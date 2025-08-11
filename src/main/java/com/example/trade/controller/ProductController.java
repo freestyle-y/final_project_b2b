@@ -28,4 +28,5 @@ public class ProductController {
 	public String shoppingCart() {
 		return "personal/shoppingCart";
 	}
+	
 }

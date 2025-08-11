@@ -40,4 +40,10 @@ public class BoardController {
 	public String reviewList() {
 		return "public/reviewList";
 	}
+	
+	// 알림 목록
+	@GetMapping("/public/notificationList")
+	public String notificationList() {
+		return "public/notificationList";
+	}
 }
