@@ -6,7 +6,11 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 </head>
+<jsp:include page="/WEB-INF/common/header/publicHeader.jsp" />
 <body>
+	<jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
 	<h1>deliveryList</h1>
 </body>
+<jsp:include page="/WEB-INF/common/footer/footer.jsp" />
+<jsp:include page="/WEB-INF/common/footer/footer.jsp" />
 </html>
