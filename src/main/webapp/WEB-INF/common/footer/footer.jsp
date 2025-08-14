@@ -12,11 +12,11 @@
     <div style="text-align: center; margin-bottom: 8px;">
         <strong>계좌번호</strong> : 977-000803-01-011 기업은행 (예금주 : 노민혁)
         <span style="margin-left: 15px;"><strong>주소</strong> : 서울특별시 금천구 가산디지털2로 95 KM타워 3층</span>
-        <span style="margin-left: 15px;"><strong>이메일</strong> : freeStyle@y.com</span>
+        <span style="margin-left: 15px;"><strong>이메일</strong> : freeStyle@naver.com</span>
     </div>
 
     <!-- 하단 -->
     <div style="text-align: center; margin-top: 10px; font-size: 12px; color: #888;">
         &copy; 2025 FreeStyle Team. All rights reserved.
     </div>
-</footer>
+</footer>---
