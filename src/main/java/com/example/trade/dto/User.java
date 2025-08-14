@@ -14,10 +14,10 @@ public class User {
 	private String password;
 	private String customerCategory;
 	private String name;
-	private String phone; // 확인 필요
-	private String sn; // 확인 필요
+	private String phone;
+	private String sn;
 	private String email;
-	private String postal; // 확인 필요
+	private String postal;
 	private String address;
 	private String detailAddress;
 	private String simplePassword;
@@ -27,6 +27,7 @@ public class User {
 	private LocalDateTime updateDate;
 	private String companyName;
 	private String bussinessNo;
-	private String customerStatus;
 	private int totalReward;
+	private int failedLoginCount;
+	private String customerStatus;
 }

@@ -19,5 +19,5 @@ public class Board {
 	private String updateUser;
 	private LocalDateTime updateDate;
 	private String useStatus;
-
+	private int viewCount;
 }

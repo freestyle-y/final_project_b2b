@@ -9,19 +9,19 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Address {
-	private int addressNo;
-	private String ownerType;
-	private String ownerNo;
-	private String postal;
-	private String address;
-	private String detailAddress;
-	private String nickname;
+public class PaymentMethod {
+	private int paymentMethodNo;
+	private String userId;
+	private String paymentCode;
+	private String financialInstitution;
+	private String accountNumber;
+	private String cardPassword;
+	private String cardCvc;
+	private String cardExpiration;
+	private String isDefault;
 	private String createUser;
 	private LocalDateTime createDate;
 	private String updateUser;
 	private LocalDateTime updateDate;
 	private String useStatus;
-	private String managerName;
-	private String mainAddress;
 }

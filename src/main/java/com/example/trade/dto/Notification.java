@@ -12,6 +12,12 @@ import lombok.NoArgsConstructor;
 public class Notification {
 	private int notificationNo;
 	private String notificationTitle;
+	private String notificationType;
 	private LocalDateTime startDate;
 	private LocalDateTime endDate;
+	private String createUser;
+	private LocalDateTime createDate;
+	private String updateUser;
+	private LocalDateTime updateDate;
+	private String useStatus;
 }

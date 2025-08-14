@@ -14,6 +14,10 @@ public class Contract {
 	private int quotationNo;
 	private int downPayment;
 	private String downPaymentStatus;
+	private LocalDateTime downPaymentDate;
+	private int finalPayment;
+	private String finalPaymentStatus;
+	private LocalDateTime finalPaymentDate;
 	private String createUser;
 	private LocalDateTime createDate;
 	private String updateUser;
