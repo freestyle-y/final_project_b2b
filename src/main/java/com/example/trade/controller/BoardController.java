@@ -34,12 +34,6 @@ public class BoardController {
 	public String FAQList() {
 		return "public/FAQList";
 	}
-
-	// 리뷰 목록
-	@GetMapping("/public/reviewList")
-	public String reviewList() {
-		return "public/reviewList";
-	}
 	
 	// 로그인 이력 페이지
 	@GetMapping("/admin/loginHistory")
