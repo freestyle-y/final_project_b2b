@@ -3,12 +3,15 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>login page</title>
 </head>
-<jsp:include page="/WEB-INF/common/header/publicHeader.jsp" />
 <body>
-	<jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
 	<h1>login page</h1>
+	<hr>
+	<form action="/public/loginAction" method="post" name="loginForm">
+	<input type="text" id="username" name="username" placeholder="id">
+	<input type="password" id="password" name="password" placeholder="password">
+	<button type="submit">login</button>
+	</form>
 </body>
-<jsp:include page="/WEB-INF/common/footer/footer.jsp" />
 </html>

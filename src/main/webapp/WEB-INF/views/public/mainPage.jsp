@@ -3,7 +3,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>메인 페이지</title>
+<title>공용 메인 페이지</title>
 <style>
     .main-container {
         max-width: 1200px;
