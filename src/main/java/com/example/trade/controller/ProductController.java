@@ -1,10 +1,26 @@
 package com.example.trade.controller;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.example.trade.dto.User;
+import com.example.trade.service.ProductService;
+
+import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
+
 @Controller
+@Slf4j
 public class ProductController {
+	private final ProductService productService;
+	public ProductController(ProductService productService) {
+		this.productService = productService;
+	}
+
 	// 상품 후기 페이지
 	@GetMapping("/public/reviewList")
 	public String reviewList() {
@@ -13,19 +29,30 @@ public class ProductController {
 	
 	// 개인 메인 페이지
 	@GetMapping("/personal/mainPage")
-	public String perMainPage() {
+	public String perMainPage(Model model) {
+		List<Map<String, Object>> productList = productService.selectProductByWish();
+		//log.info(productList.toString());
+		model.addAttribute("productList", productList);
 		return "personal/mainPage";
 	}
 	
 	// 찜
 	@GetMapping("/personal/wishList")
-	public String wishList() {
+	public String wishList(HttpSession session, Model model) {
+		//User loginUser = (User) session.getAttribute("loginUser");
+		List<Map<String, Object>> wishList = productService.selectWishList("user01");
+		//log.info(wishList.toString());
+		model.addAttribute("wishList", wishList);
 		return "personal/wishList";
 	}
 	
 	// 장바구니
 	@GetMapping("/personal/shoppingCart")
-	public String shoppingCart() {
+	public String shoppingCart(HttpSession session, Model model) {
+		//User loginUser = (User) session.getAttribute("loginUser");
+		List<Map<String, Object>> shoppingCartList = productService.selectShoppingCart("3");
+		log.info(shoppingCartList.toString());
+		model.addAttribute("shoppingCartList", shoppingCartList);
 		return "personal/shoppingCart";
 	}
 	

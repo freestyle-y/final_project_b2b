@@ -1,3 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.trade.mapper.ProductMapper"></mapper>
+<mapper namespace="com.example.trade.mapper.ProductMapper">
+	<!-- 상품 목록(찜 많은순) -->
+	<select id="productListByWish" resultType="map">
+		SELECT
+			p.product_no AS productNo,
+		    p.product_name AS productName,
+		    IFNULL(w.wish_count, 0) AS wishCount
+		FROM 
+		    product p
+		LEFT JOIN (
+		    SELECT 
+		        product_no, 
+		        COUNT(*) AS wish_count
+		    FROM 
+		        wish_list
+		    WHERE 
+		        use_status = 'Y'
+		    GROUP BY 
+		        product_no
+		) w ON p.product_no = w.product_no
+		WHERE 
+		    p.use_status = 'Y'
+		GROUP BY 
+		    p.product_no
+		ORDER BY 
+		    wish_count DESC
+		LIMIT 0, 10
+	</select>
+
+	<!-- 개인 찜 목록 보기 -->
+	<select id="wishList" parameterType="String" resultType="map">
+		SELECT 
+		    p.product_no AS productNo, 
+		    p.product_name AS productName, 
+		    p.category AS category, 
+		    p.use_status AS productUseStatus
+		FROM wish_list w
+		INNER JOIN product p
+		    ON w.product_no = p.product_no
+		WHERE w.user_id = #{id}
+		  AND w.use_status = 'Y'
+		GROUP BY p.product_no;
+	</select>
+	
+	<!-- 개인 장바구니 목록 보기 -->
+	<select id="shoppingCart" parameterType="String" resultType="map">
+		SELECT 
+			sc.user_no AS userNo,
+			p.product_no AS productNo, 
+			p.option_no AS optionNo,
+			p.product_name AS productName,
+			o.option_name_value AS optionNameValue,
+			sc.quantity,
+			CASE p.product_status
+		        WHEN 'GS001' THEN '판매대기'
+		        WHEN 'GS002' THEN '판매중'
+		        WHEN 'GS003' THEN '일시품절'
+		        WHEN 'GS004' THEN '영구중단'
+		        ELSE '알수없음'
+		    END AS productStatus,
+			p.price,
+			p.use_status AS useStatus
+		FROM shopping_cart sc
+		INNER JOIN product p
+			ON sc.product_no = p.product_no
+			AND sc.option_no = p.option_no
+		INNER JOIN `option` o
+			ON p.option_no = o.option_no
+		WHERE sc.user_no = #{id}
+			AND sc.use_status = 'Y'
+	</select>
+</mapper>

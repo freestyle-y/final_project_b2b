@@ -19,4 +19,4 @@
     <div style="text-align: center; margin-top: 10px; font-size: 12px; color: #888;">
         &copy; 2025 FreeStyle Team. All rights reserved.
     </div>
-</footer>---
+</footer>

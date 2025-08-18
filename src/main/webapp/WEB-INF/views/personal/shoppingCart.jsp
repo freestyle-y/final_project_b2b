@@ -1,15 +1,289 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+<meta charset="UTF-8" />
+<title>장바구니</title>
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f9f9f9;
+        margin: 0; padding: 0;
+    }
+
+    .container {
+        max-width: 1000px;
+        margin: 30px auto;
+        padding: 0 20px;
+    }
+
+    .cart-title {
+        font-size: 26px;
+        font-weight: bold;
+        margin-bottom: 30px;
+        border-bottom: 2px solid #333;
+        padding-bottom: 10px;
+    }
+
+    .header-checkbox {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .header-checkbox input[type="checkbox"] {
+        margin-right: 8px;
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+
+    .cart-item {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 20px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .cart-item.sold-out {
+        background-color: #e0e0e0;
+        color: #888;
+    }
+
+    .item-info {
+        flex: 1;
+        margin-left: 10px;
+    }
+
+    .item-name {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .item-option {
+        font-size: 14px;
+        color: #555;
+    }
+
+    .item-price {
+        text-align: right;
+        width: 140px;
+        position: relative;
+        white-space: nowrap; /* 이거 추가했어 */
+        /* flex 대신 inline-block 쓰는게 좋아서 바꿨음 */
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .item-quantity {
+        display: flex;
+        align-items: center;
+    }
+
+    .qty-btn {
+        padding: 2px 8px;
+        margin: 0 4px;
+        font-size: 16px;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .item-quantity input[type="text"] {
+        width: 40px;
+        text-align: center;
+        border: none;
+        background: transparent;
+        font-size: 16px;
+        pointer-events: none;
+    }
+
+    .item-quantity button.delete-btn {
+        margin-left: 10px;
+        background-color: #ff4d4f;
+        border: none;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .sold-out-text {
+        color: #b00000;
+        font-weight: bold;
+        margin-top: 5px;
+        font-size: 14px;
+    }
+
+    .reward-point {
+        color: #28a745;
+        font-size: 14px;
+        margin-top: 4px;
+        white-space: nowrap;
+    }
+
+    .summary-box {
+        text-align: right;
+        margin-top: 40px;
+        font-size: 18px;
+    }
+
+    .total-price {
+        font-weight: bold;
+        font-size: 20px;
+        margin-top: 10px;
+    }
+
+    .total-reward-point {
+        color: #28a745;
+        font-weight: bold;
+        margin-top: 6px;
+        font-size: 18px;
+    }
+
+    .buy-btn {
+        margin-top: 20px;
+        padding: 12px 30px;
+        background-color: #007bff;
+        border: none;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+</style>
+
+<script>
+    function updateTotal() {
+        let total = 0;
+        const checkboxes = document.querySelectorAll(".item-checkbox");
+        const allCheckbox = document.getElementById("selectAll");
+
+        let checkedCount = 0;
+        let enabledCount = 0;
+
+        checkboxes.forEach(cb => {
+            if (!cb.disabled) enabledCount++;
+            if (cb.checked) {
+                checkedCount++;
+                const price = parseInt(cb.getAttribute("data-total-price"));
+                total += price;
+            }
+        });
+
+        allCheckbox.checked = (checkedCount === enabledCount && enabledCount > 0);
+
+        const totalElement = document.getElementById("totalPrice");
+        const formatted = total.toLocaleString('ko-KR');
+        totalElement.innerText = formatted + "원";
+
+        const rewardPoint = Math.floor(total * 0.01);
+        const rewardElement = document.getElementById("totalRewardPoint");
+        if (rewardElement) {
+            rewardElement.innerText = rewardPoint.toLocaleString('ko-KR') + "원";
+        }
+    }
+
+    function toggleAllCheckboxes(source) {
+        const checkboxes = document.querySelectorAll(".item-checkbox:not(:disabled)");
+        checkboxes.forEach(cb => {
+            cb.checked = source.checked;
+        });
+        updateTotal();
+    }
+
+    function changeQuantity(cartId, delta) {
+        const qtyInput = document.getElementById(`qty-${cartId}`);
+        let currentQty = parseInt(qtyInput.value);
+        let newQty = currentQty + delta;
+
+        if (newQty < 1) {
+            alert("수량은 1개 이상이어야 합니다.");
+            return;
+        }
+
+        // 서버에 AJAX 요청 보내기 (수량 업데이트)
+    }
+
+    function deleteItem(cartId, button) {
+        if (!confirm("정말 삭제하시겠습니까?")) return;
+
+        // AJAX로 장바구니삭제
+    }
+</script>
 </head>
-<jsp:include page="/WEB-INF/common/header/publicHeader.jsp" />
+
+<jsp:include page="/WEB-INF/common/header/personalHeader.jsp" />
 <body>
-	<jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
-	<h1>shopping cart</h1>
+<jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
+
+<div class="container">
+    <div class="cart-title">장바구니</div>
+
+    <div class="header-checkbox">
+        <input type="checkbox" id="selectAll" onclick="toggleAllCheckboxes(this)" />
+        <label for="selectAll">전체 선택</label>
+    </div>
+
+    <c:forEach var="item" items="${shoppingCartList}">
+        <c:set var="itemTotal" value="${item.quantity * item.price}" />
+        <c:set var="isSoldOut" value="${item.productStatus == '일시품절'}" />
+
+        <div class="cart-item ${isSoldOut ? 'sold-out' : ''}" data-cart-id="${item.cartId}">
+            <input type="checkbox" class="item-checkbox"
+                   data-total-price="${itemTotal}"
+                   onchange="updateTotal()"
+                   <c:if test="${isSoldOut}">disabled</c:if> />
+
+            <div class="item-info">
+                <div class="item-name">${item.productName}</div>
+                <div class="item-option">옵션: ${item.optionNameValue}</div>
+            </div>
+
+            <div class="item-quantity">
+                수량:
+                <button type="button" class="qty-btn" onclick="changeQuantity('${item.cartId}', -1)" <c:if test="${isSoldOut}">disabled</c:if> >-</button>
+                <input type="text" id="qty-${item.cartId}" value="${item.quantity}" readonly />
+                <button type="button" class="qty-btn" onclick="changeQuantity('${item.cartId}', 1)" <c:if test="${isSoldOut}">disabled</c:if> >+</button>
+                <button type="button" class="delete-btn" onclick="deleteItem('${item.cartId}', this)">삭제</button>
+            </div>
+
+            <div class="item-price" data-price-per-unit="${item.price}">
+                <span class="price-value"><fmt:formatNumber value="${itemTotal}" type="number" />원</span>
+                <c:if test="${isSoldOut}">
+                    <div class="sold-out-text">품절</div>
+                </c:if>
+                <div class="reward-point">
+                    적립금: <fmt:formatNumber value="${itemTotal * 0.01}" type="number" />원
+                </div>
+            </div>
+        </div>
+    </c:forEach>
+
+    <div class="summary-box">
+        <div class="total-price">
+            총 결제 금액: <span id="totalPrice">0원</span>
+        </div>
+        <div class="total-reward-point">
+            적립금: <span id="totalRewardPoint">0원</span>
+        </div>
+        <button class="buy-btn" onclick="location.href='/purchase'">구매하기</button>
+    </div>
+</div>
+
+<script>
+    window.onload = function() {
+        updateTotal();
+    };
+</script>
+
 </body>
 <jsp:include page="/WEB-INF/common/footer/footer.jsp" />
 </html>
