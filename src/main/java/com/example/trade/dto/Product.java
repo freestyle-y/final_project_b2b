@@ -14,7 +14,7 @@ public class Product {
 	private int optionNo;
 	private String productName;
 	private String productStatus;
-	private String category; // 확인 필요
+	private String categoryId;
 	private int price;
 	private String createUser;
 	private LocalDateTime createDate;

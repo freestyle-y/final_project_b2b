@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.example.trade.dto.Category;
 import com.example.trade.dto.User;
 import com.example.trade.service.ProductService;
 
@@ -51,15 +52,21 @@ public class ProductController {
 	public String shoppingCart(HttpSession session, Model model) {
 		//User loginUser = (User) session.getAttribute("loginUser");
 		List<Map<String, Object>> shoppingCartList = productService.selectShoppingCart("3");
-		log.info(shoppingCartList.toString());
+		//log.info(shoppingCartList.toString());
 		model.addAttribute("shoppingCartList", shoppingCartList);
 		return "personal/shoppingCart";
 	}
 	
 	// 상품 목록
-	@GetMapping("/public/productList")
-	public String productList() {
-		return "public/productList";
+	@GetMapping("/personal/productList")
+	public String productList(Model model) {
+		List<Category> majorCategoryList = productService.selectMajorCategory();
+		List<Map<String, Object>> productList = productService.selectProductListByCategory(null, null);
+		//log.info(majorCategoryList.toString());
+		//log.info(productList.toString());
+		model.addAttribute("majorCategoryList", majorCategoryList);
+		model.addAttribute("productList", productList);
+		return "personal/productList";
 	}
 	
 	// 개인용 상품 상세 페이지
