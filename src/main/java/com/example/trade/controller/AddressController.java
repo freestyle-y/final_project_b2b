@@ -1,0 +1,55 @@
+package com.example.trade.controller;
+
+import java.security.Principal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.example.trade.dto.Address;
+import com.example.trade.service.AddressService;
+
+@Controller
+public class AddressController {
+	private final AddressService addressService;
+    public AddressController(AddressService addressService) {
+		super();
+		this.addressService = addressService;
+	}
+	// 배송지 추가 팝업 페이지
+    @GetMapping("/personal/addressPopup")
+    public String addressPopup(@RequestParam("user_id") String userId,Model model, Principal principal) {
+        if (userId == null) {
+            userId = principal.getName(); // user_id 없으면 로그인 사용자 아이디 사용
+        }
+    	List<Address> addressList = addressService.getAddressList(userId);
+    	model.addAttribute("addressList", addressList);
+    	return "personal/addressPopup";
+    }
+    
+    @PostMapping("/personal/address/add")
+    @ResponseBody
+    public Map<String, Object> addAddress(@RequestBody Address address, Principal principal) {
+        String userId = principal.getName();
+        address.setOwnerType("AC001");
+        address.setUserId(userId);
+        address.setCreateUser(userId);
+
+        if (address.getMainAddress() == null) {
+            address.setMainAddress("N");
+        }
+
+        int row = addressService.addAddress(address);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("status", row > 0 ? "success" : "error");
+        return result; // ✅ JSON 변환되어 응답
+    }
+}

@@ -164,10 +164,12 @@ h1, h3 {
         </p>
 
         <!-- 배송지 -->
-        <h3>배송지</h3>
-        <p>기본 배송지: <strong>${orderList[0].address} ${orderList[0].detailAddress}</strong></p>
-        <button type="button" class="btn" onclick="alert('배송지 변경 창')">배송지 변경</button>
-        <br><br>
+		<h3>배송지</h3>
+		<p>기본 배송지: 
+		   <strong id="selectedAddress">${orderList[0].address} ${orderList[0].detailAddress}</strong>
+		</p>
+		<input type="hidden" id="selectedAddressId" name="addressNo" value="${orderList[0].addressNo}">
+		<button type="button" class="btn" onclick="openAddressPopup()">배송지 변경</button>
 
         <!-- 배송 요청사항 -->
         <h3>배송 요청사항</h3>
@@ -182,6 +184,14 @@ h1, h3 {
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
+	function openAddressPopup() {
+	    let userId = "${orderList[0].userId}"; // JSP에서 세션/모델에서 전달된 값 사용
+	    window.open(
+	        "/personal/addressPopup?user_id=" + userId,
+	        "addressPopup",
+	        "width=600,height=500,scrollbars=yes"
+	    );
+	}
 	function handlePayment() {
 	    const method = document.querySelector("input[name='paymentMethod']:checked").value;
 

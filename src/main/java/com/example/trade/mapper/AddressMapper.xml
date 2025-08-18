@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.trade.mapper.AddressMapper">
+	<select id="getAddressList" resultType="com.example.trade.dto.Address">
+		SELECT address_no AS addressNo, address, detail_address AS detailAddress, nickname, postal
+		FROM address
+		WHERE user_id = #{userId}
+	</select>
+	
+    <insert id="addAddress" parameterType="com.example.trade.dto.Address" useGeneratedKeys="true" keyProperty="addressNo">
+        INSERT INTO address
+        (
+            owner_type,
+            user_id,
+            postal,
+            address,
+            detail_address,
+            nickname,
+            create_user,
+            main_address
+        )
+        VALUES
+        (
+            #{ownerType},
+            #{userId},
+            #{postal},
+            #{address},
+            #{detailAddress},
+            #{nickname},
+            #{createUser},
+            #{mainAddress}
+        )
+    </insert>
+</mapper>

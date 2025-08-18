@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class Address {
 	private int addressNo;
 	private String ownerType;
-	private String ownerNo;
+	private String userId;
 	private String postal;
 	private String address;
 	private String detailAddress;
