@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.trade.mapper.OrderMapper">
+	<select id="getOrderList" resultType="com.example.trade.dto.Order">
+	    SELECT
+	        o.order_no             AS orderNo,
+	        o.sub_order_no         AS subOrderNo,
+	        o.parent_sub_order_no  AS parentSubOrderNo,
+	        o.user_id              AS userId,
+	        o.address_no           AS addressNo,
+	        a.address			   AS address,
+	        a.detail_address       AS detailAddress,
+	        o.delivery_request     AS deliveryRequest,
+	        o.product_no           AS productNo,
+	        o.product_name         AS productName,
+	        o.option_no            AS optionNo,
+	        o.option_name          AS optionName,
+	        o.option_name_value    AS optionNameValue,
+	        o.order_quantity       AS orderQuantity,
+	        o.price                AS price,
+	        o.payment_type         AS paymentType,
+	        o.payment_time         AS paymentTime,
+	        o.return_quantity      AS returnQuantity,
+	        o.return_reason        AS returnReason,
+	        o.return_request_time  AS returnRequestTime,
+	        o.return_end_time      AS returnEndTime,
+	        o.exchange_quantity    AS exchangeQuantity,
+	        o.exchange_reason      AS exchangeReason,
+	        o.exchange_request_time AS exchangeRequestTime,
+	        o.exchange_end_time    AS exchangeEndTime,
+	        o.return_delivery_method AS returnDeliveryMethod,
+	        o.order_status         AS orderStatus,
+	        o.delivery_status      AS deliveryStatus,
+	        o.order_time           AS orderTime,
+	        o.order_reward         AS orderReward,
+	        o.order_reward_status  AS orderRewardStatus,
+	        o.review               AS review,
+	        o.grade                AS grade,
+	        o.review_reward        AS reviewReward,
+	        o.review_reward_status AS reviewRewardStatus,
+	        o.create_user          AS createUser,
+	        o.create_date          AS createDate,
+	        o.update_user          AS updateUser,
+	        o.update_date          AS updateDate,
+	        o.use_status           AS useStatus
+	    FROM `order` o INNER JOIN address a ON o.address_no = a.address_no
+	    WHERE order_no = #{orderNo}
+	</select>
+</mapper>

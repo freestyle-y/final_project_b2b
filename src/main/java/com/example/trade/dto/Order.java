@@ -48,4 +48,8 @@ public class Order {
 	private String updateUser;
 	private LocalDateTime updateDate;
 	private String useStatus;
+	
+	// address 테이블 조인
+	private String address;
+	private String detailAddress;
 }
