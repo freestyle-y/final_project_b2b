@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -46,10 +47,17 @@ h1, h3 {
         document.querySelectorAll("input[name='paymentMethod']").forEach(radio => {
             radio.addEventListener("change", function() {
                 const bankInfo = document.getElementById("bankInfo");
+                const cardInfo = document.getElementById("cardInfo");
+
                 if (this.value === "bank") {
                     bankInfo.style.display = "block";
+                    cardInfo.style.display = "none";
+                } else if (this.value === "card") {
+                    cardInfo.style.display = "block";
+                    bankInfo.style.display = "none";
                 } else {
                     bankInfo.style.display = "none";
+                    cardInfo.style.display = "none";
                 }
             });
         });
@@ -87,16 +95,53 @@ h1, h3 {
 
         <!-- 결제수단 -->
         <h3>결제수단</h3>
-        <label>
-            <input type="radio" name="paymentMethod" value="kakaopay" checked> 카카오페이
-        </label>
-        <label>
-            <input type="radio" name="paymentMethod" value="bank"> 계좌이체
-        </label>
+        <label><input type="radio" name="paymentMethod" value="kakaopay" checked> 카카오페이</label>
+        <label><input type="radio" name="paymentMethod" value="bank"> 계좌이체</label>
+        <label><input type="radio" name="paymentMethod" value="card"> 카드결제</label>
+
         <div id="bankInfo" style="display: none; margin-top: 5px;">
             <p>기업 계좌번호: <strong>기업은행 977-000803-01-011 (예금주: 노민혁)</strong></p>
         </div>
-        <br>
+
+		<!-- 카드 결제 영역 -->
+		<div id="cardInfo" style="display: none; margin-top: 10px;">
+		    <c:choose>
+		        <c:when test="${not empty cardList}">
+		            <p><strong>등록된 카드 선택</strong></p>
+						<c:forEach var="card" items="${cardList}">
+						<label>
+						    <input type="radio" name="cardNo" value="${card.paymentMethodNo}" 
+						           <c:if test="${card.isDefault == 'Y'}">checked</c:if>>
+						    ${card.financialInstitution} - ****-****-****-${fn:substring(card.accountNumber, card.accountNumber.length()-4, card.accountNumber.length())}
+						    (유효기간: ${card.cardExpiration})
+						</label>
+						<br>
+						</c:forEach>
+		            <br>
+		            <button type="button" class="btn" onclick="document.getElementById('newCardForm').style.display='block'">+ 새 카드 등록</button>
+		            <div id="newCardForm" style="display:none;">
+		                <label>카드사: <input type="text" name="financialInstitution"></label><br>
+		                <label>카드번호: <input type="text" name="accountNumber"></label><br>
+		                <label>유효기간(YYYY-MM): <input type="month" name="cardExpiration"></label><br>
+		                <label>CVC: <input type="text" name="cardCvc" maxlength="4"></label><br>
+		                <label>비밀번호 앞 2자리: <input type="password" name="cardPassword" maxlength="2"></label><br>
+		                <label><input type="checkbox" name="isDefault" value="Y"> 기본 결제수단으로 등록</label>
+		                <button type="button" class="btn" onclick="addCard()">카드 등록</button>
+		            </div>
+		        </c:when>
+		        <c:otherwise>
+		            <p><strong>등록된 카드가 없습니다. 새 카드 정보를 입력하세요.</strong></p>
+		            <div id="newCardForm">
+		                <label>카드사: <input type="text" name="financialInstitution"></label><br>
+		                <label>카드번호: <input type="text" name="accountNumber"></label><br>
+		                <label>유효기간(YYYY-MM): <input type="month" name="cardExpiration"></label><br>
+		                <label>CVC: <input type="text" name="cardCvc" maxlength="4"></label><br>
+		                <label>비밀번호 앞 2자리: <input type="password" name="cardPassword" maxlength="2"></label><br>
+		                <label><input type="checkbox" name="isDefault" value="Y"> 기본 결제수단으로 등록</label>
+		            </div>
+		        </c:otherwise>
+		    </c:choose>
+		</div>
 
         <!-- 결제 금액 & 적립금 -->
         <h3>결제 금액</h3>
@@ -110,31 +155,17 @@ h1, h3 {
             </strong>
         </p>
 
-        <p>
-            사용 가능 적립금:
+        <p>사용 가능 적립금:
             <input type="text" id="availablePoints" value="${orderList[0].orderReward}" readonly> 원
         </p>
-        <p>
-            사용할 적립금:
+        <p>사용할 적립금:
             <input type="number" id="usePoints" name="usePoints" min="0" step="100"> 원
             <button type="button" class="btn" onclick="useAllPoints()">전액 사용</button>
         </p>
 
-        <p class="note">
-            ※ 적립금 사용 기준 <br>
-            1. 적립금은 최소 1,000원 이상 사용 가능하다. <br>
-            2. 단위는 100원 단위로 가능하다. <br>
-            3. 물품 가격이 최소 10,000원 이상부터 적립금을 사용 가능하다. <br>
-            4. 적립금은 구매 금액의 10%를 넘을 수 없다. <br>
-            5. 적립금은 적립된 후 90일이 지나면 소멸된다. <br>
-            6. 적립금은 남은 기간이 짧은 적립금부터 사용된다. <br>
-        </p>
-
         <!-- 배송지 -->
         <h3>배송지</h3>
-        <p>
-            기본 배송지: <strong>${orderList[0].address} ${orderList[0].detailAddress}</strong>
-        </p>
+        <p>기본 배송지: <strong>${orderList[0].address} ${orderList[0].detailAddress}</strong></p>
         <button type="button" class="btn" onclick="alert('배송지 변경 창')">배송지 변경</button>
         <br><br>
 
@@ -151,54 +182,96 @@ h1, h3 {
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
-function handlePayment() {
-    const method = document.querySelector("input[name='paymentMethod']:checked").value;
+	function handlePayment() {
+	    const method = document.querySelector("input[name='paymentMethod']:checked").value;
 
-    if (method === "kakaopay") {
-        // 카카오페이 Ajax 요청
-        let data = {
-            orderNo: "${orderList[0].orderNo}",    // 주문번호
-            name: "${orderList[0].productName}",   // 상품명
-            totalPrice: ${orderList[0].price}      // 총 결제금액
-        };
+	    if (method === "card") {
+	        const hasRegisteredCards = document.querySelectorAll("input[name='cardNo']").length > 0;
+	        if (hasRegisteredCards) {
+	            const selectedCard = document.querySelector("input[name='cardNo']:checked");
+	            if (!selectedCard) {
+	                alert("결제할 카드를 선택해주세요.");
+	                return false;
+	            }
+	            alert("선택한 카드(" + selectedCard.value + ")로 결제를 진행합니다.");
+	            // TODO: Ajax로 카드 결제 처리
+	            return false;
+	        } else {
+	            document.getElementById("newCardForm").style.display = "block";
+	            alert("등록된 카드가 없습니다. 새 카드를 등록해주세요.");
+	            return false;
+	        }
+	    }
 
-        $.ajax({
-            type: "POST",
-            url: "/personal/payment/ready",
-            data: JSON.stringify(data),
-            contentType: "application/json",
-            success: function(response) {
-                if (response.next_redirect_pc_url) {
-                    // 팝업으로 카카오 결제창 열기
-                    const kakaoWin = window.open(
-                        response.next_redirect_pc_url, 
-                        "kakaoPayPopup", 
-                        "width=500,height=700,scrollbars=yes"
-                    );
+	    if (method === "kakaopay") {
+	        let data = {
+	            orderNo: "${orderList[0].orderNo}",
+	            name: "${orderList[0].productName}",
+	            totalPrice: ${orderList[0].price}
+	        };
 
-                    // 팝업 닫힘 감지 → 부모창 새로고침 or 완료 페이지 이동
-                    const timer = setInterval(function() {
-                        if (kakaoWin.closed) {
-                            clearInterval(timer);
-                            location.href = "/personal/orderList"; // 완료 페이지 or 주문내역
-                        }
-                    }, 1000);
-                } else {
-                    alert("카카오페이 결제 요청 실패");
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error("카카오페이 요청 에러:", error);
-                alert("결제 중 오류 발생");
-            }
-        });
-        return false; // 기본 form submit 막기
-    } else {
-        // 계좌이체 선택 시 일반 submit
-        document.getElementById("paymentForm").action = "/payment/submit";
-        return true;
-    }
-}
+	        $.ajax({
+	            type: "POST",
+	            url: "/personal/payment/ready",
+	            data: JSON.stringify(data),
+	            contentType: "application/json",
+	            success: function(response) {
+	                if (response.next_redirect_pc_url) {
+	                    const kakaoWin = window.open(
+	                        response.next_redirect_pc_url, 
+	                        "kakaoPayPopup", 
+	                        "width=500,height=700,scrollbars=yes"
+	                    );
+	                    const timer = setInterval(function() {
+	                        if (kakaoWin.closed) {
+	                            clearInterval(timer);
+	                            location.href = "/personal/orderList";
+	                        }
+	                    }, 1000);
+	                } else {
+	                    alert("카카오페이 결제 요청 실패");
+	                }
+	            },
+	            error: function(xhr, status, error) {
+	                console.error("카카오페이 요청 에러:", error);
+	                alert("결제 중 오류 발생");
+	            }
+	        });
+	        return false;
+	    }
+
+	    if (method === "bank") {
+	        document.getElementById("paymentForm").action = "/payment/submit";
+	        return true;
+	    }
+	}
+	
+	function addCard() {
+	    const formData = {
+	        userId: "${orderList[0].userId}",  // 세션 사용자 id도 가능
+	        financialInstitution: document.querySelector("input[name='financialInstitution']").value,
+	        accountNumber: document.querySelector("input[name='accountNumber']").value,
+	        cardExpiration: document.querySelector("input[name='cardExpiration']").value,
+	        cardCvc: document.querySelector("input[name='cardCvc']").value,
+	        cardPassword: document.querySelector("input[name='cardPassword']").value,
+	        isDefault: document.querySelector("input[name='isDefault']").checked ? "Y" : "N"
+	    };
+
+	    $.ajax({
+	        type: "POST",
+	        url: "/personal/payment/addCard",
+	        data: JSON.stringify(formData),
+	        contentType: "application/json",
+	        success: function(response) {
+	            alert("카드가 등록되었습니다.");
+	            location.reload(); // 새로고침해서 cardList 다시 불러오기
+	        },
+	        error: function(xhr, status, error) {
+	            console.error("카드 등록 실패:", error);
+	            alert("카드 등록 중 오류가 발생했습니다.");
+	        }
+	    });
+	}
 </script>
 
 </body>
