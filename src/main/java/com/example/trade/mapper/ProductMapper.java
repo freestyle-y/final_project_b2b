@@ -9,7 +9,8 @@ import com.example.trade.dto.Category;
 
 @Mapper
 public interface ProductMapper {
-	
+	// 상품 후기 목록 보기
+	List<Map<String, Object>> reviewList();
 	// 상품 목록(찜 많은순)
 	List<Map<String, Object>> productListByWish();
 	// 개인 찜 목록 보기

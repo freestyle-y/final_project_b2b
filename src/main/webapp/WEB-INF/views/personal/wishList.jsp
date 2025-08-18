@@ -80,7 +80,6 @@
 <jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
 
 <div class="wishlist-container">
-    <h1>찜 목록</h1>
 
     <form id="deleteForm" method="post" action="${pageContext.request.contextPath}/personal/wish/delete">
         <!-- 전체 선택 체크박스 -->

@@ -18,6 +18,11 @@ public class ProductService {
 		this.productMapper = productMapper;
 	}
 	
+	// 상품 후기 목록 보기
+	public List<Map<String, Object>> selectReviewList() {
+		return productMapper.reviewList();
+	}
+	
 	// 상품 목록(찜 많은순)
 	public List<Map<String, Object>> selectProductByWish() {
 		return productMapper.productListByWish();

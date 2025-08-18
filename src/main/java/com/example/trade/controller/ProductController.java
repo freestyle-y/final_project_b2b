@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import com.example.trade.dto.Category;
+import com.example.trade.dto.Order;
 import com.example.trade.dto.User;
 import com.example.trade.service.ProductService;
 
@@ -24,7 +25,10 @@ public class ProductController {
 
 	// 상품 후기 페이지
 	@GetMapping("/public/reviewList")
-	public String reviewList() {
+	public String reviewList(Model model) {
+		List<Map<String, Object>> reviewList = productService.selectReviewList();
+		log.info(reviewList.toString());
+		model.addAttribute("reviewList", reviewList);
 		return "public/reviewList";
 	}
 	
