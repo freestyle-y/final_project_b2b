@@ -1,10 +1,10 @@
 package com.example.trade.controller;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,7 +33,14 @@ public class QuotationController {
 	public String quotationList(Model model, Principal principal) {
 		String userId = principal.getName();
 	    List<Quotation> quotationList = quotationService.getQuotationList(userId);
-	    model.addAttribute("quotationList", quotationList);
+	    Map<String, List<Quotation>> quotationGroupedMap = new LinkedHashMap<>();
+
+	    for (Quotation q : quotationList) {
+	        String key = q.getQuotationNo() + "_" + q.getSubProductRequestNo() + "_" + q.getPrice();
+	        quotationGroupedMap.computeIfAbsent(key, k -> new ArrayList<>()).add(q);
+	    }
+
+	    model.addAttribute("quotationGroupedMap", quotationGroupedMap);
 	    return "biz/quotationList";
 	}
 

@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -38,18 +39,25 @@
         </tr>
     </thead>
     <tbody>
-        <c:forEach var="q" items="${quotationList}">
-            <tr>
-                <td>${q.quotationNo}</td>
-                <td>${q.subProductRequestNo}</td>
-                <td>${q.price}</td>
-                <td>${q.status}</td>
-                <td>${q.createUser}</td>
-                <td>${q.createDate}</td>
-                <td>${q.productName}</td>
-                <td>${q.productQuantity}</td>
-            </tr>
-        </c:forEach>
+<c:forEach var="entry" items="${quotationGroupedMap}">
+    <c:set var="keyParts" value="${fn:split(entry.key, '_')}" />
+    <c:set var="quotationList" value="${entry.value}" />
+    <c:set var="first" value="true" />
+
+    <c:forEach var="q" items="${quotationList}">
+        <tr>
+            <td><c:if test="${first}">${keyParts[0]}</c:if></td>
+            <td><c:if test="${first}">${keyParts[1]}</c:if></td>
+            <td><c:if test="${first}">${keyParts[2]}</c:if></td>
+            <td><c:if test="${first}">${q.status}</c:if></td>
+            <td><c:if test="${first}">${q.createUser}</c:if></td>
+            <td><c:if test="${first}">${q.createDate}</c:if></td>
+            <td>${q.productName}</td>
+            <td>${q.productQuantity}</td>
+        </tr>
+        <c:set var="first" value="false" />
+    </c:forEach>
+</c:forEach>
     </tbody>
 </table>
 
