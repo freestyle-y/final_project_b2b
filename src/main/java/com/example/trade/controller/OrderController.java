@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.example.trade.dto.Address;
 import com.example.trade.dto.KakaoPayApprovalResponse;
 import com.example.trade.dto.KakaoPayReadyResponse;
 import com.example.trade.dto.Order;
 import com.example.trade.dto.PaymentMethod;
+import com.example.trade.service.AddressService;
 import com.example.trade.service.KakaoPayService;
 import com.example.trade.service.OrderService;
 import com.example.trade.service.PaymentMethodService;
@@ -26,7 +28,7 @@ public class OrderController {
     private final OrderService orderService;
     private final KakaoPayService kakaoPayService;
     private final PaymentMethodService paymentMethodService;
-
+    
     public OrderController(OrderService orderService, KakaoPayService kakaoPayService, PaymentMethodService paymentMethodService) {
         this.orderService = orderService;
         this.kakaoPayService = kakaoPayService;
