@@ -1,8 +1,10 @@
 package com.example.trade.controller;
 
 import java.security.Principal;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,12 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.example.trade.dto.Address;
 import com.example.trade.dto.KakaoPayApprovalResponse;
 import com.example.trade.dto.KakaoPayReadyResponse;
 import com.example.trade.dto.Order;
 import com.example.trade.dto.PaymentMethod;
-import com.example.trade.service.AddressService;
 import com.example.trade.service.KakaoPayService;
 import com.example.trade.service.OrderService;
 import com.example.trade.service.PaymentMethodService;
@@ -126,7 +126,24 @@ public class OrderController {
     
     // 주문조회
     @GetMapping("/personal/orderList")
-    public String orderList() {
-    	return "personal/orderList";
+    public String orderList(Model model, Principal principal) {
+        String userId = principal.getName();
+
+        List<Order> orderList = orderService.getOrderListByuserId(userId);
+
+        // 주문번호 기준으로 그룹핑
+        Map<String, List<Order>> orderGroupMap = orderList.stream()
+                .collect(Collectors.groupingBy(Order::getOrderNo, LinkedHashMap::new, Collectors.toList()));
+
+        model.addAttribute("orderGroupMap", orderGroupMap);
+
+        return "personal/orderList";
+    }
+    
+    @GetMapping("/personal/orderOne")
+    public String orderOne(@RequestParam("orderNo") int orderNo, Model model) {
+        List<Order> orderDetailList = orderService.getOrderDetailByOrderNo(orderNo); // 서비스에서 가져오기
+        model.addAttribute("orderDetailList", orderDetailList);
+        return "personal/orderOne";
     }
 }

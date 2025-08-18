@@ -16,4 +16,6 @@ public interface OrderMapper {
 	int getOrderItemCount(String orderNo);
 	String getUserIdByOrderNo(String orderNo);
 	String getFirstProductName(String orderNo);
+	List<Order> getOrderListByUserId(String userId);
+	List<Order> selectOrderDetailByOrderNo(int orderNo);
 }

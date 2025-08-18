@@ -21,4 +21,8 @@ public class Quotation {
 	private String updateUser;
 	private LocalDateTime updateDate;
 	private String useStatus;
+	
+	// product_request 조인
+	private String productName;
+	private int productQuantity;
 }
