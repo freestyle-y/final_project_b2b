@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.trade.mapper.QuotationMapper">
+	<select id="getQuotationList" resultType="com.example.trade.dto.Quotation">
+		SELECT 
+		    q.quotation_no AS quotationNo,
+		    q.sub_product_request_no AS subProductRequestNo,
+		    q.price AS price,
+		    q.status AS status,
+		    pr.create_user AS createUser,
+		    pr.create_date AS createDate,
+		    pr.product_name AS productName,
+		    pr.product_quantity AS productQuantity
+		FROM quotation q
+		INNER JOIN product_request pr ON q.sub_product_request_no = pr.sub_product_request_no
+		WHERE pr.create_user = #{userId}
+	</select>
+</mapper>

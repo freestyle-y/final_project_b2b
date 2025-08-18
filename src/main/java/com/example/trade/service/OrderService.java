@@ -31,4 +31,15 @@ public class OrderService {
 		return orderMapper.getOrderItemCount(orderNo);
 	}
 
+
+	public List<Order> getOrderListByuserId(String userId) {
+
+		return orderMapper.getOrderListByUserId(userId);
+	}
+
+
+	public List<Order> getOrderDetailByOrderNo(int orderNo) {
+		
+	    return orderMapper.selectOrderDetailByOrderNo(orderNo);
+	}
 }

@@ -83,4 +83,48 @@
 	    FROM `order`
 	    WHERE order_no = #{orderNo}
 	</select>
+	
+	<select id="getOrderListByUserId" resultType="com.example.trade.dto.Order">
+	    SELECT
+	        order_no AS orderNo,
+	        user_id AS userId,
+	        product_name AS productName,
+	        option_name AS optionName,
+	        option_name_value AS optionNameValue,
+	        order_quantity AS orderQuantity,
+	        price
+	    FROM `order`
+	    WHERE user_id = #{userId}
+	    ORDER BY order_no
+	</select>
+	
+	
+	<select id="selectOrderDetailByOrderNo" resultType="com.example.trade.dto.Order">
+	    SELECT 
+	        o.order_no AS orderNo,
+	        o.sub_order_no AS subOrderNo,
+	        o.user_id AS userId,
+	
+	        u.name AS name,
+	        u.phone AS phone,
+	        
+	        a.address AS address,
+	        a.detail_address AS detailAddress,
+	        a.postal AS postal,
+	
+	        o.product_name AS productName,
+	        o.option_name AS optionName,
+	        o.option_name_value AS optionNameValue,
+	        o.order_quantity AS orderQuantity,
+	        o.price AS price,
+	        (o.price * o.order_quantity) AS totalPrice,
+	
+	        o.order_time AS orderTime,
+	        o.delivery_request AS deliveryRequest,
+	        o.payment_type AS paymentType
+	    FROM `order` o
+	    INNER JOIN address a ON o.address_no = a.address_no
+	    INNER JOIN `user` u ON a.user_id = u.id
+	    WHERE o.order_no = #{orderNo}
+	</select>
 </mapper>

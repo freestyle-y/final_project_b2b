@@ -48,6 +48,8 @@ public class Order {
 	private String updateUser;
 	private LocalDateTime updateDate;
 	private String useStatus;
+	private String orderDetails;
+	private String totalOrderQuantity;
 	
 	// 결제 금액 총액 확인용
 	private int totalPrice;
@@ -56,4 +58,6 @@ public class Order {
 	private String detailAddress;
 	// user 테이블 조인
 	private String name;
+	private String phone;
+	private String postal;
 }
