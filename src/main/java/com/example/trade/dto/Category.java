@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Categroy {
+public class Category {
 	private String categoryId;
 	private String parentCategory;
 	private String categoryName;

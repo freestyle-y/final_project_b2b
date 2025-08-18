@@ -210,6 +210,7 @@
         }
 
         // 서버에 AJAX 요청 보내기 (수량 업데이트)
+        // 수량 늘릴때 재고에 있는 수량 확인해서 늘리기
     }
 
     function deleteItem(cartId, button) {
