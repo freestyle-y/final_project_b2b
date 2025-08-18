@@ -1,5 +1,6 @@
 package com.example.trade.controller;
 
+import java.lang.annotation.Target;
 import java.util.List;
 import java.util.Map;
 
@@ -50,14 +51,32 @@ public class OrderController {
         return kakaoPayService.payReady(orderNo, name, totalPrice);
     }
 
-    // 결제 성공 콜백 (approval_url)
     @GetMapping("/personal/payment/success")
-    public String paymentSuccess(@RequestParam("pg_token") String pgToken, Model model) {
+    public String paymentSuccess(@RequestParam("pg_token") String pgToken,
+                                 @RequestParam("orderNo") String orderNo,
+                                 Model model) {
+        // 1. 카카오 결제 승인
         KakaoPayApprovalResponse response = kakaoPayService.payApprove(pgToken);
-        model.addAttribute("info", response);
+
+        // 2. 주문 정보
+        Order order = orderService.getOrder(orderNo);
+
+        // 3. 아이템 개수 조회
+        int itemCount = orderService.getOrderItemCount(orderNo);
+
+        // 4. 상품명 가공
+        String productName = order.getProductName();
+        if (itemCount > 1) {
+            productName += " 외 " + (itemCount - 1) + "건";
+        }
+
+        // 5. JSP에 전달
+        model.addAttribute("name", order.getName());  // 구매자
+        model.addAttribute("productName", productName); // 상품명 (외 n건 포함)
+        model.addAttribute("totalPrice", order.getTotalPrice()); // 총액
+
         return "personal/paymentSuccess";
     }
-
     // 결제 취소 콜백 (cancel_url)
     @GetMapping("/personal/payment/cancel")
     public String paymentCancel() {
@@ -68,5 +87,11 @@ public class OrderController {
     @GetMapping("/personal/payment/fail")
     public String paymentFail() {
         return "personal/paymentFail";
+    }
+    
+    // 주문조회
+    @GetMapping("/personal/orderList")
+    public String orderList() {
+    	return "personal/orderList";
     }
 }

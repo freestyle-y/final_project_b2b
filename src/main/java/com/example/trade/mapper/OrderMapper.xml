@@ -46,4 +46,41 @@
 	    FROM `order` o INNER JOIN address a ON o.address_no = a.address_no
 	    WHERE order_no = #{orderNo}
 	</select>
+	
+	<select id="getOrder" parameterType="string" resultType="com.example.trade.dto.Order">
+	    SELECT 
+	        o.order_no AS orderNo,
+	        u.name AS name,
+	        MAX(o.product_name) AS productName,
+	        SUM(o.price * o.order_quantity) AS totalPrice
+	    FROM `order` o
+		LEFT JOIN `user` u ON o.user_id = u.id
+	    WHERE o.order_no = #{orderNo}
+	    GROUP BY o.order_no, u.name
+	</select>
+	<select id="getTotalPrice" parameterType="string" resultType="int">
+	    SELECT SUM(o.price * o.order_quantity)
+	    FROM `order` o
+	    WHERE o.order_no = #{orderNo}
+	</select>
+	
+	<select id="getUserIdByOrderNo" parameterType="string" resultType="string">
+	    SELECT user_id
+	    FROM `order`
+	    WHERE order_no = #{orderNo}
+	    LIMIT 1
+	</select>
+	
+	<select id="getFirstProductName" parameterType="string" resultType="string">
+	    SELECT product_name
+	    FROM `order`
+	    WHERE order_no = #{orderNo}
+	    LIMIT 1
+	</select>
+	
+	<select id="getOrderItemCount" parameterType="string" resultType="int">
+	    SELECT COUNT(*)
+	    FROM `order`
+	    WHERE order_no = #{orderNo}
+	</select>
 </mapper>

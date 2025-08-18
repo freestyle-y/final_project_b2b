@@ -169,10 +169,22 @@ function handlePayment() {
             contentType: "application/json",
             success: function(response) {
                 if (response.next_redirect_pc_url) {
-                	window.open(response.next_redirect_pc_url, "kakaoPayPopup", "width=500,height=700,scrollbars=yes");
+                    // 팝업으로 카카오 결제창 열기
+                    const kakaoWin = window.open(
+                        response.next_redirect_pc_url, 
+                        "kakaoPayPopup", 
+                        "width=500,height=700,scrollbars=yes"
+                    );
+
+                    // 팝업 닫힘 감지 → 부모창 새로고침 or 완료 페이지 이동
+                    const timer = setInterval(function() {
+                        if (kakaoWin.closed) {
+                            clearInterval(timer);
+                            location.href = "/personal/orderList"; // 완료 페이지 or 주문내역
+                        }
+                    }, 1000);
                 } else {
                     alert("카카오페이 결제 요청 실패");
-                    console.log(response);
                 }
             },
             error: function(xhr, status, error) {

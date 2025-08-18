@@ -3,6 +3,7 @@ package com.example.trade.mapper;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.example.trade.dto.Order;
 
@@ -10,5 +11,9 @@ import com.example.trade.dto.Order;
 public interface OrderMapper {
 
 	List<Order> getOrderList(String orderNo);
-
+	Order getOrder(@Param("orderNo") String orderNo);
+	int getTotalPrice(String orderNo);
+	int getOrderItemCount(String orderNo);
+	String getUserIdByOrderNo(String orderNo);
+	String getFirstProductName(String orderNo);
 }

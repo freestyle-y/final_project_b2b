@@ -20,4 +20,15 @@ public class OrderService {
 		return orderMapper.getOrderList(orderNo);
 	}
 
+
+	public Order getOrder(String orderNo) {
+		return orderMapper.getOrder(orderNo);
+	}
+
+
+	public int getOrderItemCount(String orderNo) {
+
+		return orderMapper.getOrderItemCount(orderNo);
+	}
+
 }

@@ -49,7 +49,11 @@ public class Order {
 	private LocalDateTime updateDate;
 	private String useStatus;
 	
+	// 결제 금액 총액 확인용
+	private int totalPrice;
 	// address 테이블 조인
 	private String address;
 	private String detailAddress;
+	// user 테이블 조인
+	private String name;
 }
