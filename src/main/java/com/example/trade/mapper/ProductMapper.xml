@@ -209,4 +209,13 @@
 		FROM address
 		WHERE user_id = #{id}
 	</select>
+	
+	<!-- 상품 요청 입력 -->
+	<insert id="insertProductRequest" parameterType="com.example.trade.dto.ProductRequest" useGeneratedKeys="true" keyProperty="productRequestNo" keyColumn="product_request_no">
+		INSERT INTO product_request(product_request_no, sub_product_request_no, address_no, product_name,
+				product_option, product_quantity, requests, create_user, use_status)
+		VALUES (#{productRequestNo}, #{subProductRequestNo}, #{addressNo}, #{productName},
+				#{productOption}, #{productQuantity}, #{requests}, #{createUser}, #{useStatus}
+				)
+	</insert>
 </mapper>

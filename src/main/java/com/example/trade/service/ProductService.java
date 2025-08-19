@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.trade.dto.Address;
 import com.example.trade.dto.Category;
+import com.example.trade.dto.ProductRequest;
 import com.example.trade.mapper.ProductMapper;
 
 @Service
@@ -72,5 +73,28 @@ public class ProductService {
 	// 기업회원 배송지
 	public List<Address> selectBizAddress(String id) {
 		return productMapper.bizAddress(id);
+	}
+	
+	// 상품 요청 입력
+	public void insertProductRequest(List<ProductRequest> list) {
+		
+        // 첫 번째 상품 insert (subProductRequestNo = 1)
+        ProductRequest first = list.get(0);
+        first.setSubProductRequestNo(1);
+        first.setUseStatus("Y");
+        productMapper.insertProductRequest(first);
+        
+        // 자동 생성된 productRequestNo 가져오기
+        int productRequestNo = first.getProductRequestNo();
+        
+        // 두 번째 상품부터는 같은 productRequestNo, subProductRequestNo 증가하면서 insert
+        int subNo = 2;
+        for (int i = 1; i < list.size(); i++) {
+            ProductRequest pr = list.get(i);
+            pr.setProductRequestNo(productRequestNo);
+            pr.setSubProductRequestNo(subNo++);
+            pr.setUseStatus("Y");
+            productMapper.insertProductRequest(pr);
+        }
 	}
 }
