@@ -52,4 +52,19 @@ public class ProductService {
 	public List<Map<String, Object>> selectProductListByCategory(String parentId, String middleId) {
 		return productMapper.productListByCategory(parentId, middleId);
 	}
+	
+	// 상품 상세 페이지 보기
+	public List<Map<String, Object>> selectProductOne(String id, int productNo) {
+		return productMapper.productOne(id, productNo);
+	}
+	
+	// 상품별 리뷰 보기
+	public List<Map<String, Object>> selectProductReview(int productNo) {
+		return productMapper.productReview(productNo);
+	}
+	
+	// 상품별 평균 평점
+	public Double avgProductRate(int productNo) {
+		return productMapper.avgProductRate(productNo);
+	}
 }

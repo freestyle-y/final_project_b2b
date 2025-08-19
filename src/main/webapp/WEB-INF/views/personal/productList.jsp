@@ -13,7 +13,11 @@
 		background-color: #f9f9f9;
 	}
 
-	/* 카테고리 리스트 */
+	a {
+		text-decoration: none;
+		color: inherit;
+	}
+
 	.category-list {
 		display: flex;
 		gap: 15px;
@@ -41,7 +45,6 @@
 		text-decoration: underline;
 	}
 
-	/* 상품 리스트 */
 	.product-list {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -60,16 +63,18 @@
 		box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 	}
 	
-	/* 일시품절 스타일 */
-  	.sold-out {
+	.sold-out {
 		background-color: #f0f0f0;
 		color: #999;
+		pointer-events: none; /* 클릭 비활성화 */
+		cursor: default;
 	}
 
 	.product-name {
 		font-weight: bold;
 		margin-bottom: 10px;
 		font-size: 1.1em;
+		color: #000;
 	}
 	
 	.product-price {
@@ -114,24 +119,22 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(function () {
-	// --- 변수 선언 ---
 	let allProducts = [];
 	const itemsPerPage = 6;
 	let currentPage = 1;
 	let filteredProducts = [];
 
-	// 초기 JSP에서 렌더링된 상품들을 배열에 저장
 	$('#product-container .product-card').each(function() {
 	    allProducts.push({
 	        productName: $(this).data('name'),
 	        price: $(this).data('price'),
-	        productStatus: $(this).data('status')
+	        productStatus: $(this).data('status'),
+	        productNo: $(this).data('product-no')
 	    });
 	});
 
 	filteredProducts = allProducts.slice();
 
-	// 페이지 렌더링 함수
 	function renderPage(page) {
 	    const container = $('#product-container');
 	    container.empty();
@@ -141,25 +144,30 @@ $(function () {
 
 	    pageItems.forEach(function(item) {
 	        const soldOutClass = item.productStatus === "일시품절" ? "sold-out" : "";
-	        const productHtml = 
+	        const productCardHtml =
 	            '<div class="product-card ' + soldOutClass + '">' +
 	                '<div class="product-name">' + item.productName + '</div>' +
 	                '<div class="product-price">' + item.price + ' 원</div>' +
 	                '<div class="product-status">' + item.productStatus + '</div>' +
 	            '</div>';
+
+	        // 일시품절은 링크 없이, 아니면 링크 적용
+	        const productHtml = item.productStatus === "일시품절"
+	            ? productCardHtml
+	            : '<a href="/personal/productOne?productNo=' + item.productNo + '">' + productCardHtml + '</a>';
+
 	        container.append(productHtml);
 	    });
 
 	    renderPagination();
 	}
 
-	// 페이징 버튼 생성 함수
 	function renderPagination() {
 	    const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 	    const pagination = $('#pagination');
 	    pagination.empty();
 
-	    for(let i=1; i<=totalPages; i++) {
+	    for(let i = 1; i <= totalPages; i++) {
 	        const btn = $('<button>').text(i);
 	        if(i === currentPage) btn.addClass('active');
 	        btn.on('click', function() {
@@ -170,7 +178,6 @@ $(function () {
 	    }
 	}
 
-	// 검색 기능
 	$('#search-input').on('input', function() {
 	    const keyword = $(this).val().toLowerCase();
 	    filteredProducts = allProducts.filter(item => item.productName.toLowerCase().includes(keyword));
@@ -178,34 +185,31 @@ $(function () {
 	    renderPage(currentPage);
 	});
 
-	// 대분류 클릭 이벤트
 	$('.major-category-list > div').click(function () {
-		const categoryId = $(this).data('id'); // data-id 속성에서 읽음
+		const categoryId = $(this).data('id');
 		
 		$.ajax({
 			url: '/product/byCategory?parentId=' + categoryId,
 			type: 'get',
 			success: function (data) {
-				// 중분류 카테고리 생성
 				let categoryHtml = '';
 				data.middleCategoryList.forEach(function (cat) {
 					categoryHtml += '<div data-id="' + cat.categoryId + '">' + cat.categoryName + '</div>';
 				});
 				$('.middle-category-list').html(categoryHtml);
 				
-				// 상품 데이터 배열 업데이트 및 초기화
 				allProducts = data.productList.map(function(item){
 					return {
 						productName: item.productName,
 						price: item.price,
-						productStatus: item.productStatus
+						productStatus: item.productStatus,
+						productNo: item.productNo
 					};
 				});
 				filteredProducts = allProducts.slice();
 				currentPage = 1;
 				renderPage(currentPage);
 				
-				// 중분류 클릭 이벤트 바인딩
 				$('.middle-category-list > div').off('click').on('click', function() {
 					const middleCategoryId = $(this).data('id');
 					$.ajax({
@@ -216,7 +220,8 @@ $(function () {
 								return {
 									productName: item.productName,
 									price: item.price,
-									productStatus: item.productStatus
+									productStatus: item.productStatus,
+									productNo: item.productNo
 								};
 							});
 							filteredProducts = allProducts.slice();
@@ -235,44 +240,62 @@ $(function () {
 		});
 	});
 
-	// 초기 렌더링
 	renderPage(currentPage);
 });
 </script>
-
 </head>
+
 <jsp:include page="/WEB-INF/common/header/personalHeader.jsp" />
 <body>
 	<jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
-	
+
 	<input type="text" id="search-input" placeholder="상품명 검색..." />
 
-	<!-- 대분류 카테고리 -->
+	<!-- 대분류 -->
 	<div class="category-list major-category-list">
 		<c:forEach var="item" items="${majorCategoryList}">
 			<div data-id="${item.categoryId}">${item.categoryName}</div>
 		</c:forEach>
 	</div>
-	
-	<!-- 중분류 카테고리 -->
+
+	<!-- 중분류 -->
 	<div class="category-list middle-category-list"></div>
-	
-	<!-- 상품 리스트 영역 -->
+
+	<!-- 상품 리스트 -->
 	<div id="product-container" class="product-list">
 		<c:forEach var="item" items="${productList}">
-			<div class="product-card <c:if test='${item.productStatus == "일시품절"}'>sold-out</c:if>" 
-			     data-name="${item.productName}"
-			     data-price="${item.price}"
-			     data-status="${item.productStatus}">
-				<div class="product-name">${item.productName}</div>
-				<div class="product-price">${item.price} 원</div>
-				<div class="product-status">${item.productStatus}</div>
-			</div>
+			<c:choose>
+				<c:when test="${item.productStatus == '일시품절'}">
+					<!-- 일시품절: 링크 제거 -->
+					<div class="product-card sold-out"
+					     data-name="${item.productName}"
+					     data-price="${item.price}"
+					     data-status="${item.productStatus}"
+					     data-product-no="${item.productNo}">
+						<div class="product-name">${item.productName}</div>
+						<div class="product-price">${item.price} 원</div>
+						<div class="product-status">${item.productStatus}</div>
+					</div>
+				</c:when>
+				<c:otherwise>
+					<!-- 판매중: 링크 적용 -->
+					<a href="/personal/productOne?productNo=${item.productNo}">
+						<div class="product-card"
+						     data-name="${item.productName}"
+						     data-price="${item.price}"
+						     data-status="${item.productStatus}"
+						     data-product-no="${item.productNo}">
+							<div class="product-name">${item.productName}</div>
+							<div class="product-price">${item.price} 원</div>
+							<div class="product-status">${item.productStatus}</div>
+						</div>
+					</a>
+				</c:otherwise>
+			</c:choose>
 		</c:forEach>
 	</div>
-	
-	<div class="pagination" id="pagination"></div>
 
+	<div class="pagination" id="pagination"></div>
 </body>
 <jsp:include page="/WEB-INF/common/footer/footer.jsp" />
 </html>

@@ -1,15 +1,16 @@
 package com.example.trade.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.trade.dto.Category;
-import com.example.trade.dto.Order;
-import com.example.trade.dto.User;
 import com.example.trade.service.ProductService;
 
 import jakarta.servlet.http.HttpSession;
@@ -23,11 +24,20 @@ public class ProductController {
 		this.productService = productService;
 	}
 
-	// 상품 후기 페이지
-	@GetMapping("/public/reviewList")
-	public String reviewList(Model model) {
+	// 상품 후기 페이지(개인)
+	@GetMapping("/personal/reviewList")
+	public String personalReviewList(Model model) {
 		List<Map<String, Object>> reviewList = productService.selectReviewList();
-		log.info(reviewList.toString());
+		//log.info(reviewList.toString());
+		model.addAttribute("reviewList", reviewList);
+		return "personal/reviewList";
+	}
+	
+	// 상품 후기 페이지(전체)
+	@GetMapping("/public/reviewList")
+	public String publicReviewList(Model model) {
+		List<Map<String, Object>> reviewList = productService.selectReviewList();
+		//log.info(reviewList.toString());
 		model.addAttribute("reviewList", reviewList);
 		return "public/reviewList";
 	}
@@ -75,8 +85,41 @@ public class ProductController {
 	
 	// 개인용 상품 상세 페이지
 	@GetMapping("/personal/productOne")
-	public String perProductOne() {
-		return "indiviual/productOne";
+	public String perProductOne(Model model,
+			@RequestParam int productNo) {
+		//log.info("" + productNo);
+		List<Map<String, Object>> productOne = productService.selectProductOne("user01", productNo);
+		//log.info(productOne.toString());
+		
+		// 공통 정보 추출 (상품명, 번호, 찜 여부 등)
+	    Map<String, Object> commonInfo = new HashMap<>();
+	    Map<String, Object> first = productOne.get(0);
+
+	    commonInfo.put("productNo", first.get("productNo"));
+	    commonInfo.put("productName", first.get("productName"));
+	    commonInfo.put("isWish", first.get("isWish"));
+
+	    // 옵션 리스트 생성
+	    List<Map<String, Object>> optionList = new ArrayList<>();
+	    for (Map<String, Object> item : productOne) {
+	        Map<String, Object> opt = new HashMap<>();
+	        opt.put("optionNameValue", item.get("optionNameValue"));
+	        opt.put("price", item.get("price"));
+	        opt.put("quantity", item.get("quantity"));
+	        optionList.add(opt);
+	    }
+
+	    List<Map<String, Object>> productReview = productService.selectProductReview(productNo);
+	    //log.info(productReview.toString());
+	    Double avgProductRate = productService.avgProductRate(productNo);
+	    //log.info(avgProductRate + "");
+	    
+	    // JSP로 전달
+	    model.addAttribute("product", commonInfo);
+	    model.addAttribute("optionList", optionList);
+	    model.addAttribute("productReview", productReview);
+	    model.addAttribute("avgProductRate", avgProductRate);
+		return "personal/productOne";
 	}
 	
 	// 기업회원 상품 요청

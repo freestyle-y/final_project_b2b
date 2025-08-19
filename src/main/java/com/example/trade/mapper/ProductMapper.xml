@@ -153,4 +153,48 @@
 		AND (#{middleId} IS NULL OR category_id_lv2 = #{middleId})
 		GROUP BY product_no
 	</select>
+	
+	<!-- 상품 상세 페이지 보기 -->
+	<select id="productOne" resultType="map">
+		SELECT
+		    p.product_no AS productNo,
+		    p.product_name AS productName,
+		    o.option_name_value AS optionNameValue,
+		    p.price,
+		    i.quantity,
+		    CASE WHEN w.user_id IS NOT NULL THEN 1 ELSE 0 END AS isWish
+		FROM product p
+		INNER JOIN `option` o 
+			ON p.option_no = o.option_no
+		INNER JOIN inventory i 
+			ON i.product_no = p.product_no 
+			AND i.option_no = p.option_no
+		LEFT JOIN wish_list w 
+			ON w.product_no = p.product_no 
+			AND w.user_id = #{id}
+		WHERE p.product_no = #{productNo}
+	</select>
+	
+	<!-- 상품별 리뷰 보기 -->
+	<select id="productReview" parameterType="int" resultType="map">
+		SELECT 
+			u.name,
+			o.product_name AS productName,
+			o.option_name_value AS optionNameValue,
+			o.review,
+			o.grade
+		FROM `order` o
+		INNER JOIN user u
+			ON o.user_id = u.id
+		WHERE review IS NOT NULL
+			AND o.product_no = #{productNo}
+		order BY grade DESC
+	</select>
+	
+	<!-- 상품별 평균 평점 -->
+	<select id="avgProductRate" parameterType="int" resultType="double">
+		SELECT AVG(grade) AS avgGrade
+		FROM `order`
+		WHERE product_no = #{productNo}
+	</select>
 </mapper>

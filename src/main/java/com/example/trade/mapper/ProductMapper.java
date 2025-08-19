@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.example.trade.dto.Category;
 
@@ -23,4 +24,10 @@ public interface ProductMapper {
 	List<Category> middleCategory(String id);
 	// 카테고리별 상품 목록 보기
 	List<Map<String, Object>> productListByCategory(String parentId, String middleId);
+	// 상품 상세 페이지 보기
+	List<Map<String, Object>> productOne(@Param("id") String id, @Param("productNo") int productNo);
+	// 상품별 리뷰 보기
+	List<Map<String, Object>> productReview(int productNo);
+	// 상품별 평균 평점
+	Double avgProductRate(int productNo);
 }
