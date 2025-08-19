@@ -145,9 +145,22 @@ public class ProductController {
 		return "biz/productRequest";
 	}
 	
-	//
+	// 상품 요청 DB insert
 	@PostMapping("/biz/productRequest")
 	public String productRequest(@ModelAttribute ProductRequestForm form) {
+	    List<ProductRequest> productRequestList = form.getProductRequestList();
+	    int addressNo = form.getAddressNo();
+	    String requests = form.getRequests();
+
+	    for (ProductRequest pr : productRequestList) {
+	        // 공통으로 받은 배송지, 요청사항을 각 상품에 세팅해주기 (필요 시)
+	        pr.setAddressNo(addressNo);
+	        pr.setRequests(requests);
+	        //log.info(pr.toString());
+	    }
+	    
+	    productService.insertProductRequest(productRequestList);
+
 	    return "redirect:/biz/mainPage";
 	}
 	

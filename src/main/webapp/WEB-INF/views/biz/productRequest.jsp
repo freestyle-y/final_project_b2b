@@ -13,16 +13,6 @@
             margin-bottom: 10px;
             position: relative;
         }
-        .remove-btn {
-            position: absolute;
-            right: 10px;
-            top: 10px;
-            background: red;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
     </style>
 </head>
 <jsp:include page="/WEB-INF/common/header/bizHeader.jsp" />
@@ -31,19 +21,13 @@
 
 <h1>상품 요청</h1>
 
-<!-- 로그인 사용자명 -->
-<div>${loginUserName}</div>
-
-<!-- 요청 form 시작 -->
 <form method="post" action="/biz/productRequest">
     <div id="product-container">
         <!-- 초기 상품 입력 항목 -->
         <div class="product-group">
-            <button type="button" class="remove-btn" style="display:none;">삭제</button>
             <div>상품명: <input type="text" name="productRequestList[0].productName" required></div>
             <div>옵션: <input type="text" name="productRequestList[0].productOption" required></div>
             <div>수량: <input type="number" name="productRequestList[0].productQuantity" min="1" required></div>
-            <!-- createUser hidden -->
             <input type="hidden" name="productRequestList[0].createUser" value="${loginUserName}" />
         </div>
     </div>
@@ -52,20 +36,18 @@
 
     <br/><br/>
 
-    <!-- 요청사항 (공통) -->
     <div>
         <label for="requests">요청사항:</label><br/>
-        <textarea id="requests" name="productRequestList[0].requests" rows="3" cols="40"></textarea>
+        <textarea id="requests" name="requests" rows="3" cols="40"></textarea>
     </div>
 
     <br/>
 
-    <!-- 배송지 선택 -->
     <div>
         <label><strong>배송지 선택:</strong></label><br/>
         <c:forEach var="addr" items="${bizAddressList}">
             <label>
-                <input type="radio" name="productRequestList[0].addressNo"
+                <input type="radio" name="addressNo"
                        value="${addr.addressNo}"
                        ${addr.mainAddress == 'Y' ? 'checked' : ''} />
                 [${addr.postal}] ${addr.address} ${addr.detailAddress}
@@ -80,7 +62,7 @@
 <!-- 스크립트 -->
 <script>
     $(function () {
-        let index = 1;
+        const loginUserName = $('#loginUserDiv').data('user');
 
         $('#addProductBtn').on('click', function () {
             const lastGroup = $('#product-container .product-group').last();
@@ -93,46 +75,24 @@
                 return;
             }
 
-            const selectedAddress = $('input[name="productRequestList[0].addressNo"]:checked').val();
-            const requests = $('#requests').val();
-            const createUser = lastGroup.find('input[name$=".createUser"]').val();
+            const index = $('#product-container .product-group').length;
 
-            const newGroup = $(`
+            const newGroupHtml = `
                 <div class="product-group">
-                    <button type="button" class="remove-btn">삭제</button>
-                    <div>상품명: <input type="text" name="productRequestList[${index}].productName" required></div>
-                    <div>옵션: <input type="text" name="productRequestList[${index}].productOption" required></div>
-                    <div>수량: <input type="number" name="productRequestList[${index}].productQuantity" min="1" required></div>
-                    <input type="hidden" name="productRequestList[${index}].addressNo" value="${selectedAddress}" />
-                    <input type="hidden" name="productRequestList[${index}].requests" value="${requests}" />
-                    <input type="hidden" name="productRequestList[${index}].createUser" value="${createUser}" />
+                    <div>상품명: <input type="text" name="productRequestList[\${index}].productName" required></div>
+                    <div>옵션: <input type="text" name="productRequestList[\${index}].productOption" required></div>
+                    <div>수량: <input type="number" name="productRequestList[\${index}].productQuantity" min="1" required></div>
+                    <input type="hidden" name="productRequestList[\${index}].createUser" value="${loginUserName}" />
                 </div>
-            `);
+            `.replace(/\$\{index\}/g, index)
+            .replace(/\$\{loginUserName\}/g, loginUserName);
 
-            $('#product-container').append(newGroup);
-            index++;
+            $('#product-container').append(newGroupHtml);
         });
-
-        // 삭제 버튼
-        $('#product-container').on('click', '.remove-btn', function () {
-            $(this).closest('.product-group').remove();
-
-            // 이름 재정렬
-            $('#product-container .product-group').each(function (i) {
-                $(this).find('input[name$=".productName"]').attr('name', `productRequestList[${i}].productName`);
-                $(this).find('input[name$=".productOption"]').attr('name', `productRequestList[${i}].productOption`);
-                $(this).find('input[name$=".productQuantity"]').attr('name', `productRequestList[${i}].productQuantity`);
-                $(this).find('input[name$=".addressNo"]').attr('name', `productRequestList[${i}].addressNo`);
-                $(this).find('input[name$=".requests"]').attr('name', `productRequestList[${i}].requests`);
-                $(this).find('input[name$=".createUser"]').attr('name', `productRequestList[${i}].createUser`);
-            });
-
-            index = $('#product-container .product-group').length;
-        });
-
+        
         // 배송지 선택 안 했을 때 제출 방지
         $('form').on('submit', function (e) {
-            const isAddressSelected = $('input[name="productRequestList[0].addressNo"]:checked').length > 0;
+            const isAddressSelected = $('input[name="addressNo"]:checked').length > 0;
             if (!isAddressSelected) {
                 alert("배송지를 선택해주세요.");
                 e.preventDefault();

@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.example.trade.dto.Address;
 import com.example.trade.dto.Category;
+import com.example.trade.dto.ProductRequest;
 
 @Mapper
 public interface ProductMapper {
@@ -33,4 +34,6 @@ public interface ProductMapper {
 	Double avgProductRate(int productNo);
 	// 기업회원 배송지
 	List<Address> bizAddress(String id);
+	// 상품 요청 입력
+	int insertProductRequest(ProductRequest pr);
 }
