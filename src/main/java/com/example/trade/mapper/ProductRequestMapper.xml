@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.trade.mapper.ProductRequestMapper">
+	<select id="getProductRequestList" resultType="com.example.trade.dto.ProductRequest">
+		SELECT 
+			product_request_no AS productRequestNo
+			,sub_product_request_no AS subProductRequestNo
+			,address_no AS addressNo
+			,product_name AS productName
+			,product_option AS productOption
+			,product_quantity AS productQuantity
+			,requests ,status
+			,create_user AS createUser
+			,create_date AS createDate
+		FROM product_request
+	</select>
+</mapper>
