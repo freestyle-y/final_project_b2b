@@ -1,0 +1,29 @@
+package com.example.trade.mapper;
+
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Mapper;
+
+import com.example.trade.dto.Board;
+
+@Mapper
+public interface BoardMapper {
+
+	// 자주 묻는 질문(FAQ) 목록
+	List<Map<String, Object>> selectFAQList();
+
+	// 접속한 사용자의 문의 내역
+	List<Map<String, Object>> selectQNAListById(String username);
+
+	// 문의 내역 상세 조회
+	List<Map<String, Object>> selectQNAOne(Board board);
+
+	// 공지사항 목록 조회
+	List<Map<String, Object>> selectNoticeList();
+
+	// 공지사항 상세 조회
+	List<Map<String, Object>> selectNoticeOne(int boardNo);
+	
+}

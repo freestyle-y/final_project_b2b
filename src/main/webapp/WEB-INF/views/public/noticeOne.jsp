@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>자주 묻는 질문</title>
+<title>공지사항 상세</title>
 <style>
     table {
         width: 50%;
@@ -37,16 +37,29 @@
 <body>
 	<jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
 	
-	<h1>자주 묻는 질문</h1>
-	<table border="1">
+	<h1>공지사항 상세</h1>
+	<table>
+		<c:forEach var="notice" items="${noticeOne}">
 		<tr>
 			<th>제목</th>
+			<td>${notice.boardTitle}</td>
 		</tr>
-		
-		<c:forEach var="faq" items="${FAQList}">
-			<tr>
-				<td>${faq.boardTitle}</td>
-			</tr>
+		<tr>
+			<th>내용</th>
+			<td>${notice.boardContent}</td>
+		</tr>
+		<tr>
+			<th>작성자</th>
+			<td>${notice.createUser}</td>
+		</tr>
+		<tr>
+			<th>작성일시</th>
+			<td>${notice.createDate}</td>
+		</tr>
+		<tr>
+			<th>조회수</th>
+			<td>${notice.viewCount}</td>
+		</tr>
 		</c:forEach>
 	</table>
 </body>

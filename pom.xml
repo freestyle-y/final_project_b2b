@@ -78,6 +78,18 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
+		
+		<!-- 
+		    Spring Security JSP 태그 라이브러리 
+		    - JSP에서 <sec:authorize> 같은 태그를 사용하기 위해 필요
+		    - 로그인 여부 / 권한(Role)에 따라 화면 요소(헤더)를 제어
+		    - 현재 프로젝트는 Spring Security 6.5.2 이므로 taglibs도 6.5.2로 지정
+		-->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-taglibs</artifactId>
+			<version>6.5.2</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
