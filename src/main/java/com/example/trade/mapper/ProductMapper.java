@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.example.trade.dto.Address;
 import com.example.trade.dto.Category;
 
 @Mapper
@@ -30,4 +31,6 @@ public interface ProductMapper {
 	List<Map<String, Object>> productReview(int productNo);
 	// 상품별 평균 평점
 	Double avgProductRate(int productNo);
+	// 기업회원 배송지
+	List<Address> bizAddress(String id);
 }

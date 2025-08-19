@@ -64,7 +64,7 @@
 	<!-- 개인 장바구니 목록 보기 -->
 	<select id="shoppingCart" parameterType="String" resultType="map">
 		SELECT 
-			sc.user_no AS userNo,
+			sc.user_id AS userId,
 			p.product_no AS productNo, 
 			p.option_no AS optionNo,
 			p.product_name AS productName,
@@ -85,7 +85,7 @@
 			AND sc.option_no = p.option_no
 		INNER JOIN `option` o
 			ON p.option_no = o.option_no
-		WHERE sc.user_no = #{id}
+		WHERE sc.user_id = #{id}
 			AND sc.use_status = 'Y'
 	</select>
 	
@@ -196,5 +196,17 @@
 		SELECT AVG(grade) AS avgGrade
 		FROM `order`
 		WHERE product_no = #{productNo}
+	</select>
+	
+	<!-- 기업회원 배송지 -->
+	<select id="bizAddress" parameterType="String" resultType="com.example.trade.dto.Address">
+		SELECT 
+			address_no AS addressNo,
+			postal,
+			address,
+			detail_address AS detailAddress,
+			main_address AS mainAddress
+		FROM address
+		WHERE user_id = #{id}
 	</select>
 </mapper>

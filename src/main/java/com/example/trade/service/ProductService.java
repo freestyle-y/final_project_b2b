@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.trade.dto.Address;
 import com.example.trade.dto.Category;
 import com.example.trade.mapper.ProductMapper;
 
@@ -66,5 +67,10 @@ public class ProductService {
 	// 상품별 평균 평점
 	public Double avgProductRate(int productNo) {
 		return productMapper.avgProductRate(productNo);
+	}
+	
+	// 기업회원 배송지
+	public List<Address> selectBizAddress(String id) {
+		return productMapper.bizAddress(id);
 	}
 }

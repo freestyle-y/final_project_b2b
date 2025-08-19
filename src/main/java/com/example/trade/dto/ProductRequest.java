@@ -12,10 +12,11 @@ import lombok.NoArgsConstructor;
 public class ProductRequest {
 	private int productRequestNo;
 	private int subProductRequestNo;
-	private int contractDeliveryArrival;
+	private int addressNo;
 	private String productName;
 	private String productOption;
 	private int productQuantity;
+	private String requests;
 	private String status;
 	private String createUser;
 	private LocalDateTime createDate;
