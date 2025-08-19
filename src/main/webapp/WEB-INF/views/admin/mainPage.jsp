@@ -56,7 +56,8 @@
 
     <div class="main-container">
         <h1>admin mainPage</h1>
-		<a href="/biz/quotationList?userId=biz001">견적서</a>
+		<a href="/biz/quotationList?userId=biz001">견적서</a> / 
+		<a href="/admin/loginHistory">로그인 이력</a>
     </div>
 </body>
 <jsp:include page="/WEB-INF/common/footer/footer.jsp" />
