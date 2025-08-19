@@ -7,7 +7,7 @@
 		    q.sub_product_request_no AS subProductRequestNo,
 		    q.price AS price,
 		    q.status AS status,
-		    pr.create_user AS createUser,
+		    q.create_user AS createUser,
 		    pr.create_date AS createDate,
 		    pr.product_name AS productName,
 		    pr.product_quantity AS productQuantity
@@ -15,4 +15,35 @@
 		INNER JOIN product_request pr ON q.sub_product_request_no = pr.sub_product_request_no
 		WHERE pr.create_user = #{userId}
 	</select>
+
+	<select id="getQuotationOne" resultType="com.example.trade.dto.Quotation">
+		SELECT 
+		    q.quotation_no AS quotationNo,
+		    q.sub_product_request_no AS subProductRequestNo,
+		    q.price AS price,
+		    q.status AS status,
+		    q.create_user AS createUser,
+		    pr.create_date AS createDate,
+		    pr.product_name AS productName,
+		    pr.product_quantity AS productQuantity
+		FROM quotation q
+		INNER JOIN product_request pr ON q.sub_product_request_no = pr.sub_product_request_no
+		WHERE q.quotation_no = #{quotationNo} AND q.sub_product_request_no = #{subProductRequestNo}
+	</select>
+	
+	<update id="updateStatusAtApprove">
+		UPDATE quotation
+		SET status = '승인'
+		WHERE quotation_no = #{quotationNo} AND sub_product_request_no = #{subProductRequestNo}
+	</update>
+	
+	<update id="updateStatusAtReject">
+		UPDATE quotation
+		SET status = '승인거절'
+			,update_user = #{userId}
+			,refusal_reason = #{rejectionReason}
+			,update_date = NOW()
+		WHERE quotation_no = #{quotationNo} 
+		AND sub_product_request_no = #{subProductRequestNo}
+	</update>
 </mapper>

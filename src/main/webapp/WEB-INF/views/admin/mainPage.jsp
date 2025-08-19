@@ -8,5 +8,6 @@
 <body>
 	<h1>admin mainPage</h1>
 	<a href="/public/logout"       style="text-decoration:none; color:#374151;">로그아웃</a>
+	<a href="/biz/quotationList?userId=biz001">견적서</a>
 </body>
 </html>

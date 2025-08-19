@@ -11,4 +11,10 @@ public interface QuotationMapper {
 
 	List<Quotation> getQuotationList(String userId);
 
+	List<Quotation> getQuotationOne(int quotationNo, int subProductRequestNo);
+
+	int updateStatusAtApprove(int quotationNo, int subProductRequestNo);
+
+	int updateStatusAtReject(int quotationNo, int subProductRequestNo, String rejectionReason, String userId);
+
 }
