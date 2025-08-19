@@ -9,9 +9,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.trade.dto.Address;
 import com.example.trade.dto.Category;
+import com.example.trade.dto.ProductRequest;
+import com.example.trade.dto.ProductRequestForm;
 import com.example.trade.service.ProductService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -56,8 +61,9 @@ public class ProductController {
 	public String wishList(Model model) {
 		String loginUserName = SecurityContextHolder.getContext().getAuthentication().getName();
 		//log.info(loginUserName);
-		List<Map<String, Object>> wishList = productService.selectWishList("user01");
+		List<Map<String, Object>> wishList = productService.selectWishList(loginUserName);
 		//log.info(wishList.toString());
+		model.addAttribute("loginUserName", loginUserName);
 		model.addAttribute("wishList", wishList);
 		return "personal/wishList";
 	}
@@ -65,8 +71,11 @@ public class ProductController {
 	// 장바구니
 	@GetMapping("/personal/shoppingCart")
 	public String shoppingCart(Model model) {
-		List<Map<String, Object>> shoppingCartList = productService.selectShoppingCart("3");
+		String loginUserName = SecurityContextHolder.getContext().getAuthentication().getName();
+		//log.info(loginUserName);
+		List<Map<String, Object>> shoppingCartList = productService.selectShoppingCart(loginUserName);
 		//log.info(shoppingCartList.toString());
+		model.addAttribute("loginUserName", loginUserName);
 		model.addAttribute("shoppingCartList", shoppingCartList);
 		return "personal/shoppingCart";
 	}
@@ -88,7 +97,9 @@ public class ProductController {
 	public String personalProductOne(Model model,
 			@RequestParam int productNo) {
 		//log.info("" + productNo);
-		List<Map<String, Object>> productOne = productService.selectProductOne("user01", productNo);
+		String loginUserName = SecurityContextHolder.getContext().getAuthentication().getName();
+		//log.info(loginUserName);
+		List<Map<String, Object>> productOne = productService.selectProductOne(loginUserName, productNo);
 		//log.info(productOne.toString());
 		
 		// 공통 정보 추출 (상품명, 번호, 찜 여부 등)
@@ -114,18 +125,30 @@ public class ProductController {
 	    Double avgProductRate = productService.avgProductRate(productNo);
 	    //log.info(avgProductRate + "");
 	    
-	    // JSP로 전달
 	    model.addAttribute("product", commonInfo);
 	    model.addAttribute("optionList", optionList);
 	    model.addAttribute("productReview", productReview);
 	    model.addAttribute("avgProductRate", avgProductRate);
+	    model.addAttribute("loginUserName", loginUserName);
 		return "personal/productOne";
 	}
 	
 	// 기업회원 상품 요청
 	@GetMapping("/biz/productRequest")
-	public String productRequest() {
+	public String productRequest(Model model) {
+		String loginUserName = SecurityContextHolder.getContext().getAuthentication().getName();
+		//log.info(loginUserName);
+		List<Address> bizAddressList = productService.selectBizAddress(loginUserName);
+		//log.info(bizAddressList.toString());
+		model.addAttribute("bizAddressList", bizAddressList);
+		model.addAttribute("loginUserName", loginUserName);
 		return "biz/productRequest";
+	}
+	
+	//
+	@PostMapping("/biz/productRequest")
+	public String productRequest(@ModelAttribute ProductRequestForm form) {
+	    return "redirect:/biz/mainPage";
 	}
 	
 	// 기업 메인 페이지
