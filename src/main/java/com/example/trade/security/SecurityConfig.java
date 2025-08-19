@@ -16,6 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.SavedRequest;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -71,6 +73,8 @@ public class SecurityConfig {
 				-> requestMatcherRegistry
 										 // 모두 접근 가능 (공용 페이지, 정적 리소스)
 										 .requestMatchers("/", "/public/**", "/WEB-INF/views/**", "/WEB-INF/common/**","/css/**","/js/**", "/images/**").permitAll()
+										 // 로그인 한 사용자만 접근 가능
+										 .requestMatchers("/member/**").authenticated()
 										 // 관리자만 접근 가능
 										 .requestMatchers("/admin/**").hasAnyRole("ADMIN")
 										 // 기업 회원 및 관리자 접근 가능
@@ -98,7 +102,8 @@ public class SecurityConfig {
 	}
 	
 	// 로그인 성공 시 핸들러
-	// 사용자 권한(Role)에 따른 각 메인 페이지로 분기
+	// 1) 원래 요청(SavedRequest)이 있으면 그 URL로 복귀
+	// 2) 없으면 권한(Role)에 따라 각 메인 페이지로 분기
 	public AuthenticationSuccessHandler loginSuccessHandler() {
 		return new AuthenticationSuccessHandler() {
 			
@@ -108,19 +113,39 @@ public class SecurityConfig {
 				// 로그인 성공 로그
 				System.out.println("로그인 성공 : " + authentication.getName());
 				
-				// 권한(Role) 확인
-				String role = authentication.getAuthorities().iterator().next().getAuthority();
-				System.out.println("사용자 권한 : " + role);
+				// 로그인 전 요청했던 URL(SavedRequest) 확인
+				SavedRequest savedRequest = new HttpSessionRequestCache().getRequest(request, response);
 				
-				// 권한에 따른 분기 처리 (각 권한별 메인 페이지로 리다이렉트)
-				if("ROLE_ADMIN".equals(role)) {
-					response.sendRedirect("/admin/mainPage");
-				} else if("ROLE_BIZ".equals(role)) {
-					response.sendRedirect("/biz/mainPage");
-				} else if("ROLE_PERSONAL".equals(role)) {
-					response.sendRedirect("/personal/mainPage");
+				String targetUrl = null;
+				
+				if(savedRequest != null) {
+					targetUrl = savedRequest.getRedirectUrl();
+					
+					// 로그인 페이지(/public/login)에서 로그인한 경우는 제외
+					if(targetUrl.contains("/public/login")) {
+						targetUrl = null;
+					}
+				}
+				
+				// 1) 원래 요청 URL이 있으면 해당 URL로 이동
+				if(targetUrl != null) {
+					response.sendRedirect(targetUrl);
+				// 2) 원래 요청이 없으면 role별 메인 페이지로 이동
 				} else {
-					response.sendRedirect("/public/mainPage");
+					// 권한(Role) 확인
+					String role = authentication.getAuthorities().iterator().next().getAuthority();
+					System.out.println("사용자 권한 : " + role);
+					
+					// 권한에 따른 분기 처리 (각 권한별 메인 페이지로 리다이렉트)
+					if("ROLE_ADMIN".equals(role)) {
+						response.sendRedirect("/admin/mainPage");
+					} else if("ROLE_BIZ".equals(role)) {
+						response.sendRedirect("/biz/mainPage");
+					} else if("ROLE_PERSONAL".equals(role)) {
+						response.sendRedirect("/personal/mainPage");
+					} else {
+						response.sendRedirect("/public/mainPage");
+					}
 				}
 			}
 		};
