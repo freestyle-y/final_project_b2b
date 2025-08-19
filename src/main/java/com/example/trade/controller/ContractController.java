@@ -20,7 +20,7 @@ public class ContractController {
 		this.contractService = contractService;
 	}
 
-	// 계약서 목록 페이지
+	// 기업 회원 계약서 목록 페이지
 	@GetMapping("/biz/contractList")
 	public String contractList(Principal principal, Model model) {
 		String userId = principal.getName();
@@ -29,7 +29,7 @@ public class ContractController {
 		return "biz/contractList";
 	}
 	
-	// 계약서 상세 페이지
+	// 기업 회원 계약서 상세 페이지
 	@GetMapping("/biz/contractOne")
 	public String contractOne(@RequestParam("contractNo") int contractNo
 							 ,Principal principal

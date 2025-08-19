@@ -17,4 +17,6 @@ public interface QuotationMapper {
 
 	int updateStatusAtReject(int quotationNo, int subProductRequestNo, String rejectionReason, String userId);
 
+	List<Quotation> getQuotaionOneByQuotationNo(int productRequestNo);
+
 }

@@ -5,31 +5,36 @@
 		SELECT 
 		    q.quotation_no AS quotationNo,
 		    q.sub_product_request_no AS subProductRequestNo,
+		    q.product_request_no AS productRequestNo,
 		    q.price AS price,
 		    q.status AS status,
+		    q.refusal_reason AS refusalReason,
 		    q.create_user AS createUser,
-		    pr.create_date AS createDate,
+		    q.create_date AS createDate,
 		    pr.product_name AS productName,
 		    pr.product_quantity AS productQuantity
 		FROM quotation q
 		INNER JOIN product_request pr ON q.sub_product_request_no = pr.sub_product_request_no
 		WHERE pr.create_user = #{userId}
+		ORDER BY q.quotation_no, q.sub_product_request_no
 	</select>
 
-	<select id="getQuotationOne" resultType="com.example.trade.dto.Quotation">
-		SELECT 
-		    q.quotation_no AS quotationNo,
-		    q.sub_product_request_no AS subProductRequestNo,
-		    q.price AS price,
-		    q.status AS status,
-		    q.create_user AS createUser,
-		    pr.create_date AS createDate,
-		    pr.product_name AS productName,
-		    pr.product_quantity AS productQuantity
-		FROM quotation q
-		INNER JOIN product_request pr ON q.sub_product_request_no = pr.sub_product_request_no
-		WHERE q.quotation_no = #{quotationNo} AND q.sub_product_request_no = #{subProductRequestNo}
-	</select>
+<select id="getQuotationOne" resultType="com.example.trade.dto.Quotation">
+	SELECT 
+	    q.quotation_no AS quotationNo,
+	    q.sub_product_request_no AS subProductRequestNo,
+	    q.price AS price,
+	    q.status AS status,
+	    q.create_user AS createUser,
+	    pr.create_date AS createDate,
+	    pr.product_name AS productName,
+	    pr.product_quantity AS productQuantity
+	FROM quotation q
+	INNER JOIN product_request pr 
+	    ON q.product_request_no = pr.product_request_no
+	WHERE q.quotation_no = #{quotationNo}
+	  AND q.sub_product_request_no = #{subProductRequestNo}
+</select>
 	
 	<update id="updateStatusAtApprove">
 		UPDATE quotation
@@ -46,4 +51,17 @@
 		WHERE quotation_no = #{quotationNo} 
 		AND sub_product_request_no = #{subProductRequestNo}
 	</update>
+	
+	<select id="getQuotaionOneByQuotationNo" resultType="com.example.trade.dto.Quotation">
+		SELECT 
+			 quotation_no AS quotationNo
+			,sub_product_request_no AS subProductRequestNo
+			,product_request_no AS productRequestno
+			,price ,status
+			,refusal_reason AS refusalReason
+			,create_user AS createUser
+			,create_date AS createDate
+		FROM quotation
+		WHERE product_request_no = #{productRequestNo}
+	</select>
 </mapper>

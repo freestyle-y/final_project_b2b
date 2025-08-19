@@ -30,5 +30,8 @@ public class QuotationService {
 
 		return quotationMapper.updateStatusAtReject(quotationNo, subProductRequestNo, rejectionReason, userId);
 	}
-	
+	public List<Quotation> getQuotationOneByQuotationNo(int productRequestNo) {
+
+		return quotationMapper.getQuotaionOneByQuotationNo(productRequestNo);
+	}
 }
