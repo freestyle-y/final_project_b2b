@@ -18,5 +18,17 @@ public class QuotationService {
 
 		return quotationMapper.getQuotationList(userId);
 	}
+	public List<Quotation> getQuotationOne(int quotationNo, int subProductRequestNo) {
+
+		return quotationMapper.getQuotationOne(quotationNo, subProductRequestNo);
+	}
+	public int updateStatusAtApprove(int quotationNo, int subProductRequestNo) {
+
+		return quotationMapper.updateStatusAtApprove(quotationNo, subProductRequestNo);
+	}
+	public int updateStatusAtReject(int quotationNo, int subProductRequestNo, String rejectionReason, String userId) {
+
+		return quotationMapper.updateStatusAtReject(quotationNo, subProductRequestNo, rejectionReason, userId);
+	}
 	
 }
