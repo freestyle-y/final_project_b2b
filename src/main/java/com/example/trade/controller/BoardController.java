@@ -61,9 +61,9 @@ public class BoardController {
 	}
 
 	// 1:1 문의 작성 페이지
-	@GetMapping("/member/QNAPage")
-	public String QNAPage() {
-		return "member/QNAPage";
+	@GetMapping("/member/QNAWrite")
+	public String QNAWrite() {
+		return "member/QNAWrite";
 	}
 
 	// 공지사항
@@ -80,11 +80,5 @@ public class BoardController {
 		List<Map<String, Object>> noticeOne = boardService.getNoticeOne(boardNo);
 		model.addAttribute("noticeOne", noticeOne);
 		return "public/noticeOne";
-	}
-	
-	// 로그인 이력 페이지
-	@GetMapping("/admin/loginHistory")
-	public String loginHistory() {
-		return "admin/loginHistory";
 	}
 }

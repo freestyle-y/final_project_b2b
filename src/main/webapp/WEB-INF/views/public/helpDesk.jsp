@@ -11,7 +11,7 @@
 	<h1>help desk page</h1>
 	<a href="/public/FAQList">자주 묻는 질문</a> /
 	<a href="/member/QNAList">문의 내역</a> /
-	<a href="/member/QNAPage">1:1 문의</a> /
+	<a href="/member/QNAWrite">1:1 문의</a> /
 	<a href="/public/noticeList">공지사항</a>
 </body>
 <jsp:include page="/WEB-INF/common/footer/footer.jsp" />

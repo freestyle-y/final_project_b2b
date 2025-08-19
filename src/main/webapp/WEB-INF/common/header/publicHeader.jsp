@@ -21,9 +21,9 @@
       <div style="display:flex; gap:12px; font-size:14px; justify-content:flex-end;">
         <a href="/public/joinMember"     style="text-decoration:none; color:#374151;">회원가입</a>
         <a href="/personal/shoppingCart" style="text-decoration:none; color:#374151;">장바구니</a>
-        <a href="/personal/wishList"     style="text-decoration:none; color:#374151;">찜 목록</a>
         <a href="/personal/deliveryList" style="text-decoration:none; color:#374151;">주문배송조회</a>
         <a href="/public/helpDesk"       style="text-decoration:none; color:#374151;">고객센터</a>
+        <a href="/public/login"       style="text-decoration:none; color:#111827;">로그인</a>
       </div>
 
       <!-- 메인 메뉴 -->
@@ -31,7 +31,6 @@
         <a href="/categories"         style="text-decoration:none; color:#111827;">상품 카테고리</a>
         <a href="/biz/productRequest" style="text-decoration:none; color:#111827;">구매 견적 요청</a>
         <a href="/public/reviewList"  style="text-decoration:none; color:#111827;">상품 후기</a>
-        <a href="/public/login"       style="text-decoration:none; color:#111827;">로그인</a>
       </nav>
     </div>
 

@@ -3,15 +3,67 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>login page</title>
+<title>로그인</title>
+<style>
+	body {
+		font-family: Arial, sans-serif;
+		background-color: #f4f6f9;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 100vh;
+		margin: 0;
+	}
+	
+	.login-container {
+		width: 350px;
+		padding: 30px;
+		background: #fff;
+		border: 1px solid #ddd;
+		border-radius: 8px;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+		text-align: center;
+	}
+	
+	h1 {
+		margin-bottom: 20px;
+		font-size: 22px;
+		color: #333;
+	}
+	
+	input[type="text"], input[type="password"] {
+		width: 100%;
+		padding: 10px;
+		margin: 8px 0;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		box-sizing: border-box;
+	}
+	
+	button {
+		width: 100%;
+		padding: 12px;
+		background-color: #4CAF50;
+		color: white;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+		font-size: 16px;
+	}
+	
+	button:hover {
+		background-color: #45a049;
+	}
+</style>
 </head>
 <body>
-	<h1>login page</h1>
-	<hr>
-	<form action="/public/loginAction" method="post" name="loginForm">
-	<input type="text" id="username" name="username" placeholder="id">
-	<input type="password" id="password" name="password" placeholder="password">
-	<button type="submit">login</button>
-	</form>
+	<div class="login-container">
+		<h1>로그인</h1>
+		<form action="/public/loginAction" method="post" name="loginForm">
+			<input type="text" id="username" name="username" placeholder="아이디" required>
+			<input type="password" id="password" name="password" placeholder="비밀번호" required>
+			<button type="submit">로그인</button>
+		</form>
+	</div>
 </body>
 </html>
