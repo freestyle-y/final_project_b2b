@@ -1,5 +1,8 @@
 package com.example.trade.mapper;
 
+import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Mapper;
 
 import com.example.trade.domain.UserDomain;
@@ -12,4 +15,14 @@ public interface UserMapper {
 	
 	// 회원가입
 	void insertUser(User user);
+	
+	// 중복가입방지용 조회
+	String findBySn(User user);
+	String findByBusinessNo(User user);
+	
+	// 회원목록 조회
+	List<User> findUser(Map<String, Object> params);
+	
+	// 가입승인
+	void approveUser(String id);
 }

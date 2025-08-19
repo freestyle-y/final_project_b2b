@@ -185,7 +185,7 @@ function allowOnlyNumber(event){
         <input type="text" id="companyBuss2" maxlength="2" required onkeypress="allowOnlyNumber(event)" oninput="autoMoveNext(this,'companyBuss3',2)"> -
         <input type="text" id="companyBuss3" maxlength="5" required onkeypress="allowOnlyNumber(event)">
     </label>
-    <input type="hidden" name="bussinessNo" id="companyBussFull">
+    <input type="hidden" name="businessNo" id="companyBussFull">
 
     <label>우편번호: <input type="text" id="bizPostal" name="postal" readonly>
         <button type="button" onclick="execDaumPostcode('bizPostal','bizAddress')">검색</button>
@@ -204,7 +204,7 @@ function validateForm(formId){
     const email = form.querySelector("[name='email']").value;
 
     if(!idVerified){ alert("아이디 중복 확인이 필요합니다."); return false; }
-    if(!validatePassword(pw)){ alert("비밀번호는 8자 이상, 대문자 1개, 특수문자 1개 포함해야 합니다."); return false; }
+    if(!validatePassword(pw)){ alert("비밀번호는 8자 이상, 대문자 1개, 특수문자 1개를 포함해야 합니다."); return false; }
     if(pw !== confirmPw){ alert("비밀번호가 일치하지 않습니다."); return false; }
     if(!validateEmail(email)){ alert("유효한 이메일을 입력해주세요."); return false; }
 
@@ -249,7 +249,7 @@ function submitPersonalForm(){
          }
      })
      .fail(function(xhr){
-         alert("서버 오류 발생: " + xhr.responseText);
+         alert("회원가입 실패 : " + xhr.responseText);
      });
 
     return false; // 기본 submit 막기
@@ -269,7 +269,7 @@ function submitCompanyForm(){
          }
      })
      .fail(function(xhr){
-         alert("서버 오류 발생: " + xhr.responseText);
+         alert("회원가입 실패 : " + xhr.responseText);
      });
 
     return false; // 기본 submit 막기

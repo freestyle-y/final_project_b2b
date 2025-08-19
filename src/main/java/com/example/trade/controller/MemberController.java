@@ -46,4 +46,10 @@ public class MemberController {
 	public String rewardList() {
 		return "personal/rewardList";
 	}
+	
+	// 회원관리 페이지
+	@GetMapping("/admin/manageUser")
+	public String manageUser() {
+		return "admin/manageUser";
+	}
 }

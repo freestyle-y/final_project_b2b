@@ -15,11 +15,57 @@
 	INSERT INTO user (
 		id, password, customer_category, name, phone, sn, email, postal, address, detail_address,
 		simple_password, create_user, create_date, update_user, update_date,
-		company_name, bussiness_no, total_reward, failed_login_count, customer_status
+		company_name, business_no, total_reward, failed_login_count, customer_status
 	) VALUES (
 		#{id}, #{password}, #{customerCategory}, #{name}, #{phone}, #{sn}, #{email}, #{postal}, #{address}, #{detailAddress},
 		#{simplePassword}, #{createUser}, NOW(), #{updateUser}, #{updateDate},
-		#{companyName}, #{bussinessNo}, #{totalReward}, #{failedLoginCount}, #{customerStatus}
+		#{companyName}, #{businessNo}, #{totalReward}, #{failedLoginCount}, #{customerStatus}
 	)
     </insert>
+    
+    <!-- 중복가입 방지용 주민등록번호 조회 -->
+   	<select id="findBySn">
+   		SELECT
+   			sn
+   		FROM user
+   		WHERE sn = #{sn} AND customer_category = #{customerCategory}
+   	</select>
+    
+    <!-- 중복가입 방지용 사업자등록번호 조회 -->
+   	<select id="findByBusinessNo">
+   		SELECT
+   			business_no AS businessNo
+   		FROM user
+   		WHERE business_no = #{businessNo} AND customer_category = #{customerCategory}
+   	</select>
+   	
+	<!-- 회원 목록 조회 (필터 적용) -->
+	<select id="findUser" parameterType="map" resultType="com.example.trade.dto.User">
+		SELECT
+			id, customer_category AS customerCategory, name, phone, email,
+			company_name AS companyName, business_no AS businessNo,
+			total_reward AS totalReward, failed_login_count AS failedLoginCount,
+			customer_status AS customerStatus, create_date AS createDate
+		FROM user
+		WHERE 1=1
+		<if test="customerCategory != null and customerCategory != ''">
+			AND customer_category = #{customerCategory}
+		</if>
+		<if test="customerStatus != null and customerStatus != ''">
+			AND customer_status = #{customerStatus}
+		</if>
+		ORDER BY create_date DESC
+	</select>
+
+	<!-- 기업회원 가입 승인 (CS004 → CS001) -->
+	<update id="approveUser" parameterType="string">
+		UPDATE user
+		SET customer_status = 'CS001',
+			update_user = 'system',
+			update_date = NOW()
+		WHERE id = #{id}
+			AND customer_status = 'CS004'
+			AND customer_category = 'CC002'
+    </update>
+    	
 </mapper>

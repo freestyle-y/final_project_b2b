@@ -26,8 +26,8 @@ public class User {
 	private String updateUser;
 	private LocalDateTime updateDate;
 	private String companyName; // 기업회원만
-	private String bussinessNo; // 기업회원만
-	private int totalReward;
-	private int failedLoginCount;
+	private String businessNo; // 기업회원만
+	private Integer totalReward;
+	private Integer failedLoginCount;
 	private String customerStatus;
 }
