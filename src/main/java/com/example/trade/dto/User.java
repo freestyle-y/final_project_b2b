@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class User {
 	private String id;
 	private String password;
-	private String customerCategory;
+	private String customerCategory; // CC001 : 관리자 CC002 : 기업회원 CC003 : 개인회원
 	private String name;
 	private String phone;
 	private String sn;
@@ -25,8 +25,8 @@ public class User {
 	private LocalDateTime createDate;
 	private String updateUser;
 	private LocalDateTime updateDate;
-	private String companyName;
-	private String bussinessNo;
+	private String companyName; // 기업회원만
+	private String bussinessNo; // 기업회원만
 	private int totalReward;
 	private int failedLoginCount;
 	private String customerStatus;

@@ -9,4 +9,17 @@
 		FROM user
 		WHERE id = #{id}
 	</select>
+	
+	<!-- 회원가입 삽입 -->
+    <insert id="insertUser" parameterType="com.example.trade.dto.User">
+	INSERT INTO user (
+		id, password, customer_category, name, phone, sn, email, postal, address, detail_address,
+		simple_password, create_user, create_date, update_user, update_date,
+		company_name, bussiness_no, total_reward, failed_login_count, customer_status
+	) VALUES (
+		#{id}, #{password}, #{customerCategory}, #{name}, #{phone}, #{sn}, #{email}, #{postal}, #{address}, #{detailAddress},
+		#{simplePassword}, #{createUser}, NOW(), #{updateUser}, #{updateDate},
+		#{companyName}, #{bussinessNo}, #{totalReward}, #{failedLoginCount}, #{customerStatus}
+	)
+    </insert>
 </mapper>
