@@ -12,5 +12,4 @@
 	<h1>deliveryList</h1>
 </body>
 <jsp:include page="/WEB-INF/common/footer/footer.jsp" />
-<jsp:include page="/WEB-INF/common/footer/footer.jsp" />
 </html>

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.trade.mapper.ProductMapper">
 
-	<!-- 상품 목록(찜 많은순) -->
+	<!-- 상품 후기 -->
 	<select id="reviewList" resultType="map">
 		SELECT 
 			u.name,

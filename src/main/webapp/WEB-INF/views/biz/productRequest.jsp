@@ -6,9 +6,9 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 </head>
-<jsp:include page="/WEB-INF/common/header/publicHeader.jsp" />
+<jsp:include page="/WEB-INF/common/header/bizHeader.jsp" />
 <body>
-	<jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
+	<jsp:include page="/WEB-INF/common/sidebar/bizSidebar.jsp" />
 	<h1>productRequest</h1>
 </body>
 <jsp:include page="/WEB-INF/common/footer/footer.jsp" />
