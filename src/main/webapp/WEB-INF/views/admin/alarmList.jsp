@@ -5,10 +5,10 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>로그인 이력</title>
+<title>알림 목록</title>
 <style>
     table {
-        width: 50%;
+        width: 90%;
         border-collapse: collapse;
         text-align: center;
         margin: auto;
@@ -37,19 +37,41 @@
 <body>
 	<jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
 	
-	<h1>로그인 이력 조회</h1>
+	<h1>알림 목록</h1>
 	<table>
 		<tr>
 			<th>번호</th>
-			<th>ID</th>
-			<th>로그인 일시</th>
+			<th>알림 대상</th>
+			<th>알림 종류</th>
+			<th>제목</th>
+			<th>내용</th>
+			<th>target URL</th>
+			<th>image URL</th>
+			<th>확인 유무</th>
+			<th>확인 일시</th>
+			<th>작성자</th>
+			<th>작성 일시</th>
+			<th>수정자</th>
+			<th>수정 일시</th>
+			<th>사용 유무</th>
 		</tr>
 		
-		<c:forEach var="loginHistory" items="${loginHistory}">
+		<c:forEach var="alarmList" items="${alarmList}">
 			<tr>
-				<td>${loginHistory.loginHistoryNo}</td>
-				<td>${loginHistory.id}</td>
-				<td>${loginHistory.loginTime}</td>
+				<td>${alarmList.notificationNo}</td>
+				<td>${alarmList.targetDisplay}</td>
+				<td>${alarmList.notificationType}</td>
+				<td>${alarmList.notificationTitle}</td>
+				<td>${alarmList.notificationContent}</td>
+				<td>${alarmList.targetUrl}</td>
+				<td>${alarmList.imageUrl}</td>
+				<td>${alarmList.readStatus}</td>
+				<td>${alarmList.readDate}</td>
+				<td>${alarmList.createUser}</td>
+				<td>${alarmList.createDate}</td>
+				<td>${alarmList.updateUser}</td>
+				<td>${alarmList.updateDate}</td>
+				<td>${alarmList.useStatus}</td>
 			</tr>
 		</c:forEach>
 	</table>
