@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,15 +25,42 @@ public class QuotationController {
 		super();
 		this.quotationService = quotationService;
 	}
-	// 관리자 견적서 작성 페이지
+	// 관리자 견적서 작성 할 목록 페이지
 	@GetMapping("/admin/writeQuotation")
 	public String writeQuotation(@RequestParam("productRequestNo") int productRequestNo
 								,Model model) {
 		List<Quotation> quotationOne = quotationService.getQuotationOneByQuotationNo(productRequestNo);
-		model.addAttribute("quotationOne", quotationOne);
+		Map<String, List<Quotation>> grouped = quotationOne.stream()
+			    .collect(Collectors.groupingBy(
+			        q -> q.getQuotationNo() + "_" + q.getSubProductRequestNo(),
+			        LinkedHashMap::new,
+			        Collectors.toList()
+			    ));
+
+			model.addAttribute("groupList", grouped);
 		return "admin/writeQuotation";
 	}
 	
+	// 견적서 작성 popup
+	@GetMapping("/admin/writeQuotationForm")
+	public String openQuotationPopup(@RequestParam("quotationNo") int quotationNo,
+	                                 @RequestParam("subProductRequestNo") int subProductRequestNo,
+	                                 Model model) {
+	    System.out.println("⛳ popup quotationNo = " + quotationNo);
+	    System.out.println("⛳ popup subProductRequestNo = " + subProductRequestNo);
+
+	    List<Quotation> list = quotationService.getQuotationOne(quotationNo, subProductRequestNo);
+	    model.addAttribute("quotationList", list);
+	    return "admin/writeQuotationForm";
+	}
+	
+	// 견적서 제출 페이지
+	@PostMapping("/admin/writeQuotationForm")
+	public String writeQuotationForm(Quotation quotation) {
+		int row = quotationService.insertQuotation(quotation);
+		
+		return "admin/writeQuotationForm";
+	}
     // 기업 회원 견적서 목록 페이지
     @GetMapping("/biz/quotationList")
     public String quotationList(@RequestParam String userId, Model model) {

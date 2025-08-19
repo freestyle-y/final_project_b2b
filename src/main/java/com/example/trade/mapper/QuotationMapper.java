@@ -19,4 +19,6 @@ public interface QuotationMapper {
 
 	List<Quotation> getQuotaionOneByQuotationNo(int productRequestNo);
 
+	int insertQuotation(Quotation quotation);
+
 }

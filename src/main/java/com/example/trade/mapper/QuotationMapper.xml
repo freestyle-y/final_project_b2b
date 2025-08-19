@@ -28,7 +28,8 @@
 	    q.create_user AS createUser,
 	    pr.create_date AS createDate,
 	    pr.product_name AS productName,
-	    pr.product_quantity AS productQuantity
+	    pr.product_quantity AS productQuantity,
+	    pr.product_option AS productOption
 	FROM quotation q
 	INNER JOIN product_request pr 
 	    ON q.product_request_no = pr.product_request_no
@@ -54,14 +55,40 @@
 	
 	<select id="getQuotaionOneByQuotationNo" resultType="com.example.trade.dto.Quotation">
 		SELECT 
-			 quotation_no AS quotationNo
-			,sub_product_request_no AS subProductRequestNo
-			,product_request_no AS productRequestno
-			,price ,status
-			,refusal_reason AS refusalReason
-			,create_user AS createUser
-			,create_date AS createDate
-		FROM quotation
-		WHERE product_request_no = #{productRequestNo}
+			 q.quotation_no AS quotationNo
+			,q.sub_product_request_no AS subProductRequestNo
+			,q.product_request_no AS productRequestno
+			,q.price ,q.`status`
+			,q.refusal_reason AS refusalReason
+			,q.create_user AS createUser
+			,q.create_date AS createDate
+			,pr.product_name AS productName
+			,pr.product_quantity AS productQuantity
+			,pr.product_option AS productOption
+		FROM quotation q INNER JOIN product_request pr ON q.product_request_no = pr.product_request_no
+		WHERE q.product_request_no = #{productRequestNo}
 	</select>
+	
+	<insert id="insertQuotation" parameterType="com.example.trade.dto.Quotation">
+	    INSERT INTO quotation (
+	        quotation_no,
+	        sub_product_request_no,
+	        product_request_no,
+	        price,
+	        status,
+	        refusal_reason,
+	        create_user,
+	        create_date
+	    )
+	    VALUES (
+	        #{quotationNo},
+	        #{subProductRequestNo},
+	        #{productRequestNo},
+	        #{price},
+	        #{status},
+	        #{refusalReason},
+	        #{createUser},
+	        NOW()
+	    )
+	</insert>
 </mapper>

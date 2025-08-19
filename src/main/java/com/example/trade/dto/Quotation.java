@@ -25,4 +25,5 @@ public class Quotation {
 	// product_request 조인
 	private String productName;
 	private int productQuantity;
+	private String productOption;
 }

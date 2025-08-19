@@ -1,23 +1,78 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>견적서 작성</title>
 </head>
+
 <jsp:include page="/WEB-INF/common/header/publicHeader.jsp" />
+
 <body>
 	<jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
-	<h1>writeQuotation</h1>
+	<h1>견적서 작성</h1>
+
 	<table border="1">
-		<c:forEach var="qu" items="${quotationOne}">
-			<tr>
-				<th>계약번호</th>
-				<td>${qu.quotationNo}</td>
-			</tr>
-		</c:forEach>
+	    <thead>
+	        <tr>
+	            <th>견적번호</th>
+	            <th>상품명</th>
+	            <th>수량</th>
+	            <th>옵션</th>
+	            <th>견적 작성하기</th>
+	        </tr>
+	    </thead>
+	    <tbody>
+	        <c:forEach var="entry" items="${groupList}">
+	            <c:set var="quotationList" value="${entry.value}" />
+	            <c:set var="first" value="${quotationList[0]}" />
+	            <c:forEach var="q" items="${quotationList}" varStatus="status">
+	                <tr>
+	                    <c:if test="${status.first}">
+	                        <td rowspan="${fn:length(quotationList)}">
+	                            ${first.quotationNo} - ${first.subProductRequestNo}
+	                        </td>
+	                    </c:if>
+	                    <td>${q.productName}</td>
+	                    <td>${q.productQuantity}</td>
+	                    <td>${q.productOption}</td>
+	                    <c:if test="${status.first}">
+	                        <td rowspan="${fn:length(quotationList)}">
+	                            <button type="button"
+	                                onclick="submitQuotationPopup('${first.quotationNo}', '${first.subProductRequestNo}')">
+	                                견적 작성하기
+	                            </button>
+	                        </td>
+	                    </c:if>
+	                </tr>
+	            </c:forEach>
+	        </c:forEach>
+	    </tbody>
 	</table>
+
+	<!-- 숨겨진 폼 (팝업으로 제출용) -->
+	<form id="quotationForm" method="get" target="quotationPopup" style="display: none;">
+	    <input type="hidden" name="quotationNo" />
+	    <input type="hidden" name="subProductRequestNo" />
+	</form>
 </body>
+
+<script>
+function submitQuotationPopup(quotationNo, subProductRequestNo) {
+    const form = document.getElementById('quotationForm');
+    form.action = '/admin/writeQuotationForm';
+    form.quotationNo.value = quotationNo;
+    form.subProductRequestNo.value = subProductRequestNo;
+
+    // 팝업 창 열기
+    window.open('', 'quotationPopup', 'width=700,height=600,scrollbars=yes');
+
+    // 팝업 창에 폼 제출
+    form.submit();
+}
+</script>
+
 <jsp:include page="/WEB-INF/common/footer/footer.jsp" />
 </html>

@@ -34,4 +34,8 @@ public class QuotationService {
 
 		return quotationMapper.getQuotaionOneByQuotationNo(productRequestNo);
 	}
+	public int insertQuotation(Quotation quotation) {
+
+		return quotationMapper.insertQuotation(quotation);
+	}
 }
