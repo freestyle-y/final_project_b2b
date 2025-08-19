@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.trade.mapper.ContractMapper">
+	<select id="getContractList" resultType="com.example.trade.dto.Contract">
+		SELECT DISTINCT 
+			c.contract_no AS contractNo, c.down_payment AS downPayment
+			, ct.code_name AS codeName, c.final_payment AS finalPayment
+			, c.create_date AS createDate
+		FROM contract c
+			INNER JOIN quotation q ON c.quotation_no = q.quotation_no
+			INNER JOIN product_request pr ON q.product_request_no = pr.product_request_no
+			INNER JOIN comm_tbl ct ON c.down_payment_status = ct.code_number
+		WHERE pr.create_user = #{userId}
+	</select>
+	
+	<select id="getContractOne" resultType="com.example.trade.dto.Contract">
+		SELECT DISTINCT 
+			c.contract_no AS contractNo, c.down_payment AS downPayment
+			, ct.code_name AS codeName, c.final_payment AS finalPayment
+			, c.create_date AS createDate, pr.product_name AS productName
+			, pr.product_option AS productOption, pr.product_quantity AS productQuantity
+		FROM contract c
+			INNER JOIN quotation q ON c.quotation_no = q.quotation_no
+			INNER JOIN product_request pr ON q.product_request_no = pr.product_request_no
+			INNER JOIN comm_tbl ct ON c.down_payment_status = ct.code_number
+		WHERE pr.create_user = #{userId} AND contract_no = #{contractNo}
+	</select>
+	
+	<select id="getContractUser" resultType="com.example.trade.dto.Contract">
+		SELECT `name` AS name, company_name AS companyName
+			,address, detail_address AS detailAddress, phone
+		FROM user
+		WHERE id = #{userId}
+	</select>
+	
+	<select id="getContractSupplier" resultType="com.example.trade.dto.Contract">
+		SELECT u.`name` AS name, u.company_name AS companyName
+			,u.address, u.detail_address AS detailAddress, u.phone
+		FROM contract c
+			INNER JOIN quotation q ON c.quotation_no = q.quotation_no
+			INNER JOIN user u ON q.create_user = u.id
+		WHERE c.contract_no = #{contractNo}
+	</select>
+</mapper>
