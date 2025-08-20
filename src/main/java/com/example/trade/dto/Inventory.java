@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Inventory {
+	private int inventoryId;
 	private int productNo;
 	private int optionNo;
 	private int quantity;
