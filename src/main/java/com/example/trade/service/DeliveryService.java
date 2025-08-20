@@ -18,4 +18,9 @@ public class DeliveryService {
 	public List<Map<String, Object>> getBizDeliveryList() {
 		return deliveryMapper.selectBizDeliveryList();
 	}
+
+	// 배송 상세 조회(개인)
+	public List<Map<String, Object>> getPersonalDeliveryOne(int subOrderNo) {
+		return deliveryMapper.selectPersonalDeliveryBySubOrderNo(subOrderNo);
+	}
 }

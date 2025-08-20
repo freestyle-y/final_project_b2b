@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.trade.service.DeliveryService;
 
@@ -30,21 +31,23 @@ public class DeliveryController {
 		return "biz/deliveryList";
 	}
 	
-	// 배송 상세 페이지
+	// 배송 상세 페이지(기업)
 	@GetMapping("/biz/deliveryOne")
 	public String bizDeliveryOne() {
 		return "biz/deliveryOne";
 	}
 	
-	// 배송 조회 페이지
+	// 배송 목록 페이지(개인)
 	@GetMapping("/personal/deliveryList")
 	public String personalDeliveryList() {
 		return "personal/deliveryList";
 	}
 	
-	// 배송 페이지
+	// 배송 상세 페이지(개인)
 	@GetMapping("/personal/deliveryOne")
-	public String personalDeliveryOne() {
+	public String personalDeliveryOne(@RequestParam int subOrderNo, Model model) {
+		List<Map<String, Object>> personalDeliveryOne = deliveryService.getPersonalDeliveryOne(subOrderNo);
+		model.addAttribute("personalDeliveryOne", personalDeliveryOne);
 		return "personal/deliveryOne";
 	}
 }

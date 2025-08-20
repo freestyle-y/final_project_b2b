@@ -70,7 +70,7 @@ function toggleReviewForm(index) {
                 <td>${order.orderQuantity}</td>
                 <td>${order.price}</td>
                 <td>
-                    <button onclick="location.href='/personal/deliveryList'">배송조회</button>
+                    <button onclick="location.href='/personal/deliveryOne?subOrderNo=${order.subOrderNo}'">배송조회</button>
                     <button onclick="location.href='/personal/exchangeReturn?orderDetailNo=${order.orderNo}'">교환/반품</button>
                     <button onclick="toggleReviewForm(${status.index})">리뷰작성</button>
                     <button onclick="location.href='/personal/confirm?orderDetailNo=${order.orderNo}'">구매확정</button>

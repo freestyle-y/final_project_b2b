@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.trade.mapper.DeliveryMapper">
+	<!-- 배송 목록 조회(기업) -->
 	<select id="selectBizDeliveryList" resultType="map">
 		SELECT
 			co.contract_no AS contractNo,
@@ -15,5 +16,35 @@
 		FROM contract_delivery cd INNER JOIN address a ON cd.address_no = a.address_no
 		INNER JOIN container ct ON cd.container_no = ct.container_no
 		INNER JOIN contract_order co ON ct.contract_order_no = co.contract_order_no
+	</select>
+	
+	<!-- 배송 상세 조회(개인) -->
+	<select id="selectPersonalDeliveryBySubOrderNo" parameterType="int" resultType="map">
+		SELECT 
+			product_name AS productName,
+			concat(option_name, ' : ', option_name_value) AS `option`,
+			order_quantity AS orderQuantity,
+			price,
+			
+			CASE order_status
+				WHEN 'OS001' THEN '결제대기'
+				WHEN 'OS002' THEN '결제완료'
+				WHEN 'OS003' THEN '구매확정'
+			END AS orderStatus,
+			order_time AS orderTime,
+			
+			CASE delivery_status
+				WHEN 'DS001' THEN '배송대기'
+				WHEN 'DS002' THEN '배송중'
+				WHEN 'DS003' THEN '배송완료'
+				WHEN 'DS004' THEN '반품대기'
+				WHEN 'DS005' THEN '반품완료'
+				WHEN 'DS006' THEN '교환대기'
+				WHEN 'DS007' THEN '교환중'
+				WHEN 'DS008' THEN '교환완료'
+			END AS deliveryStatus
+		
+		FROM `order`
+		WHERE sub_order_no = #{subOrderNo};
 	</select>
 </mapper>

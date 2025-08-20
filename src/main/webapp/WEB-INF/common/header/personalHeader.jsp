@@ -24,7 +24,7 @@
         <a href="/personal/reviewList"  style="text-decoration:none; color:#111827;">상품 후기</a>
         <a href="/personal/shoppingCart" style="text-decoration:none; color:#374151;">장바구니</a>
         <a href="/personal/wishList"     style="text-decoration:none; color:#374151;">찜 목록</a>
-        <a href="/personal/deliveryList" style="text-decoration:none; color:#374151;">주문배송조회</a>
+        <a href="/personal/orderList" style="text-decoration:none; color:#374151;">주문배송조회</a>
         <a href="/public/logout"       style="text-decoration:none; color:#374151;">로그아웃</a>
       </div>
 

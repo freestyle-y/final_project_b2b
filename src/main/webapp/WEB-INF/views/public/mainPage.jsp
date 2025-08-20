@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -50,7 +51,20 @@
 </style>
 </head>
 
-<jsp:include page="/WEB-INF/common/header/publicHeader.jsp" />
+<!-- 헤더 : 권한별 분기 -->
+<sec:authorize access="hasRole('ROLE_ADMIN')">
+    <jsp:include page="/WEB-INF/common/header/adminHeader.jsp"/>
+</sec:authorize>
+<sec:authorize access="hasRole('ROLE_BIZ')">
+    <jsp:include page="/WEB-INF/common/header/bizHeader.jsp"/>
+</sec:authorize>
+<sec:authorize access="hasRole('ROLE_PERSONAL')">
+    <jsp:include page="/WEB-INF/common/header/personalHeader.jsp"/>
+</sec:authorize>
+<sec:authorize access="isAnonymous()">
+    <jsp:include page="/WEB-INF/common/header/publicHeader.jsp"/>
+</sec:authorize>
+
 <body>
     <jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
 
@@ -71,5 +85,6 @@
         </div>
     </div>
 </body>
+
 <jsp:include page="/WEB-INF/common/footer/footer.jsp" />
 </html>
