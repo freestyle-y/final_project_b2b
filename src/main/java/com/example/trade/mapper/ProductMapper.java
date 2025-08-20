@@ -22,22 +22,26 @@ public interface ProductMapper {
 	List<Map<String, Object>> wishList(String id);
 	// 개인 장바구니 목록 보기
 	List<Map<String, Object>> shoppingCart(String id);
+	
 	// 카테고리(대분류) 목록
 	List<Category> majorCategory();
 	// 카테고리(중분류) 목록
 	List<Category> middleCategory(String id);
 	// 카테고리별 상품 목록 보기
 	List<Map<String, Object>> productListByCategory(String parentId, String middleId);
+	
 	// 상품 상세 페이지 보기
 	List<Map<String, Object>> productOne(@Param("id") String id, @Param("productNo") int productNo);
 	// 상품별 리뷰 보기
 	List<Map<String, Object>> productReview(int productNo);
 	// 상품별 평균 평점
 	Double avgProductRate(int productNo);
+	
 	// 기업회원 배송지
 	List<Address> bizAddress(String id);
 	// 상품 요청 입력
 	int insertProductRequest(ProductRequest pr);
+	
 	// 대분류 최대 ID 조회 
 	String selectMaxMajorCategoryId();
 	// 중분류, 소분류 최대 ID 조회
@@ -56,4 +60,9 @@ public interface ProductMapper {
 	Integer findMaxProductNo();
 	// 상품 등록
 	int insertProduct(Product product);
+	
+	// 재고 목록 조회
+	List<Map<String, Object>> inventoryList();
+	// 재고 수정
+	int updateInventoryQuantity(@Param("inventoryId") int inventoryId, @Param("quantity") int quantity);
 }

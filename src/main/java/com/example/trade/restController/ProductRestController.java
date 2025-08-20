@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.trade.dto.Category;
+import com.example.trade.dto.Inventory;
 import com.example.trade.dto.Option;
 import com.example.trade.service.ProductService;
 
@@ -76,5 +77,12 @@ public class ProductRestController {
 	public Option addOption(@RequestBody Option option) {
 	    productService.insertOption(option);
 	    return option; // JSON으로 반환 (optionNo 포함)
+	}
+	
+	// 재고 수량 수정
+	@PostMapping("/updateInventoryQuantity")
+    public String updateInventoryQuantity(@RequestBody Inventory inventory) {
+        productService.updateInventoryQuantity(inventory.getInventoryId(), inventory.getQuantity());
+        return "success";
 	}
 }

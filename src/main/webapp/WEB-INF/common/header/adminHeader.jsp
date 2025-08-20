@@ -20,8 +20,8 @@
       <!-- 유틸 메뉴 -->
       <div style="display:flex; gap:12px; font-size:14px; justify-content:flex-end;">
         <a href="/admin/insertProduct"     style="text-decoration:none; color:#374151;">상품 등록</a>
-        <a href="#" style="text-decoration:none; color:#374151;">메뉴2</a>
-        <a href="#"     style="text-decoration:none; color:#374151;">메뉴3</a>
+        <a href="/admin/productList" style="text-decoration:none; color:#374151;">상품 조회</a>
+        <a href="/admin/inventoryList"     style="text-decoration:none; color:#374151;">재고 관리</a>
         <a href="#" style="text-decoration:none; color:#374151;">주문배송조회</a>
         <a href="/public/helpDesk"       style="text-decoration:none; color:#374151;">고객센터</a>
         <a href="/public/logout"       style="text-decoration:none; color:#111827;">로그아웃</a>

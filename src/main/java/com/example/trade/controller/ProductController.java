@@ -254,7 +254,10 @@ public class ProductController {
 	
 	// 재고 목록 페이지
 	@GetMapping("/admin/inventoryList")
-	public String inventoryList() {
+	public String inventoryList(Model model) {
+		List<Map<String, Object>> inventoryList = productService.selectInventoryList();
+		log.info(inventoryList.toString());
+		model.addAttribute("inventoryList", inventoryList);
 		return "admin/inventoryList";
 	}
 }

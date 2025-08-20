@@ -171,4 +171,14 @@ public class ProductService {
         product.setProductNo(resolvedProductNo);
 		productMapper.insertProduct(product);
 	}
+	
+	// 재고 조회
+	public List<Map<String, Object>> selectInventoryList() {
+		return productMapper.inventoryList();
+	}
+	
+	// 재고 수정
+	public void updateInventoryQuantity(int inventoryId, int quantity) {
+		productMapper.updateInventoryQuantity(inventoryId, quantity);
+	}
 }

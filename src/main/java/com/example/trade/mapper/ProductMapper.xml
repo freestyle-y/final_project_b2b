@@ -247,6 +247,30 @@
 	    FROM product
 	</select>
 	
+	<!-- 재고 목록 조회 -->
+	<select id="inventoryList" resultType="map">
+		SELECT
+			i.inventory_id AS inventoryId,
+			p.product_no AS productNo,
+			p.option_no AS optionNo,
+			i.address_no AS addressNo,
+			p.product_name AS productName,
+			o.option_name_value AS optionNameValue,
+			p.price,
+			i.quantity,
+			a.postal,
+			a.address,
+			a.detail_address AS detailAddress
+		FROM inventory i
+		INNER JOIN product p
+			ON i.product_no = p.product_no
+			AND i.option_no = p.option_no
+		INNER JOIN `option` o
+			ON o.option_no = p.option_no
+		INNER JOIN address a
+			ON i.address_no = a.address_no
+	</select>
+	
 	<!-- 상품 요청 입력 -->
 	<insert id="insertProductRequest" parameterType="com.example.trade.dto.ProductRequest" useGeneratedKeys="true" keyProperty="productRequestNo" keyColumn="product_request_no">
 		INSERT INTO product_request(product_request_no, sub_product_request_no, address_no, product_name,
@@ -283,5 +307,12 @@
 			#{productNo}, #{optionNo}, #{productName}, 'GS002',
 			#{categoryId}, #{price}, #{createUser}, 'Y')
 	</insert>
+	
+	<!-- 재고 수정 -->
+	<update id="updateInventoryQuantity">
+		UPDATE inventory
+	    SET quantity = #{quantity}
+	    WHERE inventory_id = #{inventoryId}
+	</update>
 	
 </mapper>
