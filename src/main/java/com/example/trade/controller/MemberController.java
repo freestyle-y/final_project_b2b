@@ -60,7 +60,10 @@ public class MemberController {
 	
 	// 비밀번호 변경
 	@GetMapping("/public/changeMemberPw")
-	public String changeMemberPw() {
+	public String changeMemberPw(@RequestParam String id, 
+								Model model) {
+		User user = memberService.getUserById(id);
+		model.addAttribute("pw", user.getPassword());
 		return "public/changeMemberPw";
 	}
 	
