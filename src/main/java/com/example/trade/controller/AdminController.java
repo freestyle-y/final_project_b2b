@@ -43,4 +43,12 @@ public class AdminController {
 	public String alarmWrite() {
 		return "admin/alarmWrite";
 	}
+	
+	// 기업 회원의 배송 현황 페이지
+	@GetMapping("/admin/bizDeliveryList")
+	public String bizDeliveryList(Model model) {
+		List<Map<String, Object>> bizDeliveryList = adminService.getBizDeliveryList();
+		model.addAttribute("bizDeliveryList", bizDeliveryList);
+		return "admin/bizDeliveryList";
+	}
 }

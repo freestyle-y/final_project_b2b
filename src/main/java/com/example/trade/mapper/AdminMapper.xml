@@ -43,4 +43,25 @@
 		FROM notification n LEFT JOIN comm_tbl ct
 		ON n.target_value = ct.code_number
 	</select>
+	
+	<!-- 기업 회원의 배송 현황 조회 -->
+	<select id="selectBizDeliveryList" resultType="map">
+		SELECT
+			co.contract_no AS contractNo,
+			co.order_time AS orderTime,
+			cd.container_no AS containerNo,
+			ct.container_location AS containerLocation,
+			co.arrival_time AS arrivalTime,
+			a.address,
+			a.detail_address AS detailAddress,
+			cd.contract_delivery_time AS contractDeliveryTime,
+			CASE cd.contract_delivery_status
+				WHEN 'DS001' THEN '배송대기'
+				WHEN 'DS002' THEN '배송중'
+				WHEN 'DS003' THEN '배송완료'
+			END AS contractDeliveryStatus
+		FROM contract_delivery cd INNER JOIN address a ON cd.address_no = a.address_no
+		INNER JOIN container ct ON cd.container_no = ct.container_no
+		INNER JOIN contract_order co ON ct.contract_order_no = co.contract_order_no
+	</select>
 </mapper>

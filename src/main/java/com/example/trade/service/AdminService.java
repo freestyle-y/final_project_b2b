@@ -24,4 +24,9 @@ public class AdminService {
 		return adminMapper.selectAlarmList();
 	}
 
+	// 기업 회원의 배송 현황 조회
+	public List<Map<String, Object>> getBizDeliveryList() {
+		return adminMapper.selectBizDeliveryList();
+	}
+
 }

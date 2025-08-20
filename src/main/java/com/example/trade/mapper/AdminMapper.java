@@ -14,4 +14,7 @@ public interface AdminMapper {
 	// 알림 목록 조회
 	List<Map<String, Object>> selectAlarmList();
 
+	// 기업 회원의 배송 현황 조회
+	List<Map<String, Object>> selectBizDeliveryList();
+
 }

@@ -1,0 +1,71 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>기업 회원 배송 현황</title>
+<style>
+    table {
+        width: 90%;
+        border-collapse: collapse;
+        text-align: center;
+        margin: auto;
+    }
+    th, td {
+        border: 1px solid #ccc;
+        padding: 8px;
+    }
+</style>
+</head>
+
+<!-- 헤더 : 권한별 분기 -->
+<sec:authorize access="hasRole('ROLE_ADMIN')">
+    <jsp:include page="/WEB-INF/common/header/adminHeader.jsp"/>
+</sec:authorize>
+<sec:authorize access="hasRole('ROLE_BIZ')">
+    <jsp:include page="/WEB-INF/common/header/bizHeader.jsp"/>
+</sec:authorize>
+<sec:authorize access="hasRole('ROLE_PERSONAL')">
+    <jsp:include page="/WEB-INF/common/header/personalHeader.jsp"/>
+</sec:authorize>
+<sec:authorize access="isAnonymous()">
+    <jsp:include page="/WEB-INF/common/header/publicHeader.jsp"/>
+</sec:authorize>
+
+<body>
+	<jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
+	
+	<h1>기업 회원 배송 현황</h1>
+	<table>
+		<tr>
+			<th>계약 번호</th>
+			<th>발주 일시</th>
+			<th>컨테이너 번호</th>
+			<th>컨테이너 위치</th>
+			<th>입고 일시</th>
+			<th>배송지 주소</th>
+			<th>상세 주소</th>
+			<th>배송 출발 일시</th>
+			<th>배송 상태</th>
+		</tr>
+		
+		<c:forEach var="bizDeliveryList" items="${bizDeliveryList}">
+			<tr>
+				<td>${bizDeliveryList.contractNo}</td>
+				<td>${bizDeliveryList.orderTime}</td>
+				<td>${bizDeliveryList.containerNo}</td>
+				<td>${bizDeliveryList.containerLocation}</td>
+				<td>${bizDeliveryList.arrivalTime}</td>
+				<td>${bizDeliveryList.address}</td>
+				<td>${bizDeliveryList.detailAddress}</td>
+				<td>${bizDeliveryList.contractDeliveryTime}</td>
+				<td>${bizDeliveryList.contractDeliveryStatus}</td>
+			</tr>
+		</c:forEach>
+	</table>
+</body>
+
+<jsp:include page="/WEB-INF/common/footer/footer.jsp" />
+</html>

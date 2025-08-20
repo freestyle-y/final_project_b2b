@@ -60,6 +60,7 @@
 		<a href="/admin/loginHistory">로그인 이력</a> /
 		<a href="/admin/alarmList">알림 목록</a> /
 		<a href="/admin/alarmWrite">알림 등록</a> /
+		<a href="/admin/bizDeliveryList">기업 회원 배송 현황</a> /
 		<a href="/admin/manageUser">회원관리</a>
     </div>
 </body>
