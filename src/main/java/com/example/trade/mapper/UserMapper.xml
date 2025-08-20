@@ -100,4 +100,16 @@
 		SET password = #{password}
 		WHERE id = #{id}
 	</update>
+	
+	<!-- 아이디 찾기 -->
+	<select id="findIdBySn" parameterType="com.example.trade.dto.User" resultType="String">
+		SELECT id
+		FROM user
+		WHERE name = #{name} AND sn = #{sn}
+	</select>
+	<select id="findIdByBusinessNo" parameterType="com.example.trade.dto.User" resultType="String">
+		SELECT id
+		FROM user
+		WHERE company_name = #{companyName} AND business_no = #{businessNo}
+	</select>
 </mapper>

@@ -142,4 +142,15 @@ public class MemberService {
     public void updatePw(String id, String password) {
     	userMapper.updatePw(id, passwordEncoder.encode(password));
     }
+    
+    // 아이디 찾기(개인)
+	public String findPersonalId(String name, String sn) {
+		userMapper.findIdBySn(name, sn);
+		return null;
+	}
+	// 아이디 찾기(기업)
+	public String findBizId(String companyName, String businessNo) {
+		userMapper.findIdByBusinessNo(companyName, businessNo);
+		return null;
+	}
 }

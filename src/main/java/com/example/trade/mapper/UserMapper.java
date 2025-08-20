@@ -35,4 +35,8 @@ public interface UserMapper {
     
     // 비밀번호 변경
     void updatePw(String id, String password);
+    
+    // 아이디찾기
+	String findIdBySn(String name, String sn);
+	String findIdByBusinessNo(String companyName, String businessNo);
 }

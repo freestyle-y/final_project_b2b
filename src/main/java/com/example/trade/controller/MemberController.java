@@ -1,6 +1,7 @@
 package com.example.trade.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -49,9 +50,36 @@ public class MemberController {
 	
 	// 아이디 찾기
 	@GetMapping("/public/findMemberId")
-	public String findMemberId() {
+	public String findMemberId(Model model) {
 		return "public/findMemberId";
 	}
+	
+	@PostMapping("/public/findMemberIdAction")
+	public String findMemberId(@RequestParam String memberType,
+	                           @RequestParam Map<String,String> params,
+	                           Model model) {
+
+	    String foundId = null;
+
+	    if("PERSONAL".equals(memberType)) {
+	        String name = params.get("name");
+	        String sn  = params.get("sn");
+	        foundId = memberService.findPersonalId(name, sn);
+	    } else if("BIZ".equals(memberType)) {
+	        String companyName = params.get("companyName");
+	        String businessNo  = params.get("businessNo");
+	        foundId = memberService.findBizId(companyName, businessNo);
+	    }
+
+	    if(foundId != null) {
+	        model.addAttribute("foundId", foundId);
+	    } else {
+	        model.addAttribute("notFound", true);
+	    }
+
+	    return "public/findMemberId"; // JSP 이름
+	}
+
 	
 	// 비밀번호 찾기
 	@GetMapping("/public/findMemberPw")
