@@ -224,6 +224,15 @@
 	    WHERE parent_category = #{parentId}
 	</select>
 	
+	<!-- 옵션 목록 -->
+	<select id="optionList" resultType="com.example.trade.dto.Option">
+		SELECT
+			option_no AS optionNo,
+			option_name AS optionName,
+			option_name_value AS optionNameValue
+		FROM `option`
+	</select>
+	
 	<!-- 상품 번호 찾기 -->
 	<select id="findProductNoByName" resultType="int">
 	    SELECT product_no
@@ -255,6 +264,14 @@
 		VALUES (
 			#{categoryId}, #{parentCategory}, #{categoryName},
 			#{createUser}, 'Y')
+	</insert>
+
+	<!-- 옵션 추가 -->
+	<insert id="insertOption" parameterType="com.example.trade.dto.Option">
+		INSERT INTO `option`(
+			option_name, option_name_value, create_user, use_status)
+		VALUES (
+			#{optionName}, #{optionNameValue}, #{createUser}, 'Y')
 	</insert>
 
 	<!-- 상품 추가 -->

@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.trade.dto.Address;
 import com.example.trade.dto.Category;
+import com.example.trade.dto.Option;
 import com.example.trade.dto.Product;
 import com.example.trade.dto.ProductRequest;
 import com.example.trade.mapper.ProductMapper;
@@ -142,6 +143,16 @@ public class ProductService {
 
 		productMapper.insertCategory(category);
 		return category;
+	}
+	
+	// 옵션 목록 보기
+	public List<Option> selectOptionList() {
+		return productMapper.optionList();
+	}
+	
+	// 옵션 추가
+	public void insertOption(Option option) {
+		productMapper.insertOption(option);
 	}
 	
 	// 상품 등록

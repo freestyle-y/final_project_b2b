@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.trade.dto.Address;
 import com.example.trade.dto.Category;
+import com.example.trade.dto.Option;
 import com.example.trade.dto.Product;
 import com.example.trade.dto.ProductRequest;
 import com.example.trade.dto.ProductRequestForm;
@@ -228,10 +229,17 @@ public class ProductController {
 	public String insertProduct(Model model) {
 		String loginUserName = SecurityContextHolder.getContext().getAuthentication().getName();
 		//log.info(loginUserName);
+		
+		// 카테고리 불러오기
 		List<Category> majorCategoryList = productService.selectMajorCategory();
-		//log.info(majorCategoryList + "");
+		//log.info(majorCategoryList.toString());
+		
+		// 옵션 불러오기
+		List<Option> optionList = productService.selectOptionList();
+		//log.info(optionList.toString());
 		
 		model.addAttribute("majorCategoryList", majorCategoryList);
+		model.addAttribute("optionList", optionList);
 		model.addAttribute("loginUserName", loginUserName);
 		return "admin/insertProduct";
 	}

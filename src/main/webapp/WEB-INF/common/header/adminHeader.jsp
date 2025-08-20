@@ -19,7 +19,7 @@
     <div style="display:flex; flex-direction:column; justify-content:flex-end; height:130px;">
       <!-- 유틸 메뉴 -->
       <div style="display:flex; gap:12px; font-size:14px; justify-content:flex-end;">
-        <a href="#"     style="text-decoration:none; color:#374151;">메뉴1</a>
+        <a href="/admin/insertProduct"     style="text-decoration:none; color:#374151;">상품 등록</a>
         <a href="#" style="text-decoration:none; color:#374151;">메뉴2</a>
         <a href="#"     style="text-decoration:none; color:#374151;">메뉴3</a>
         <a href="#" style="text-decoration:none; color:#374151;">주문배송조회</a>

@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.example.trade.dto.Address;
 import com.example.trade.dto.Category;
+import com.example.trade.dto.Option;
 import com.example.trade.dto.Product;
 import com.example.trade.dto.ProductRequest;
 
@@ -43,6 +44,11 @@ public interface ProductMapper {
 	String selectMaxSubCategoryId(String parentId);
 	// 카테고리 추가
 	int insertCategory(Category category);
+	
+	// 옵션 목록 보기
+	List<Option> optionList();
+	// 옵션 추가
+	int insertOption(Option option);
 	
 	// 상품 번호 찾기
 	Integer findProductNoByName(String productName);

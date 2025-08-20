@@ -29,6 +29,113 @@
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+
+	const optionList = [
+	    <c:forEach var="opt" items="${optionList}" varStatus="status">
+	        {
+	            optionNo: ${opt.optionNo},
+	            optionName: '${opt.optionName}',
+	            optionNameValue: '${opt.optionNameValue}'
+	        }<c:if test="${!status.last}">,</c:if>
+	    </c:forEach>
+	];
+	
+	// 옵션 그룹화
+	const optionMap = {};
+	optionList.forEach(opt => {
+	    if (!optionMap[opt.optionName]) {
+	        optionMap[opt.optionName] = [];
+	    }
+	    optionMap[opt.optionName].push({
+	        value: opt.optionNameValue,
+	        optionNo: opt.optionNo
+	    });
+	});
+
+	// 옵션 종류 채우기
+	$(document).ready(function() {
+	    const $nameSelect = $('#optionNameSelect');
+	    const $newOptionName = $('#newOptionName'); // 자동 입력할 input
+	    
+	    Object.keys(optionMap).forEach(name => {
+	        $nameSelect.append(
+	            $('<option>', { value: name, text: name })
+	        );
+	    });
+	    
+	 	// 옵션 종류 선택 시 옵션명 자동 입력
+	    $nameSelect.on('change', function() {
+	        const selectedOption = $(this).val();
+	        $newOptionName.val(selectedOption); // 입력창에 자동 채움
+	    });
+	});
+
+	// 옵션 값 채우기
+	function onOptionNameChange() {
+	    const selectedName = $('#optionNameSelect').val();
+	    const $valueSelect = $('#optionValueSelect');
+	    $valueSelect.html('<option value="">-- 값 선택 --</option>');
+
+	    if (selectedName && optionMap[selectedName]) {
+	        optionMap[selectedName].forEach(item => {
+	            $valueSelect.append(
+	                $('<option>', {
+	                    value: item.optionNo, // 서버로 넘길 번호
+	                    text: item.value      // 사용자 표시
+	                })
+	            );
+	        });
+	    }
+	}
+
+	function addOption() {
+	    const name = $('#newOptionName').val().trim();
+	    const value = $('#newOptionValue').val().trim();
+	    const createUser = '${loginUserName}';
+
+	    if (!name || !value) {
+	        alert("옵션명과 옵션값을 모두 입력하세요.");
+	        return;
+	    }
+
+	    $.ajax({
+	        url: '/addOption',
+	        type: 'POST',
+	        contentType: 'application/json',
+	        data: JSON.stringify({
+	            optionName: name,
+	            optionNameValue: value,
+	            createUser: createUser
+	        }),
+	        success: function(newOption) {
+	            alert("옵션이 추가되었습니다.");
+	            $('#newOptionName').val('');
+	            $('#newOptionValue').val('');
+
+	            // 내부 optionMap 갱신
+	            if (!optionMap[name]) {
+	                optionMap[name] = [];
+	                $('#optionNameSelect').append(
+	                    $('<option>', { value: name, text: name })
+	                );
+	            }
+	            optionMap[name].push({
+	                value: value,
+	                optionNo: newOption.optionNo
+	            });
+
+	            // 드롭다운 새로고침
+	            if ($('#optionNameSelect').val() === name) {
+	                onOptionNameChange(); // 현재 선택 중인 옵션이면 하위 값도 갱신
+	            }
+	        },
+	        error: function() {
+	            alert("옵션 추가에 실패했습니다.");
+	        }
+	    });
+	}
+
+	
     function addCategory(level) {
     	const nameInput = document.getElementById("new" + level + "Category");
         const name = nameInput.value.trim();
@@ -180,7 +287,7 @@
     }
 </script>
 </head>
-<jsp:include page="/WEB-INF/common/header/publicHeader.jsp" />
+<jsp:include page="/WEB-INF/common/header/adminHeader.jsp" />
 <body>
 <jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
 
@@ -241,11 +348,36 @@
     <!-- 숨겨진 카테고리 ID 전달용 -->
     <input type="hidden" id="categoryId" name="categoryId" />
 
-    <!-- 기타 상품 정보 -->
-    <div class="form-group">
-        <label>옵션:</label>
-        <input type="text" name="optionNo" required>
-    </div>
+    <!-- 옵션 선택 (2단 드롭다운) -->
+	<div class="form-group">
+	    <label>옵션 종류:</label>
+	    <select id="optionNameSelect" onchange="onOptionNameChange()" required>
+	        <option value="">-- 옵션 선택 --</option>
+	    </select>
+	</div>
+	
+	<div class="form-group">
+	    <label>옵션 값:</label>
+	    <select id="optionValueSelect" name="optionNo" required>
+	        <option value="">-- 값 선택 --</option>
+	    </select>
+	</div>
+	
+	<!-- 옵션 추가 영역 -->
+	<div class="form-group">
+	    <label>옵션명 추가:</label>
+	    <input type="text" id="newOptionName" placeholder="예: 사이즈">
+	</div>
+	
+	<div class="form-group">
+	    <label>옵션값 추가:</label>
+	    <input type="text" id="newOptionValue" placeholder="예: XXL">
+	</div>
+	
+	<div class="form-group">
+	    <label></label>
+	    <button type="button" onclick="addOption()">옵션 추가</button>
+	</div>
 
     <div class="form-group">
         <label>금액:</label>

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.trade.dto.Category;
+import com.example.trade.dto.Option;
 import com.example.trade.service.ProductService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -69,4 +70,11 @@ public class ProductRestController {
         Category saveCategory = productService.insertCategory(category);      
         return ResponseEntity.ok(saveCategory);
     }
+	
+	// 옵션 추가
+	@PostMapping("/addOption")
+	public Option addOption(@RequestBody Option option) {
+	    productService.insertOption(option);
+	    return option; // JSON으로 반환 (optionNo 포함)
+	}
 }
