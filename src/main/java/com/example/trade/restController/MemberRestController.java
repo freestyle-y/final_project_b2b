@@ -55,18 +55,6 @@ public class MemberRestController {
         }
     }
     
-    // 회원 목록 조회
-    @GetMapping
-    public ResponseEntity<List<User>> getMembers(
-    		@RequestParam(required = false) String type,
-    		@RequestParam(required = false) String status) {
-    	try {
-    		List<User> members = memberService.getMembers(type, status);
-    		return ResponseEntity.ok(members);
-    	} catch (Exception e) {
-    		return ResponseEntity.internalServerError().build();
-    	}
-    }
 
     // 기업회원 승인 처리
     @PutMapping("/{id}/approve")
