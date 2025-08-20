@@ -41,4 +41,41 @@
 			INNER JOIN user u ON q.create_user = u.id
 		WHERE c.contract_no = #{contractNo}
 	</select>
+	
+	<select id="getAllContractList" resultType="com.example.trade.dto.Contract">
+		SELECT
+			 contract_no AS contractNo
+			,quotation_no AS quotationNo
+			,down_payment AS downPayment
+			,down_payment_status AS downPaymentStatus
+			,final_payment AS finalPayment
+			,final_payment_date AS finalPaymentDate
+			,create_user AS createUser
+			,create_date AS createDate
+		FROM contract
+	</select>
+	
+	<select id="getContractOneForAdmin" resultType="com.example.trade.dto.Contract">
+		SELECT DISTINCT 
+			c.contract_no AS contractNo, c.down_payment AS downPayment
+			, ct.code_name AS codeName, c.final_payment AS finalPayment
+			, c.create_date AS createDate, pr.product_name AS productName
+			, pr.product_option AS productOption, pr.product_quantity AS productQuantity
+		FROM contract c
+			INNER JOIN quotation q ON c.quotation_no = q.quotation_no
+			INNER JOIN product_request pr ON q.product_request_no = pr.product_request_no
+			INNER JOIN comm_tbl ct ON c.down_payment_status = ct.code_number
+		WHERE contract_no = #{contractNo}
+	</select>
+
+	<!-- 관리자 화면: 계약번호로 을(수요자) 조회 -->
+	<select id="getContractUserByContractNo" resultType="com.example.trade.dto.Contract">
+		SELECT DISTINCT u.`name` AS name, u.company_name AS companyName
+			,u.address, u.detail_address AS detailAddress, u.phone
+		FROM contract c
+			INNER JOIN quotation q ON c.quotation_no = q.quotation_no
+			INNER JOIN product_request pr ON q.product_request_no = pr.product_request_no
+			INNER JOIN `user` u ON pr.create_user = u.id
+		WHERE c.contract_no = #{contractNo}
+	</select>
 </mapper>

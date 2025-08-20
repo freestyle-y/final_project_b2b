@@ -17,4 +17,13 @@ public interface ContractMapper {
 	
 	List<Contract> getContractSupplier(int contractNo);
 
+	List<Contract> getAllContractList();
+
+	List<Contract> getContractOneForAdmin(int contractNo);
+
+	List<Contract> getContractForAdmin(int contractNo);
+
+	// 관리자 화면에서 계약번호로 을(수요자) 정보를 조회
+	List<Contract> getContractUserByContractNo(int contractNo);
+
 }
