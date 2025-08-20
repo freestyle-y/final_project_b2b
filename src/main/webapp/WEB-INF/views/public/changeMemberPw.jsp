@@ -16,6 +16,7 @@
     <h1>비밀번호 변경</h1>
 
     <form id="pwForm" action="/public/changeMemberPw" method="post">
+    	<input type="hidden" name="id" value="${id}">
         <div>
             현재 비밀번호 : 
             <input type="password" id="nowPw" name="nowPw">

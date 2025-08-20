@@ -32,4 +32,7 @@ public interface UserMapper {
 	
 	// 회원 정보 업데이트
     void updateUser(User user);
+    
+    // 비밀번호 변경
+    void updatePw(String id, String password);
 }

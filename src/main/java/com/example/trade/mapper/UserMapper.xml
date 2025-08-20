@@ -93,4 +93,11 @@
 		</set>
 		WHERE id = #{id}
 	</update>
+	
+	<!-- 비밀번호 변경 -->
+	<update id="updatePw" parameterType="com.example.trade.dto.User">
+		UPDATE user
+		SET password = #{password}
+		WHERE id = #{id}
+	</update>
 </mapper>
