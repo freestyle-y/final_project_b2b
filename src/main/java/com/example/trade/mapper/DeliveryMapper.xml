@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.trade.mapper.DeliveryMapper">
+	<select id="selectBizDeliveryList" resultType="map">
+		SELECT
+			co.contract_no AS contractNo,
+			a.address,
+			a.detail_address AS detailAddress,
+			cd.contract_delivery_time AS contractDeliveryTime,
+			CASE cd.contract_delivery_status
+				WHEN 'DS001' THEN '배송대기'
+				WHEN 'DS002' THEN '배송중'
+				WHEN 'DS003' THEN '배송완료'
+			END AS contractDeliveryStatus
+		FROM contract_delivery cd INNER JOIN address a ON cd.address_no = a.address_no
+		INNER JOIN container ct ON cd.container_no = ct.container_no
+		INNER JOIN contract_order co ON ct.contract_order_no = co.contract_order_no
+	</select>
+</mapper>

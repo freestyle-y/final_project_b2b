@@ -61,7 +61,10 @@
 		<a href="/admin/alarmList">알림 목록</a> /
 		<a href="/admin/alarmWrite">알림 등록</a> /
 		<a href="/admin/bizDeliveryList">기업 회원 배송 현황</a> /
-		<a href="/admin/manageUser">회원관리</a>
+		<a href="/admin/manageUser">회원관리</a> /
+		<a href="/admin/contractList">계약서 목록</a> / 
+		<a href="/admin/writeQuotation?productRequestNo=1">견적서 작성</a> / 
+		<a href="/admin/insertContainer">컨테이너 상품 입력</a>
     </div>
 </body>
 <jsp:include page="/WEB-INF/common/footer/footer.jsp" />

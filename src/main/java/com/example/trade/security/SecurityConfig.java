@@ -92,6 +92,12 @@ public class SecurityConfig {
 									 .failureHandler(loginFailureHandler())		// 로그인 실패 시 동작
 									 .permitAll());
 		
+		// ✅ 소셜 로그인 설정 (네이버/카카오)
+	    httpSecurity.oauth2Login(oauth2 -> oauth2
+	            .loginPage("/public/login")          // 소셜 로그인 실패 시 보여줄 페이지
+	            .defaultSuccessUrl("/public/mainPage", true) // 성공 시 이동할 페이지
+	    );
+		
 		// 로그아웃 설정
 		httpSecurity.logout((logoutConfigurer)
 				-> logoutConfigurer.logoutUrl("/public/logout")			// 로그아웃 처리 URL

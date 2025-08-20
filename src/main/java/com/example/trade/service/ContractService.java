@@ -31,4 +31,20 @@ public class ContractService {
 	public List<Contract> getContractSupplier(int contractNo) {
 		return contractMapper.getContractSupplier(contractNo);
 	}
+
+	public List<Contract> getAllContractList() {
+		return contractMapper.getAllContractList();
+	}
+
+	public List<Contract> getContractOneForAdmin(int contractNo) {
+		return contractMapper.getContractOneForAdmin(contractNo);
+	}
+
+	public List<Contract> getContractForAdmin(int contractNo) {
+		return contractMapper.getContractForAdmin(contractNo);
+	}
+
+	public List<Contract> getContractUserByContractNo(int contractNo) {
+		return contractMapper.getContractUserByContractNo(contractNo);
+	}
 }
