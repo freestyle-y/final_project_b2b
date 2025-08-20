@@ -55,11 +55,16 @@ public class ProductService {
 		return productMapper.middleCategory(id);
 	}
 	
-	// 카테고리별 상품 목록 보기
+	// 카테고리별 상품 목록 보기(판매중, 일시품절만)
 	public List<Map<String, Object>> selectProductListByCategory(String parentId, String middleId) {
 		return productMapper.productListByCategory(parentId, middleId);
 	}
 	
+	// 카테고리별 상품 목록 보기(전체)
+	public List<Map<String, Object>> selectAllProductListByCategory(String parentId, String middleId) {
+		return productMapper.allProductListByCategory(parentId, middleId);
+	}
+
 	// 상품 상세 페이지 보기
 	public List<Map<String, Object>> selectProductOne(String id, int productNo) {
 		return productMapper.productOne(id, productNo);
@@ -180,5 +185,10 @@ public class ProductService {
 	// 재고 수정
 	public void updateInventoryQuantity(int inventoryId, int quantity) {
 		productMapper.updateInventoryQuantity(inventoryId, quantity);
+	}
+	
+	// 상품 사용여부 변경
+	public void changeProductStatus(int productNo, String useStatus) {
+		productMapper.updateProductStatus(productNo, useStatus);
 	}
 }

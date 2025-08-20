@@ -15,7 +15,7 @@
 		<tr>
 			<td>컨테이너 위치</td>
 			<th>
-				<input type="text">
+				<input type="text" id="containerLocation" name="containerLocation">
 			</th>
 		</tr>
 		<tr>

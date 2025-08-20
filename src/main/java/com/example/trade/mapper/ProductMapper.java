@@ -27,9 +27,11 @@ public interface ProductMapper {
 	List<Category> majorCategory();
 	// 카테고리(중분류) 목록
 	List<Category> middleCategory(String id);
-	// 카테고리별 상품 목록 보기
+	// 카테고리별 상품 목록 보기(판매중, 일시품절만)
 	List<Map<String, Object>> productListByCategory(String parentId, String middleId);
-	
+	// 카테고리별 상품 목록 보기(전체)
+	List<Map<String, Object>> allProductListByCategory(String parentId, String middleId);
+		
 	// 상품 상세 페이지 보기
 	List<Map<String, Object>> productOne(@Param("id") String id, @Param("productNo") int productNo);
 	// 상품별 리뷰 보기
@@ -65,4 +67,7 @@ public interface ProductMapper {
 	List<Map<String, Object>> inventoryList();
 	// 재고 수정
 	int updateInventoryQuantity(@Param("inventoryId") int inventoryId, @Param("quantity") int quantity);
+	
+	// 상품 사용여부 변경
+	int updateProductStatus(@Param("productNo") int productNo, @Param("useStatus") String useStatus);
 }

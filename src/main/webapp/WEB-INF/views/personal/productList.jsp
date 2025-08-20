@@ -120,7 +120,7 @@
 <script>
 $(function () {
 	let allProducts = [];
-	const itemsPerPage = 6;
+	const itemsPerPage = 5;
 	let currentPage = 1;
 	let filteredProducts = [];
 

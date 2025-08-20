@@ -64,7 +64,7 @@
 		<a href="/admin/manageUser">회원관리</a> /
 		<a href="/admin/contractList">계약서 목록</a> / 
 		<a href="/admin/writeQuotation?productRequestNo=1">견적서 작성</a> / 
-		<a href="/admin/insertContainer">컨테이너 상품 입력</a>
+		<a href="/admin/finalPaymentHistory">잔금 확인 페이지</a>
     </div>
 </body>
 <jsp:include page="/WEB-INF/common/footer/footer.jsp" />

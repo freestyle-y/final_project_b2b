@@ -28,17 +28,21 @@
     </tr>
   </thead>
   <tbody>
-    <c:forEach var="q" items="${quotations}">
-      <tr>
-        <td>
-          <a href="/biz/quotationOne?quotationNo=${q.quotationNo}&subProductRequestNo=${q.subProductRequestNo}">${q.quotationNo}-${q.subProductRequestNo}</a>
-        </td>
-        <td>₩<fmt:formatNumber value="${q.price}" type="number" groupingUsed="true"/></td>
-        <td>${q.status}</td>
-        <td>${q.createUser}</td>
-        <td>${fn:replace(q.createDate, 'T', ' ')}</td>
-      </tr>
-    </c:forEach>
+    <c:if test="${not empty quotationGroupedMap}">
+      <c:forEach var="entry" items="${quotationGroupedMap}">
+        <c:set var="list" value="${entry.value}" />
+        <c:set var="first" value="${list[0]}" />
+        <tr>
+          <td>
+            <a href="/biz/quotationOne?quotationNo=${first.quotationNo}&subProductRequestNo=${first.subProductRequestNo}">${first.quotationNo}-${first.subProductRequestNo}</a>
+          </td>
+          <td>₩<fmt:formatNumber value="${first.price}" type="number" groupingUsed="true"/></td>
+          <td>${first.status}</td>
+          <td>${first.createUser}</td>
+          <td>${fn:replace(first.createDate, 'T', ' ')}</td>
+        </tr>
+      </c:forEach>
+    </c:if>
   </tbody>
 </table>
 <jsp:include page="/WEB-INF/common/footer/footer.jsp" />

@@ -29,7 +29,19 @@ public class QuotationController {
 	public String writeQuotation(@RequestParam("productRequestNo") int productRequestNo
 								,Model model) {
 		List<Quotation> quotationOne = quotationService.getQuotationOneByQuotationNo(productRequestNo);
-		model.addAttribute("quotationOne", quotationOne);
+
+		quotationOne.sort(Comparator
+			.comparing(Quotation::getQuotationNo)
+			.thenComparing(Quotation::getSubProductRequestNo));
+
+		Map<String, List<Quotation>> groupList = new LinkedHashMap<>();
+		for (Quotation q : quotationOne) {
+			String key = q.getQuotationNo() + "_" + q.getSubProductRequestNo() + "_" + q.getPrice();
+			groupList.computeIfAbsent(key, k -> new ArrayList<>()).add(q);
+		}
+
+		model.addAttribute("groupList", groupList);
+		model.addAttribute("productRequestNo", productRequestNo);
 		return "admin/writeQuotation";
 	}
 	
@@ -43,8 +55,8 @@ public class QuotationController {
         //    2차 기준: quotationNo (견적서 번호)
         //    → 즉, "재견적서 번호"가 우선적으로 정렬되도록 보장
         quotationList.sort(Comparator
-            .comparing(Quotation::getSubProductRequestNo)   // 첫 번째 정렬 기준
-            .thenComparing(Quotation::getQuotationNo));     // 두 번째 정렬 기준
+            .comparing(Quotation::getQuotationNo)           // 첫 번째 정렬 기준: 견적서 번호
+            .thenComparing(Quotation::getSubProductRequestNo)); // 두 번째 정렬 기준: 재견적서 번호
 
         // 3. 그룹핑 결과를 담을 Map 준비
         //    Key   : "subProductRequestNo_quotationNo_price" 문자열
