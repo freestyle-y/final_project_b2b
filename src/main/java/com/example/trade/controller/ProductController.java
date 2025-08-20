@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.trade.dto.Address;
 import com.example.trade.dto.Category;
+import com.example.trade.dto.Product;
 import com.example.trade.dto.ProductRequest;
 import com.example.trade.dto.ProductRequestForm;
 import com.example.trade.service.ProductService;
@@ -160,7 +161,6 @@ public class ProductController {
 	    }
 	    
 	    productService.insertProductRequest(productRequestList);
-
 	    return "redirect:/biz/mainPage";
 	}
 	
@@ -216,7 +216,6 @@ public class ProductController {
 	    Double avgProductRate = productService.avgProductRate(productNo);
 	    //log.info(avgProductRate + "");
 	    
-	    // JSP로 전달
 	    model.addAttribute("product", commonInfo);
 	    model.addAttribute("optionList", optionList);
 	    model.addAttribute("productReview", productReview);
@@ -226,8 +225,23 @@ public class ProductController {
 	
 	// 상품 등록 페이지
 	@GetMapping("/admin/insertProduct")
-	public String insertProduct() {
+	public String insertProduct(Model model) {
+		String loginUserName = SecurityContextHolder.getContext().getAuthentication().getName();
+		//log.info(loginUserName);
+		List<Category> majorCategoryList = productService.selectMajorCategory();
+		//log.info(majorCategoryList + "");
+		
+		model.addAttribute("majorCategoryList", majorCategoryList);
+		model.addAttribute("loginUserName", loginUserName);
 		return "admin/insertProduct";
+	}
+	
+	// 상품 등록 DB insert
+	@PostMapping("/admin/insertProduct")
+	public String insertProduct(Product product) {
+		log.info(product.toString());
+		productService.insertProduct(product);
+		return "admin/mainPage";
 	}
 	
 	// 재고 목록 페이지

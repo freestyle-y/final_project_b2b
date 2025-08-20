@@ -4,7 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -48,4 +52,21 @@ public class ProductRestController {
        
         return result;
 	}
+		
+	// 카테고리 선택 시 그 다음 카테고리 나오게
+	@GetMapping("/categories/{parentId}/children")
+    public List<Category> getChildCategories(@PathVariable String parentId) {
+		//log.info(parentId);
+        List<Category> categoryList = productService.selectMiddleCategory(parentId);
+        //log.info(middleCategory.toString());
+        
+        return categoryList;
+    }
+	
+	// 카테고리 추가
+	@PostMapping("/addCategories")
+	public ResponseEntity<Category> addCategory(@RequestBody Category category) {		
+        Category saveCategory = productService.insertCategory(category);      
+        return ResponseEntity.ok(saveCategory);
+    }
 }

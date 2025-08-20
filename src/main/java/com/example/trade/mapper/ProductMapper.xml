@@ -95,7 +95,7 @@
 			category_id AS categoryId,
 			category_name AS categoryName
 		FROM category
-		WHERE parent_category = 0
+		WHERE parent_category = '0'
 	</select>
 	
 	<!-- 카테고리(중분류) 목록 -->
@@ -210,6 +210,34 @@
 		WHERE user_id = #{id}
 	</select>
 	
+	<!-- 대분류 최대 ID 조회 -->
+	<select id="selectMaxMajorCategoryId" resultType="String">
+		SELECT MAX(CAST(category_id AS UNSIGNED)) 
+	    FROM category 
+	    WHERE parent_category = '0'
+	</select>
+	
+	<!-- 중분류, 소분류 최대 ID 조회 -->
+	<select id="selectMaxSubCategoryId" parameterType="String" resultType="String">
+		SELECT MAX(category_id)
+	    FROM category
+	    WHERE parent_category = #{parentId}
+	</select>
+	
+	<!-- 상품 번호 찾기 -->
+	<select id="findProductNoByName" resultType="int">
+	    SELECT product_no
+	    FROM product
+	    WHERE product_name = #{productName}
+	    LIMIT 1
+	</select>
+	
+	<!-- 상품 최대 번호 찾기 -->
+	<select id="findMaxProductNo" resultType="int">
+	    SELECT MAX(product_no)
+	    FROM product
+	</select>
+	
 	<!-- 상품 요청 입력 -->
 	<insert id="insertProductRequest" parameterType="com.example.trade.dto.ProductRequest" useGeneratedKeys="true" keyProperty="productRequestNo" keyColumn="product_request_no">
 		INSERT INTO product_request(product_request_no, sub_product_request_no, address_no, product_name,
@@ -218,4 +246,25 @@
 				#{productOption}, #{productQuantity}, #{requests}, #{createUser}, #{useStatus}
 				)
 	</insert>
+	
+	<!-- 카테고리 추가 -->
+	<insert id="insertCategory" parameterType="com.example.trade.dto.Category">
+		INSERT INTO category (
+			category_id, parent_category, category_name,
+			create_user, use_status)
+		VALUES (
+			#{categoryId}, #{parentCategory}, #{categoryName},
+			#{createUser}, 'Y')
+	</insert>
+
+	<!-- 상품 추가 -->
+	<insert id="insertProduct" parameterType="com.example.trade.dto.Product">	
+		INSERT INTO product(
+			product_no, option_no, product_name, product_status,
+			category_id, price, create_user, use_status)
+		VALUES (
+			#{productNo}, #{optionNo}, #{productName}, 'GS002',
+			#{categoryId}, #{price}, #{createUser}, 'Y')
+	</insert>
+	
 </mapper>

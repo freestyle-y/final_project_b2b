@@ -8,9 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.trade.dto.Address;
 import com.example.trade.dto.Category;
+import com.example.trade.dto.Product;
 import com.example.trade.dto.ProductRequest;
 import com.example.trade.mapper.ProductMapper;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 @Transactional
 public class ProductService {
@@ -96,5 +100,64 @@ public class ProductService {
             pr.setUseStatus("Y");
             productMapper.insertProductRequest(pr);
         }
+	}
+	
+	// 카테고리 추가
+	public Category insertCategory(Category category) {
+		String parentId = category.getParentCategory();
+		
+		if ("0".equals(parentId)) {
+		    // 대분류 처리
+		    String maxIdStr = productMapper.selectMaxMajorCategoryId();
+		    int newId = (maxIdStr != null) ? Integer.parseInt(maxIdStr) + 1 : 1;
+		    category.setCategoryId(String.valueOf(newId));
+
+		} else if (parentId.length() == 1) {
+		    // 중분류 처리 (예: parentId = "1", newId는 "1001", "1002", ...)
+		    String maxSubIdStr = productMapper.selectMaxSubCategoryId(parentId);
+		    int nextSubNum = 1;
+
+		    if (maxSubIdStr != null && maxSubIdStr.startsWith(parentId)) {
+		        String suffix = maxSubIdStr.substring(parentId.length()); // "002"
+		        nextSubNum = Integer.parseInt(suffix) + 1;
+		    }
+
+		    String newId = parentId + String.format("%03d", nextSubNum);
+		    category.setCategoryId(newId);
+
+		} else if (parentId.length() == 4) {
+		    // 소분류 처리 (예: parentId = "1002", newId는 "1002001", "1002002", ...)
+		    String maxSubIdStr = productMapper.selectMaxSubCategoryId(parentId);
+		    int nextSubNum = 1;
+
+		    if (maxSubIdStr != null && maxSubIdStr.startsWith(parentId)) {
+		        String suffix = maxSubIdStr.substring(parentId.length()); // "001"
+		        nextSubNum = Integer.parseInt(suffix) + 1;
+		    }
+
+		    String newId = parentId + String.format("%03d", nextSubNum);
+		    category.setCategoryId(newId);
+
+		}
+
+		productMapper.insertCategory(category);
+		return category;
+	}
+	
+	// 상품 등록
+	public void insertProduct(Product product) {
+        // 1. product_no 설정
+        Integer existingProductNo = productMapper.findProductNoByName(product.getProductName());
+
+        int resolvedProductNo;
+        if (existingProductNo != null) {
+            resolvedProductNo = existingProductNo; // 기존 product 사용
+        } else {
+            Integer maxProductNo = productMapper.findMaxProductNo();
+            resolvedProductNo = (maxProductNo != null) ? maxProductNo + 1 : 1;
+        }
+
+        product.setProductNo(resolvedProductNo);
+		productMapper.insertProduct(product);
 	}
 }
