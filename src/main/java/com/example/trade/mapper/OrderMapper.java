@@ -18,4 +18,5 @@ public interface OrderMapper {
 	String getFirstProductName(String orderNo);
 	List<Order> getOrderListByUserId(String userId);
 	List<Order> selectOrderDetailByOrderNo(int orderNo);
+	int getReward(String userId);
 }

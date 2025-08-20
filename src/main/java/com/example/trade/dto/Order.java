@@ -51,6 +51,9 @@ public class Order {
 	private String orderDetails;
 	private String totalOrderQuantity;
 	
+	
+	// reward 총액
+	private int reward;
 	// 결제 금액 총액 확인용
 	private int totalPrice;
 	// address 테이블 조인
