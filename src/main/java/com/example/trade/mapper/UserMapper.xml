@@ -61,11 +61,36 @@
 	<update id="approveUser" parameterType="string">
 		UPDATE user
 		SET customer_status = 'CS001',
-			update_user = 'system',
+			update_user = #{updateUser},
 			update_date = NOW()
 		WHERE id = #{id}
 			AND customer_status = 'CS004'
 			AND customer_category = 'CC002'
     </update>
-    	
+    
+    <!-- 회원 정보들 조회 -->
+    <select id="getInfoById" parameterType="String" resultType="com.example.trade.dto.User">
+    	SELECT
+    		id, password, customer_category AS customerCategory, name, phone, sn, email, postal, address, 
+    		detail_address AS detailAddress, simple_password AS simplePassword, company_name AS companyName, 
+    		business_no AS businessNo, total_reward AS totalReward, customer_status AS customerStatus, create_date AS createDate
+    	FROM user
+    	WHERE id = #{id}
+    </select>
+    
+    <!-- 회원정보 업데이트 -->
+    <update id="updateUser" parameterType="com.example.trade.dto.User">
+		UPDATE user
+		<set>
+			<if test="name != null">name = #{name},</if>
+			<if test="phone != null">phone = #{phone},</if>
+			<if test="email != null">email = #{email},</if>
+			<if test="postal != null">postal = #{postal},</if>
+			<if test="address != null">address = #{address},</if>
+			<if test="detailAddress != null">detail_address = #{detailAddress},</if>
+			<if test="simplePassword != null">simple_password = #{simplePassword},</if>
+			<if test="companyName != null">company_name = #{companyName},</if>
+		</set>
+		WHERE id = #{id}
+	</update>
 </mapper>

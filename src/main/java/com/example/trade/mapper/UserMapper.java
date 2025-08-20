@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.example.trade.domain.UserDomain;
 import com.example.trade.dto.User;
@@ -24,5 +25,11 @@ public interface UserMapper {
 	List<User> findUser(Map<String, Object> params);
 	
 	// 가입승인
-	void approveUser(String id);
+	void approveUser(@Param("id") String id, @Param("updateUser") String updateUser);
+	
+	// 비밀번호 확인, 마이페이지 정보조회
+	User getInfoById(String id);
+	
+	// 회원 정보 업데이트
+    void updateUser(User user);
 }

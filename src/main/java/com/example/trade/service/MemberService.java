@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,6 +87,54 @@ public class MemberService {
     // 기업회원 가입 승인
     @Transactional
     public void approveUser(String id) {
-        userMapper.approveUser(id);
+    	// 1) 현재 로그인한 관리자 정보 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication == null || !authentication.isAuthenticated()) {
+            throw new IllegalStateException("로그인한 관리자가 없습니다.");
+        }
+
+        String adminId = authentication.getName();
+
+        // 2) ROLE_ADMIN 체크
+        boolean isAdmin = authentication.getAuthorities().stream()
+                            .map(GrantedAuthority::getAuthority)
+                            .anyMatch(role -> role.equals("ROLE_ADMIN"));
+
+        if(!isAdmin) {
+            throw new IllegalStateException("승인 권한이 없습니다. 관리자만 가능합니다.");
+        }
+
+        // 3) DB 업데이트: 상태 변경 + updateUser 컬럼에 관리자 ID 기록
+        userMapper.approveUser(id, adminId);
+    }
+    
+    // 비밀번호 확인
+    public boolean checkPassword(String id, String rawPassword) {
+        User user = userMapper.getInfoById(id);
+        return passwordEncoder.matches(rawPassword, user.getPassword());
+    }
+    
+    // 아이디 별 회원정보(마이페이지)
+    public User getUserById(String id) {
+        return userMapper.getInfoById(id);
+    }
+    
+    @Transactional
+    public void updateUserInfo(String id, Map<String,Object> updates){
+        User user = userMapper.getInfoById(id);
+        if(user == null) throw new RuntimeException("회원 정보가 존재하지 않습니다.");
+
+        // 업데이트 가능한 필드만 처리
+        if(updates.containsKey("name")) user.setName((String)updates.get("name"));
+        if(updates.containsKey("phone")) user.setPhone((String)updates.get("phone"));
+        if(updates.containsKey("email")) user.setEmail((String)updates.get("email"));
+        if(updates.containsKey("postal")) user.setPostal((String)updates.get("postal"));
+        if(updates.containsKey("address")) user.setAddress((String)updates.get("address"));
+        if(updates.containsKey("detailAddress")) user.setDetailAddress((String)updates.get("detailAddress"));
+        if(updates.containsKey("simplePassword")) user.setSimplePassword((String)updates.get("simplePassword"));
+        if(updates.containsKey("companyName") && "CC002".equals(user.getCustomerCategory()))
+            user.setCompanyName((String)updates.get("companyName"));
+
+        userMapper.updateUser(user);
     }
 }
