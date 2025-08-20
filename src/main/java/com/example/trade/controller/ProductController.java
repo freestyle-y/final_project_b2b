@@ -247,16 +247,29 @@ public class ProductController {
 	// 상품 등록 DB insert
 	@PostMapping("/admin/insertProduct")
 	public String insertProduct(Product product) {
-		log.info(product.toString());
+		//log.info(product.toString());
 		productService.insertProduct(product);
 		return "admin/mainPage";
+	}
+	
+	// 관리자 상품 목록 페이지
+	@GetMapping("/admin/productList")
+	public String adminProductList(Model model) {
+		List<Category> majorCategoryList = productService.selectMajorCategory();
+		List<Map<String, Object>> productList = productService.selectAllProductListByCategory(null, null);
+		//log.info(majorCategoryList.toString());
+		log.info(productList.toString());
+		model.addAttribute("majorCategoryList", majorCategoryList);
+		model.addAttribute("productList", productList);
+		
+		return "admin/productList";
 	}
 	
 	// 재고 목록 페이지
 	@GetMapping("/admin/inventoryList")
 	public String inventoryList(Model model) {
 		List<Map<String, Object>> inventoryList = productService.selectInventoryList();
-		log.info(inventoryList.toString());
+		//log.info(inventoryList.toString());
 		model.addAttribute("inventoryList", inventoryList);
 		return "admin/inventoryList";
 	}

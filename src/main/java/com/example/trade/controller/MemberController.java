@@ -7,6 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.trade.dto.User;
@@ -63,8 +64,16 @@ public class MemberController {
 	public String changeMemberPw(@RequestParam String id, 
 								Model model) {
 		User user = memberService.getUserById(id);
+		model.addAttribute("id", id);
 		model.addAttribute("pw", user.getPassword());
 		return "public/changeMemberPw";
+	}
+	@PostMapping("/public/changeMemberPw")
+	public String changeMemberPw(@RequestParam String password, 
+								@RequestParam String id) {
+		memberService.updatePw(id, password);
+		
+		return "redirect:/public/logout";
 	}
 	
 	// 적립금 페이지

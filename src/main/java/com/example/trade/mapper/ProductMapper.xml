@@ -107,7 +107,7 @@
 		WHERE parent_category = #{id}
 	</select>
 	
-	<!-- 카테고리별 상품 목록 보기 -->
+	<!-- 카테고리별 상품 목록 보기(판매중, 일시품절만) -->
 	<select id="productListByCategory" parameterType="String" resultType="map">
 		WITH category_path AS (
 		    SELECT 
@@ -147,12 +147,63 @@
 		    cp.category_id_lv2 AS categoryIdLv2,
 		    cp.category_id_lv3 AS categoryIdLv3
 		FROM product p
-		LEFT JOIN category_path cp ON p.category_id = cp.category_id
+		LEFT JOIN category_path cp 
+			ON p.category_id = cp.category_id
 		WHERE p.use_status = 'Y'
+			AND p.product_status = 'GS002' OR p.product_status = 'GS003'
 		AND (#{parentId} IS NULL OR category_id_lv1 = #{parentId})
 		AND (#{middleId} IS NULL OR category_id_lv2 = #{middleId})
 		GROUP BY product_no
 	</select>
+	
+	<!-- 카테고리별 상품 목록 보기(전체) -->
+	<select id="allProductListByCategory" parameterType="String" resultType="map">
+		WITH category_path AS (
+		    SELECT 
+		        c1.category_id AS category_id,
+		        CASE 
+		            WHEN c3.category_id IS NOT NULL THEN c3.category_id
+		            WHEN c2.category_id IS NOT NULL THEN c2.category_id
+		            ELSE c1.category_id
+		        END AS category_id_lv1,
+		
+		        CASE 
+		            WHEN c3.category_id IS NOT NULL THEN c2.category_id
+		            WHEN c2.category_id IS NOT NULL THEN c1.category_id
+		            ELSE NULL
+		        END AS category_id_lv2,
+		
+		        CASE 
+		            WHEN c3.category_id IS NOT NULL THEN c1.category_id
+		            ELSE NULL
+		        END AS category_id_lv3
+		    FROM category c1
+		    LEFT JOIN category c2 ON c1.parent_category = c2.category_id
+		    LEFT JOIN category c3 ON c2.parent_category = c3.category_id
+		)
+		SELECT 
+		    p.product_no AS productNo,
+		    p.product_name AS productName,
+		    p.price,
+		    p.use_status AS useStatus,
+		    CASE p.product_status
+		        WHEN 'GS001' THEN '판매대기'
+		        WHEN 'GS002' THEN '판매중'
+		        WHEN 'GS003' THEN '일시품절'
+		        WHEN 'GS004' THEN '영구중단'
+		        ELSE '알수없음'
+		    END AS productStatus,
+		    cp.category_id_lv1 AS categoryIdLv1,
+		    cp.category_id_lv2 AS categoryIdLv2,
+		    cp.category_id_lv3 AS categoryIdLv3
+		FROM product p
+		LEFT JOIN category_path cp 
+			ON p.category_id = cp.category_id
+		AND (#{parentId} IS NULL OR category_id_lv1 = #{parentId})
+		AND (#{middleId} IS NULL OR category_id_lv2 = #{middleId})
+		GROUP BY product_no
+	</select>
+	
 	
 	<!-- 상품 상세 페이지 보기 -->
 	<select id="productOne" resultType="map">
@@ -315,4 +366,10 @@
 	    WHERE inventory_id = #{inventoryId}
 	</update>
 	
+	<!-- 상품 사용여부 변경 -->
+	<update id="updateProductStatus">
+		UPDATE product
+	    SET use_status = #{useStatus}
+	    WHERE product_no = #{productNo}
+	</update>
 </mapper>

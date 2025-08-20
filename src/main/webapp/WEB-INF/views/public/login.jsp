@@ -96,6 +96,30 @@
 	.extra-links a:hover {
 		text-decoration: underline;
 	}
+	.naver-btn, .kakao-btn {
+    display: block;
+    text-align: center;
+    width: 100%;
+    padding: 12px;
+    border-radius: 4px;
+    font-size: 16px;
+    text-decoration: none;
+    cursor: pointer;
+	}
+	
+	/* 네이버 */
+	.naver-btn {
+	    background-color: #03C75A;
+	    color: white;
+	    margin-bottom: 8px;
+	}
+	
+	/* 카카오 */
+	.kakao-btn {
+	    background-color: #FEE500;
+	    color: #3C1E1E;
+	}
+		
 </style>
 </head>
 <jsp:include page="/WEB-INF/common/header/publicHeader.jsp" />
@@ -110,10 +134,10 @@
 				<input type="password" id="password" name="password" placeholder="비밀번호" required>
 				<button type="submit">로그인</button>
 			</form>
-
+			
 			<div class="social-login">
-				<button type="button" class="naver-btn">네이버로 로그인</button>
-				<button type="button" class="kakao-btn">카카오로 로그인</button>
+			    <a href="/oauth2/authorization/naver" class="naver-btn">네이버로 로그인</a>
+			    <a href="/oauth2/authorization/kakao" class="kakao-btn">카카오로 로그인</a>
 			</div>
 
 			<div class="extra-links">

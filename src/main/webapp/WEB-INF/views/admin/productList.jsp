@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>상품 목록</title>
+<title>상품 목록 관리</title>
 <style>
 	body {
 		font-family: Arial, sans-serif;
@@ -62,13 +62,6 @@
 	.product-card:hover {
 		box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 	}
-	
-	.sold-out {
-		background-color: #f0f0f0;
-		color: #999;
-		pointer-events: none; /* 클릭 비활성화 */
-		cursor: default;
-	}
 
 	.product-name {
 		font-weight: bold;
@@ -81,10 +74,17 @@
 		color: #28a745;
 		margin-bottom: 5px;
 	}
-	
+
 	.product-status {
 		font-size: 0.9em;
 		color: #555;
+		margin-bottom: 3px;
+	}
+
+	.product-useStatus {
+		font-size: 0.9em;
+		color: #555;
+		margin-top: 5px;
 	}
 
 	#search-input {
@@ -114,6 +114,57 @@
 	    color: #fff;
 	    border-color: #333;
 	}
+
+	/* 토글 스위치 스타일 */
+	.switch {
+	  position: relative;
+	  display: inline-block;
+	  width: 40px;
+	  height: 20px;
+	}
+
+	.switch input {
+	  opacity: 0;
+	  width: 0;
+	  height: 0;
+	}
+
+	.slider {
+	  position: absolute;
+	  cursor: pointer;
+	  background-color: #ccc;
+	  border-radius: 34px;
+	  top: 0; left: 0; right: 0; bottom: 0;
+	  transition: .4s;
+	}
+
+	.slider:before {
+	  position: absolute;
+	  content: "";
+	  height: 14px;
+	  width: 14px;
+	  left: 3px;
+	  bottom: 3px;
+	  background-color: white;
+	  border-radius: 50%;
+	  transition: .4s;
+	}
+
+	input:checked + .slider {
+	  background-color: #28a745;
+	}
+
+	input:checked + .slider:before {
+	  transform: translateX(20px);
+	}
+
+	/* 둥근 슬라이더 */
+	.slider.round {
+	  border-radius: 34px;
+	}
+	.slider.round:before {
+	  border-radius: 50%;
+	}
 </style>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -124,11 +175,13 @@ $(function () {
 	let currentPage = 1;
 	let filteredProducts = [];
 
+	// 초기 상품 데이터 수집
 	$('#product-container .product-card').each(function() {
 	    allProducts.push({
 	        productName: $(this).data('name'),
 	        price: $(this).data('price'),
 	        productStatus: $(this).data('status'),
+	        useStatus: $(this).data('usestatus'),
 	        productNo: $(this).data('product-no')
 	    });
 	});
@@ -143,18 +196,25 @@ $(function () {
 	    const pageItems = filteredProducts.slice(start, end);
 
 	    pageItems.forEach(function(item) {
-	        const soldOutClass = item.productStatus === "일시품절" ? "sold-out" : "";
 	        const productCardHtml =
-	            '<div class="product-card ' + soldOutClass + '">' +
+	            '<div class="product-card" ' +
+					'data-name="' + item.productName + '" ' +
+					'data-price="' + item.price + '" ' +
+					'data-status="' + item.productStatus + '" ' +
+					'data-usestatus="' + item.useStatus + '" ' +
+					'data-product-no="' + item.productNo + '">' +
 	                '<div class="product-name">' + item.productName + '</div>' +
 	                '<div class="product-price">' + item.price + ' 원</div>' +
-	                '<div class="product-status">' + item.productStatus + '</div>' +
+	                '<div class="product-status">상태: ' + item.productStatus + '</div>' +
+	                '<div class="product-useStatus">사용여부: ' +
+						'<label class="switch">' +
+							'<input type="checkbox" class="useStatus-toggle" data-product-no="' + item.productNo + '"' + (item.useStatus === 'Y' ? ' checked' : '') + '>' +
+							'<span class="slider round"></span>' +
+						'</label>' +
+					'</div>' +
 	            '</div>';
 
-	        // 일시품절은 링크 없이, 아니면 링크 적용
-	        const productHtml = item.productStatus === "일시품절"
-	            ? productCardHtml
-	            : '<a href="/biz/productOne?productNo=' + item.productNo + '">' + productCardHtml + '</a>';
+	        const productHtml = '<a href="/admin/productOne?productNo=' + item.productNo + '">' + productCardHtml + '</a>';
 
 	        container.append(productHtml);
 	    });
@@ -178,6 +238,7 @@ $(function () {
 	    }
 	}
 
+	// 검색 필터링
 	$('#search-input').on('input', function() {
 	    const keyword = $(this).val().toLowerCase();
 	    filteredProducts = allProducts.filter(item => item.productName.toLowerCase().includes(keyword));
@@ -185,6 +246,7 @@ $(function () {
 	    renderPage(currentPage);
 	});
 
+	// 대분류 클릭
 	$('.major-category-list > div').click(function () {
 		const categoryId = $(this).data('id');
 		
@@ -203,6 +265,7 @@ $(function () {
 						productName: item.productName,
 						price: item.price,
 						productStatus: item.productStatus,
+						useStatus: item.useStatus,
 						productNo: item.productNo
 					};
 				});
@@ -221,6 +284,7 @@ $(function () {
 									productName: item.productName,
 									price: item.price,
 									productStatus: item.productStatus,
+									useStatus: item.useStatus,
 									productNo: item.productNo
 								};
 							});
@@ -240,14 +304,35 @@ $(function () {
 		});
 	});
 
+	// 사용여부 토글 AJAX
+	$(document).on('change', '.useStatus-toggle', function() {
+	    const productNo = $(this).data('product-no');
+	    const newStatus = $(this).is(':checked') ? 'Y' : 'N';
+
+	    $.ajax({
+	        url: '/changeStatus',
+	        method: 'POST',
+	        contentType: 'application/json',
+	        data: JSON.stringify({ productNo: productNo, useStatus: newStatus }),
+	        success: function(response) {
+	            alert('사용여부가 성공적으로 변경되었습니다.');
+	        },
+	        error: function() {
+	            alert('사용여부 변경에 실패했습니다.');
+	            // 실패시 체크박스 상태 되돌리기
+	            $(this).prop('checked', !$(this).is(':checked'));
+	        }.bind(this)
+	    });
+	});
+
 	renderPage(currentPage);
 });
 </script>
 </head>
 
-<jsp:include page="/WEB-INF/common/header/bizHeader.jsp" />
+<jsp:include page="/WEB-INF/common/header/adminHeader.jsp" />
 <body>
-	<jsp:include page="/WEB-INF/common/sidebar/bizSidebar.jsp" />
+	<jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
 
 	<input type="text" id="search-input" placeholder="상품명 검색..." />
 
@@ -264,34 +349,25 @@ $(function () {
 	<!-- 상품 리스트 -->
 	<div id="product-container" class="product-list">
 		<c:forEach var="item" items="${productList}">
-			<c:choose>
-				<c:when test="${item.productStatus == '일시품절'}">
-					<!-- 일시품절: 링크 제거 -->
-					<div class="product-card sold-out"
-					     data-name="${item.productName}"
-					     data-price="${item.price}"
-					     data-status="${item.productStatus}"
-					     data-product-no="${item.productNo}">
-						<div class="product-name">${item.productName}</div>
-						<div class="product-price">${item.price} 원</div>
-						<div class="product-status">${item.productStatus}</div>
+			<a href="/admin/productOne?productNo=${item.productNo}">
+				<div class="product-card"
+				     data-name="${item.productName}"
+				     data-price="${item.price}"
+				     data-status="${item.productStatus}"
+				     data-usestatus="${item.useStatus}"
+				     data-product-no="${item.productNo}">
+					<div class="product-name">${item.productName}</div>
+					<div class="product-price">${item.price} 원</div>
+					<div class="product-status">상태: ${item.productStatus}</div>
+					<div class="product-useStatus">
+						사용여부: 
+						<label class="switch">
+							<input type="checkbox" class="useStatus-toggle" data-product-no="${item.productNo}" <c:if test="${item.useStatus == 'Y'}">checked</c:if> >
+							<span class="slider round"></span>
+						</label>
 					</div>
-				</c:when>
-				<c:otherwise>
-					<!-- 판매중: 링크 적용 -->
-					<a href="/biz/productOne?productNo=${item.productNo}">
-						<div class="product-card"
-						     data-name="${item.productName}"
-						     data-price="${item.price}"
-						     data-status="${item.productStatus}"
-						     data-product-no="${item.productNo}">
-							<div class="product-name">${item.productName}</div>
-							<div class="product-price">${item.price} 원</div>
-							<div class="product-status">${item.productStatus}</div>
-						</div>
-					</a>
-				</c:otherwise>
-			</c:choose>
+				</div>
+			</a>
 		</c:forEach>
 	</div>
 
