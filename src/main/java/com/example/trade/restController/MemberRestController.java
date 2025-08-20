@@ -1,13 +1,16 @@
 package com.example.trade.restController;
 
-import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -67,5 +70,36 @@ public class MemberRestController {
     	} catch (Exception e) {
     		return ResponseEntity.internalServerError().build(); // 서버 오류
     	}
+    }
+    
+ // 비밀번호 확인 AJAX
+    @PostMapping("/checkPassword")
+    public ResponseEntity<Boolean> checkPassword(@RequestParam String password) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String id = auth.getName();
+        boolean match = memberService.checkPassword(id, password);
+        return ResponseEntity.ok(match);
+    }
+
+    // 마이페이지 정보 조회
+    @GetMapping("/info")
+    public ResponseEntity<User> getUserInfo() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String id = auth.getName();
+        User user = memberService.getUserById(id);
+        return ResponseEntity.ok(user);
+    }
+    
+    // 회원 정보 업데이트
+    @PutMapping("/updateUserInfo")
+    public ResponseEntity<String> updateUserInfo(@RequestBody Map<String, Object> updates) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String id = auth.getName();
+        try {
+            memberService.updateUserInfo(id, updates);
+            return ResponseEntity.ok("SUCCESS");
+        } catch(Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

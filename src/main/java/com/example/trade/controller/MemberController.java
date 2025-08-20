@@ -2,6 +2,8 @@ package com.example.trade.controller;
 
 import java.util.List;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,10 +25,14 @@ public class MemberController {
     }
     
 	// 마이페이지
-	@GetMapping("/public/myPage")
-	public String myPage() {
-		return "public/myPage";
-	}
+    @GetMapping("/public/myPage")
+    public String myPage(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String id = auth.getName();
+        User user = memberService.getUserById(id);
+        model.addAttribute("user", user);
+        return "public/myPage";
+    }
 
 	// 로그인
 	@GetMapping("/public/login")
