@@ -21,6 +21,8 @@
       <div style="display:flex; gap:12px; font-size:14px; justify-content:flex-end;">
         <a href=""	style="text-decoration:none; color:#111827;">상품 카테고리</a>
         <a href="/biz/productRequest"	style="text-decoration:none; color:#111827;">상품 요청</a>
+        <a href="/biz/quotationList?userId=biz001"	style="text-decoration:none; color:#111827;">견적서</a>        
+        <a href="/biz/contractList?userId=biz001" style="text-decoration:none; color:#111827;">계약서</a> 
         <a href="/biz/deliveryList" style="text-decoration:none; color:#374151;">주문배송조회</a>
         <a href="/public/logout"       style="text-decoration:none; color:#374151;">로그아웃</a>
       </div>
