@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.trade.dto.Category;
 import com.example.trade.dto.Inventory;
 import com.example.trade.dto.Option;
+import com.example.trade.dto.Product;
 import com.example.trade.service.ProductService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -84,5 +85,13 @@ public class ProductRestController {
     public String updateInventoryQuantity(@RequestBody Inventory inventory) {
         productService.updateInventoryQuantity(inventory.getInventoryId(), inventory.getQuantity());
         return "success";
+	}
+	
+	// 사용여부 수정
+	@PostMapping("/changeStatus")
+	public String changeStatus(@RequestBody Product product) {
+		//log.info(product.toString());
+		productService.changeProductStatus(product.getProductNo(), product.getUseStatus());
+		return "success";
 	}
 }
