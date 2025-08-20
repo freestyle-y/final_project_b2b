@@ -42,4 +42,10 @@ public class OrderService {
 		
 	    return orderMapper.selectOrderDetailByOrderNo(orderNo);
 	}
+
+
+	public int getReward(String userId) {
+
+		return orderMapper.getReward(userId);
+	}
 }

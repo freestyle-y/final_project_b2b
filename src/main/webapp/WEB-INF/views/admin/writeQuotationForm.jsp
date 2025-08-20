@@ -29,8 +29,9 @@
                     <td>${q.productQuantity}</td>
                     <td>${q.productOption}</td>
                     <td>
-                        <input type="number" name="prices" required placeholder="₩ 가격">
+                        <input type="number" name="price" required placeholder="₩ 가격">
                     </td>
+                    <td>
                 </tr>
             </c:forEach>
         </tbody>

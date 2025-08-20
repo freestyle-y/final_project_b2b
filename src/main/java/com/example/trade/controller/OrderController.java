@@ -44,9 +44,13 @@ public class OrderController {
 
     	List<Order> orderList = orderService.getOrderList(orderNo);
         List<PaymentMethod> cardList = paymentMethodService.getUserCardList(userId);
+        int reward = orderService.getReward(userId);
+        
+        model.addAttribute("reward", reward);
+        System.out.println("reward 액 : " + reward);
         
         model.addAttribute("cardList", cardList);
-        System.out.println("🔥 cardList = " + cardList);
+        System.out.println("cardList = " + cardList);
         
         model.addAttribute("orderList", orderList);
         System.out.println("orderList size = " + orderList.size());
@@ -73,29 +77,29 @@ public class OrderController {
         }
     }
     
-    //카카오페이 결제 준비 요청 - orderNo, name, totalPrice JSON 받음, - KakaoPayService 호출 → ReadyResponse 그대로 반환
     @PostMapping("/personal/payment/ready")
     @ResponseBody
     public KakaoPayReadyResponse kakaoPayReady(@RequestBody Map<String, Object> request) {
         String orderNo = (String) request.get("orderNo");
         String name = (String) request.get("name");
-        int totalPrice = (int) request.get("totalPrice");
+        int totalPrice = Integer.parseInt(request.get("totalPrice").toString()); // ✅ 수정 완료
 
-        System.out.println("🔥 카카오페이 요청 들어옴: " + request);
+        System.out.println("카카오페이 요청 들어옴: " + request);
         
         return kakaoPayService.payReady(orderNo, name, totalPrice);
     }
 
+
     @GetMapping("/personal/payment/success")
-    public String paymentSuccess(@RequestParam("pg_token") String pgToken,
-                                 @RequestParam("orderNo") String orderNo,
-                                 Model model) {
+    public String paymentSuccess(@RequestParam("pg_token") String pgToken
+                                ,@RequestParam("orderNo") String orderNo
+                                ,Model model
+                                ,Principal princiapl) {
+    	String userId = princiapl.getName();
         // 1. 카카오 결제 승인
         KakaoPayApprovalResponse response = kakaoPayService.payApprove(pgToken);
-
         // 2. 주문 정보
         Order order = orderService.getOrder(orderNo);
-
         // 3. 아이템 개수 조회
         int itemCount = orderService.getOrderItemCount(orderNo);
 
@@ -105,10 +109,18 @@ public class OrderController {
             productName += " 외 " + (itemCount - 1) + "건";
         }
 
-        // 5. JSP에 전달
+        // 5. 실 결제 금액 계산 (상품 금액 - 사용 적립금)
+        // int finalPrice = order.getTotalPrice() - orderService.getReward(userId);
+
+        System.out.println("[컨트롤러] usedPoint = " + response.getUsedPoint());
+        System.out.println("[컨트롤러] realPaidAmount = " + response.getRealPaidAmount());
+        
+        // 6. JSP에 전달
         model.addAttribute("name", order.getName());  // 구매자
-        model.addAttribute("productName", productName); // 상품명 (외 n건 포함)
-        model.addAttribute("totalPrice", order.getTotalPrice()); // 총액
+        model.addAttribute("productName", productName); // 상품명
+        model.addAttribute("usedPoint", response.getUsedPoint());
+        model.addAttribute("realPaidAmount", response.getRealPaidAmount());
+        model.addAttribute("usedKakaoPoint", response.getUsedKakaoPoint());
 
         return "personal/paymentSuccess";
     }
@@ -140,6 +152,7 @@ public class OrderController {
         return "personal/orderList";
     }
     
+    // 주문 상세
     @GetMapping("/personal/orderOne")
     public String orderOne(@RequestParam("orderNo") int orderNo, Model model) {
         List<Order> orderDetailList = orderService.getOrderDetailByOrderNo(orderNo); // 서비스에서 가져오기

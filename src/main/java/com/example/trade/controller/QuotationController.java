@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,66 +24,47 @@ public class QuotationController {
 		super();
 		this.quotationService = quotationService;
 	}
-	// 관리자 견적서 작성 할 목록 페이지
+	// 관리자 견적서 작성 페이지
 	@GetMapping("/admin/writeQuotation")
 	public String writeQuotation(@RequestParam("productRequestNo") int productRequestNo
 								,Model model) {
 		List<Quotation> quotationOne = quotationService.getQuotationOneByQuotationNo(productRequestNo);
-		Map<String, List<Quotation>> grouped = quotationOne.stream()
-			    .collect(Collectors.groupingBy(
-			        q -> q.getQuotationNo() + "_" + q.getSubProductRequestNo(),
-			        LinkedHashMap::new,
-			        Collectors.toList()
-			    ));
-
-			model.addAttribute("groupList", grouped);
+		model.addAttribute("quotationOne", quotationOne);
 		return "admin/writeQuotation";
 	}
 	
-	// 견적서 작성 popup
-	@GetMapping("/admin/writeQuotationForm")
-	public String openQuotationPopup(@RequestParam("quotationNo") int quotationNo,
-	                                 @RequestParam("subProductRequestNo") int subProductRequestNo,
-	                                 Model model) {
-	    System.out.println("⛳ popup quotationNo = " + quotationNo);
-	    System.out.println("⛳ popup subProductRequestNo = " + subProductRequestNo);
-
-	    List<Quotation> list = quotationService.getQuotationOne(quotationNo, subProductRequestNo);
-	    model.addAttribute("quotationList", list);
-	    return "admin/writeQuotationForm";
-	}
-	
-	// 견적서 제출 페이지
-	@PostMapping("/admin/writeQuotationForm")
-	public String writeQuotationForm(Quotation quotation) {
-		int row = quotationService.insertQuotation(quotation);
-		
-		return "admin/writeQuotationForm";
-	}
     // 기업 회원 견적서 목록 페이지
     @GetMapping("/biz/quotationList")
     public String quotationList(@RequestParam String userId, Model model) {
-        List<Quotation> raw = quotationService.getQuotationList(userId);
+        List<Quotation> quotationList = quotationService.getQuotationList(userId);
 
-        // 최신 createDate가 우선되도록 정렬 (null 안전)
-        raw.sort(Comparator.comparing(Quotation::getCreateDate, Comparator.nullsLast(Comparator.reverseOrder())));
+        // 2. 견적서 리스트를 정렬
+        //    1차 기준: subProductRequestNo (재견적서 번호)
+        //    2차 기준: quotationNo (견적서 번호)
+        //    → 즉, "재견적서 번호"가 우선적으로 정렬되도록 보장
+        quotationList.sort(Comparator
+            .comparing(Quotation::getSubProductRequestNo)   // 첫 번째 정렬 기준
+            .thenComparing(Quotation::getQuotationNo));     // 두 번째 정렬 기준
 
-        // (quotationNo, subProductRequestNo, productRequestNo) 기준으로 중복제거
-        Map<String, Quotation> uniqueMap = new LinkedHashMap<>();
-        for (Quotation q : raw) {
-            String key = q.getQuotationNo() + "_" + q.getSubProductRequestNo() + "_" + q.getProductRequestNo();
-            // 최신이 먼저 오므로 비어있을 때만 넣음
-            uniqueMap.putIfAbsent(key, q);
+        // 3. 그룹핑 결과를 담을 Map 준비
+        //    Key   : "subProductRequestNo_quotationNo_price" 문자열
+        //    Value : 해당 Key에 속하는 Quotation 객체 리스트
+        //    LinkedHashMap 사용 → 입력 순서 보장 (정렬된 순서대로 유지)
+        Map<String, List<Quotation>> quotationGroupedMap = new LinkedHashMap<>();
+
+        // 4. 견적서 리스트를 순회하면서 그룹핑 처리
+        for (Quotation q : quotationList) {
+            // Key 생성 규칙:
+            //   subProductRequestNo + "_" + quotationNo + "_" + price
+            //   예: "1_1_8000000"
+            String key = q.getSubProductRequestNo() + "_" + q.getQuotationNo() + "_" + q.getPrice();
+            // Key가 없으면 새 리스트 생성, 있으면 기존 리스트에 추가
+            quotationGroupedMap.computeIfAbsent(key, k -> new ArrayList<>()).add(q);
         }
-        List<Quotation> quotations = new ArrayList<>(uniqueMap.values());
+        // 5. JSP(View)에서 사용할 데이터 등록
+        //    JSP에서는 ${quotationGroupedMap} 으로 접근 가능
+        model.addAttribute("quotationGroupedMap", quotationGroupedMap);
 
-        // 화면 정렬: quotationNo, subProductRequestNo, productRequestNo 오름차순
-        quotations.sort(Comparator
-                .comparing(Quotation::getQuotationNo)
-                .thenComparing(Quotation::getSubProductRequestNo)
-                .thenComparing(Quotation::getProductRequestNo));
-
-        model.addAttribute("quotations", quotations);
         return "biz/quotationList";
     }
 
@@ -102,8 +82,9 @@ public class QuotationController {
 	@PostMapping("/biz/quotationApprove")
 	public String quotationApprove(@RequestParam("quotationNo") int quotationNo
 								  ,@RequestParam("subProductRequestNo") int subProductRequestNo) {
-		quotationService.updateStatusAtApprove(quotationNo, subProductRequestNo);
-		return "redirect:/biz/quotationOne?quotationNo=" + quotationNo + "&subProductRequestNo=" + subProductRequestNo;
+		int row = quotationService.updateStatusAtApprove(quotationNo, subProductRequestNo);
+		
+	    return "redirect:/biz/quotationOne?quotationNo=" + quotationNo + "&subProductRequestNo=" + subProductRequestNo;
 	}
 	
 	// 기업회원 견적서 거절
@@ -113,7 +94,9 @@ public class QuotationController {
 								 ,@RequestParam("rejectionReason") String rejectionReason
 								 ,Principal principal) {
 		String userId = principal.getName();
-		quotationService.updateStatusAtReject(quotationNo, subProductRequestNo, rejectionReason, userId);
+		
+		int row = quotationService.updateStatusAtReject(quotationNo, subProductRequestNo, rejectionReason, userId);
+		
 		return "redirect:/biz/quotationOne?quotationNo=" + quotationNo + "&subProductRequestNo=" + subProductRequestNo;
 	}
 }
