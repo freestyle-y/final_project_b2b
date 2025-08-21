@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.example.trade.dto.Address;
 import com.example.trade.dto.KakaoPayApprovalResponse;
 import com.example.trade.dto.KakaoPayReadyResponse;
 import com.example.trade.dto.Order;
 import com.example.trade.dto.PaymentMethod;
+import com.example.trade.service.AddressService;
 import com.example.trade.service.KakaoPayService;
 import com.example.trade.service.OrderService;
 import com.example.trade.service.PaymentMethodService;
@@ -28,13 +30,15 @@ public class OrderController {
     private final OrderService orderService;
     private final KakaoPayService kakaoPayService;
     private final PaymentMethodService paymentMethodService;
-    
-    public OrderController(OrderService orderService, KakaoPayService kakaoPayService, PaymentMethodService paymentMethodService) {
-        this.orderService = orderService;
-        this.kakaoPayService = kakaoPayService;
-        this.paymentMethodService = paymentMethodService;
-    }
-
+    private final AddressService addressService;
+    public OrderController(OrderService orderService, KakaoPayService kakaoPayService,
+			PaymentMethodService paymentMethodService, AddressService addressService) {
+		super();
+		this.orderService = orderService;
+		this.kakaoPayService = kakaoPayService;
+		this.paymentMethodService = paymentMethodService;
+		this.addressService = addressService;
+	}
     // 결제 페이지 (주문정보 보여주기)
 
     @GetMapping("/personal/payment")
@@ -44,8 +48,11 @@ public class OrderController {
 
     	List<Order> orderList = orderService.getOrderList(orderNo);
         List<PaymentMethod> cardList = paymentMethodService.getUserCardList(userId);
-        int reward = orderService.getReward(userId);
         
+        List<Address> mainAddress = addressService.getMainAddress(userId);
+        model.addAttribute("mainAddress", mainAddress);
+        
+        int reward = orderService.getReward(userId);
         model.addAttribute("reward", reward);
         System.out.println("reward 액 : " + reward);
         

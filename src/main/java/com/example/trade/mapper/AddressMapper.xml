@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.trade.mapper.AddressMapper">
+	<!-- 배송지 주소 받기 -->
 	<select id="getAddressList" resultType="com.example.trade.dto.Address">
-		SELECT address_no AS addressNo, address, detail_address AS detailAddress, nickname, postal
+		SELECT address_no AS addressNo, address, detail_address AS detailAddress, nickname, postal, main_address AS mainAddress
 		FROM address
 		WHERE user_id = #{userId}
 	</select>
 	
+	<!-- 배송지 추가 -->
     <insert id="addAddress" parameterType="com.example.trade.dto.Address" useGeneratedKeys="true" keyProperty="addressNo">
         INSERT INTO address
         (
@@ -31,4 +33,39 @@
             #{mainAddress}
         )
     </insert>
+    
+    <!-- 기본 배송지 받기 -->
+    <select id="getMainAddress" resultType="com.example.trade.dto.Address">
+    	SELECT
+    		 user_id AS userId
+    		,postal
+    		,address
+    		,detail_address AS detailAddress
+    		,nickname AS nickname
+    		,main_address AS mainAddress
+    	FROM address
+    	WHERE user_id = #{userId} AND main_address = 'Y'
+    </select>
+    
+	<!-- 기본 배송지 변경 Y -->
+	<update id="changeMainAddress">
+		UPDATE address
+		SET main_address = 'Y'
+		WHERE user_id = #{userId}
+		AND address_no = #{addressNo}
+	</update>
+	
+	<!-- 기본 배송지 변경 전체 N -->
+	<update id="resetMainAddress" parameterType="string">
+		UPDATE address
+		SET main_address = 'N'
+		WHERE user_id = #{userId}
+	</update>
+	
+	<!-- 배송지 삭제 -->
+	<delete id="deleteAddress">
+		DELETE FROM address
+		WHERE user_id = #{userId}
+		AND address_no = #{addressNo}
+	</delete>
 </mapper>

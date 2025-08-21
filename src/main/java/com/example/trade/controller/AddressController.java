@@ -34,6 +34,7 @@ public class AddressController {
     	return "personal/addressPopup";
     }
     
+    // 배송지 추가
     @PostMapping("/personal/address/add")
     @ResponseBody
     public Map<String, Object> addAddress(@RequestBody Address address, Principal principal) {
@@ -50,6 +51,28 @@ public class AddressController {
 
         Map<String, Object> result = new HashMap<>();
         result.put("status", row > 0 ? "success" : "error");
-        return result; // ✅ JSON 변환되어 응답
+        return result;
     }
+    
+    @PostMapping("/personal/addressCon")
+    public String addressCon(@RequestParam("addressCon") String addressCon,
+                             @RequestParam("selectedAddressChk") int addressNo,
+                             Principal principal) {
+
+        String userId = principal.getName();
+        int row = 0;
+
+        if ("changeMainAddress".equals(addressCon)) {
+            row = addressService.changeMainAddress(userId, addressNo);
+        } else if ("deleteAddress".equals(addressCon)) {
+            row = addressService.deleteAddress(userId, addressNo);
+        }
+
+        if (row > 0) {
+            return "redirect:/personal/addressPopup?user_id=" + userId;
+        } else {
+            return "redirect:/personal/addressPopup?user_id=" + userId + "&error=true";
+        }
+    }
+
 }
