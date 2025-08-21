@@ -12,6 +12,22 @@
             padding: 10px;
             margin-bottom: 10px;
             position: relative;
+            width: 700px;
+            max-width: 90%;
+            background: #f9f9f9;
+        }
+
+        .remove-btn {
+            margin-top: 5px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .remove-btn:hover {
+            background-color: #c0392b;
         }
     </style>
 </head>
@@ -61,44 +77,62 @@
 
 <!-- 스크립트 -->
 <script>
-    $(function () {
-        const loginUserName = $('#loginUserDiv').data('user');
+	$(function () {
+	    const loginUserName = $('#loginUserDiv').data('user');
+	
+	    // 상품 추가 버튼 클릭 시
+	    $('#addProductBtn').on('click', function () {
+	        const lastGroup = $('#product-container .product-group').last();
+	        const productName = lastGroup.find('input[name$=".productName"]').val().trim();
+	        const option = lastGroup.find('input[name$=".productOption"]').val().trim();
+	        const quantity = lastGroup.find('input[name$=".productQuantity"]').val().trim();
+	
+	        if (!productName || !option || !quantity) {
+	            alert("상품명, 옵션, 수량을 모두 입력해주세요.");
+	            return;
+	        }
+	
+	        const index = $('#product-container .product-group').length;
+	
+	        const newGroupHtml = `
+	            <div class="product-group">
+	                <div>상품명: <input type="text" name="productRequestList[\${index}].productName" required></div>
+	                <div>옵션: <input type="text" name="productRequestList[\${index}].productOption" required></div>
+	                <div>수량: <input type="number" name="productRequestList[\${index}].productQuantity" min="1" required></div>
+	                <input type="hidden" name="productRequestList[\${index}].createUser" value="${loginUserName}" />
+	                <button type="button" class="remove-btn">삭제</button>
+	            </div>
+	        `.replace(/\$\{index\}/g, index);
+	
+	        $('#product-container').append(newGroupHtml);
+	    });
+	
+	    // 삭제 버튼 클릭 시 해당 상품 그룹 삭제
+	    $(document).on('click', '.remove-btn', function () {
+	        $(this).closest('.product-group').remove();
+	        reindexInputs();
+	    });
+	
+	    // 삭제 후 인덱스 재정렬 함수
+	    function reindexInputs() {
+		    $('#product-container .product-group').each(function (idx) {
+		        $(this).find('input[type="text"]').eq(0).attr('name', 'productRequestList[' + idx + '].productName');
+		        $(this).find('input[type="text"]').eq(1).attr('name', 'productRequestList[' + idx + '].productOption');
+		        $(this).find('input[type="number"]').attr('name', 'productRequestList[' + idx + '].productQuantity');
+		        $(this).find('input[type="hidden"]').attr('name', 'productRequestList[' + idx + '].createUser');
+		    });
+		}
 
-        $('#addProductBtn').on('click', function () {
-            const lastGroup = $('#product-container .product-group').last();
-            const productName = lastGroup.find('input[name$=".productName"]').val().trim();
-            const option = lastGroup.find('input[name$=".productOption"]').val().trim();
-            const quantity = lastGroup.find('input[name$=".productQuantity"]').val().trim();
-
-            if (!productName || !option || !quantity) {
-                alert("상품명, 옵션, 수량을 모두 입력해주세요.");
-                return;
-            }
-
-            const index = $('#product-container .product-group').length;
-
-            const newGroupHtml = `
-                <div class="product-group">
-                    <div>상품명: <input type="text" name="productRequestList[\${index}].productName" required></div>
-                    <div>옵션: <input type="text" name="productRequestList[\${index}].productOption" required></div>
-                    <div>수량: <input type="number" name="productRequestList[\${index}].productQuantity" min="1" required></div>
-                    <input type="hidden" name="productRequestList[\${index}].createUser" value="${loginUserName}" />
-                </div>
-            `.replace(/\$\{index\}/g, index)
-            .replace(/\$\{loginUserName\}/g, loginUserName);
-
-            $('#product-container').append(newGroupHtml);
-        });
-        
-        // 배송지 선택 안 했을 때 제출 방지
-        $('form').on('submit', function (e) {
-            const isAddressSelected = $('input[name="addressNo"]:checked').length > 0;
-            if (!isAddressSelected) {
-                alert("배송지를 선택해주세요.");
-                e.preventDefault();
-            }
-        });
-    });
+	
+	    // 배송지 선택 안 했을 때 제출 방지
+	    $('form').on('submit', function (e) {
+	        const isAddressSelected = $('input[name="addressNo"]:checked').length > 0;
+	        if (!isAddressSelected) {
+	            alert("배송지를 선택해주세요.");
+	            e.preventDefault();
+	        }
+	    });
+	});
 </script>
 
 <jsp:include page="/WEB-INF/common/footer/footer.jsp" />

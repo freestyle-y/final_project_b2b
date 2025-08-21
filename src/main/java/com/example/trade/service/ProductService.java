@@ -178,6 +178,11 @@ public class ProductService {
         }
 	}
 	
+	// 상품 요청 리스트 조회
+	public List<ProductRequest> selectProductRequestList() {
+		return productMapper.productRequestList();
+	}
+	
 	// 카테고리 추가
 	public Category insertCategory(Category category) {
 		String parentId = category.getParentCategory();

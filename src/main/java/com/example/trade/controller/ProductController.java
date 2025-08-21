@@ -1,9 +1,13 @@
 package com.example.trade.controller;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -165,8 +169,43 @@ public class ProductController {
 	    }
 	    
 	    productService.insertProductRequest(productRequestList);
-	    return "redirect:/biz/mainPage";
+	    return "redirect:/biz/productRequestList";
 	}
+	
+	// 상품 요청 리스트 조회 페이지
+	@GetMapping("/biz/productRequestList")
+	public String productRequestList(Model model) {
+		List<ProductRequest> productRequestList = productService.selectProductRequestList();
+		//log.info(productRequestList.toString());
+		
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	    for (ProductRequest req : productRequestList) {
+	        if (req.getCreateDate() != null) {
+	            req.setFormattedCreateDate(req.getCreateDate().format(formatter));
+	        }
+	    }
+	    
+		Map<Integer, List<ProductRequest>> groupedRequests = 
+			    productRequestList.stream()
+			        .collect(Collectors.groupingBy(ProductRequest::getProductRequestNo));
+
+		// Map을 내림차순 정렬된 LinkedHashMap으로 변경
+		Map<Integer, List<ProductRequest>> sortedGroupedRequests = 
+		    groupedRequests.entrySet().stream()
+		        .sorted(Map.Entry.<Integer, List<ProductRequest>>comparingByKey(Comparator.reverseOrder()))
+		        .collect(Collectors.toMap(
+		            Map.Entry::getKey,
+		            Map.Entry::getValue,
+		            (e1, e2) -> e1,
+		            LinkedHashMap::new
+		        ));
+
+		model.addAttribute("groupedRequests", sortedGroupedRequests);
+
+		    
+		return "biz/productRequestList";
+	}
+	
 	
 	// 기업 메인 페이지
 	@GetMapping("/biz/mainPage")

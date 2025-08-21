@@ -68,6 +68,9 @@ public interface ProductMapper {
 	// 상품 요청 입력
 	int insertProductRequest(ProductRequest pr);
 	
+	// 상품 요청 리스트 조회
+	List<ProductRequest> productRequestList();
+	
 	// 대분류 최대 ID 조회 
 	String selectMaxMajorCategoryId();
 	// 중분류, 소분류 최대 ID 조회
