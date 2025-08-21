@@ -19,4 +19,8 @@ public interface OrderMapper {
 	List<Order> getOrderListByUserId(String userId);
 	List<Order> selectOrderDetailByOrderNo(int orderNo);
 	int getReward(String userId);
+	int updateDeliveryRequest(@Param("orderNo") String orderNo
+							 ,@Param("deliveryRequest") String deliveryRequest);
+	void insertUsedPoint(@Param("orderNo") String orderNo
+						,@Param("rewardUse") int rewardUse);
 }

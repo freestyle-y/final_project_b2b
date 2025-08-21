@@ -90,8 +90,12 @@ public class OrderController {
         String orderNo = (String) request.get("orderNo");
         String name = (String) request.get("name");
         int totalPrice = Integer.parseInt(request.get("totalPrice").toString()); // ✅ 수정 완료
-
+        int rewardUse = Integer.parseInt(request.get("usePoint").toString());
         System.out.println("카카오페이 요청 들어옴: " + request);
+        
+        if (rewardUse > 0) {
+            orderService.insertUsedPoint(orderNo, rewardUse);
+        }
         
         return kakaoPayService.payReady(orderNo, name, totalPrice);
     }
@@ -118,7 +122,7 @@ public class OrderController {
 
         // 5. 실 결제 금액 계산 (상품 금액 - 사용 적립금)
         // int finalPrice = order.getTotalPrice() - orderService.getReward(userId);
-
+        
         System.out.println("[컨트롤러] usedPoint = " + response.getUsedPoint());
         System.out.println("[컨트롤러] realPaidAmount = " + response.getRealPaidAmount());
         
