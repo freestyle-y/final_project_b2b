@@ -8,43 +8,98 @@
 <title>찜</title>
 
 <style>
-    .product-name a {
-        text-decoration: none;
-        color: black;
-    }
-
-    .disabled {
-        color: gray;
-        opacity: 0.5;
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f9f9f9;
+        color: #333;
+        margin: 0;
+        padding: 0;
     }
 
     .wishlist-container {
-        margin: 20px;
+        max-width: 800px;
+        margin: 40px auto;
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
     .wishlist-item {
         display: flex;
         align-items: center;
-        margin-bottom: 10px;
+        padding: 15px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .wishlist-item:last-child {
+        border-bottom: none;
     }
 
     .wishlist-item input[type="checkbox"] {
-        margin-right: 10px;
+        margin-right: 15px;
+        transform: scale(1.2);
+        cursor: pointer;
+    }
+
+    .product-name {
+        flex: 1;
+        font-size: 16px;
+    }
+
+    .product-name a {
+        text-decoration: none;
+        color: #333;
+        transition: color 0.2s;
+    }
+
+    .product-name a:hover {
+        color: #007bff;
+    }
+
+    .disabled {
+        color: #999;
+        opacity: 0.6;
+        pointer-events: none;
     }
 
     #deleteBtn {
-        margin-top: 20px;
+        margin-top: 25px;
+        padding: 10px 20px;
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 15px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    #deleteBtn:hover {
+        background-color: #c82333;
+    }
+
+    #checkAll {
+        margin-bottom: 20px;
+        transform: scale(1.2);
+        cursor: pointer;
+    }
+
+    .wishlist-container div:first-child {
+        font-size: 16px;
+        font-weight: bold;
     }
 </style>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     // 전체 선택/해제 기능
     function toggleAll(source) {
         const checkboxes = document.querySelectorAll('.item-checkbox');
         checkboxes.forEach(cb => cb.checked = source.checked);
     }
-
-    // 선택된 상품 삭제
+    
+ 	// 선택된 상품 삭제
     function deleteSelected() {
         const selected = document.querySelectorAll('.item-checkbox:checked');
         if (selected.length === 0) {
@@ -55,9 +110,35 @@
         const confirmed = confirm("선택한 상품을 찜 목록에서 삭제하시겠습니까?");
         if (!confirmed) return;
 
-        const form = document.getElementById("deleteForm");
-        form.submit();
+        // 배열로 변환 후 value 수집
+        const productNoList = Array.from(selected).map(function(el) {
+            return el.value;
+        });
+
+        const loginUserName = '${loginUserName}';
+
+        $.ajax({
+            url: '${pageContext.request.contextPath}/personal/wish/delete',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                productNoList: productNoList,
+                userId: loginUserName
+            }),
+            success: function (response) {
+                if (response.success) {
+                    alert("삭제가 완료되었습니다.");
+                    location.reload();
+                } else {
+                    alert("삭제 실패: " + (response.message || "알 수 없는 오류"));
+                }
+            },
+            error: function () {
+                alert("요청 중 오류가 발생했습니다.");
+            }
+        });
     }
+
 
     // 개별 체크박스 변경 시 전체 선택 상태 업데이트
     document.addEventListener('DOMContentLoaded', () => {
@@ -88,16 +169,38 @@
         </div>
 
         <c:forEach var="item" items="${wishList}">
-            <div class="wishlist-item">
-                <input type="checkbox" class="item-checkbox" name="productNoList" value="${item.productNo}">
-                <div class="product-name">
-                    <a href=""
-                       class="${item.productUseStatus == 'N' ? 'disabled' : ''}">
-                       ${item.productName}
-                    </a>
-                </div>
-            </div>
-        </c:forEach>
+		    <div class="wishlist-item">
+		        <input type="checkbox" class="item-checkbox" name="productNoList" value="${item.productNo}">
+		        <div class="product-name">
+		
+		            <%-- 판매중인 경우: 링크 표시 --%>
+		            <c:choose>
+		                <c:when test="${item.productStatus == 'GS002'}">
+		                    <a href="/personal/productOne?productNo=${item.productNo}"
+		                       style="color: black; text-decoration: none;">
+		                        ${item.productName}
+		                    </a>
+		                </c:when>
+		
+		                <%-- 나머지 상태: 링크 없음, 상태 표시 --%>
+		                <c:otherwise>
+		                    <span style="color: gray;">
+		                        ${item.productName}
+		                        (
+		                        <c:choose>
+		                            <c:when test="${item.productStatus == 'GS001'}">판매대기</c:when>
+		                            <c:when test="${item.productStatus == 'GS003'}">일시품절</c:when>
+		                            <c:when test="${item.productStatus == 'GS004'}">영구중단</c:when>
+		                            <c:otherwise>알수없음</c:otherwise>
+		                        </c:choose>
+		                        )
+		                    </span>
+		                </c:otherwise>
+		            </c:choose>
+		
+		        </div>
+		    </div>
+		</c:forEach>
 
         <!-- 삭제 버튼 -->
         <button type="button" id="deleteBtn" onclick="deleteSelected()">삭제</button>

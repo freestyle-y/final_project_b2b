@@ -40,11 +40,42 @@ public class ProductService {
 		return productMapper.wishList(id);
 	}
 	
+	// 개인 찜 삭제
+	public void deleteWishItems(String loginUserName, List<Integer> productNoList) {
+	    productMapper.deleteByUserNameAndProductNos(loginUserName, productNoList);
+	}
+	
 	// 개인 장바구니 목록 보기
 	public List<Map<String, Object>> selectShoppingCart(String id) {
 		return productMapper.shoppingCart(id);
 	}
 	
+	// 개인 장바구니 수량 변경
+	public boolean updateCartItemQuantity(int shoppingCartNo, int quantity) {
+	    // 1. cartId로 productNo와 optionNo 모두 조회
+	    Map<String, Integer> itemInfo = productMapper.findProductAndOptionByCartId(shoppingCartNo);
+	    if (itemInfo == null) return false;
+
+	    Integer productNo = itemInfo.get("productNo");
+	    Integer optionNo = itemInfo.get("optionNo");
+	    
+	    // 2. 재고 수량 조회
+	    Integer inventoryQuantity = productMapper.findInventoryQuantity(productNo, optionNo);
+	    //log.info(inventoryQuantity+ "");
+	    if (inventoryQuantity == null || quantity > inventoryQuantity) {
+	        return false; // ❌ 재고 부족 또는 잘못된 요청
+	    }
+	    
+		int updatedRows = productMapper.updateCartQuantity(shoppingCartNo, quantity);
+        return updatedRows > 0;
+	}
+	
+	// 개인 장바구니 상품 삭제
+	public boolean deleteCartItem(int cartId) {
+	    int result = productMapper.deleteCartItemById(cartId);
+	    return result > 0;
+	}
+
 	// 카테고리(대분류) 목록
 	public List<Category> selectMajorCategory() {
 		return productMapper.majorCategory();

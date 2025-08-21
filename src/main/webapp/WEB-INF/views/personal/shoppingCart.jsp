@@ -76,8 +76,7 @@
         text-align: right;
         width: 140px;
         position: relative;
-        white-space: nowrap; /* 이거 추가했어 */
-        /* flex 대신 inline-block 쓰는게 좋아서 바꿨음 */
+        white-space: nowrap;
         display: inline-block;
         vertical-align: middle;
     }
@@ -159,7 +158,7 @@
         border-radius: 4px;
     }
 </style>
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     function updateTotal() {
         let total = 0;
@@ -199,8 +198,11 @@
         updateTotal();
     }
 
-    function changeQuantity(cartId, delta) {
-        const qtyInput = document.getElementById(`qty-${cartId}`);
+    // 변경: 버튼에서 this(버튼 자신)도 같이 넘겨받음
+    function changeQuantity(delta, button) {
+	    const itemDiv = button.closest('.cart-item');
+	    const cartId = itemDiv.getAttribute('data-cart-id');
+	    const qtyInput = itemDiv.querySelector('input[type="text"]');
         let currentQty = parseInt(qtyInput.value);
         let newQty = currentQty + delta;
 
@@ -209,14 +211,83 @@
             return;
         }
 
-        // 서버에 AJAX 요청 보내기 (수량 업데이트)
-        // 수량 늘릴때 재고에 있는 수량 확인해서 늘리기
+        const maxQty = parseInt(itemDiv.getAttribute("data-inventory-quantity"));
+
+        if (newQty > maxQty) {
+        	alert('재고는 최대 ' + maxQty + '개까지 가능합니다.');
+            return;
+        }
+
+     	// 수량 변경 반영
+        qtyInput.value = newQty;
+
+        // ✅ [추가] 가격도 실시간 반영
+        const pricePerUnit = parseInt(itemDiv.querySelector('.item-price').getAttribute('data-price-per-unit'));
+        const newTotalPrice = pricePerUnit * newQty;
+        itemDiv.querySelector('.price-value').innerText = newTotalPrice.toLocaleString('ko-KR') + "원";
+
+        // ✅ [추가] 적립금도 업데이트
+        itemDiv.querySelector('.reward-point').innerText = "적립금: " + Math.floor(newTotalPrice * 0.01).toLocaleString('ko-KR') + "원";
+
+        // 기존 총액 업데이트
+        updateTotal();
+
+
+        console.log('cartId:', cartId);
+        console.log('newQty:' , newQty);
+        $.ajax({
+            url: '/shoppingCart/updateQuantity',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                cartId: cartId,
+                quantity: newQty
+            }),
+            success: function(data) {
+                if (!data.success) {
+                    alert('수량 변경에 실패했습니다. 다시 시도해주세요.');
+                    // 실패 시 원래 수량으로 복원
+                    qtyInput.value = currentQty;
+                    updateTotal();
+                }
+                // 성공 시 추가 처리 가능
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX 오류:', error);
+                alert('서버와 통신 중 오류가 발생했습니다.');
+                // 오류 시 원래 수량으로 복원
+                qtyInput.value = currentQty;
+                updateTotal();
+            }
+        });
+
     }
 
     function deleteItem(cartId, button) {
         if (!confirm("정말 삭제하시겠습니까?")) return;
 
-        // AJAX로 장바구니삭제
+        $.ajax({
+            url: '/shoppingCart/deleteItem',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ cartId: cartId }),
+            success: function(response) {
+                if (response.success) {
+                    // 장바구니 항목 DOM에서 삭제
+                    const itemDiv = button.closest('.cart-item');
+                    itemDiv.remove();
+
+                    updateTotal(); // 총액 재계산
+                } else {
+                    alert('삭제에 실패했습니다: ' + response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('삭제 AJAX 오류:', error);
+                alert('서버와 통신 중 오류가 발생했습니다.');
+            }
+        });
+        
     }
 </script>
 </head>
@@ -237,7 +308,9 @@
         <c:set var="itemTotal" value="${item.quantity * item.price}" />
         <c:set var="isSoldOut" value="${item.productStatus == '일시품절'}" />
 
-        <div class="cart-item ${isSoldOut ? 'sold-out' : ''}" data-cart-id="${item.cartId}">
+        <div class="cart-item ${isSoldOut ? 'sold-out' : ''}"
+        	data-cart-id="${item.cartId}"
+     		data-inventory-quantity="${item.inventoryQuantity}">
             <input type="checkbox" class="item-checkbox"
                    data-total-price="${itemTotal}"
                    onchange="updateTotal()"
@@ -250,9 +323,10 @@
 
             <div class="item-quantity">
                 수량:
-                <button type="button" class="qty-btn" onclick="changeQuantity('${item.cartId}', -1)" <c:if test="${isSoldOut}">disabled</c:if> >-</button>
-                <input type="text" id="qty-${item.cartId}" value="${item.quantity}" readonly />
-                <button type="button" class="qty-btn" onclick="changeQuantity('${item.cartId}', 1)" <c:if test="${isSoldOut}">disabled</c:if> >+</button>
+                <button type="button" class="qty-btn" onclick="changeQuantity(-1, this)" <c:if test="${isSoldOut}">disabled</c:if> >-</button>
+				<input type="text" value="${item.quantity}" readonly />
+				<button type="button" class="qty-btn" onclick="changeQuantity(1, this)" <c:if test="${isSoldOut}">disabled</c:if> >+</button>
+
                 <button type="button" class="delete-btn" onclick="deleteItem('${item.cartId}', this)">삭제</button>
             </div>
 

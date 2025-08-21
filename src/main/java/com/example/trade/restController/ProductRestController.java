@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,56 @@ public class ProductRestController {
 	public ProductRestController(ProductService productService) {
 		this.productService = productService;
 	}
+	
+	// 찜 삭제
+	@PostMapping("/personal/wish/delete")
+	public Map<String, Object> deleteWishItems(@RequestBody Map<String, Object> request) {
+		List<Integer> productNoList = (List<Integer>) request.get("productNoList");
+	    String userId = (String) request.get("userId");
+	    
+	    log.info(userId);
+	    log.info(productNoList.toString());
+	    
+	    productService.deleteWishItems(userId, productNoList);
+	    return Map.of("success", true);
+	}
+	
+	// 장바구니 수량 변경
+	@PostMapping("/shoppingCart/updateQuantity")
+	public ResponseEntity<Map<String, Object>> updateQuantity(@RequestBody Map<String, Object> payload) {
+	    Integer cartId = Integer.parseInt(payload.get("cartId").toString());
+	    Integer quantity = Integer.parseInt(payload.get("quantity").toString());
+
+	    //log.info(cartId+ "");
+	    //log.info(quantity + "");
+	    boolean updated = productService.updateCartItemQuantity(cartId, quantity);
+
+	    Map<String, Object> response = new HashMap<>();
+	    if (updated) {
+	        response.put("success", true);
+	    } else {
+	        response.put("success", false);
+	        response.put("message", "수량 변경 실패");
+	    }
+	    return ResponseEntity.ok(response);
+    }
+	
+	// 장바구니 상품 삭제
+	@PostMapping("/shoppingCart/deleteItem")
+	public ResponseEntity<Map<String, Object>> deleteItem(@RequestBody Map<String, Object> payload) {
+	    Integer cartId = Integer.parseInt(payload.get("cartId").toString());
+	    
+	    boolean deleted = productService.deleteCartItem(cartId);
+
+	    Map<String, Object> response = new HashMap<>();
+	    response.put("success", deleted);
+
+	    if (!deleted) {
+	        response.put("message", "삭제 실패");
+	    }
+
+	    return ResponseEntity.ok(response);
+	}	
 	
 	// 카테고리별 반환
 	@GetMapping("/product/byCategory")

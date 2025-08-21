@@ -150,11 +150,11 @@
     <h2>${product.productName}</h2>
     
     <!-- 찜 하트 -->
-    <span id="wishHeart" class="heart ${product.isWish == 1 ? 'red' : ''}" 
-          data-product-no="${product.productNo}" 
-          title="찜하기/취소하기">
-        ♥
-    </span>
+    <span id="wishHeart" class="heart ${product.isWish ? 'red' : ''}" 
+	      data-product-no="${product.productNo}" 
+	      title="찜하기/취소하기">
+	    ♥
+	</span>
 
     <!-- 옵션 선택 -->
     <div>

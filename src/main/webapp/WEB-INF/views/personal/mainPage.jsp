@@ -90,7 +90,7 @@
 	<div class="product-container" id="product-container">
 	    <c:forEach var="item" items="${productList}">
 	        <div class="product-card" data-name="${item.productName}">
-	            <div class="product-name"><a href="">${item.productName}</a></div>
+	            <div class="product-name"><a href="/personal/productOne?productNo=${item.productNo}">${item.productName}</a></div>
 	            <div class="wish-count">❤️ ${item.wishCount}</div>
 	        </div>
 	    </c:forEach>
