@@ -46,8 +46,8 @@
                 <tr>
                     <th>간편 비밀번호</th>
                     <td>
-                        <input type="text" id="simplePw" readonly value="<c:out value='${user.simplePassword != null ? "설정됨" : "미설정"}'/>">
-                        <button type="button" id="simplePwBtn" onclick="openChangeModal('simplePw')">
+                        <input type="password" id="simplePassword" readonly value="<c:out value='${user.simplePassword != null ? "설정됨" : "미설정"}'/>">
+                        <button type="button" id="simplePasswordBtn" onclick="openChangeModal('simplePassword')">
                             <c:out value="${user.simplePassword != null ? '변경' : '생성'}"/>
                         </button>
                     </td>

@@ -31,7 +31,7 @@ public interface UserMapper {
 	User getInfoById(String id);
 	
 	// 회원 정보 업데이트
-    void updateUser(User user);
+    void updateUser(User updates);
     
     // 비밀번호 변경
     void updatePw(String id, String password);
@@ -39,4 +39,8 @@ public interface UserMapper {
     // 아이디찾기
 	String findIdBySn(String name, String sn);
 	String findIdByBusinessNo(String companyName, String businessNo);
+	
+	// 비밀번호 찾기
+	User findPersonalUser(@Param("id") String id, @Param("name") String name, @Param("sn") String sn);
+	User findCompanyUser(@Param("id") String id, @Param("companyName") String companyName, @Param("businessNo") String businessNo);
 }

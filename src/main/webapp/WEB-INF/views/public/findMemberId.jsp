@@ -61,7 +61,7 @@ function showAlert(message) {
 
     <!-- 아이디 출력 -->
     <c:if test="${not empty foundId}">
-        <p>회원님의 아이디는: <strong>${foundId}</strong></p>
+        <p>회원님의 아이디는: <strong>${foundId}</strong> 입니다.</p>
         <a href="/public/findMemberPw" class="small-link">비밀번호 찾기</a>
     </c:if>
 
