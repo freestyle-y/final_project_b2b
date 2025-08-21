@@ -117,31 +117,30 @@
 	
 	<!-- 주문 상세(수령인/주소/상품/결제정보) 조회 -->
 	<select id="selectOrderDetailByOrderNo" resultType="com.example.trade.dto.Order">
-	    SELECT 
-	        o.order_no AS orderNo,
-	        o.sub_order_no AS subOrderNo,
-	        o.user_id AS userId,
-	
-	        u.name AS name,
-	        u.phone AS phone,
-	        
-	        a.address AS address,
-	        a.detail_address AS detailAddress,
-	        a.postal AS postal,
-	
-	        o.product_name AS productName,
-	        o.option_name AS optionName,
-	        o.option_name_value AS optionNameValue,
-	        o.order_quantity AS orderQuantity,
-	        o.price AS price,
-	        (o.price * o.order_quantity) AS totalPrice,
-	
-	        o.order_time AS orderTime,
-	        o.delivery_request AS deliveryRequest,
-	        o.payment_type AS paymentType
-	    FROM `order` o
-	    INNER JOIN address a ON o.address_no = a.address_no
-	    INNER JOIN `user` u ON a.user_id = u.id
+		SELECT 
+		    o.order_no AS orderNo,
+		    o.sub_order_no AS subOrderNo,
+		    o.user_id AS userId,
+		    u.name AS name,
+		    u.phone AS phone,
+		    a.address AS address,
+		    a.detail_address AS detailAddress,
+		    a.postal AS postal,
+		    o.product_name AS productName,
+		    o.option_name AS optionName,
+		    o.option_name_value AS optionNameValue,
+		    o.order_quantity AS orderQuantity,
+		    o.price AS price,
+		    (SELECT SUM(price * order_quantity) 
+		     FROM `order` 
+		     WHERE order_no = o.order_no) AS totalPrice,
+		    o.order_time AS orderTime,
+		    o.delivery_request AS deliveryRequest,
+		    o.payment_type AS paymentType
+		
+		FROM `order` o
+		INNER JOIN address a ON o.address_no = a.address_no
+		INNER JOIN `user` u ON a.user_id = u.id
 	    WHERE o.order_no = #{orderNo}
 	</select>
 	
