@@ -35,6 +35,8 @@ public class ProductRestController {
 		    @RequestParam(value = "middleId", required = false) String middleId) {
 		Map<String, Object> result = new HashMap<>();
 
+		//log.info(parentId);
+		//log.info(middleId);
 		if (parentId != null) {
 	        // 대분류 ID가 있으면, 중분류 리스트 조회
 	        List<Category> middleCategoryList = productService.selectMiddleCategory(parentId);
