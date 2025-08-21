@@ -127,9 +127,13 @@ h1, h3 {
 
 		<p>사용 가능 적립금: <input type="text" id="availablePoints" value="${reward}" readonly> 원</p>
 
-		<p>사용할 적립금: <input type="number" id="usePoints" name="usePoints" min="0" step="100">	원
-			<button type="button" class="btn" onclick="useAllPoints()">전액 사용</button>
+		<p>사용할 적립금: <input type="number" id="usePoints" name="usePoints" min="0" step="100"> 원
+			<button type="button" id="useAllBtn" class="btn" onclick="useAllPoints()">전액 사용</button>
 			<div id="pointError" class="error"></div>
+				<div class="note" id="pointRuleNote">
+					적립금 사용 규칙: ① 주문금액 10,000원 이상 ② 최소 1,000원 ③ 100원 단위 ④ 주문금액의 10% 이내
+				</div>
+			<div class="note" id="pointMaxNote"></div>
 		</p>
 
 		<p><strong>최종 결제 금액: <span id="finalAmount">${total}</span> 원</strong></p>
@@ -145,68 +149,103 @@ h1, h3 {
 		<h3>배송 요청사항</h3>
 		<textarea name="deliveryRequest" rows="3" cols="60"	placeholder="예: 부재 시 경비실에 맡겨주세요.">${orderList[0].deliveryRequest}</textarea>
 		<br><br> 
-		<input type="button" class="btn" value="결제하기" onclick="showPasswordPopup()"> 
+		<input type="button" id="payBtn" class="btn" value="결제하기" onclick="showPasswordPopup()"> 
 		<input type="reset"	class="btn" value="취소">
 	</form>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
-	function updateFinalAmount() {
-	    const total = parseInt(document.getElementById("totalAmount").innerText);
-	    const available = parseInt(document.getElementById("availablePoints").value);
-	    let usePoint = parseInt(document.getElementById("usePoints").value || 0);
-	
-	    if (usePoint < 0) usePoint = 0;
-	    if (usePoint > available) usePoint = available;
-	
-	    document.getElementById("usePoints").value = usePoint;
-	    document.getElementById("finalAmount").innerText = total - usePoint;
-	    
-	    // 적립금 사용 기준 검증
-	    validatePointUsage(usePoint, total);
+	function getPointRuleError(usePoint, total, available) {
+		// 포인트 사용 안 하면 통과
+		if (!usePoint || usePoint <= 0) return "";
+		
+		if (total < 10000) return "물품 가격이 10,000원 이상이어야 적립금을 사용할 수 있습니다.";
+		if (usePoint < 1000) return "적립금은 최소 1,000원 이상 사용 가능합니다.";
+		if (usePoint % 100 !== 0) return "적립금은 100원 단위로만 사용 가능합니다.";
+		
+		const maxPoint = Math.floor((total * 0.1) / 100) * 100; // 구매가 10%를 100원 단위로 내림
+		if (usePoint > maxPoint) return `적립금은 구매 가격의 10%(${maxPoint}원)를 넘을 수 없습니다.`;
+		if (usePoint > available) return "보유 적립금을 초과했습니다.";
+		
+		return "";
 	}
-	
-	function validatePointUsage(usePoint, total) {
-	    const errorDiv = document.getElementById("pointError");
-	    let errorMessage = "";
-	    
-	    // 1. 최소 1,000원 이상 사용
-	    if (usePoint > 0 && usePoint < 1000) {
-	        errorMessage = "적립금은 최소 1,000원 이상 사용 가능합니다.";
-	    }
-	    
-	    // 2. 100원 단위
-	    if (usePoint % 100 !== 0) {
-	        errorMessage = "적립금은 100원 단위로 사용 가능합니다.";
-	    }
-	    
-	    // 3. 물품 가격 10,000원 이상
-	    if (total < 10000) {
-	        errorMessage = "물품 가격이 10,000원 이상이어야 적립금을 사용할 수 있습니다.";
-	    }
-	    
-	    // 4. 구매 가격의 10% 초과 방지
-	    const maxPoint = Math.floor(total * 0.1);
-	    if (usePoint > maxPoint) {
-	        errorMessage = `적립금은 구매 가격의 10%(${maxPoint}원)를 넘을 수 없습니다.`;
-	    }
-	    
-	    errorDiv.textContent = errorMessage;
-	    return errorMessage === "";
+	function updateFinalAmount() {
+		const total     = parseInt(document.getElementById("totalAmount").innerText);
+		const available = parseInt(document.getElementById("availablePoints").value);
+		let usePoint    = parseInt(document.getElementById("usePoints").value || 0);
+		
+		if (usePoint < 0) usePoint = 0;
+		
+		const err = getPointRuleError(usePoint, total, available);
+		const errorDiv = document.getElementById("pointError");
+		const payBtn = document.getElementById("payBtn");
+
+		if (err) {
+			errorDiv.textContent = err;
+			document.getElementById("finalAmount").innerText = total; // 차감 금지
+			payBtn.disabled = true;                                   // 버튼 막기
+		} else {
+			errorDiv.textContent = "";
+			// 클램핑(보유 한도 내, 10% 내, 100원 단위 유지)
+			const maxPoint = Math.floor((total * 0.1) / 100) * 100;
+			usePoint = Math.min(usePoint, available, maxPoint);
+			usePoint = Math.floor(usePoint / 100) * 100;
+			document.getElementById("usePoints").value = usePoint;
+			document.getElementById("finalAmount").innerText = total - usePoint;
+			
+			payBtn.disabled = false;
+		}
+		refreshPointControls();
+	}
+
+	function refreshPointControls() {
+		const total = parseInt(document.getElementById("totalAmount").innerText);
+		const available  = parseInt(document.getElementById("availablePoints").value);
+		const useInput   = document.getElementById("usePoints");
+		const allBtn     = document.getElementById("useAllBtn");
+		const maxNote    = document.getElementById("pointMaxNote");
+		
+		const maxByRate  = Math.floor((total * 0.1) / 100) * 100; // 10%를 100원 단위 내림
+		const maxUsable  = Math.min(available, maxByRate);
+		const eligible   = (total >= 10000) && (maxUsable >= 1000);
+		
+		maxNote.textContent = `최대 사용 가능: ${maxUsable}원 (보유 ${available}원, 한도 ${maxByRate}원)`;
+		
+		useInput.disabled = !eligible;
+		allBtn.disabled   = !eligible;
+		if (!eligible) {
+			useInput.value = 0;
+			document.getElementById("finalAmount").innerText = total;
+		}
 	}
 	
 	function useAllPoints() {
-	    const total = parseInt(document.getElementById("totalAmount").innerText);
-	    const available = parseInt(document.getElementById("availablePoints").value);
-	    
-	    // 상품 총 가격의 10%와 보유 적립금 중 작은 값
-	    const maxPoint = Math.min(available, Math.floor(total * 0.1));
-	    
-	    // 100원 단위로 내림
-	    const usePoint = Math.floor(maxPoint / 100) * 100;
-	    
-	    document.getElementById("usePoints").value = usePoint;
-	    updateFinalAmount();
+		const total     = parseInt(document.getElementById("totalAmount").innerText);
+		const available = parseInt(document.getElementById("availablePoints").value);
+		
+		// ❌ 1만원 미만이면 사용 불가: 0으로 고정하고 종료
+		if (total < 10000) {
+			document.getElementById("usePoints").value = 0;
+			updateFinalAmount();
+			return;
+		}
+		
+		// 총액의 10% 한도(100원 단위 내림)와 보유 포인트 중 작은 값
+		const tenPctCap = Math.floor((total * 0.1) / 100) * 100;
+		let usePoint    = Math.min(available, tenPctCap);
+		
+		// 100원 단위로 내림
+		usePoint = Math.floor(usePoint / 100) * 100;
+		
+		// ❌ 최소 1,000원 미만이면 사용하지 않음
+		if (usePoint < 1000) {
+			document.getElementById("usePoints").value = 0;
+			updateFinalAmount();
+			return;
+		}
+		
+		document.getElementById("usePoints").value = usePoint;
+		updateFinalAmount();
 	}
 	
 	window.onload = function() {
@@ -221,6 +260,8 @@ h1, h3 {
 	    });
 	
 	    document.getElementById("usePoints").addEventListener("input", updateFinalAmount);
+	    updateFinalAmount();
+	    refreshPointControls(); 
 	};
 	
 	function openAddressPopup() {
@@ -231,84 +272,179 @@ h1, h3 {
 	function showPasswordPopup() {
 		const method = document.querySelector("input[name='paymentMethod']:checked").value;
 		if (method === "bank") {
-			// 계좌이체는 간편 비밀번호 입력 없이 바로 주문목록으로 이동
-			alert("계좌이체가 선택되었습니다. 기업 계좌로 입금 후 주문이 완료됩니다.");
-			location.href = "/personal/orderList";
-			return;
-		}
-		
-		// 카드결제나 카카오페이일 때만 간편 비밀번호 확인
-		const userId = "${orderList[0].userId}";
-		
-		// 간편결제 비밀번호 등록 유무
-		$.ajax({
-			 type: "GET"		
-			,url: "/personal/payment/simplePassword"
-			,data: {userId}
-			,dataType: "json"
-			,success: function(hasPassword) {
-				window.open("/personal/passwordPopup?userId="+userId, "passwordPopup", "width=400, height=300");
-			},
-			error: function() {
-				alert("비밀번호 등록 유무 확인 중 오류 발생");
+			  updateDeliveryRequest()
+			    .done(function () {
+			      const total     = parseInt(document.getElementById("totalAmount").innerText);
+			      const available = parseInt(document.getElementById("availablePoints").value);
+			      let usePoint    = parseInt(document.getElementById("usePoints").value || 0);
+
+			      const err = getPointRuleError(usePoint, total, available);
+			      if (err) { alert(err); return; }
+
+			      // 규칙에 맞춰 클램프
+			      const maxPoint = Math.floor((total * 0.1) / 100) * 100;
+			      usePoint = Math.max(0, Math.min(usePoint, available, maxPoint));
+			      usePoint = Math.floor(usePoint / 100) * 100;
+
+			      $.ajax({
+			        type: "POST",
+			        url: "/personal/payment/saveMethodAndPoints",
+			        contentType: "application/json",
+			        data: JSON.stringify({
+			          orderNo: "${orderList[0].orderNo}",
+			          paymentMethod: "bank",
+			          usePoint: usePoint
+			        }),
+			        success: function () {
+			          alert("계좌이체가 선택되었습니다. 기업 계좌로 입금 후 주문이 완료됩니다.");
+			          location.href = "/personal/orderList";
+			        },
+			        error: function () { alert("결제수단/적립금 저장 실패"); }
+			      });
+			    })
+			    .fail(function () { alert("배송요청 저장 실패"); });
+			  return;
 			}
-		})
+
+		
+		// ✅ 포인트 규칙 검사
+		const total     = parseInt(document.getElementById("totalAmount").innerText);
+		const available = parseInt(document.getElementById("availablePoints").value);
+		const usePoint  = parseInt(document.getElementById("usePoints").value || 0);
+		const err = getPointRuleError(usePoint, total, available);
+		if (err) { alert(err); return; }
+		
+		const userId = "${orderList[0].userId}";
+			$.ajax({
+				type: "GET"
+				,url: "/personal/payment/simplePassword"
+				,data: { userId }
+				,dataType: "json"
+				,success: function(hasPassword) {
+					window.open("/personal/passwordPopup?userId=" + userId, "passwordPopup", "width=400, height=300");
+				},
+			error: function() { alert("비밀번호 등록 유무 확인 중 오류 발생"); }
+			});
+	}
+	
+	function updateDeliveryRequest() {
+		const orderNo = "${orderList[0].orderNo}";
+		const deliveryRequest = document.querySelector("textarea[name='deliveryRequest']").value.trim();
+		
+		return $.ajax({
+			type: "POST"
+			,url: "/personal/payment/deliveryRequest"
+			,data: JSON.stringify({ orderNo: orderNo, deliveryRequest: deliveryRequest })
+			,contentType: "application/json"
+		});
 	}
 	
 	// 팝업에서 호출할 결제 완료 함수
-	function completePayment() {
-		const method = document.querySelector("input[name='paymentMethod']:checked").value;
-		const total = parseInt(document.getElementById("totalAmount").innerText);
-		const available = parseInt(document.getElementById("availablePoints").value);
-		let usePoint = parseInt(document.getElementById("usePoints").value || 0);
-		
-		if (usePoint < 0) usePoint = 0;
-		if (usePoint > available) usePoint = available;
-		const finalAmount = Math.max(0, total - usePoint);
+function completePayment() {
+  updateDeliveryRequest()
+    .done(function () {
+      const method    = document.querySelector("input[name='paymentMethod']:checked").value;
+      const total     = parseInt(document.getElementById("totalAmount").innerText);
+      const available = parseInt(document.getElementById("availablePoints").value);
+      let usePoint    = parseInt(document.getElementById("usePoints").value || 0);
 
-		const data = {
-			orderNo: "${orderList[0].orderNo}",
-			name: "${orderList[0].productName}",
-			totalPrice: finalAmount,
-			usePoint: usePoint
-		};
+      // 1) 규칙 검사
+      const err = getPointRuleError(usePoint, total, available);
+      if (err) { alert(err); return; }
 
-		let endpoint = "";
-		if (method === "card") {
-			// 카드결제는 간단하게 주문목록으로 이동 (API 연동 없음)
-			alert("카드결제가 완료되었습니다.");
-			location.href = "/personal/orderList";
-			return;
-		} else if (method === "kakaopay") {
-			endpoint = "/personal/payment/ready";
-		}
+      // 2) 클램프(보유/10%/100원 단위)
+      const maxPoint = Math.floor((total * 0.1) / 100) * 100;
+      usePoint = Math.max(0, Math.min(usePoint, available, maxPoint));
+      usePoint = Math.floor(usePoint / 100) * 100;
 
-		// 카카오페이만 AJAX 처리
-		$.ajax({
-			type: "POST",
-			url: endpoint,
-			data: JSON.stringify(data),
-			contentType: "application/json",
-			success: function(response) {
-				if (response.next_redirect_pc_url) {
-					const win = window.open(response.next_redirect_pc_url, "kakaoPayPopup", "width=500,height=700");
-					const timer = setInterval(function() {
-						if (win.closed) {
-							clearInterval(timer);
-							location.href = "/personal/orderList";
-						}
-					}, 1000);
-				} else {
-					alert("카카오페이 결제 요청 실패");
-				}
-			},
-			error: function(xhr, status, error) {
-				console.error("카카오페이 요청 오류:", xhr.responseText);
-				alert("카카오페이 결제 중 오류 발생");
-			}
-		});
-	}
+      // 3) 결제 데이터
+      const data = {
+        orderNo: "${orderList[0].orderNo}",
+        name: "${orderList[0].productName}",
+        totalPrice: Math.max(0, total - usePoint),
+        usePoint: usePoint,
+        userId: "${orderList[0].userId}",
+        paymentMethod: method
+      };
 
+      // 카드결제: 저장만 하고 끝
+      if (method === "card") {
+        $.ajax({
+          type: "POST",
+          url: "/personal/payment/saveMethodAndPoints",
+          contentType: "application/json",
+          data: JSON.stringify({
+            orderNo: data.orderNo,
+            paymentMethod: "card",
+            usePoint: data.usePoint
+          }),
+          success: function () {
+            alert("카드결제가 완료되었습니다.");
+            location.href = "/personal/orderList";
+          },
+          error: function () { alert("결제수단/적립금 저장 실패"); }
+        });
+        return;
+      }
+
+      // 카카오페이: 먼저 저장 → 저장 성공 시 ready 호출
+      if (method === "kakaopay") {
+        $.ajax({
+          type: "POST",
+          url: "/personal/payment/saveMethodAndPoints",
+          contentType: "application/json",
+          data: JSON.stringify({
+            orderNo: data.orderNo,
+            paymentMethod: "kakaopay",
+            usePoint: data.usePoint
+          }),
+          success: function () {
+            $.ajax({
+              type: "POST",
+              url: "/personal/payment/ready",
+              contentType: "application/json",
+              data: JSON.stringify({
+                orderNo: data.orderNo,
+                name: data.name,
+                totalPrice: data.totalPrice
+              }),
+              success: function(response) {
+                if (response.next_redirect_pc_url) {
+                  const win = window.open(
+                    response.next_redirect_pc_url,
+                    "kakaoPayPopup",
+                    "width=500,height=700"
+                  );
+                  const timer = setInterval(function () {
+                    if (win.closed) { clearInterval(timer); location.href = "/personal/orderList"; }
+                  }, 1000);
+                } else {
+                  alert("카카오페이 결제 요청 실패");
+                }
+              },
+              error: function(xhr) {
+                alert(
+                  (xhr.responseJSON && xhr.responseJSON.message)
+                  ? xhr.responseJSON.message
+                  : "카카오페이 결제 중 오류 발생"
+                );
+              }
+            });
+          },
+          error: function () {
+            alert("결제수단/적립금 저장 실패");
+          }
+        });
+        return;
+      }
+
+      // (참고) 계좌이체는 showPasswordPopup() 쪽에서 이미 저장 후 안내 처리됨
+    })
+    .fail(function () {
+      alert("배송요청 저장 실패");
+    });
+}
+	
 	function addCard() {
 		const formData = {
 			userId: "${orderList[0].userId}",
@@ -319,13 +455,13 @@ h1, h3 {
 			cardPassword: document.querySelector("input[name='cardPassword']").value,
 			isDefault: document.querySelector("input[name='isDefault']").checked ? "Y" : "N"
 		};
-
+	
 		$.ajax({
 			type: "POST",
-			url: "/personal/payment/addCard",
-			data: JSON.stringify(formData),
-			contentType: "application/json",
-			success: function(response) {
+			url: "/personal/payment/addCard"
+			,data: JSON.stringify(formData)
+			,contentType: "application/json"
+			,success: function() {
 				alert("카드가 등록되었습니다.");
 				location.reload();
 			},
@@ -334,7 +470,7 @@ h1, h3 {
 				alert("카드 등록 중 오류가 발생했습니다.");
 			}
 		});
-	}
+	 }
 </script>
 </body>
 <jsp:include page="/WEB-INF/common/footer/footer.jsp" />

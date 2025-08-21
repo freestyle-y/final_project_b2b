@@ -92,7 +92,7 @@ public class OrderController {
         int totalPrice = Integer.parseInt(request.get("totalPrice").toString()); // ✅ 수정 완료
 
         System.out.println("카카오페이 요청 들어옴: " + request);
-        
+
         return kakaoPayService.payReady(orderNo, name, totalPrice);
     }
 
@@ -118,7 +118,7 @@ public class OrderController {
 
         // 5. 실 결제 금액 계산 (상품 금액 - 사용 적립금)
         // int finalPrice = order.getTotalPrice() - orderService.getReward(userId);
-
+        
         System.out.println("[컨트롤러] usedPoint = " + response.getUsedPoint());
         System.out.println("[컨트롤러] realPaidAmount = " + response.getRealPaidAmount());
         
@@ -166,4 +166,21 @@ public class OrderController {
         model.addAttribute("orderDetailList", orderDetailList);
         return "personal/orderOne";
     }
+    
+    @PostMapping("/personal/payment/saveMethodAndPoints")
+    @ResponseBody
+    public void saveMethodAndPoints(@RequestBody Map<String, Object> req) {
+        String orderNo = (String) req.get("orderNo");
+        String paymentMethod = (String) req.get("paymentMethod");
+        int usePoint = req.get("usePoint") == null ? 0 : Integer.parseInt(req.get("usePoint").toString());
+
+        String methodKor = switch (paymentMethod) {
+            case "kakaopay" -> "카카오페이";
+            case "bank"     -> "계좌이체";
+            case "card"     -> "카드결제";
+            default         -> "기타";
+        };
+        orderService.saveMethodAndPoints(orderNo, methodKor, usePoint);
+    }
+
 }

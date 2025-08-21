@@ -112,4 +112,25 @@
 		FROM user
 		WHERE company_name = #{companyName} AND business_no = #{businessNo}
 	</select>
+	
+	<!-- 비밀번호 찾기 -->
+	<select id="findPersonalUser" resultType="com.example.trade.dto.User">
+    SELECT id, email 
+    FROM user 
+    WHERE customer_category = 'CC003'
+      AND id = #{id}
+      AND name = #{name}
+      AND sn = #{sn}
+	</select>
+	
+	<select id="findCompanyUser" resultType="com.example.trade.dto.User">
+    SELECT id, email 
+    FROM user 
+    WHERE customer_category = 'CC002'
+      AND id = #{id}
+      AND company_name = #{companyName}
+      AND business_no = #{businessNo}
+	</select>
+	
+	
 </mapper>

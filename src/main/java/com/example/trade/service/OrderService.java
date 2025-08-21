@@ -3,6 +3,7 @@ package com.example.trade.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.trade.dto.Order;
 import com.example.trade.mapper.OrderMapper;
@@ -48,4 +49,16 @@ public class OrderService {
 
 		return orderMapper.getReward(userId);
 	}
+
+
+    @Transactional
+    public void updateDeliveryRequest(String orderNo, String deliveryRequest) {
+        int rows = orderMapper.updateDeliveryRequest(orderNo, deliveryRequest);
+    }
+
+    @Transactional
+    public void saveMethodAndPoints(String orderNo, String methodKor, int usePoint) {
+        orderMapper.savePaymentMethod(orderNo, methodKor);
+        if (usePoint > 0) orderMapper.insertUsedPoint(orderNo, usePoint);
+    }
 }
