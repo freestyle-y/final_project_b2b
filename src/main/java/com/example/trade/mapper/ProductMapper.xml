@@ -37,6 +37,7 @@
 		) w ON p.product_no = w.product_no
 		WHERE 
 		    p.use_status = 'Y'
+		AND (p.product_status = 'GS002' OR p.product_status = 'GS003')
 		GROUP BY 
 		    p.product_no
 		ORDER BY 
@@ -150,7 +151,7 @@
 		LEFT JOIN category_path cp 
 			ON p.category_id = cp.category_id
 		WHERE p.use_status = 'Y'
-			AND p.product_status = 'GS002' OR p.product_status = 'GS003'
+			AND (p.product_status = 'GS002' OR p.product_status = 'GS003')
 		AND (#{parentId} IS NULL OR category_id_lv1 = #{parentId})
 		AND (#{middleId} IS NULL OR category_id_lv2 = #{middleId})
 		GROUP BY product_no
