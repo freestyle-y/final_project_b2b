@@ -20,9 +20,21 @@ public interface ProductMapper {
 	List<Map<String, Object>> productListByWish();
 	// 개인 찜 목록 보기
 	List<Map<String, Object>> wishList(String id);
+	// 개인 찜 삭제
+	int deleteByUserNameAndProductNos(@Param("userName") String userName,
+            @Param("productNoList") List<Integer> productNoList);
 	// 개인 장바구니 목록 보기
 	List<Map<String, Object>> shoppingCart(String id);
 	
+	// 장바구니 아이디로 상품id, 옵션id 찾기
+	Map<String, Integer> findProductAndOptionByCartId(int cartId);
+	// 재고 조회
+	Integer findInventoryQuantity(int productNo, int optionNo);
+	// 개인 장바구니 수량 변경
+	int updateCartQuantity(int shoppingCartNo, int quantity);
+	// 개인 장바구니 상품 삭제
+	int deleteCartItemById(int cartId);
+
 	// 카테고리(대분류) 목록
 	List<Category> majorCategory();
 	// 카테고리(중분류) 목록

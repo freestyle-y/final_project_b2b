@@ -110,8 +110,10 @@ public class ProductController {
 
 	    commonInfo.put("productNo", first.get("productNo"));
 	    commonInfo.put("productName", first.get("productName"));
-	    commonInfo.put("isWish", first.get("isWish"));
-
+	    
+	    String wishUseStatus = (String) first.get("wishUseStatus");
+	    commonInfo.put("isWish", "Y".equalsIgnoreCase(wishUseStatus));
+	    
 	    // 옵션 리스트 생성
 	    List<Map<String, Object>> optionList = new ArrayList<>();
 	    for (Map<String, Object> item : productOne) {

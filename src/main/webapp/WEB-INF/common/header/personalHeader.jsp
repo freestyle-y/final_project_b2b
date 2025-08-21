@@ -4,12 +4,12 @@
   <div style="max-width:1200px; margin:0 auto; padding:8px 12px; display:flex; align-items:flex-end; justify-content:space-between;">
 <!-- 좌측: 로고 + 텍스트 로고 -->
 <div style="display:flex; align-items:center; gap:5px; flex:1.5;">
-  <a href="/public/mainPage" style="display:flex; align-items:center;">
+  <a href="/personal/mainPage" style="display:flex; align-items:center;">
     <img src="${pageContext.request.contextPath}/images/freestyle.jpg"
          alt="FreeStyle 이미지 로고"
          style="height:130px; width:auto; object-fit:contain;">
   </a>
-  <a href="/public/mainPage" style="display:flex; align-items:center; flex:1;">
+  <a href="/personal/mainPage" style="display:flex; align-items:center; flex:1;">
     <img src="${pageContext.request.contextPath}/images/freestyle_text.png"
          alt="FreeStyle 텍스트 로고"
          style="height:110px; width:100%; object-fit:contain; padding-right:10px;">
