@@ -9,6 +9,7 @@
          alt="FreeStyle 이미지 로고"
          style="height:130px; width:auto; object-fit:contain;">
   </a>
+  <p>(public header)</p>
   <a href="/public/mainPage" style="display:flex; align-items:center; flex:1;">
     <img src="${pageContext.request.contextPath}/images/freestyle_text.png"
          alt="FreeStyle 텍스트 로고"
