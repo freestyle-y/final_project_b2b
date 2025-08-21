@@ -3,6 +3,7 @@ package com.example.trade.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,15 +15,20 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.trade.dto.User;
 import com.example.trade.mapper.UserMapper;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class MemberService {
 	
 	private final UserMapper userMapper;
 	private final BCryptPasswordEncoder passwordEncoder;
+	private final MailService mailService;
 
-	public MemberService(UserMapper userMapper, BCryptPasswordEncoder passwordEncoder){
+	public MemberService(UserMapper userMapper, BCryptPasswordEncoder passwordEncoder, MailService mailService){
 		this.userMapper = userMapper;
 		this.passwordEncoder = passwordEncoder;
+		this.mailService = mailService;
 	}
 	
 	public boolean isIdAvailable(String id){
@@ -61,7 +67,7 @@ public class MemberService {
 	    user.setCreateUser(user.getId());
 	    user.setCustomerStatus("CS001");
 	    user.setFailedLoginCount(0);
-	    if(user.getTotalReward() == 0) user.setTotalReward(0);
+	    user.setTotalReward(0);
 
 	    // 기업회원 컬럼 처리 (null 처리)
 	    if(!"CC002".equals(user.getCustomerCategory())){
@@ -119,22 +125,26 @@ public class MemberService {
         return userMapper.getInfoById(id);
     }
     
+    // 회원정보 변경
     @Transactional
-    public void updateUserInfo(String id, Map<String,Object> updates){
+    public void updateUserInfo(String id, User updateUser){
         User user = userMapper.getInfoById(id);
         if(user == null) throw new RuntimeException("회원 정보가 존재하지 않습니다.");
 
-        // 업데이트 가능한 필드만 처리
-        if(updates.containsKey("name")) user.setName((String)updates.get("name"));
-        if(updates.containsKey("phone")) user.setPhone((String)updates.get("phone"));
-        if(updates.containsKey("email")) user.setEmail((String)updates.get("email"));
-        if(updates.containsKey("postal")) user.setPostal((String)updates.get("postal"));
-        if(updates.containsKey("address")) user.setAddress((String)updates.get("address"));
-        if(updates.containsKey("detailAddress")) user.setDetailAddress((String)updates.get("detailAddress"));
-        if(updates.containsKey("simplePassword")) user.setSimplePassword((String)updates.get("simplePassword"));
-        if(updates.containsKey("companyName") && "CC002".equals(user.getCustomerCategory()))
-            user.setCompanyName((String)updates.get("companyName"));
+        // 업데이트 가능한 필드만 변경
+        if(updateUser.getName() != null) user.setName(updateUser.getName());
+        if(updateUser.getPhone() != null) user.setPhone(updateUser.getPhone());
+        if(updateUser.getEmail() != null) user.setEmail(updateUser.getEmail());
+        if(updateUser.getPostal() != null) user.setPostal(updateUser.getPostal());
+        if(updateUser.getAddress() != null) user.setAddress(updateUser.getAddress());
+        if(updateUser.getDetailAddress() != null) user.setDetailAddress(updateUser.getDetailAddress());
+        if(updateUser.getSimplePassword() != null) user.setSimplePassword(updateUser.getSimplePassword());
 
+        if(updateUser.getCompanyName() != null && "CC002".equals(user.getCustomerCategory())) {
+            user.setCompanyName(updateUser.getCompanyName());
+        }
+
+        // DB 업데이트
         userMapper.updateUser(user);
     }
     
@@ -145,12 +155,43 @@ public class MemberService {
     
     // 아이디 찾기(개인)
 	public String findPersonalId(String name, String sn) {
-		userMapper.findIdBySn(name, sn);
-		return null;
+		String id = userMapper.findIdBySn(name, sn);
+		log.info("findPersonalId() result = " + id);
+		return id;
 	}
 	// 아이디 찾기(기업)
 	public String findBizId(String companyName, String businessNo) {
-		userMapper.findIdByBusinessNo(companyName, businessNo);
-		return null;
+		String id = userMapper.findIdByBusinessNo(companyName, businessNo);
+		log.info("findBizId() result = " + id);
+		return id;
 	}
+	
+	// 비밀번호 찾기
+	@Transactional
+	public String findAndSendTempPw(Map<String,String> req){
+	    User user = null;
+
+	    if("CC003".equals(req.get("customerCategory"))){ // 개인회원
+	        user = userMapper.findPersonalUser(req.get("id"), req.get("name"), req.get("sn"));
+	    } else { // 기업회원
+	        user = userMapper.findCompanyUser(req.get("id"), req.get("companyName"), req.get("businessNo"));
+	    }
+
+	    if(user == null){
+	        throw new RuntimeException("입력한 정보와 일치하는 회원이 없습니다.");
+	    }
+
+	    // 임시 비밀번호 생성
+	    String tempPw = UUID.randomUUID().toString().substring(0,8);
+
+	    // DB 업데이트 (암호화)
+	    userMapper.updatePw(user.getId(), passwordEncoder.encode(tempPw));
+
+	    // 이메일 발송
+	    mailService.sendMail(user.getEmail(), "임시 비밀번호 안내",
+	            "안녕하세요, 요청하신 임시 비밀번호는 " + tempPw + " 입니다.");
+
+	    return "등록된 이메일로 임시 비밀번호를 발송했습니다.";
+	}
+
 }

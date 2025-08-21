@@ -1,5 +1,6 @@
 package com.example.trade.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,7 +10,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.trade.dto.User;
 import com.example.trade.service.MemberService;
@@ -31,6 +34,8 @@ public class MemberController {
     public String myPage(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String id = auth.getName();
+        log.info(id);
+        
         User user = memberService.getUserById(id);
         model.addAttribute("user", user);
         return "public/myPage";
@@ -50,7 +55,8 @@ public class MemberController {
 	
 	// 아이디 찾기
 	@GetMapping("/public/findMemberId")
-	public String findMemberId(Model model) {
+	public String findMemberId() {
+		
 		return "public/findMemberId";
 	}
 	
@@ -60,7 +66,7 @@ public class MemberController {
 	                           Model model) {
 
 	    String foundId = null;
-
+	    log.info("before if foundId" + foundId);
 	    if("PERSONAL".equals(memberType)) {
 	        String name = params.get("name");
 	        String sn  = params.get("sn");
@@ -70,11 +76,14 @@ public class MemberController {
 	        String businessNo  = params.get("businessNo");
 	        foundId = memberService.findBizId(companyName, businessNo);
 	    }
-
+	    
+	    log.info("before model foundId" + foundId);
 	    if(foundId != null) {
 	        model.addAttribute("foundId", foundId);
+	        log.info("foundId : "+foundId);
 	    } else {
 	        model.addAttribute("notFound", true);
+	        log.info("아이디 찾기 실패");
 	    }
 
 	    return "public/findMemberId"; // JSP 이름

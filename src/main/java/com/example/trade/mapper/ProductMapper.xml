@@ -325,6 +325,26 @@
 		FROM `option`
 	</select>
 	
+	<!-- 상품 요청 리스트 조회 -->
+	<select id="productRequestList" resultType="com.example.trade.dto.ProductRequest">
+		SELECT
+		    product_request_no AS productRequestNo,
+		    sub_product_request_no AS subProductRequestNO,
+		    address_no AS addressNo,
+		    product_name AS productName,
+		    product_option AS productOption,
+		    product_quantity AS productQuantity,
+		    requests,
+		    status,
+		    create_user AS createUser,
+		    create_date AS createDate
+		FROM
+		    product_request
+		ORDER BY
+		    product_request_no DESC,
+		    sub_product_request_no ASC;
+	</select>
+	
 	<!-- 상품 번호 찾기 -->
 	<select id="findProductNoByName" resultType="int">
 	    SELECT product_no
@@ -452,7 +472,6 @@
 	    WHERE user_id = #{userId}
 	      AND product_no = #{productNo}
 	</update>
-	
 	
 	<!-- 재고 수정 -->
 	<update id="updateInventoryQuantity">

@@ -1,5 +1,6 @@
 package com.example.trade.restController;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.trade.dto.User;
@@ -92,7 +94,7 @@ public class MemberRestController {
     
     // 회원 정보 업데이트
     @PutMapping("/updateUserInfo")
-    public ResponseEntity<String> updateUserInfo(@RequestBody Map<String, Object> updates) {
+    public ResponseEntity<String> updateUserInfo(@RequestBody User updates) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String id = auth.getName();
         try {
@@ -102,4 +104,20 @@ public class MemberRestController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    
+    // 비밀번호 찾기
+    @PostMapping("/findPw")
+    public Map<String,Object> findPw(@RequestBody Map<String, String> req) {
+		Map<String,Object> result = new HashMap<>();
+	    try {
+	        String message = memberService.findAndSendTempPw(req);
+	        result.put("success", true);
+	        result.put("message", message);
+	    } catch (RuntimeException e) {
+	        result.put("success", false);
+	        result.put("message", e.getMessage());
+	    }
+	    return result;
+    }
+	
 }

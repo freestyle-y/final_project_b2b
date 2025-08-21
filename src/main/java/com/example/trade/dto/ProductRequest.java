@@ -20,6 +20,7 @@ public class ProductRequest {
 	private String status;
 	private String createUser;
 	private LocalDateTime createDate;
+	private String formattedCreateDate;
 	private String updateUser;
 	private LocalDateTime updateDate;
 	private String useStatus;
