@@ -271,17 +271,41 @@ h1, h3 {
 	
 	function showPasswordPopup() {
 		const method = document.querySelector("input[name='paymentMethod']:checked").value;
-			if (method === "bank") {
-				updateDeliveryRequest()
-					.done(function () {
-						alert("계좌이체가 선택되었습니다. 기업 계좌로 입금 후 주문이 완료됩니다.");
-						location.href = "/personal/orderList";
-					})
-				.fail(function () {
-					alert("배송요청 저장 실패");
-				});
-				return;
+		if (method === "bank") {
+			  updateDeliveryRequest()
+			    .done(function () {
+			      const total     = parseInt(document.getElementById("totalAmount").innerText);
+			      const available = parseInt(document.getElementById("availablePoints").value);
+			      let usePoint    = parseInt(document.getElementById("usePoints").value || 0);
+
+			      const err = getPointRuleError(usePoint, total, available);
+			      if (err) { alert(err); return; }
+
+			      // 규칙에 맞춰 클램프
+			      const maxPoint = Math.floor((total * 0.1) / 100) * 100;
+			      usePoint = Math.max(0, Math.min(usePoint, available, maxPoint));
+			      usePoint = Math.floor(usePoint / 100) * 100;
+
+			      $.ajax({
+			        type: "POST",
+			        url: "/personal/payment/saveMethodAndPoints",
+			        contentType: "application/json",
+			        data: JSON.stringify({
+			          orderNo: "${orderList[0].orderNo}",
+			          paymentMethod: "bank",
+			          usePoint: usePoint
+			        }),
+			        success: function () {
+			          alert("계좌이체가 선택되었습니다. 기업 계좌로 입금 후 주문이 완료됩니다.");
+			          location.href = "/personal/orderList";
+			        },
+			        error: function () { alert("결제수단/적립금 저장 실패"); }
+			      });
+			    })
+			    .fail(function () { alert("배송요청 저장 실패"); });
+			  return;
 			}
+
 		
 		// ✅ 포인트 규칙 검사
 		const total     = parseInt(document.getElementById("totalAmount").innerText);
@@ -316,62 +340,110 @@ h1, h3 {
 	}
 	
 	// 팝업에서 호출할 결제 완료 함수
-	function completePayment() {
-		updateDeliveryRequest()
-			.done(function () {
-				const method   = document.querySelector("input[name='paymentMethod']:checked").value;
-				const total    = parseInt(document.getElementById("totalAmount").innerText);
-				const available= parseInt(document.getElementById("availablePoints").value);
-				let usePoint   = parseInt(document.getElementById("usePoints").value || 0);
-				
-				const err = getPointRuleError(usePoint, total, available);
-				if (err) { alert(err); return; }
-				
-				if (usePoint < 0) usePoint = 0;
-				if (usePoint > available) usePoint = available;
-				const maxPoint = Math.floor((total * 0.1) / 100) * 100;
-				usePoint = Math.min(usePoint, maxPoint);
-				usePoint = Math.floor(usePoint / 100) * 100;
-				
-				const finalAmount = Math.max(0, total - usePoint);
-				const data = {
-					orderNo: "${orderList[0].orderNo}",
-					name: "${orderList[0].productName}",
-					totalPrice: finalAmount,
-					usePoint: usePoint,
-					userId: "${orderList[0].userId}"
-				};
-	
-				if (method === "card") {
-					alert("카드결제가 완료되었습니다.");
-					location.href = "/personal/orderList";
-					return;
-				}
-							
-				$.ajax({
-					type: "POST"
-					,url: "/personal/payment/ready"
-					,data: JSON.stringify(data)
-					,contentType: "application/json"
-					,success: function(response) {
-						if (response.next_redirect_pc_url) {
-						const win = window.open(response.next_redirect_pc_url, "kakaoPayPopup", "width=500,height=700");
-						const timer = setInterval(function () {
-							if (win.closed) { clearInterval(timer); location.href = "/personal/orderList"; }
-						}, 1000);
-						} else {
-							alert("카카오페이 결제 요청 실패");
-						}
-					},
-					error: function(xhr) {
-						alert(xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : "카카오페이 결제 중 오류 발생");
-					}
-				});	
-			})
-		.fail(function () {
-		alert("배송요청 저장 실패");
-		});
-	}
+function completePayment() {
+  updateDeliveryRequest()
+    .done(function () {
+      const method    = document.querySelector("input[name='paymentMethod']:checked").value;
+      const total     = parseInt(document.getElementById("totalAmount").innerText);
+      const available = parseInt(document.getElementById("availablePoints").value);
+      let usePoint    = parseInt(document.getElementById("usePoints").value || 0);
+
+      // 1) 규칙 검사
+      const err = getPointRuleError(usePoint, total, available);
+      if (err) { alert(err); return; }
+
+      // 2) 클램프(보유/10%/100원 단위)
+      const maxPoint = Math.floor((total * 0.1) / 100) * 100;
+      usePoint = Math.max(0, Math.min(usePoint, available, maxPoint));
+      usePoint = Math.floor(usePoint / 100) * 100;
+
+      // 3) 결제 데이터
+      const data = {
+        orderNo: "${orderList[0].orderNo}",
+        name: "${orderList[0].productName}",
+        totalPrice: Math.max(0, total - usePoint),
+        usePoint: usePoint,
+        userId: "${orderList[0].userId}",
+        paymentMethod: method
+      };
+
+      // 카드결제: 저장만 하고 끝
+      if (method === "card") {
+        $.ajax({
+          type: "POST",
+          url: "/personal/payment/saveMethodAndPoints",
+          contentType: "application/json",
+          data: JSON.stringify({
+            orderNo: data.orderNo,
+            paymentMethod: "card",
+            usePoint: data.usePoint
+          }),
+          success: function () {
+            alert("카드결제가 완료되었습니다.");
+            location.href = "/personal/orderList";
+          },
+          error: function () { alert("결제수단/적립금 저장 실패"); }
+        });
+        return;
+      }
+
+      // 카카오페이: 먼저 저장 → 저장 성공 시 ready 호출
+      if (method === "kakaopay") {
+        $.ajax({
+          type: "POST",
+          url: "/personal/payment/saveMethodAndPoints",
+          contentType: "application/json",
+          data: JSON.stringify({
+            orderNo: data.orderNo,
+            paymentMethod: "kakaopay",
+            usePoint: data.usePoint
+          }),
+          success: function () {
+            $.ajax({
+              type: "POST",
+              url: "/personal/payment/ready",
+              contentType: "application/json",
+              data: JSON.stringify({
+                orderNo: data.orderNo,
+                name: data.name,
+                totalPrice: data.totalPrice
+              }),
+              success: function(response) {
+                if (response.next_redirect_pc_url) {
+                  const win = window.open(
+                    response.next_redirect_pc_url,
+                    "kakaoPayPopup",
+                    "width=500,height=700"
+                  );
+                  const timer = setInterval(function () {
+                    if (win.closed) { clearInterval(timer); location.href = "/personal/orderList"; }
+                  }, 1000);
+                } else {
+                  alert("카카오페이 결제 요청 실패");
+                }
+              },
+              error: function(xhr) {
+                alert(
+                  (xhr.responseJSON && xhr.responseJSON.message)
+                  ? xhr.responseJSON.message
+                  : "카카오페이 결제 중 오류 발생"
+                );
+              }
+            });
+          },
+          error: function () {
+            alert("결제수단/적립금 저장 실패");
+          }
+        });
+        return;
+      }
+
+      // (참고) 계좌이체는 showPasswordPopup() 쪽에서 이미 저장 후 안내 처리됨
+    })
+    .fail(function () {
+      alert("배송요청 저장 실패");
+    });
+}
 	
 	function addCard() {
 		const formData = {

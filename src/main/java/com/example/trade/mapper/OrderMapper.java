@@ -23,4 +23,6 @@ public interface OrderMapper {
 							 ,@Param("deliveryRequest") String deliveryRequest);
 	void insertUsedPoint(@Param("orderNo") String orderNo
 						,@Param("rewardUse") int rewardUse);
+	int savePaymentMethod(@Param("orderNo") String orderNo
+						 ,@Param("methodKor") String methodKor);
 }

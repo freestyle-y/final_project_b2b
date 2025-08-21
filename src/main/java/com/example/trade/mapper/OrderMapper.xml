@@ -52,8 +52,9 @@
 	<!-- 회원 적립금 가져오기 -->
 	<select id="getReward" resultType="int">
 		SELECT 
-		    SUM(o.order_reward + o.review_reward) - rh.reward_use AS reward
-		FROM `order` o INNER JOIN reward_history rh ON o.order_no = rh.order_no
+		    IFNULL(SUM(o.order_reward + o.review_reward), 0) - IFNULL(SUM(rh.reward_use), 0) AS reward
+		FROM `order` o
+		LEFT JOIN reward_history rh ON o.order_no = rh.order_no
 		WHERE order_status = 'OS003' AND user_id = #{userId}
 	</select>
 	
@@ -151,7 +152,7 @@
 		WHERE order_no = #{orderNo}
 	</update>
 	
-	<!-- 카카오톡 결제 시 사용 된 적립금 입력 -->
+	<!-- 결제 시 사용 된 적립금 입력 -->
 	<insert id="insertUsedPoint">
 		INSERT INTO reward_history(
 			order_no, reward_use
@@ -159,4 +160,12 @@
 			#{orderNo}, #{rewardUse}
 		)	
 	</insert>
+	
+	<!-- 결제 방식 입력 -->
+	<update id="savePaymentMethod">
+		UPDATE `order`
+			SET payment_type = #{methodKor}
+			,payment_time = NOW()
+		WHERE order_no = #{orderNo}
+	</update>
 </mapper>
