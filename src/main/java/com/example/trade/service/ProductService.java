@@ -1,5 +1,6 @@
 package com.example.trade.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,7 +52,7 @@ public class ProductService {
 	}
 	
 	// 개인 장바구니 수량 변경
-	public boolean updateCartItemQuantity(int shoppingCartNo, int quantity) {
+	public boolean updateCartItemQuantity(String userId, int shoppingCartNo, int quantity) {
 	    // 1. cartId로 productNo와 optionNo 모두 조회
 	    Map<String, Integer> itemInfo = productMapper.findProductAndOptionByCartId(shoppingCartNo);
 	    if (itemInfo == null) return false;
@@ -66,16 +67,54 @@ public class ProductService {
 	        return false; // ❌ 재고 부족 또는 잘못된 요청
 	    }
 	    
-		int updatedRows = productMapper.updateCartQuantity(shoppingCartNo, quantity);
+		int updatedRows = productMapper.updateCartQuantity(userId, shoppingCartNo, quantity);
         return updatedRows > 0;
 	}
 	
 	// 개인 장바구니 상품 삭제
-	public boolean deleteCartItem(int cartId) {
-	    int result = productMapper.deleteCartItemById(cartId);
+	public boolean deleteCartItem(String userId, int cartId) {
+	    int result = productMapper.deleteCartItemById(userId, cartId);
 	    return result > 0;
 	}
 
+	// 찜 토글
+	public boolean toggleWish(String userId, int productNo, boolean wish) {
+	    Map<String, Object> param = new HashMap<>();
+	    param.put("userId", userId);
+	    param.put("productNo", productNo);
+
+	    Integer exists = productMapper.checkWishExists(param); // 0 or 1
+
+	    if (exists == null || exists == 0) {
+	        // 찜이 아예 없으면 insert
+	        param.put("useStatus", wish ? "Y" : "N"); // 대부분 처음엔 Y
+	        return productMapper.insertWish(param) > 0;
+	    } else {
+	        // 찜이 이미 있으면 update
+	        param.put("useStatus", wish ? "Y" : "N");
+	        return productMapper.updateWishStatus(param) > 0;
+	    }
+	}
+	
+	// 장바구니 추가
+	public Map<String, Object> addCartItem(String userId, int productNo, int optionNo, int quantity) {
+	    Map<String, Object> result = new HashMap<>();
+
+	    int existing = productMapper.checkCart(userId, productNo, optionNo);
+
+	    if (existing > 0) {
+	        result.put("success", false);
+	        result.put("message", "이미 장바구니에 담긴 상품입니다.");
+	    } else {
+	        boolean inserted = productMapper.insertCart(userId, productNo, optionNo, quantity) > 0;
+	        result.put("success", inserted);
+	        result.put("message", inserted ? "장바구니에 담겼습니다!" : "장바구니 추가에 실패했습니다.");
+	    }
+
+	    return result;
+	}
+
+	
 	// 카테고리(대분류) 목록
 	public List<Category> selectMajorCategory() {
 		return productMapper.majorCategory();
@@ -219,7 +258,7 @@ public class ProductService {
 	}
 	
 	// 상품 사용여부 변경
-	public void changeProductStatus(int productNo, String useStatus) {
-		productMapper.updateProductStatus(productNo, useStatus);
+	public void changeProductStatus(String userId, int productNo, String useStatus) {
+		productMapper.updateProductStatus(userId, productNo, useStatus);
 	}
 }

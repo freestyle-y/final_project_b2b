@@ -152,6 +152,7 @@
     <!-- 찜 하트 -->
     <span id="wishHeart" class="heart ${product.isWish ? 'red' : ''}" 
 	      data-product-no="${product.productNo}" 
+	      data-is-wish="${product.isWish}"
 	      title="찜하기/취소하기">
 	    ♥
 	</span>
@@ -161,7 +162,7 @@
         <label for="optionSelect">옵션 선택:</label><br/>
         <select id="optionSelect" name="option">
             <c:forEach var="opt" items="${optionList}">
-                <option value="${opt.optionNameValue}" 
+                <option value="${opt.optionNo}" 
                         data-price="${opt.price}" 
                         data-quantity="${opt.quantity}">
                     ${opt.optionNameValue}
@@ -292,31 +293,30 @@
             }
         }
 
-        // 찜 하트 클릭 토글
-        wishHeart.on('click', function() {
+     	// 찜 하트 클릭 토글
+        wishHeart.on('click', function () {
             const heart = $(this);
             const productNo = heart.data('product-no');
-            const isCurrentlyWish = heart.hasClass('red');
+            const isCurrentlyWish = heart.hasClass('red'); // 현재 찜 상태 확인
 
-            // AJAX 요청으로 찜 등록/해제 요청
-            /* $.ajax({
+            $.ajax({
                 url: '/wish/toggle',
                 type: 'POST',
                 data: {
                     productNo: productNo,
-                    wish: isCurrentlyWish ? 0 : 1
+                    wish: !isCurrentlyWish // 반대 상태 전송
                 },
-                success: function(res) {
-                    if(res.success) {
-                        heart.toggleClass('red');
+                success: function (res) {
+                    if (res.success) {
+                        heart.toggleClass('red'); // UI 반영
                     } else {
                         alert('찜 처리에 실패했습니다.');
                     }
                 },
-                error: function() {
+                error: function () {
                     alert('서버 오류가 발생했습니다.');
                 }
-            }); */
+            });
         });
 
         // 옵션 변경 시 가격, 재고, 수량 업데이트
@@ -354,28 +354,39 @@
         addCartBtn.on('click', function() {
             const productNo = wishHeart.data('product-no');
             const selectedOption = optionSelect.find('option:selected').val();
+            const selectedOptionNo = optionSelect.find('option:selected').val(); // ← optionNo
             const quantity = Number(quantityInput.val());
 
             // AJAX로 구현
-            /* $.ajax({
-                url: '/cart/add',
+            $.ajax({
+                url: '/shoppingCart/add',
                 type: 'POST',
                 data: {
                     productNo: productNo,
-                    optionNameValue: selectedOption,
+                    optionNo: selectedOptionNo,
                     quantity: quantity
                 },
                 success: function(res) {
-                    if(res.success) {
-                        alert('장바구니에 담겼습니다!');
-                    } else {
-                        alert('장바구니 추가에 실패했습니다.');
+                    // 정상 담겼으면 장바구니로 이동할지 물어보기
+                    if (res.success) {
+                        if (confirm('장바구니에 담겼습니다. 장바구니로 이동하시겠습니까?')) {
+                            window.location.href = '/personal/shoppingCart'; // 장바구니 페이지 URL에 맞게 조정
+                        }
                     }
                 },
-                error: function() {
-                    alert('서버 오류가 발생했습니다.');
+                error: function(xhr) {
+                    if (xhr.status === 409) {  // 이미 장바구니에 담긴 상품인 경우
+                        let res = xhr.responseJSON;
+                        alert(res.message);
+                        if (confirm('장바구니로 이동하시겠습니까?')) {
+                            window.location.href = '/personal/shoppingCart';
+                        }
+                    } else {
+                        alert('서버 오류가 발생했습니다.');
+                    }
                 }
-            }); */
+            });
+
         });
 
     	function renderReviewPage(page, list) {

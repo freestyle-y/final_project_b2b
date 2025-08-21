@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
@@ -124,10 +123,11 @@ $(function () {
 	let currentPage = 1;
 	let filteredProducts = [];
 
+	// 초기 데이터 수집
 	$('#product-container .product-card').each(function() {
 	    allProducts.push({
 	        productName: $(this).data('name'),
-	        price: $(this).data('price'),
+	        price: parseInt($(this).data('price')),
 	        productStatus: $(this).data('status'),
 	        productNo: $(this).data('product-no')
 	    });
@@ -135,6 +135,7 @@ $(function () {
 
 	filteredProducts = allProducts.slice();
 
+	// 페이지 렌더링
 	function renderPage(page) {
 	    const container = $('#product-container');
 	    container.empty();
@@ -144,14 +145,15 @@ $(function () {
 
 	    pageItems.forEach(function(item) {
 	        const soldOutClass = item.productStatus === "일시품절" ? "sold-out" : "";
+	        const formattedPrice = item.price.toLocaleString('ko-KR');
+
 	        const productCardHtml =
 	            '<div class="product-card ' + soldOutClass + '">' +
 	                '<div class="product-name">' + item.productName + '</div>' +
-	                '<div class="product-price">' + item.price + ' 원</div>' +
+	                '<div class="product-price">' + formattedPrice + ' 원</div>' +
 	                '<div class="product-status">' + item.productStatus + '</div>' +
 	            '</div>';
 
-	        // 일시품절은 링크 없이, 아니면 링크 적용
 	        const productHtml = item.productStatus === "일시품절"
 	            ? productCardHtml
 	            : '<a href="/personal/productOne?productNo=' + item.productNo + '">' + productCardHtml + '</a>';
@@ -162,6 +164,7 @@ $(function () {
 	    renderPagination();
 	}
 
+	// 페이징 버튼 렌더링
 	function renderPagination() {
 	    const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 	    const pagination = $('#pagination');
@@ -178,6 +181,7 @@ $(function () {
 	    }
 	}
 
+	// 검색 기능
 	$('#search-input').on('input', function() {
 	    const keyword = $(this).val().toLowerCase();
 	    filteredProducts = allProducts.filter(item => item.productName.toLowerCase().includes(keyword));
@@ -185,6 +189,7 @@ $(function () {
 	    renderPage(currentPage);
 	});
 
+	// 대분류 클릭
 	$('.major-category-list > div').click(function () {
 		const categoryId = $(this).data('id');
 		
@@ -201,7 +206,7 @@ $(function () {
 				allProducts = data.productList.map(function(item){
 					return {
 						productName: item.productName,
-						price: item.price,
+						price: parseInt(item.price),
 						productStatus: item.productStatus,
 						productNo: item.productNo
 					};
@@ -210,6 +215,7 @@ $(function () {
 				currentPage = 1;
 				renderPage(currentPage);
 				
+				// 중분류 클릭
 				$('.middle-category-list > div').off('click').on('click', function() {
 					const middleCategoryId = $(this).data('id');
 					$.ajax({
@@ -219,7 +225,7 @@ $(function () {
 							allProducts = data.productList.map(function(item){
 								return {
 									productName: item.productName,
-									price: item.price,
+									price: parseInt(item.price),
 									productStatus: item.productStatus,
 									productNo: item.productNo
 								};

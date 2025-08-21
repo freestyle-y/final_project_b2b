@@ -121,6 +121,7 @@ public class ProductController {
 	        opt.put("optionNameValue", item.get("optionNameValue"));
 	        opt.put("price", item.get("price"));
 	        opt.put("quantity", item.get("quantity"));
+	        opt.put("optionNo", item.get("optionNo"));
 	        optionList.add(opt);
 	    }
 

@@ -21,6 +21,7 @@
 		SELECT
 			p.product_no AS productNo,
 		    p.product_name AS productName,
+		    p.product_status AS productStatus,
 		    IFNULL(w.wish_count, 0) AS wishCount
 		FROM 
 		    product p
@@ -102,6 +103,17 @@
 	    FROM shopping_cart
 	    WHERE shopping_cart_no = #{cartId}
 	</select>
+	
+	<!-- 장바구니에 이미 상품이 담겨있는지 확인 -->
+	<select id="checkCart" parameterType="map" resultType="int">
+	    SELECT COUNT(*) 
+	    FROM shopping_cart
+	    WHERE user_id = #{userId}
+	      AND product_no = #{productNo}
+	      AND option_no = #{optionNo}
+	      AND use_status = 'Y'
+	</select>
+	
 	
 	<!-- 재고 조회 -->
 	<select id="findInventoryQuantity" resultType="int">
@@ -225,12 +237,12 @@
 		GROUP BY product_no
 	</select>
 	
-	
 	<!-- 상품 상세 페이지 보기 -->
 	<select id="productOne" resultType="map">
 		SELECT
 		    p.product_no AS productNo,
 		    p.product_name AS productName,
+		    o.option_no AS optionNo,
 		    o.option_name_value AS optionNameValue,
 		    p.price,
 		    i.quantity,
@@ -245,6 +257,14 @@
 			ON w.product_no = p.product_no 
 			AND w.user_id = #{id}
 		WHERE p.product_no = #{productNo}
+	</select>
+	
+	<!-- 찜 테이블에 데이터 있는지 확인 -->
+	<select id="checkWishExists" resultType="int">
+	    SELECT COUNT(*)
+	    FROM wish_list
+	    WHERE user_id = #{userId}
+			AND product_no = #{productNo}
 	</select>
 	
 	<!-- 상품별 리뷰 보기 -->
@@ -343,6 +363,18 @@
 			ON i.address_no = a.address_no
 	</select>
 	
+	<!-- 찜 테이블에 찜 삽입 -->
+	<insert id="insertWish">
+		INSERT INTO wish_list (user_id, product_no, use_status, create_user)
+	    VALUES (#{userId}, #{productNo}, #{useStatus}, #{userId})
+	</insert>
+	
+	<!-- 장바구니에 담기 -->
+	<insert id="insertCart" parameterType="map">
+	    INSERT INTO shopping_cart (user_id, product_no, option_no, quantity, create_user, use_status)
+	    VALUES (#{userId}, #{productNo}, #{optionNo}, #{quantity}, #{userId}, 'Y')
+	</insert>
+	
 	<!-- 상품 요청 입력 -->
 	<insert id="insertProductRequest" parameterType="com.example.trade.dto.ProductRequest" useGeneratedKeys="true" keyProperty="productRequestNo" keyColumn="product_request_no">
 		INSERT INTO product_request(product_request_no, sub_product_request_no, address_no, product_name,
@@ -383,7 +415,9 @@
 	<!-- 찜 삭제 -->
 	<update id="deleteByUserNameAndProductNos">
 		UPDATE wish_list
-		SET use_status = 'N'
+		SET use_status = 'N',
+			update_user = 'personal001',
+			update_date = NOW()
 		WHERE user_id = #{userName}
 		AND product_no IN
 		    <foreach item="productNo" collection="productNoList" open="(" separator="," close=")">
@@ -394,16 +428,31 @@
 	<!-- 개인 장바구니 수량 변경 -->
 	<update id="updateCartQuantity" parameterType="map">
 	    UPDATE shopping_cart
-	    SET quantity = #{quantity}
+	    SET quantity = #{quantity},
+	    	update_user = #{userId},
+	    	update_date = NOW()
 	    WHERE shopping_cart_no = #{shoppingCartNo}
 	</update>
 
 	<!-- 개인 장바구니 상품 삭제 -->
-	<update id="deleteCartItemById">
+	<update id="deleteCartItemById" parameterType="map">
 		UPDATE shopping_cart
-		SET use_status = 'N'
+		SET use_status = 'N',
+			update_user = #{userId},
+	    	update_date = NOW()
 		WHERE shopping_cart_no = #{cartId}
 	</update>
+	
+	<!-- 찜 삭제/등록(하나만) -->
+	<update id="updateWishStatus" parameterType="map">
+		UPDATE wish_list
+	    SET use_status = #{useStatus},
+	        update_user = #{userId},
+	        update_date = NOW()
+	    WHERE user_id = #{userId}
+	      AND product_no = #{productNo}
+	</update>
+	
 	
 	<!-- 재고 수정 -->
 	<update id="updateInventoryQuantity">
@@ -415,7 +464,9 @@
 	<!-- 상품 사용여부 변경 -->
 	<update id="updateProductStatus">
 		UPDATE product
-	    SET use_status = #{useStatus}
+	    SET use_status = #{useStatus},
+	    	update_user = #{userId},
+	    	update_date = NOW()
 	    WHERE product_no = #{productNo}
 	</update>
 </mapper>

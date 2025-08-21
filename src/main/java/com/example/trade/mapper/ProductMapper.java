@@ -20,7 +20,7 @@ public interface ProductMapper {
 	List<Map<String, Object>> productListByWish();
 	// 개인 찜 목록 보기
 	List<Map<String, Object>> wishList(String id);
-	// 개인 찜 삭제
+	// 개인 찜 삭제(하나 ~ 여러개)
 	int deleteByUserNameAndProductNos(@Param("userName") String userName,
             @Param("productNoList") List<Integer> productNoList);
 	// 개인 장바구니 목록 보기
@@ -31,10 +31,22 @@ public interface ProductMapper {
 	// 재고 조회
 	Integer findInventoryQuantity(int productNo, int optionNo);
 	// 개인 장바구니 수량 변경
-	int updateCartQuantity(int shoppingCartNo, int quantity);
+	int updateCartQuantity(String userId, int shoppingCartNo, int quantity);
 	// 개인 장바구니 상품 삭제
-	int deleteCartItemById(int cartId);
+	int deleteCartItemById(String userId, int cartId);
 
+	// 찜 테이블에 데이터 있는지 확인
+	Integer checkWishExists(Map<String, Object> param);
+	// 찜 테이블에 찜 삽입
+	int insertWish(Map<String, Object> param);
+	// 찜 삭제/등록(하나만)
+	int updateWishStatus(Map<String, Object> param);
+	
+	// 장바구니에 이미 담겨있는지 확인
+    int checkCart(@Param("userId") String userId, @Param("productNo") int productNo, @Param("optionNo") int optionNo);
+    // 장바구니에 담기
+    int insertCart(@Param("userId") String userId, @Param("productNo") int productNo, @Param("optionNo") int optionNo, @Param("quantity") int quantity);
+    
 	// 카테고리(대분류) 목록
 	List<Category> majorCategory();
 	// 카테고리(중분류) 목록
@@ -81,5 +93,5 @@ public interface ProductMapper {
 	int updateInventoryQuantity(@Param("inventoryId") int inventoryId, @Param("quantity") int quantity);
 	
 	// 상품 사용여부 변경
-	int updateProductStatus(@Param("productNo") int productNo, @Param("useStatus") String useStatus);
+	int updateProductStatus(@Param("userId") String userId, @Param("productNo") int productNo, @Param("useStatus") String useStatus);
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,12 +46,13 @@ public class ProductRestController {
 	// 장바구니 수량 변경
 	@PostMapping("/shoppingCart/updateQuantity")
 	public ResponseEntity<Map<String, Object>> updateQuantity(@RequestBody Map<String, Object> payload) {
-	    Integer cartId = Integer.parseInt(payload.get("cartId").toString());
+		String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+		Integer cartId = Integer.parseInt(payload.get("cartId").toString());
 	    Integer quantity = Integer.parseInt(payload.get("quantity").toString());
 
 	    //log.info(cartId+ "");
 	    //log.info(quantity + "");
-	    boolean updated = productService.updateCartItemQuantity(cartId, quantity);
+	    boolean updated = productService.updateCartItemQuantity(userId, cartId, quantity);
 
 	    Map<String, Object> response = new HashMap<>();
 	    if (updated) {
@@ -65,9 +67,10 @@ public class ProductRestController {
 	// 장바구니 상품 삭제
 	@PostMapping("/shoppingCart/deleteItem")
 	public ResponseEntity<Map<String, Object>> deleteItem(@RequestBody Map<String, Object> payload) {
-	    Integer cartId = Integer.parseInt(payload.get("cartId").toString());
+		String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+		Integer cartId = Integer.parseInt(payload.get("cartId").toString());
 	    
-	    boolean deleted = productService.deleteCartItem(cartId);
+	    boolean deleted = productService.deleteCartItem(userId, cartId);
 
 	    Map<String, Object> response = new HashMap<>();
 	    response.put("success", deleted);
@@ -78,6 +81,46 @@ public class ProductRestController {
 
 	    return ResponseEntity.ok(response);
 	}	
+	
+	// 찜 토글
+	@PostMapping("/wish/toggle")
+	public Map<String, Object> toggleWish(@RequestParam int productNo,
+	                                      @RequestParam boolean wish) {
+	    String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+	    boolean success = productService.toggleWish(userId, productNo, wish);
+
+	    Map<String, Object> res = new HashMap<>();
+	    res.put("success", success);
+	    return res;
+	}
+
+	// 장바구니 상품 담기
+	@PostMapping("/shoppingCart/add")
+	public ResponseEntity<Map<String, Object>> addCart(
+	        @RequestParam int productNo,
+	        @RequestParam int optionNo,
+	        @RequestParam int quantity) {
+		
+		//log.info(productNo + "");
+		//log.info(optionNo + "");
+		//log.info(quantity + "");
+		
+	    String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+	    Map<String, Object> result = productService.addCartItem(userId, productNo, optionNo, quantity);
+
+	    boolean success = (boolean) result.get("success");
+	    String message = (String) result.get("message");
+
+	    if (success) {
+	        return ResponseEntity.ok(result);  // 200 OK
+	    } else if ("이미 장바구니에 담긴 상품입니다.".equals(message)) {
+	        return ResponseEntity.status(HttpStatus.CONFLICT).body(result);  // 409 Conflict
+	    } else {
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result); // 기타 실패
+	    }
+	}
+
+
 	
 	// 카테고리별 반환
 	@GetMapping("/product/byCategory")
@@ -144,7 +187,9 @@ public class ProductRestController {
 	@PostMapping("/changeStatus")
 	public String changeStatus(@RequestBody Product product) {
 		//log.info(product.toString());
-		productService.changeProductStatus(product.getProductNo(), product.getUseStatus());
+		String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+		
+		productService.changeProductStatus(userId, product.getProductNo(), product.getUseStatus());
 		return "success";
 	}
 }
