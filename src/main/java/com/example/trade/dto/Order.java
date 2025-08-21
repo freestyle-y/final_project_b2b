@@ -59,6 +59,7 @@ public class Order {
 	// address 테이블 조인
 	private String address;
 	private String detailAddress;
+	private String mainAddress;
 	// user 테이블 조인
 	private String name;
 	private String phone;

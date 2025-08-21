@@ -7,7 +7,7 @@
 <meta charset="UTF-8">
 <title>주문 목록</title>
 </head>
-<jsp:include page="/WEB-INF/common/header/publicHeader.jsp" />
+<jsp:include page="/WEB-INF/common/header/personalHeader.jsp" />
 <body>
 <jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
 

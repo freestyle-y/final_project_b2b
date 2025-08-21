@@ -35,7 +35,7 @@ h1, h3 {
 </style>
 </head>
 
-<jsp:include page="/WEB-INF/common/header/publicHeader.jsp" />
+<jsp:include page="/WEB-INF/common/header/personalHeader.jsp" />
 <body>
 <jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
 
@@ -134,9 +134,14 @@ h1, h3 {
 
     <!-- 배송지 -->
     <h3>배송지</h3>
-    <p>기본 배송지: 
-       <strong id="selectedAddress">${orderList[0].address} ${orderList[0].detailAddress}</strong>
+   	<c:forEach var="add" items="${mainAddress}">
+	<p>기본 배송지: 
+		<strong id="selectedAddress">${add.address} ${add.detailAddress }</strong>
     </p>
+	<p>별칭 : 
+		<strong id="selectedAddressNickname">${add.nickname}</strong>
+	</p>
+   	</c:forEach>
     <input type="hidden" id="selectedAddressId" name="addressNo" value="${orderList[0].addressNo}">
     <button type="button" class="btn" onclick="openAddressPopup()">배송지 변경</button>
 
@@ -186,7 +191,7 @@ window.onload = function() {
 
 function openAddressPopup() {
     let userId = "${orderList[0].userId}";
-    window.open("/personal/addressPopup?user_id=" + userId, "addressPopup", "width=600,height=500,scrollbars=yes");
+    window.open("/personal/addressPopup?user_id=" + userId, "addressPopup", "width=800,height=600,scrollbars=yes");
 }
 
 function handlePayment() {

@@ -44,6 +44,16 @@ public class QuotationController {
 		model.addAttribute("productRequestNo", productRequestNo);
 		return "admin/writeQuotation";
 	}
+
+	// 관리자 견적서 작성 팝업 페이지
+	@GetMapping("/admin/writeQuotationForm")
+	public String writeQuotationForm(@RequestParam("quotationNo") int quotationNo
+									 ,@RequestParam("subProductRequestNo") int subProductRequestNo
+									 ,Model model) {
+		List<Quotation> quotationList = quotationService.getQuotationOne(quotationNo, subProductRequestNo);
+		model.addAttribute("quotationList", quotationList);
+		return "admin/writeQuotationForm";
+	}
 	
     // 기업 회원 견적서 목록 페이지
     @GetMapping("/biz/quotationList")

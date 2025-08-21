@@ -61,40 +61,73 @@ function addAddress() {
     })
     .catch(err => alert("배송지 등록 실패: " + err));
 }
+function handleCheck(chk) {
+    document.querySelectorAll("input[name='selectedAddressChk']").forEach(cb => {
+        if (cb !== chk) cb.checked = false;
+    });
+}
 
+function applySelected() {
+    const selected = document.querySelector("input[name='selectedAddressChk']:checked");
+    if (!selected) {
+        alert("배송지를 선택하세요.");
+        return;
+    }
+
+    const addressId = selected.value;
+    const address = selected.getAttribute("data-address");
+    const detail = selected.getAttribute("data-detail");
+    const nickname = selected.getAttribute("data-nickname");
+    
+    opener.document.querySelector("strong#selectedAddress").innerText = address + " " + detail;
+    opener.document.getElementById("selectedAddressId").value = addressId;
+    opener.document.getElementById("selectedAddressNickname").innerText = nickname;
+    window.close();
+}
 </script>
 </head>
 <body>
 <h2>내 배송지 목록</h2>
+<form action="/personal/addressCon" method="post">
 <table>
     <tr>
+        <th>선택</th>
         <th>주소</th>
-        <th>상세</th>
+        <th>상세주소</th>
         <th>우편번호</th>
         <th>별칭</th>
-        <th>받는 분</th>
         <th>기본배송지</th>
-        <th>선택</th>
     </tr>
     <c:forEach var="address" items="${addressList}">
         <tr>
+            <td>
+                <input type="checkbox" name="selectedAddressChk" id="selectedAddressChk"
+                       value="${address.addressNo}"
+                       data-address="${address.address}"
+                       data-detail="${address.detailAddress}"
+                       data-nickname="${address.nickname}"
+                       onclick="handleCheck(this)">
+            </td>
             <td>${address.address}</td>
             <td>${address.detailAddress}</td>
             <td>${address.postal}</td>
             <td>${address.nickname}</td>
-            <td>${address.managerName}</td>
             <td>
                 <c:choose>
                     <c:when test="${address.mainAddress eq 'Y'}">✔</c:when>
                     <c:otherwise>-</c:otherwise>
                 </c:choose>
             </td>
-            <td>
-                <button class="btn" onclick="selectAddress('${address.addressNo}','${address.address}','${address.detailAddress}')">선택</button>
-            </td>
         </tr>
     </c:forEach>
 </table>
+<button class="btn" onclick="applySelected()">선택 적용</button>
+<button class="btn" type="submit" name="addressCon" value="changeMainAddress">기본 배송지 변경</button>
+<button class="btn" type="submit" name="addressCon" value="deleteAddress">삭제</button>
+</form>
+<c:if test="${param.error eq 'true'}">
+    <script>alert("요청 처리에 실패했습니다. 다시 시도해주세요.");</script>
+</c:if>
 
 <h3>새 배송지 추가</h3>
 <div class="form-row">
