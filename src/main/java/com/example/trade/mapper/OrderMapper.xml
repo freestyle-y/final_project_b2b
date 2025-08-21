@@ -136,7 +136,8 @@
 		     WHERE order_no = o.order_no) AS totalPrice,
 		    o.order_time AS orderTime,
 		    o.delivery_request AS deliveryRequest,
-		    o.payment_type AS paymentType
+		    o.payment_type AS paymentType,
+		    o.delivery_status AS deliveryStatus
 		
 		FROM `order` o
 		INNER JOIN address a ON o.address_no = a.address_no
