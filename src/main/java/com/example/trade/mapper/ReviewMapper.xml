@@ -5,6 +5,8 @@
 		UPDATE `order`
 		SET grade = #{grade}
 			,review = #{review}
+			,review_reward = FLOOR(price * 0.01)
+			,review_reward_status = 'Y'
 		WHERE order_no = #{orderNo}
 		AND sub_order_no = #{subOrderNo}
 	</update>

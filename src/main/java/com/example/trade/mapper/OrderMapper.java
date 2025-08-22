@@ -25,4 +25,5 @@ public interface OrderMapper {
 						,@Param("rewardUse") int rewardUse);
 	int savePaymentMethod(@Param("orderNo") String orderNo
 						 ,@Param("methodKor") String methodKor);
+	int updateOrderStatus(String orderNo, String subOrderNo);
 }

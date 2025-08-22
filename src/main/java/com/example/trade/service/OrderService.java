@@ -61,4 +61,9 @@ public class OrderService {
         orderMapper.savePaymentMethod(orderNo, methodKor);
         if (usePoint > 0) orderMapper.insertUsedPoint(orderNo, usePoint);
     }
+
+
+	public int updateOrderStatus(String orderNo, String subOrderNo) {
+		return orderMapper.updateOrderStatus(orderNo, subOrderNo);
+	}
 }
