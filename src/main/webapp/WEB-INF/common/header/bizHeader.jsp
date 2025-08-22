@@ -31,6 +31,7 @@
 
       <!-- 메인 메뉴 -->
       <nav aria-label="Main Navigation" style="display:flex; gap:18px; font-size:15px; margin-top:auto;">
+      	<a href="/biz/productList" style="text-decoration:none; color:#111827;">상품 목록</a>
       	<a href="" 	style="text-decoration:none; color:#111827;">공지사항</a>
       	<a href="" 	style="text-decoration:none; color:#111827;">FAQ</a>
       	<a href="" 	style="text-decoration:none; color:#111827;">문의사항</a>

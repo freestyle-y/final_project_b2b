@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
@@ -116,6 +115,7 @@
 	}
 </style>
 
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(function () {
@@ -124,10 +124,11 @@ $(function () {
 	let currentPage = 1;
 	let filteredProducts = [];
 
+	// 상품 초기 수집
 	$('#product-container .product-card').each(function() {
 	    allProducts.push({
 	        productName: $(this).data('name'),
-	        price: $(this).data('price'),
+	        price: parseInt($(this).data('price')),
 	        productStatus: $(this).data('status'),
 	        productNo: $(this).data('product-no')
 	    });
@@ -135,6 +136,7 @@ $(function () {
 
 	filteredProducts = allProducts.slice();
 
+	// 페이지 렌더링
 	function renderPage(page) {
 	    const container = $('#product-container');
 	    container.empty();
@@ -144,14 +146,15 @@ $(function () {
 
 	    pageItems.forEach(function(item) {
 	        const soldOutClass = item.productStatus === "일시품절" ? "sold-out" : "";
+	        const formattedPrice = item.price.toLocaleString('ko-KR') + ' 원';
+
 	        const productCardHtml =
 	            '<div class="product-card ' + soldOutClass + '">' +
 	                '<div class="product-name">' + item.productName + '</div>' +
-	                '<div class="product-price">' + item.price + ' 원</div>' +
+	                '<div class="product-price">' + formattedPrice + '</div>' +
 	                '<div class="product-status">' + item.productStatus + '</div>' +
 	            '</div>';
 
-	        // 일시품절은 링크 없이, 아니면 링크 적용
 	        const productHtml = item.productStatus === "일시품절"
 	            ? productCardHtml
 	            : '<a href="/biz/productOne?productNo=' + item.productNo + '">' + productCardHtml + '</a>';
@@ -167,10 +170,10 @@ $(function () {
 	    const pagination = $('#pagination');
 	    pagination.empty();
 
-	    for(let i = 1; i <= totalPages; i++) {
+	    for (let i = 1; i <= totalPages; i++) {
 	        const btn = $('<button>').text(i);
-	        if(i === currentPage) btn.addClass('active');
-	        btn.on('click', function() {
+	        if (i === currentPage) btn.addClass('active');
+	        btn.on('click', function () {
 	            currentPage = i;
 	            renderPage(currentPage);
 	        });
@@ -178,16 +181,17 @@ $(function () {
 	    }
 	}
 
-	$('#search-input').on('input', function() {
+	$('#search-input').on('input', function () {
 	    const keyword = $(this).val().toLowerCase();
 	    filteredProducts = allProducts.filter(item => item.productName.toLowerCase().includes(keyword));
 	    currentPage = 1;
 	    renderPage(currentPage);
 	});
 
+	// 대분류 클릭
 	$('.major-category-list > div').click(function () {
 		const categoryId = $(this).data('id');
-		
+
 		$.ajax({
 			url: '/product/byCategory?parentId=' + categoryId,
 			type: 'get',
@@ -197,11 +201,11 @@ $(function () {
 					categoryHtml += '<div data-id="' + cat.categoryId + '">' + cat.categoryName + '</div>';
 				});
 				$('.middle-category-list').html(categoryHtml);
-				
-				allProducts = data.productList.map(function(item){
+
+				allProducts = data.productList.map(function (item) {
 					return {
 						productName: item.productName,
-						price: item.price,
+						price: parseInt(item.price),
 						productStatus: item.productStatus,
 						productNo: item.productNo
 					};
@@ -209,17 +213,17 @@ $(function () {
 				filteredProducts = allProducts.slice();
 				currentPage = 1;
 				renderPage(currentPage);
-				
-				$('.middle-category-list > div').off('click').on('click', function() {
+
+				$('.middle-category-list > div').off('click').on('click', function () {
 					const middleCategoryId = $(this).data('id');
 					$.ajax({
 						url: '/product/byCategory?middleId=' + middleCategoryId,
 						type: 'get',
-						success: function(data) {
-							allProducts = data.productList.map(function(item){
+						success: function (data) {
+							allProducts = data.productList.map(function (item) {
 								return {
 									productName: item.productName,
-									price: item.price,
+									price: parseInt(item.price),
 									productStatus: item.productStatus,
 									productNo: item.productNo
 								};
@@ -266,7 +270,6 @@ $(function () {
 		<c:forEach var="item" items="${productList}">
 			<c:choose>
 				<c:when test="${item.productStatus == '일시품절'}">
-					<!-- 일시품절: 링크 제거 -->
 					<div class="product-card sold-out"
 					     data-name="${item.productName}"
 					     data-price="${item.price}"
@@ -278,7 +281,6 @@ $(function () {
 					</div>
 				</c:when>
 				<c:otherwise>
-					<!-- 판매중: 링크 적용 -->
 					<a href="/biz/productOne?productNo=${item.productNo}">
 						<div class="product-card"
 						     data-name="${item.productName}"

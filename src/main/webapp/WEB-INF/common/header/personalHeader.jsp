@@ -21,7 +21,7 @@
       <!-- 유틸 메뉴 -->
       <div style="display:flex; gap:12px; font-size:14px; justify-content:flex-end;">
         <a href=""	style="text-decoration:none; color:#111827;">상품 카테고리</a>
-        <a href="/personal/productList"	style="text-decoration:none; color:#111827;">상품 구매</a>
+        <a href="/personal/productList"	style="text-decoration:none; color:#111827;">상품 목록</a>
         <a href="/personal/reviewList"  style="text-decoration:none; color:#111827;">상품 후기</a>
         <a href="/personal/shoppingCart" style="text-decoration:none; color:#374151;">장바구니</a>
         <a href="/personal/wishList"     style="text-decoration:none; color:#374151;">찜 목록</a>

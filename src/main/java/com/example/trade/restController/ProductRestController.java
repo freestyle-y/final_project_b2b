@@ -120,7 +120,7 @@ public class ProductRestController {
 	    }
 	}
 
-	// 카테고리별 반환
+	// 카테고리별 반환(판매중, 일시품절만)
 	@GetMapping("/product/byCategory")
 	public Map<String, Object> productByCategory(
 			@RequestParam(value = "parentId", required = false) String parentId,
@@ -149,7 +149,37 @@ public class ProductRestController {
        
         return result;
 	}
-		
+	
+	// 카테고리별 반환(전체 -> 관리자용)
+	@GetMapping("/admin/product/byCategory")
+	public Map<String, Object> bizProductByCategory(
+			@RequestParam(value = "parentId", required = false) String parentId,
+		    @RequestParam(value = "middleId", required = false) String middleId) {
+		Map<String, Object> result = new HashMap<>();
+
+		log.info(parentId);
+		log.info(middleId);
+		if (parentId != null) {
+	        // 대분류 ID가 있으면, 중분류 리스트 조회
+	        List<Category> middleCategoryList = productService.selectMiddleCategory(parentId);
+	        //log.info(middleCategoryList.toString());
+	        
+	        // 대분류에 속한 상품 리스트 조회
+	        List<Map<String, Object>> productList = productService.selectAllProductListByCategory(parentId, null);
+	        //log.info(productList.toString());
+	        
+	        result.put("middleCategoryList", middleCategoryList);
+	        result.put("productList", productList);
+	    } else if (middleId != null) {
+	        // 중분류 ID가 있으면, 중분류에 속한 상품 리스트만 조회
+	        List<Map<String, Object>> productList = productService.selectAllProductListByCategory(null, middleId);
+	        //log.info(productList.toString());
+	        result.put("productList", productList);
+	    }
+       
+        return result;
+	}
+	
 	// 카테고리 선택 시 그 다음 카테고리 나오게
 	@GetMapping("/categories/{parentId}/children")
     public List<Category> getChildCategories(@PathVariable String parentId) {
