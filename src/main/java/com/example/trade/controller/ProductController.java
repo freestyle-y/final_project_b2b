@@ -105,7 +105,7 @@ public class ProductController {
 		//log.info("" + productNo);
 		String loginUserName = SecurityContextHolder.getContext().getAuthentication().getName();
 		//log.info(loginUserName);
-		List<Map<String, Object>> productOne = productService.selectProductOne(loginUserName, productNo);
+		List<Map<String, Object>> productOne = productService.selectPersonalProductOne(loginUserName, productNo);
 		//log.info(productOne.toString());
 		
 		// 공통 정보 추출 (상품명, 번호, 찜 여부 등)
@@ -270,26 +270,15 @@ public class ProductController {
 	public String bizProductOne(Model model,
 			@RequestParam int productNo) {
 		//log.info("" + productNo);
-		List<Map<String, Object>> productOne = productService.selectProductOne("user01", productNo);
+		List<Map<String, Object>> productOne = productService.selectProductOne(productNo);
 		//log.info(productOne.toString());
 		
-		// 공통 정보 추출 (상품명, 번호, 찜 여부 등)
+		// 공통 정보 추출 (상품명, 번호)
 	    Map<String, Object> commonInfo = new HashMap<>();
 	    Map<String, Object> first = productOne.get(0);
 
 	    commonInfo.put("productNo", first.get("productNo"));
 	    commonInfo.put("productName", first.get("productName"));
-	    commonInfo.put("isWish", first.get("isWish"));
-
-	    // 옵션 리스트 생성
-	    List<Map<String, Object>> optionList = new ArrayList<>();
-	    for (Map<String, Object> item : productOne) {
-	        Map<String, Object> opt = new HashMap<>();
-	        opt.put("optionNameValue", item.get("optionNameValue"));
-	        opt.put("price", item.get("price"));
-	        opt.put("quantity", item.get("quantity"));
-	        optionList.add(opt);
-	    }
 
 	    List<Map<String, Object>> productReview = productService.selectProductReview(productNo);
 	    //log.info(productReview.toString());
@@ -297,7 +286,6 @@ public class ProductController {
 	    //log.info(avgProductRate + "");
 	    
 	    model.addAttribute("product", commonInfo);
-	    model.addAttribute("optionList", optionList);
 	    model.addAttribute("productReview", productReview);
 	    model.addAttribute("avgProductRate", avgProductRate);
 		return "biz/productOne";
@@ -348,7 +336,29 @@ public class ProductController {
 	public String adminProductOne(Model model,
 			@RequestParam int productNo) {
 		//log.info(productNo + "");
+		List<Map<String, Object>> productOne = productService.selectProductOne(productNo);
+		//log.info(productOne.toString());
 		
+		// 공통 정보 추출 (상품명, 번호, 찜 여부 등)
+	    Map<String, Object> commonInfo = new HashMap<>();
+	    Map<String, Object> first = productOne.get(0);
+
+	    commonInfo.put("productNo", first.get("productNo"));
+	    commonInfo.put("productName", first.get("productName"));
+	    
+	    // 옵션 리스트 생성
+	    List<Map<String, Object>> optionList = new ArrayList<>();
+	    for (Map<String, Object> item : productOne) {
+	        Map<String, Object> opt = new HashMap<>();
+	        opt.put("optionNameValue", item.get("optionNameValue"));
+	        opt.put("price", item.get("price"));
+	        opt.put("quantity", item.get("quantity"));
+	        opt.put("optionNo", item.get("optionNo"));
+	        optionList.add(opt);
+	    }
+	    
+	    model.addAttribute("product", commonInfo);
+	    model.addAttribute("optionList", optionList);
 		return "admin/productOne";
 	}
 	

@@ -80,7 +80,7 @@
 </style>
 </head>
 
-<jsp:include page="/WEB-INF/common/header/personalHeader.jsp" />
+<jsp:include page="/WEB-INF/common/header/bizHeader.jsp" />
 <body>
 <jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
 

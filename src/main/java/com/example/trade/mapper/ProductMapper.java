@@ -56,8 +56,10 @@ public interface ProductMapper {
 	// 카테고리별 상품 목록 보기(전체)
 	List<Map<String, Object>> allProductListByCategory(String parentId, String middleId);
 		
-	// 상품 상세 페이지 보기
-	List<Map<String, Object>> productOne(@Param("id") String id, @Param("productNo") int productNo);
+	// 상품 상세 페이지 보기(개인용)
+	List<Map<String, Object>> personalProductOne(@Param("id") String id, @Param("productNo") int productNo);
+	// 상품 상세 페이지 보기(기업, 관리자용)
+	List<Map<String, Object>> productOne(int productNo);
 	// 상품별 리뷰 보기
 	List<Map<String, Object>> productReview(int productNo);
 	// 상품별 평균 평점
