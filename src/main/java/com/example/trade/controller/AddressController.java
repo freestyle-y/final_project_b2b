@@ -34,26 +34,6 @@ public class AddressController {
     	return "personal/addressPopup";
     }
     
-    // 배송지 추가
-    @PostMapping("/personal/address/add")
-    @ResponseBody
-    public Map<String, Object> addAddress(@RequestBody Address address, Principal principal) {
-        String userId = principal.getName();
-        address.setOwnerType("AC001");
-        address.setUserId(userId);
-        address.setCreateUser(userId);
-
-        if (address.getMainAddress() == null) {
-            address.setMainAddress("N");
-        }
-
-        int row = addressService.addAddress(address);
-
-        Map<String, Object> result = new HashMap<>();
-        result.put("status", row > 0 ? "success" : "error");
-        return result;
-    }
-    
     @PostMapping("/personal/addressCon")
     public String addressCon(@RequestParam("addressCon") String addressCon,
                              @RequestParam("selectedAddressChk") int addressNo,
