@@ -11,7 +11,6 @@
 .modal-content { background:#fff; padding:20px; margin:100px auto; width:400px; border-radius:10px; }
 </style>
 </head>
-
 <body>
 
 <!-- 공통 헤더 -->
@@ -99,6 +98,10 @@
     <button onclick="$('#socialModal').hide()">취소</button>
   </div>
 </div>
+
+<!-- 공통 풋터 -->
+<%@include file="/WEB-INF/common/footer/footer.jsp"%>
+
 <script>
 let currentField = '';
 
@@ -179,9 +182,6 @@ function unlinkSocial(provider) {
 
 
 </script>
-
-<!-- 공통 풋터 -->
-<%@include file="/WEB-INF/common/footer/footer.jsp"%>
 
 </body>
 </html>

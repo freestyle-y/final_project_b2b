@@ -32,7 +32,6 @@ function showAlert(message) {
 }
 </script>
 </head>
-
 <body>
 
 <!-- 공통 헤더 -->

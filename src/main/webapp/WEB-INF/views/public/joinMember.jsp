@@ -104,7 +104,6 @@ function allowOnlyNumber(event){
 
 </script>
 </head>
-
 <body>
 
 <!-- 공통 헤더 -->
@@ -198,6 +197,10 @@ function allowOnlyNumber(event){
     <label>상세주소: <input type="text" name="detailAddress"></label>
     <button type="submit">가입하기</button>
 </form>
+
+<!-- 공통 풋터 -->
+<%@include file="/WEB-INF/common/footer/footer.jsp"%>
+
 <script>
 //회원가입 전 유효성 체크
 function validateForm(formId){
@@ -279,9 +282,6 @@ function submitCompanyForm(){
     return false; // 기본 submit 막기
 }
 </script>
-
-<!-- 공통 풋터 -->
-<%@include file="/WEB-INF/common/footer/footer.jsp"%>
 
 </body>
 </html>

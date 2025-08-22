@@ -10,7 +10,6 @@
     .success-msg { color: green; font-size: 0.9em; margin-left: 8px; }
 </style>
 </head>
-
 <body>
 
 <!-- 공통 헤더 -->
@@ -41,6 +40,9 @@
         <br>
         <button type="submit">변경하기</button>
     </form>
+    
+    <!-- 공통 풋터 -->
+	<%@include file="/WEB-INF/common/footer/footer.jsp"%>
 
     <script>
     $(function() {
@@ -85,9 +87,6 @@
         });
     });
     </script>
-
-<!-- 공통 풋터 -->
-<%@include file="/WEB-INF/common/footer/footer.jsp"%>
 
 </body>
 </html>

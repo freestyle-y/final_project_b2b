@@ -5,7 +5,6 @@
 <meta charset="UTF-8">
 <title>상품 목록</title>
 </head>
-
 <body>
 
 <!-- 공통 헤더 -->

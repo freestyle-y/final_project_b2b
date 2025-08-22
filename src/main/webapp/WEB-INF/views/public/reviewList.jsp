@@ -93,7 +93,6 @@
 		}
 	</style>
 </head>
-
 <body>
 
 <!-- 공통 헤더 -->
@@ -156,7 +155,10 @@
 			</div>
 		</c:forEach>
 	</div>
-
+	
+	<!-- 공통 풋터 -->
+	<%@include file="/WEB-INF/common/footer/footer.jsp"%>
+	
 	<!-- jQuery CDN -->
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script>
@@ -213,9 +215,6 @@
 			renderPage(currentPage);
 		});
 	</script>
-
-<!-- 공통 풋터 -->
-<%@include file="/WEB-INF/common/footer/footer.jsp"%>
 
 </body>
 </html>
