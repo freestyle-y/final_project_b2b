@@ -53,7 +53,18 @@
                     </td>
                 </tr>
                 <tr><th>보유 적립금</th><td><input type="text" id="totalReward" readonly value="${user.totalReward}"></td></tr>
-            </c:if>
+				<!-- 소셜 연동 영역 -->
+				<tr>
+				    <th>소셜 계정 연동</th>
+				    <td>
+				        <c:forEach var="s" items="${socialList}">
+							${s.socialType} (${s.socialId})
+							<button type="button" onclick="unlinkSocial('${s.socialType}')">해제</button><br/>
+						</c:forEach>
+						<button type="button" onclick="openSocialModal()">소셜 계정 추가 연동</button>
+				    </td>
+				</tr>
+           		</c:if>
 
             <!-- 기업회원 -->
             <c:if test="${user.customerCategory == 'CC002'}">
@@ -75,7 +86,15 @@
         <button onclick="$('#changeModal').hide()">취소</button>
     </div>
 </div>
-
+<!-- 소셜 연동 모달 -->
+<div id="socialModal" class="modal">
+  <div class="modal-content">
+    <h3>소셜 로그인 연동</h3>
+    <button onclick="linkSocial('kakao')">카카오 연동</button>
+    <button onclick="linkSocial('naver')">네이버 연동</button>
+    <button onclick="$('#socialModal').hide()">취소</button>
+  </div>
+</div>
 <script>
 let currentField = '';
 
@@ -83,7 +102,7 @@ let currentField = '';
 $(document).ready(function() {
     $("#passwordCheckModal").show();
     
- 	// 뒤로가기 버튼
+    // 뒤로가기 버튼
     $("#goBackBtn").click(function() {
         window.history.back();
     });
@@ -131,6 +150,30 @@ $("#saveChangeBtn").click(function(){
         }
     });
 });
+//소셜 연동
+function openSocialModal() {
+    $("#socialModal").show();
+}
+
+function linkSocial(provider) {
+    location.href = "/oauth2/authorization/" + provider + "?linkAccount=true";
+}
+
+function unlinkSocial(provider) {
+    $.ajax({
+        url: "/api/social/unlink/" + provider,
+        type: "DELETE",
+        success: function(res){
+            alert(res);
+            location.reload();
+        },
+       error: function(){
+           alert("연동 해제 실패");
+       }
+    });
+}
+
+
 </script>
 
 <jsp:include page="/WEB-INF/common/footer/footer.jsp" />
