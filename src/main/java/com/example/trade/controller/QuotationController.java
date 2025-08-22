@@ -24,10 +24,57 @@ public class QuotationController {
 		super();
 		this.quotationService = quotationService;
 	}
+	
+	// 관리자 견적서 목록
+	@GetMapping("/admin/quotationList")
+    public String adminQuotationList(Model model) {
+        List<Quotation> adminQuotationList = quotationService.getAdminQuotationList();
+
+        // 2. 견적서 리스트를 정렬
+        //    1차 기준: subProductRequestNo (재견적서 번호)
+        //    2차 기준: quotationNo (견적서 번호)
+        //    → 즉, "재견적서 번호"가 우선적으로 정렬되도록 보장
+        adminQuotationList.sort(Comparator
+            .comparing(Quotation::getQuotationNo)           // 첫 번째 정렬 기준: 견적서 번호
+            .thenComparing(Quotation::getSubProductRequestNo)); // 두 번째 정렬 기준: 재견적서 번호
+
+        // 3. 그룹핑 결과를 담을 Map 준비
+        //    Key   : "subProductRequestNo_quotationNo_price" 문자열
+        //    Value : 해당 Key에 속하는 Quotation 객체 리스트
+        //    LinkedHashMap 사용 → 입력 순서 보장 (정렬된 순서대로 유지)
+        Map<String, List<Quotation>> quotationGroupedMap = new LinkedHashMap<>();
+
+        // 4. 견적서 리스트를 순회하면서 그룹핑 처리
+        for (Quotation q : adminQuotationList) {
+            // Key 생성 규칙:
+            //   subProductRequestNo + "_" + quotationNo + "_" + price
+            //   예: "1_1_8000000"
+            String key = q.getSubProductRequestNo() + "_" + q.getQuotationNo() + "_" + q.getPrice();
+            // Key가 없으면 새 리스트 생성, 있으면 기존 리스트에 추가
+            quotationGroupedMap.computeIfAbsent(key, k -> new ArrayList<>()).add(q);
+        }
+        // 5. JSP(View)에서 사용할 데이터 등록
+        //    JSP에서는 ${quotationGroupedMap} 으로 접근 가능
+        model.addAttribute("quotationGroupedMap", quotationGroupedMap);
+		return "admin/quotationList";
+	}
+	
+	// 관리자 견적서 상세페이지
+	@GetMapping("/admin/quotationOne")
+	public String adminQuotationOne(Model model
+							  ,@RequestParam("quotationNo") int quotationNo
+							  ,@RequestParam("subProductRequestNo") int subProductRequestNo) {
+		List<Quotation> adminQuotationOne = quotationService.adminQuotationOne(quotationNo, subProductRequestNo);
+		model.addAttribute("adminQuotationOne", adminQuotationOne);
+		return "admin/quotationOne";
+	}
+	
 	// 관리자 견적서 작성 페이지
 	@GetMapping("/admin/writeQuotation")
 	public String writeQuotation(@RequestParam("productRequestNo") int productRequestNo
-								,Model model) {
+	                            ,@RequestParam("quotationNo") int quotationNo
+	                            ,@RequestParam("subProductRequestNo") int subProductRequestNo,
+	                             Model model) {
 		List<Quotation> quotationOne = quotationService.getQuotationOneByQuotationNo(productRequestNo);
 
 		quotationOne.sort(Comparator
@@ -54,7 +101,7 @@ public class QuotationController {
 		model.addAttribute("quotationList", quotationList);
 		return "admin/writeQuotationForm";
 	}
-	
+
     // 기업 회원 견적서 목록 페이지
     @GetMapping("/biz/quotationList")
     public String quotationList(@RequestParam String userId, Model model) {
@@ -121,4 +168,5 @@ public class QuotationController {
 		
 		return "redirect:/biz/quotationOne?quotationNo=" + quotationNo + "&subProductRequestNo=" + subProductRequestNo;
 	}
+	
 }

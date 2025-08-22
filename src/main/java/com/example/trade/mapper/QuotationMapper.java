@@ -19,6 +19,10 @@ public interface QuotationMapper {
 
 	List<Quotation> getQuotaionOneByQuotationNo(int productRequestNo);
 
-	int insertQuotation(Quotation quotation, String userId);
+	int insertQuotation(String quotationNo, String subProductRequestNo, int price);
+
+	List<Quotation> getAdminQuotationList();
+
+	List<Quotation> adminQuotationOne(int quotationNo, int subProductRequestNo);
 
 }

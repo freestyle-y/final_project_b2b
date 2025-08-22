@@ -34,8 +34,15 @@ public class QuotationService {
 
 		return quotationMapper.getQuotaionOneByQuotationNo(productRequestNo);
 	}
-	public int insertQuotation(Quotation quotation, String userId) {
+	public int insertQuotation(String quotationNo, String subProductRequestNo, int price) {
 
-		return quotationMapper.insertQuotation(quotation, userId);
+		return quotationMapper.insertQuotation(quotationNo, subProductRequestNo, price);
+	}
+	public List<Quotation> getAdminQuotationList() {
+
+		return quotationMapper.getAdminQuotationList();
+	}
+	public List<Quotation> adminQuotationOne(int quotationNo, int subProductRequestNo) {
+		return quotationMapper.adminQuotationOne(quotationNo, subProductRequestNo);
 	}
 }
