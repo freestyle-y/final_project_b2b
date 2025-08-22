@@ -202,7 +202,7 @@ public class MemberService {
 	
 	// 소셜 계정 추가 연동
     public void linkSocialAccount(String userId, String socialType, String socialId) {
-        SocialLogin existing = userMapper.findBySocialTypeAndSocialId(socialType, socialId);
+        SocialLogin existing = userMapper.findAllBySocialTypeAndSocialId(socialType, socialId);
         if (existing != null) {
             throw new IllegalStateException("이미 다른 계정에 연동된 소셜입니다.");
         }
@@ -217,7 +217,7 @@ public class MemberService {
 
     // 소셜 계정으로 로그인 시 기존 유저 찾기
     public String findUserIdBySocial(String socialType, String socialId) {
-        SocialLogin socialLogin = userMapper.findBySocialTypeAndSocialId(socialType, socialId);
+        SocialLogin socialLogin = userMapper.findAllBySocialTypeAndSocialId(socialType, socialId);
         return (socialLogin != null) ? socialLogin.getUserId() : null;
     }
 
