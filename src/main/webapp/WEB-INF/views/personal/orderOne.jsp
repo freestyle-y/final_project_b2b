@@ -69,7 +69,7 @@
                     <button onclick="location.href='/personal/deliveryOne?subOrderNo=${order.subOrderNo}'">배송조회</button>
                     <button onclick="location.href='/personal/exchangeReturn?orderDetailNo=${order.orderNo}'">교환/반품</button>
                     <button onclick="toggleReviewForm(${status.index})">리뷰작성</button>
-                    <button onclick="location.href='/public/QNAPage'">상품문의</button>
+                    <button onclick="location.href='/member/QNAWrite'">상품문의</button>
                     <button type="button" class="btn-confirm" onclick="confirmProduct('${order.orderNo}', '${order.subOrderNo}')">구매확정</button>
                     <span style="font-size:12px; color:gray;">(1% 적립 예정)</span>
                 </td>
