@@ -65,38 +65,6 @@ public class OrderController {
         return "personal/payment"; 
     }
 
-    // 카드 등록
-    @PostMapping("/personal/payment/addCard")
-    @ResponseBody
-    public String addCard(@RequestBody PaymentMethod card) {
-        card.setCreateUser(card.getUserId());
-        card.setUseStatus("Y");
-        card.setPaymentCode("CARD");
-        if (card.getIsDefault() == null) {
-            card.setIsDefault("N"); // 기본값 세팅
-        }
-        int row = paymentMethodService.insertCard(card);
-        System.out.println("insert 결과: " + row);
-        if (row > 0) {
-            return "success";
-        } else {
-            return "fail";
-        }
-    }
-    
-    @PostMapping("/personal/payment/ready")
-    @ResponseBody
-    public KakaoPayReadyResponse kakaoPayReady(@RequestBody Map<String, Object> request) {
-        String orderNo = (String) request.get("orderNo");
-        String name = (String) request.get("name");
-        int totalPrice = Integer.parseInt(request.get("totalPrice").toString()); // ✅ 수정 완료
-
-        System.out.println("카카오페이 요청 들어옴: " + request);
-
-        return kakaoPayService.payReady(orderNo, name, totalPrice);
-    }
-
-
     @GetMapping("/personal/payment/success")
     public String paymentSuccess(@RequestParam("pg_token") String pgToken
                                 ,@RequestParam("orderNo") String orderNo
@@ -167,20 +135,5 @@ public class OrderController {
         return "personal/orderOne";
     }
     
-    @PostMapping("/personal/payment/saveMethodAndPoints")
-    @ResponseBody
-    public void saveMethodAndPoints(@RequestBody Map<String, Object> req) {
-        String orderNo = (String) req.get("orderNo");
-        String paymentMethod = (String) req.get("paymentMethod");
-        int usePoint = req.get("usePoint") == null ? 0 : Integer.parseInt(req.get("usePoint").toString());
-
-        String methodKor = switch (paymentMethod) {
-            case "kakaopay" -> "카카오페이";
-            case "bank"     -> "계좌이체";
-            case "card"     -> "카드결제";
-            default         -> "기타";
-        };
-        orderService.saveMethodAndPoints(orderNo, methodKor, usePoint);
-    }
 
 }
