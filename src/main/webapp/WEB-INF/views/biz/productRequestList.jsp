@@ -102,10 +102,12 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 </head>
-
-<jsp:include page="/WEB-INF/common/header/bizHeader.jsp" />
 <body>
-<jsp:include page="/WEB-INF/common/sidebar/bizSidebar.jsp" />
+
+<!-- 공통 헤더 -->
+<%@include file="/WEB-INF/common/header/header.jsp"%>
+<!-- 공통 사이드바 -->
+<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
 
     <h2 style="text-align:center; margin-top: 30px;">상품 요청 목록</h2>
 
@@ -140,7 +142,10 @@
             </div>
         </c:forEach>
     </div>
-
+	
+	<!-- 공통 풋터 -->
+	<%@include file="/WEB-INF/common/footer/footer.jsp"%>
+	
     <script>
         $(document).ready(function () {
             const itemsPerPage = 4;
@@ -204,6 +209,5 @@
         });
     </script>
 
-<jsp:include page="/WEB-INF/common/footer/footer.jsp" />
 </body>
 </html>

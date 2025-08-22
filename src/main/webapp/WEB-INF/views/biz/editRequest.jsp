@@ -17,10 +17,12 @@
         }
     </style>
 </head>
-
-<jsp:include page="/WEB-INF/common/header/bizHeader.jsp" />
 <body>
-<jsp:include page="/WEB-INF/common/sidebar/bizSidebar.jsp" />
+
+<!-- 공통 헤더 -->
+<%@include file="/WEB-INF/common/header/header.jsp"%>
+<!-- 공통 사이드바 -->
+<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
 
 <h1>수정</h1>
 
@@ -72,6 +74,9 @@
     <button type="submit">수정 완료</button>
 </form>
 
+<!-- 공통 풋터 -->
+<%@include file="/WEB-INF/common/footer/footer.jsp"%>
+
 <script>
     $(function () {
         // 배송지 선택 안 했을 경우 경고
@@ -85,6 +90,5 @@
     });
 </script>
 
-<jsp:include page="/WEB-INF/common/footer/footer.jsp" />
 </body>
 </html>

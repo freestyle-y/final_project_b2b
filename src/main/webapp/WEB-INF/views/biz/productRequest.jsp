@@ -31,9 +31,12 @@
         }
     </style>
 </head>
-<jsp:include page="/WEB-INF/common/header/bizHeader.jsp" />
 <body>
-<jsp:include page="/WEB-INF/common/sidebar/bizSidebar.jsp" />
+
+<!-- 공통 헤더 -->
+<%@include file="/WEB-INF/common/header/header.jsp"%>
+<!-- 공통 사이드바 -->
+<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
 
 <h1>상품 요청</h1>
 
@@ -74,6 +77,9 @@
     <br/>
     <button type="submit">요청 제출</button>
 </form>
+
+<!-- 공통 풋터 -->
+<%@include file="/WEB-INF/common/footer/footer.jsp"%>
 
 <!-- 스크립트 -->
 <script>
@@ -135,6 +141,5 @@
 	});
 </script>
 
-<jsp:include page="/WEB-INF/common/footer/footer.jsp" />
 </body>
 </html>

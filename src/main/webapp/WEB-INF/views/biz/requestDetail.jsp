@@ -39,9 +39,12 @@
         .btn-delete { background: #f44336; color: white; }
     </style>
 </head>
-<jsp:include page="/WEB-INF/common/header/bizHeader.jsp" />
 <body>
-<jsp:include page="/WEB-INF/common/sidebar/bizSidebar.jsp" />
+
+<!-- 공통 헤더 -->
+<%@include file="/WEB-INF/common/header/header.jsp"%>
+<!-- 공통 사이드바 -->
+<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
 
 <div class="detail-container">
     <h2>요청 상세 정보</h2>
@@ -75,6 +78,9 @@
     </div>
 </div>
 
+<!-- 공통 풋터 -->
+<%@include file="/WEB-INF/common/footer/footer.jsp"%>
+
 <script>
     function confirmDelete(requestNo) {
         if (confirm("정말 삭제하시겠습니까?")) {
@@ -83,6 +89,5 @@
     }
 </script>
 
-<jsp:include page="/WEB-INF/common/footer/footer.jsp" />
 </body>
 </html>

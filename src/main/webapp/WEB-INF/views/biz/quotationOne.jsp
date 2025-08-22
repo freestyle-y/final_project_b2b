@@ -7,9 +7,13 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 </head>
-<jsp:include page="/WEB-INF/common/header/publicHeader.jsp" />
 <body>
-	<jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
+
+<!-- 공통 헤더 -->
+<%@include file="/WEB-INF/common/header/header.jsp"%>
+<!-- 공통 사이드바 -->
+<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
+
 	<h1>quotationOne</h1>
 	<form action="${pageContext.request.contextPath}/biz/quotationApprove" method="post">
     <!-- ✅ 수정: Spring Security 사용 시 CSRF 토큰 전송 -->
@@ -78,6 +82,10 @@
 	        <button type="submit">제출</button>
 	    </div>
 	</form>
+
+<!-- 공통 풋터 -->
+<%@include file="/WEB-INF/common/footer/footer.jsp"%>
+
 <script>
     function showRejectionBox() {
         document.getElementById("rejectionBox").style.display = "block";
@@ -87,5 +95,4 @@
 </script>
 
 </body>
-<jsp:include page="/WEB-INF/common/footer/footer.jsp" />
 </html>
