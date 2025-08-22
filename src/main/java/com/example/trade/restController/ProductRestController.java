@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.trade.dto.Address;
 import com.example.trade.dto.Category;
 import com.example.trade.dto.Inventory;
 import com.example.trade.dto.Option;
@@ -219,5 +220,24 @@ public class ProductRestController {
 		
 		productService.changeProductStatus(userId, product.getProductNo(), product.getUseStatus());
 		return "success";
+	}
+	
+	// 창고 리스트
+	@GetMapping("/admin/warehouses")
+	public List<Address> getWarehouses() {
+		String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+		return productService.selectWarehouse(userId);
+	}
+	
+	// 창고 지정
+	@PostMapping("/admin/updateInventoryAddress")
+	public ResponseEntity<?> updateInventoryAddress(@RequestBody Map<String, Object> data) {
+	    int inventoryId = (Integer) data.get("inventoryId");
+	    int addressNo = (Integer) data.get("addressNo");
+
+	    //log.info(inventoryId + "");
+	    //log.info(addressNo + "");
+	    productService.updateInventoryAddress(inventoryId, addressNo);
+	    return ResponseEntity.ok().build();
 	}
 }

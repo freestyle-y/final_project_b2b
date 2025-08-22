@@ -105,4 +105,9 @@ public interface ProductMapper {
 	
 	// 상품 사용여부 변경
 	int updateProductStatus(@Param("userId") String userId, @Param("productNo") int productNo, @Param("useStatus") String useStatus);
+	
+	// 창고 주소 불러오기
+	List<Address> warehouse(String id);
+	// 재고 창고 수정
+	void updateInventoryAddress(int inventoryId, int addressNo);
 }

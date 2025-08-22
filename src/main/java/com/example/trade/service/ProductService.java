@@ -295,4 +295,14 @@ public class ProductService {
 	public void changeProductStatus(String userId, int productNo, String useStatus) {
 		productMapper.updateProductStatus(userId, productNo, useStatus);
 	}
+	
+	// 창고 주소 불러오기
+	public List<Address> selectWarehouse(String id) {
+		return productMapper.warehouse(id);
+	}
+	
+	// 재고 창고 등록
+	public void updateInventoryAddress(int inventoryId, int addressNo) {
+		productMapper.updateInventoryAddress(inventoryId, addressNo);
+	}
 }

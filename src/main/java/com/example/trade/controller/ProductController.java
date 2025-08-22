@@ -339,9 +339,17 @@ public class ProductController {
 		//log.info(majorCategoryList.toString());
 		log.info(productList.toString());
 		model.addAttribute("majorCategoryList", majorCategoryList);
-		model.addAttribute("productList", productList);
-		
+		model.addAttribute("productList", productList);	
 		return "admin/productList";
+	}
+	
+	// 관리자 상품 상세 페이지
+	@GetMapping("/admin/productOne")
+	public String adminProductOne(Model model,
+			@RequestParam int productNo) {
+		//log.info(productNo + "");
+		
+		return "admin/productOne";
 	}
 	
 	// 재고 목록 페이지

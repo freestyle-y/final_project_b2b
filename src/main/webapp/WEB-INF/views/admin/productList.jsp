@@ -332,7 +332,7 @@ $(function () {
 
 <jsp:include page="/WEB-INF/common/header/adminHeader.jsp" />
 <body>
-	<jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
+<jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
 
 	<input type="text" id="search-input" placeholder="상품명 검색..." />
 

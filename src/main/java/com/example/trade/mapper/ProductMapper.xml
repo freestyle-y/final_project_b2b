@@ -404,8 +404,20 @@
 			AND i.option_no = p.option_no
 		INNER JOIN `option` o
 			ON o.option_no = p.option_no
-		INNER JOIN address a
+		LEFT JOIN address a
 			ON i.address_no = a.address_no
+	</select>
+	
+	<!-- 창고 주소 불러오기 -->
+	<select id="warehouse" parameterType="String" resultType="com.example.trade.dto.Address">
+		SELECT 
+			address_no AS addressNo,
+			postal,
+			address,
+			detail_address AS detailAddress,
+			main_address AS mainAddress
+		FROM address
+		WHERE user_id = #{id}
 	</select>
 	
 	<!-- 찜 테이블에 찜 삽입 -->
@@ -541,5 +553,12 @@
 	    	update_user = #{userId},
 	    	update_date = NOW()
 	    WHERE product_no = #{productNo}
+	</update>
+	
+	<!-- 재고 창고 등록 -->
+	<update id="updateInventoryAddress" parameterType="Integer">
+		UPDATE inventory
+	    SET address_no = #{addressNo}
+	    WHERE inventory_id = #{inventoryId}
 	</update>
 </mapper>
