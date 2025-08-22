@@ -136,9 +136,14 @@ public class ProductService {
 		return productMapper.allProductListByCategory(parentId, middleId);
 	}
 
-	// 상품 상세 페이지 보기
-	public List<Map<String, Object>> selectProductOne(String id, int productNo) {
-		return productMapper.productOne(id, productNo);
+	// 상품 상세 페이지 보기(개인용)
+	public List<Map<String, Object>> selectPersonalProductOne(String id, int productNo) {
+		return productMapper.personalProductOne(id, productNo);
+	}
+	
+	// 상품 상세 페이지 보기(기업, 관리자용)
+	public List<Map<String, Object>> selectProductOne(int productNo) {
+		return productMapper.productOne(productNo);
 	}
 	
 	// 상품별 리뷰 보기
@@ -294,5 +299,15 @@ public class ProductService {
 	// 상품 사용여부 변경
 	public void changeProductStatus(String userId, int productNo, String useStatus) {
 		productMapper.updateProductStatus(userId, productNo, useStatus);
+	}
+	
+	// 창고 주소 불러오기
+	public List<Address> selectWarehouse(String id) {
+		return productMapper.warehouse(id);
+	}
+	
+	// 재고 창고 등록
+	public void updateInventoryAddress(int inventoryId, int addressNo) {
+		productMapper.updateInventoryAddress(inventoryId, addressNo);
 	}
 }

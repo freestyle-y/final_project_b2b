@@ -237,8 +237,8 @@
 		GROUP BY product_no
 	</select>
 	
-	<!-- 상품 상세 페이지 보기 -->
-	<select id="productOne" resultType="map">
+	<!-- 상품 상세 페이지 보기(개인용) -->
+	<select id="personalProductOne" resultType="map">
 		SELECT
 		    p.product_no AS productNo,
 		    p.product_name AS productName,
@@ -256,6 +256,25 @@
 		LEFT JOIN wish_list w 
 			ON w.product_no = p.product_no 
 			AND w.user_id = #{id}
+		WHERE p.product_no = #{productNo}
+	</select>
+	
+	<!-- 상품 상세 페이지 보기(기업, 관리자용) -->
+	<select id="productOne" parameterType="int" resultType="map">
+		SELECT
+		    p.product_no AS productNo,
+		    p.product_name AS productName,
+		    o.option_no AS optionNo,
+		    o.option_name_value AS optionNameValue,
+		    p.price,
+		    p.product_status AS productStatus,
+		    i.quantity
+		FROM product p
+		INNER JOIN `option` o 
+			ON p.option_no = o.option_no
+		LEFT JOIN inventory i 
+			ON i.product_no = p.product_no 
+			AND i.option_no = p.option_no
 		WHERE p.product_no = #{productNo}
 	</select>
 	
@@ -404,8 +423,20 @@
 			AND i.option_no = p.option_no
 		INNER JOIN `option` o
 			ON o.option_no = p.option_no
-		INNER JOIN address a
+		LEFT JOIN address a
 			ON i.address_no = a.address_no
+	</select>
+	
+	<!-- 창고 주소 불러오기 -->
+	<select id="warehouse" parameterType="String" resultType="com.example.trade.dto.Address">
+		SELECT 
+			address_no AS addressNo,
+			postal,
+			address,
+			detail_address AS detailAddress,
+			main_address AS mainAddress
+		FROM address
+		WHERE user_id = #{id}
 	</select>
 	
 	<!-- 찜 테이블에 찜 삽입 -->
@@ -541,5 +572,12 @@
 	    	update_user = #{userId},
 	    	update_date = NOW()
 	    WHERE product_no = #{productNo}
+	</update>
+	
+	<!-- 재고 창고 등록 -->
+	<update id="updateInventoryAddress" parameterType="Integer">
+		UPDATE inventory
+	    SET address_no = #{addressNo}
+	    WHERE inventory_id = #{inventoryId}
 	</update>
 </mapper>

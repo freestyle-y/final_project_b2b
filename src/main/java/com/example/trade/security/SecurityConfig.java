@@ -1,6 +1,8 @@
 package com.example.trade.security;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -63,7 +65,9 @@ public class SecurityConfig {
      * SecurityFilterChain: CSRF/인증/인가(권한) 및 로그인/로그아웃 설정
      */
 	@Bean
-	SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+	SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity,
+											CustomOAuth2UserService customOAuth2UserService,
+											CustomOAuth2FailureHandler customOAuth2FailureHandler) throws Exception {
 
 		// CSRF 설정 (테스트 단계이므로 disable, 추후 보안 요구사항 따라 enable 고려)
 		httpSecurity.csrf((csrfConfigurer) -> csrfConfigurer.disable());
@@ -95,7 +99,9 @@ public class SecurityConfig {
 		// ✅ 소셜 로그인 설정 (네이버/카카오)
 	    httpSecurity.oauth2Login(oauth2 -> oauth2
 	            .loginPage("/public/login")          // 소셜 로그인 실패 시 보여줄 페이지
-	            .defaultSuccessUrl("/public/mainPage", true) // 성공 시 이동할 페이지
+	            .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+	            .failureHandler(customOAuth2FailureHandler)
+	            .successHandler(loginSuccessHandler()) // 성공 시 이동할 페이지
 	    );
 		
 		// 로그아웃 설정
@@ -128,7 +134,7 @@ public class SecurityConfig {
 					targetUrl = savedRequest.getRedirectUrl();
 					
 					// 로그인 페이지(/public/login)에서 로그인한 경우는 제외
-					if(targetUrl.contains("/public/login")) {
+					if(targetUrl.contains("/public/login") || targetUrl.startsWith("http")) {
 						targetUrl = null;
 					}
 				}
@@ -166,7 +172,9 @@ public class SecurityConfig {
 			public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
 					AuthenticationException exception) throws IOException, ServletException {
 				System.out.println("로그인 실패 원인" + exception.getMessage());
-				response.sendRedirect("/public/login");
+				// 실패 메시지 URL 인코딩해서 전달
+			    String errorMsg = URLEncoder.encode("아이디 또는 비밀번호가 올바르지 않습니다.", StandardCharsets.UTF_8);
+			    response.sendRedirect("/public/login?errorMsg=" + errorMsg);
 			}
 		};
 	}

@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -88,6 +89,54 @@
             });
         }
 
+        function assignWarehouse(inventoryId) {
+        	$.ajax({
+                url: '/admin/warehouses', // 컨트롤러 URL
+                type: 'GET',
+                success: function(warehouses) {
+                	//console.log("받은 창고 리스트:", warehouses);
+                    // 선택창 만들기
+                    let selectHtml = '<select id="warehouseSelect">';
+                    for (let i = 0; i < warehouses.length; i++) {
+                        const w = warehouses[i];
+                        selectHtml += '<option value="' + w.addressNo + '">' +
+                                      '[' + w.postal + '] ' + w.address + ' ' + w.detailAddress +
+                                      '</option>';
+                    }
+                    selectHtml += '</select>';
+
+                    const confirmHtml = selectHtml + '<br><br><button onclick="confirmAssign(' + inventoryId + ')">선택 완료</button>';
+
+                    $('#warehouseModalBody').html(confirmHtml);
+                    $('#warehouseModal').show();
+                },
+                error: function() {
+                    alert('창고 목록을 불러오는 데 실패했습니다.');
+                }
+            });
+        }
+        
+        function confirmAssign(inventoryId) {
+            const selectedAddressNo = $('#warehouseSelect').val();
+            
+            $.ajax({
+                url: '/admin/updateInventoryAddress',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                	inventoryId: parseInt(inventoryId),
+                    addressNo: parseInt(selectedAddressNo)
+                }),
+                success: function() {
+                    alert('창고가 지정되었습니다.');
+                    location.reload(); // 새로고침
+                },
+                error: function() {
+                    alert('창고 지정 실패');
+                }
+            });
+        }
+        
         $(document).ready(function () {
             const itemsPerPage = 4;
             let currentPage = 1;
@@ -156,15 +205,29 @@
     <button onclick="">+ 재고 추가</button>
 </div>
 
+<!-- 모달창 -->
+<div id="warehouseModal" style="display:none; position:fixed; top:30%; left:30%; background:#fff; border:1px solid #ccc; padding:20px; z-index:999;">
+    <div id="warehouseModalBody"></div>
+    <button onclick="$('#warehouseModal').hide()">닫기</button>
+</div>
+			
 <!-- 재고 리스트 전체를 감싸는 컨테이너 추가 -->
 <div class="inventory-list-container">
     <c:forEach var="item" items="${inventoryList}">
         <div class="inventory-item">
             <div><strong>상품명:</strong> <span class="product-name">${item.productName}</span></div>
             <div><strong>옵션값:</strong> ${item.optionNameValue}</div>
-            <div><strong>가격:</strong> ${item.price}</div>
-            <div><strong>주소:</strong> [${item.postal}] ${item.address} ${item.detailAddress}</div>
-
+            <div><strong>가격:</strong> <fmt:formatNumber value="${item.price}" type="number" groupingUsed="true" />원</div>
+            <div><strong>주소:</strong>
+			    <c:choose>
+			        <c:when test="${empty item.address}">
+			            <button type="button" onclick="assignWarehouse(${item.inventoryId})">창고 지정</button>
+			        </c:when>
+			        <c:otherwise>
+			            [${item.postal}] ${item.address} ${item.detailAddress}
+			        </c:otherwise>
+			    </c:choose>
+			</div>
             <div>
                 <label>수량:</label>
                 <input type="number" id="qty-${item.inventoryId}" value="${item.quantity}" min="0" />
