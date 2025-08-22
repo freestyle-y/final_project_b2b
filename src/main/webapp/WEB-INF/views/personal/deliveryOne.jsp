@@ -19,23 +19,12 @@
     }
 </style>
 </head>
-
-<!-- 헤더 : 권한별 분기 -->
-<sec:authorize access="hasRole('ROLE_ADMIN')">
-    <jsp:include page="/WEB-INF/common/header/adminHeader.jsp"/>
-</sec:authorize>
-<sec:authorize access="hasRole('ROLE_BIZ')">
-    <jsp:include page="/WEB-INF/common/header/bizHeader.jsp"/>
-</sec:authorize>
-<sec:authorize access="hasRole('ROLE_PERSONAL')">
-    <jsp:include page="/WEB-INF/common/header/personalHeader.jsp"/>
-</sec:authorize>
-<sec:authorize access="isAnonymous()">
-    <jsp:include page="/WEB-INF/common/header/publicHeader.jsp"/>
-</sec:authorize>
-
 <body>
-	<jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
+
+<!-- 공통 헤더 -->
+<%@include file="/WEB-INF/common/header/header.jsp"%>
+<!-- 공통 사이드바 -->
+<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
 	
 	<h1>배송 상세 조회</h1>
 	<table border="1" style="border-collapse:collapse; text-align:center; width:100%;">
@@ -61,7 +50,9 @@
 			</tr>
 		</c:forEach>
 	</table>
-</body>
 
-<jsp:include page="/WEB-INF/common/footer/footer.jsp" />
+<!-- 공통 풋터 -->
+<%@include file="/WEB-INF/common/footer/footer.jsp"%>
+
+</body>
 </html>

@@ -7,9 +7,12 @@
 <title>주문 상세 정보</title>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
-<jsp:include page="/WEB-INF/common/header/publicHeader.jsp" />
 <body>
-<jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
+
+<!-- 공통 헤더 -->
+<%@include file="/WEB-INF/common/header/header.jsp"%>
+<!-- 공통 사이드바 -->
+<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
 
 <h1>주문 상세 페이지</h1>
 
@@ -103,6 +106,10 @@
         </c:forEach>
     </tbody>
 </table>
+
+<!-- 공통 풋터 -->
+<%@include file="/WEB-INF/common/footer/footer.jsp"%>
+
 <script>
 function toggleReviewForm(index) {
     const form = document.getElementById("review-form-" + index);
@@ -127,5 +134,4 @@ function confirmProduct(orderNo, subOrderNo) {
 </script>
 
 </body>
-<jsp:include page="/WEB-INF/common/footer/footer.jsp" />
 </html>

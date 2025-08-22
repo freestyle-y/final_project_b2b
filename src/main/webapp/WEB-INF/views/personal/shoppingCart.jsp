@@ -291,10 +291,12 @@
     }
 </script>
 </head>
-
-<jsp:include page="/WEB-INF/common/header/personalHeader.jsp" />
 <body>
-<jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
+
+<!-- 공통 헤더 -->
+<%@include file="/WEB-INF/common/header/header.jsp"%>
+<!-- 공통 사이드바 -->
+<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
 
 <div class="container">
     <div class="cart-title">장바구니</div>
@@ -353,6 +355,9 @@
     </div>
 </div>
 
+<!-- 공통 풋터 -->
+<%@include file="/WEB-INF/common/footer/footer.jsp"%>
+
 <script>
     window.onload = function() {
         updateTotal();
@@ -360,5 +365,4 @@
 </script>
 
 </body>
-<jsp:include page="/WEB-INF/common/footer/footer.jsp" />
 </html>

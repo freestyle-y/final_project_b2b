@@ -45,10 +45,13 @@ h1, h3 {
 }
 </style>
 </head>
-
-<jsp:include page="/WEB-INF/common/header/personalHeader.jsp" />
 <body>
-	<jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
+
+<!-- 공통 헤더 -->
+<%@include file="/WEB-INF/common/header/header.jsp"%>
+<!-- 공통 사이드바 -->
+<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
+
 	<h1>결제하기</h1>
 	<form id="paymentForm">
 		<h3>상품 정보</h3>
@@ -152,6 +155,9 @@ h1, h3 {
 		<input type="button" id="payBtn" class="btn" value="결제하기" onclick="showPasswordPopup()"> 
 		<input type="reset"	class="btn" value="취소">
 	</form>
+
+<!-- 공통 풋터 -->
+<%@include file="/WEB-INF/common/footer/footer.jsp"%>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
@@ -476,5 +482,4 @@ function completePayment() {
 	 }
 </script>
 </body>
-<jsp:include page="/WEB-INF/common/footer/footer.jsp" />
 </html>

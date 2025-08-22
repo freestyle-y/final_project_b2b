@@ -93,11 +93,12 @@
 		}
 	</style>
 </head>
-
-<jsp:include page="/WEB-INF/common/header/personalHeader.jsp" />
-
 <body>
-	<jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
+
+<!-- 공통 헤더 -->
+<%@include file="/WEB-INF/common/header/header.jsp"%>
+<!-- 공통 사이드바 -->
+<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
 
 	<div class="review-container">
 		<!-- 검색 입력창은 여기서 자바스크립트로 추가할 수도 있고 JSP 내에서 넣을 수도 있음 -->
@@ -154,7 +155,10 @@
 			</div>
 		</c:forEach>
 	</div>
-
+	
+	<!-- 공통 풋터 -->
+	<%@include file="/WEB-INF/common/footer/footer.jsp"%>
+	
 	<!-- jQuery CDN -->
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script>
@@ -213,6 +217,4 @@
 	</script>
 
 </body>
-
-<jsp:include page="/WEB-INF/common/footer/footer.jsp" />
 </html>
