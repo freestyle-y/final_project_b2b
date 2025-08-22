@@ -37,6 +37,7 @@ public class MemberController {
         model.addAttribute("user", user);
         
         // 연동된 소셜 계정 조회
+        model.addAttribute("socialList", memberService.getLinkedSocials(user.getId()));
         return "public/myPage";
     }
 
