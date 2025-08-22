@@ -204,7 +204,7 @@ $(function () {
 					'data-usestatus="' + item.useStatus + '" ' +
 					'data-product-no="' + item.productNo + '">' +
 	                '<div class="product-name">' + item.productName + '</div>' +
-	                '<div class="product-price">' + item.price + ' 원</div>' +
+	                '<div class="product-price">' + item.price.toLocaleString('ko-KR') + ' 원</div>' +
 	                '<div class="product-status">상태: ' + item.productStatus + '</div>' +
 	                '<div class="product-useStatus">사용여부: ' +
 						'<label class="switch">' +
@@ -251,7 +251,7 @@ $(function () {
 		const categoryId = $(this).data('id');
 		
 		$.ajax({
-			url: '/product/byCategory?parentId=' + categoryId,
+			url: '/admin/product/byCategory?parentId=' + categoryId,
 			type: 'get',
 			success: function (data) {
 				let categoryHtml = '';
@@ -276,7 +276,7 @@ $(function () {
 				$('.middle-category-list > div').off('click').on('click', function() {
 					const middleCategoryId = $(this).data('id');
 					$.ajax({
-						url: '/product/byCategory?middleId=' + middleCategoryId,
+						url: '/admin/product/byCategory?middleId=' + middleCategoryId,
 						type: 'get',
 						success: function(data) {
 							allProducts = data.productList.map(function(item){
@@ -357,7 +357,7 @@ $(function () {
 				     data-usestatus="${item.useStatus}"
 				     data-product-no="${item.productNo}">
 					<div class="product-name">${item.productName}</div>
-					<div class="product-price">${item.price} 원</div>
+					'<div class="product-price">' + item.price.toLocaleString('ko-KR') + ' 원</div>'
 					<div class="product-status">상태: ${item.productStatus}</div>
 					<div class="product-useStatus">
 						사용여부: 

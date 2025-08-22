@@ -232,7 +232,7 @@
 		FROM product p
 		LEFT JOIN category_path cp 
 			ON p.category_id = cp.category_id
-		AND (#{parentId} IS NULL OR category_id_lv1 = #{parentId})
+		WHERE (#{parentId} IS NULL OR category_id_lv1 = #{parentId})
 		AND (#{middleId} IS NULL OR category_id_lv2 = #{middleId})
 		GROUP BY product_no
 	</select>
@@ -429,6 +429,12 @@
 				)
 	</insert>
 	
+	<!-- 재고 초기 세팅 -->
+	<insert id="insertInventory" parameterType="map">
+	    INSERT INTO inventory (product_no, option_no, quantity)
+	    VALUES (#{productNo}, #{optionNo}, 0)
+	</insert>
+	
 	<!-- 카테고리 추가 -->
 	<insert id="insertCategory" parameterType="com.example.trade.dto.Category">
 		INSERT INTO category (
@@ -440,7 +446,7 @@
 	</insert>
 
 	<!-- 옵션 추가 -->
-	<insert id="insertOption" parameterType="com.example.trade.dto.Option">
+	<insert id="insertOption" parameterType="com.example.trade.dto.Option" useGeneratedKeys="true" keyProperty="optionNo">
 		INSERT INTO `option`(
 			option_name, option_name_value, create_user, use_status)
 		VALUES (

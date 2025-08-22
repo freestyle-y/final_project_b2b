@@ -276,6 +276,9 @@ public class ProductService {
 
         product.setProductNo(resolvedProductNo);
 		productMapper.insertProduct(product);
+		
+		// 2. 재고 테이블에 초기 재고(0) 등록
+		productMapper.insertInventory(resolvedProductNo, product.getOptionNo());
 	}
 	
 	// 재고 조회

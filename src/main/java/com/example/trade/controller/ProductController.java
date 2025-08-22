@@ -328,7 +328,7 @@ public class ProductController {
 	public String insertProduct(Product product) {
 		//log.info(product.toString());
 		productService.insertProduct(product);
-		return "admin/mainPage";
+		return "redirect:/admin/mainPage";
 	}
 	
 	// 관리자 상품 목록 페이지

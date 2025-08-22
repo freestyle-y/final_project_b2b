@@ -132,5 +132,29 @@
       AND business_no = #{businessNo}
 	</select>
 	
+	<!-- 소셜로그인 -->
+	<insert id="insertSocial" parameterType="com.example.trade.dto.SocialLogin">
+        INSERT INTO social_login (user_id, social_type, social_id)
+        VALUES (#{userId}, #{socialType}, #{socialId})
+    </insert>
+
+    <select id="findAllBySocialTypeAndSocialId" resultType="com.example.trade.dto.SocialLogin">
+        SELECT social_login_no AS socialLoginNo, user_id AS userId, social_type AS socialType, social_id AS socialId 
+		FROM social_login
+        WHERE social_type = #{socialType}
+          AND social_id = #{socialId}
+    </select>
+
+    <select id="findSocialByUserId" resultType="com.example.trade.dto.SocialLogin">
+        SELECT social_login_no AS socialLoginNo, user_id AS userId, social_type AS socialType, social_id AS socialId 
+        FROM social_login
+        WHERE user_id = #{userId}
+    </select>
+
+    <delete id="deleteByUserIdAndSocialType">
+        DELETE FROM social_login
+        WHERE user_id = #{userId}
+          AND social_type = #{socialType}
+    </delete>
 	
 </mapper>

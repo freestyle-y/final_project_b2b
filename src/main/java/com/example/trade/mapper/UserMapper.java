@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.example.trade.domain.UserDomain;
+import com.example.trade.dto.SocialLogin;
 import com.example.trade.dto.User;
 
 @Mapper
@@ -43,4 +44,23 @@ public interface UserMapper {
 	// 비밀번호 찾기
 	User findPersonalUser(@Param("id") String id, @Param("name") String name, @Param("sn") String sn);
 	User findCompanyUser(@Param("id") String id, @Param("companyName") String companyName, @Param("businessNo") String businessNo);
+	
+	// 소셜로그인
+	// 소셜 계정 추가
+    int insert(SocialLogin socialLogin);
+
+    // 특정 소셜 계정 찾기
+    SocialLogin findBySocialTypeAndSocialId(
+        @Param("socialType") String socialType,
+        @Param("socialId") String socialId
+    );
+
+    // 특정 회원이 연동한 모든 소셜 계정
+    List<SocialLogin> findSocialByUserId(String userId);
+
+    // 소셜 연동 해제
+    int deleteByUserIdAndSocialType(
+        @Param("userId") String userId,
+        @Param("socialType") String socialType
+    );
 }

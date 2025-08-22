@@ -87,13 +87,22 @@
 	
 	<input type="text" id="search-input" placeholder="상품명 검색..." />
 	
-	<div class="product-container" id="product-container">
+		<div class="product-container" id="product-container">
 	    <c:forEach var="item" items="${productList}">
-	        <div class="product-card" data-name="${item.productName}">
-	            <div class="product-name"><a href="">${item.productName}</a></div>
-	            <div class="wish-count">❤️ ${item.wishCount}</div>
-	        </div>
-	    </c:forEach>
+		    <div class="product-card" data-name="${item.productName}">
+		        <div class="product-name">
+		            <c:choose>
+		                <c:when test="${item.productStatus == 'GS003'}">
+		                    <span style="color:gray; cursor: default;">${item.productName}<br>(일시품절)</span>
+		                </c:when>
+		                <c:otherwise>
+		                    <a href="/biz/productOne?productNo=${item.productNo}">${item.productName}</a>
+		                </c:otherwise>
+		            </c:choose>
+		        </div>
+		        <div class="wish-count">❤️ ${item.wishCount}</div>
+		    </div>
+		</c:forEach>
 	</div>
 	
 	<div class="pagination" id="pagination"></div>

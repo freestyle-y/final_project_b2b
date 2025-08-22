@@ -95,6 +95,8 @@ public interface ProductMapper {
 	Integer findMaxProductNo();
 	// 상품 등록
 	int insertProduct(Product product);
+	// 초기 재고 등록(개수 : 0)
+	void insertInventory(int productNo, int optionNo);
 	
 	// 재고 목록 조회
 	List<Map<String, Object>> inventoryList();
