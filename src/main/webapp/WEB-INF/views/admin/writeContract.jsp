@@ -3,6 +3,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
 <html lang="ko">
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
 <head>
   <meta charset="UTF-8">
   <title>계약서 작성 - 관리자</title>
@@ -439,10 +440,10 @@
     <jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
   </div>
   
-  <div class="toolbar no-print">
-    <button class="btn btn-primary" onclick="document.forms['contractForm'].submit()">작성 완료</button>
-    <a class="btn" href="${pageContext.request.contextPath}/admin/contractList">목록</a>
-  </div>
+	<div class="toolbar no-print">
+	  <button class="btn btn-primary" type="submit" form="contractForm">작성 완료</button>
+	  <a class="btn" href="${pageContext.request.contextPath}/admin/contractList">목록</a>
+	</div>
   
   <form id="contractForm" method="post" action="${pageContext.request.contextPath}/biz/contract/write">
     <c:if test="${not empty contractOne}">
@@ -471,19 +472,41 @@
         </div>
       </div>
       
-      <div class="signature-section">
-        <div class="signature-title">서명</div>
-        <div class="signature-boxes">
-          <div class="signature-box">
-            <div class="signature-label">갑 (공급자) 서명</div>
-            <div class="signature-field">서명</div>
-          </div>
-          <div class="signature-box">
-            <div class="signature-label">을 (수요자) 서명</div>
-            <div class="signature-field">서명</div>
-          </div>
-        </div>
-      </div>
+		<div class="signature-section">
+		  <div class="signature-title">서명</div>
+		  <div class="signature-boxes">
+		    <!-- 갑 서명 -->
+		<div class="signature-box" id="sig-supplier">
+		  <div class="signature-label">갑 (공급자) 서명</div>
+		  <div class="signature-field" style="padding:0">
+		<canvas style="width:100%; height:60px;"></canvas>
+		</div>
+		<div class="no-print" style="margin-top:8px">
+		  <button type="button" class="btn" data-action="clear">지우기</button>
+		</div>
+		<!-- 제출용 hidden -->
+		<input type="hidden" name="supplierSignature" />
+		<!-- 인쇄 시 이미지로 교체 표시 (선택) -->
+		<img alt="supplier signature" style="display:none; max-width:100%; height:60px;" />
+		</div>
+		
+		<!-- 을 서명 -->
+		<div class="signature-box" id="sig-buyer">
+		  <div class="signature-label">을 (수요자) 서명</div>
+		  <div class="signature-field" style="padding:0">
+		<canvas style="width:100%; height:60px;"></canvas>
+		</div>
+		<div class="no-print" style="margin-top:8px">
+		  <button type="button" class="btn" data-action="clear">지우기</button>
+		</div>
+		<!-- 제출용 hidden -->
+		<input type="hidden" name="buyerSignature" />
+		<!-- 인쇄 시 이미지로 교체 표시 (선택) -->
+		<img alt="buyer signature" style="display:none; max-width:100%; height:60px;" />
+		    </div>
+		  </div>
+		</div>
+
 
       <div class="section-title">계약 개요</div>
       <table class="contract-table">
@@ -678,6 +701,83 @@
         updateTotal();
       }
     })();
+    (function() {
+    	  // 공통 유틸: 캔버스 리사이즈(레티나 대응)
+    	  function fitCanvas(canvas) {
+    	    const ratio = Math.max(window.devicePixelRatio || 1, 1);
+    	    const rect = canvas.getBoundingClientRect();
+    	    canvas.width  = Math.max(1, Math.round(rect.width  * ratio));
+    	    canvas.height = Math.max(1, Math.round(rect.height * ratio));
+    	    const ctx = canvas.getContext('2d');
+    	    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+    	  }
+
+    	  function makePad(rootId) {
+    	    const root   = document.getElementById(rootId);
+    	    const canvas = root.querySelector('canvas');
+    	    const pad    = new SignaturePad(canvas, { backgroundColor: 'rgb(255,255,255)' });
+    	    const btnClr = root.querySelector('[data-action="clear"]');
+    	    const hidden = root.querySelector('input[type="hidden"]');
+    	    const imgOut = root.querySelector('img');
+
+    	    function resize() {
+    	      // 리사이즈 시 기존 선 유지
+    	      const data = pad.toData();
+    	      fitCanvas(canvas);
+    	      pad.clear();
+    	      if (data && data.length) pad.fromData(data);
+    	    }
+    	    resize();
+    	    window.addEventListener('resize', resize);
+
+    	    btnClr.addEventListener('click', () => {
+    	      pad.clear();
+    	      if (hidden) hidden.value = '';
+    	      if (imgOut) { imgOut.src = ''; imgOut.style.display = 'none'; }
+    	    });
+
+    	    // 제출 전 dataURL로 저장
+    	    function persist() {
+    	      if (!hidden) return;
+    	      hidden.value = pad.isEmpty() ? '' : pad.toDataURL('image/png');
+    	      if (imgOut) {
+    	        if (hidden.value) { imgOut.src = hidden.value; imgOut.style.display = 'block'; }
+    	        else { imgOut.src = ''; imgOut.style.display = 'none'; }
+    	      }
+    	    }
+
+    	    // 인쇄 전/후 캔버스 대신 이미지로 표시(선택)
+    	    function beforePrint() {
+    	      persist();               // 최신 값 저장
+    	      if (imgOut && hidden.value) {
+    	        imgOut.src = hidden.value;
+    	        imgOut.style.display = 'block';
+    	      }
+    	    }
+    	    function afterPrint() {
+    	      // 인쇄 후 캔버스 계속 보이게 유지 (이미지는 둬도 무방)
+    	    }
+    	    window.addEventListener('beforeprint', beforePrint);
+    	    window.addEventListener('afterprint',  afterPrint);
+
+    	    return { pad, persist };
+    	  }
+
+    	  const supplier = makePad('sig-supplier');
+    	  const buyer    = makePad('sig-buyer');
+
+    	  // 폼 제출 시 두 서명 확정 저장
+    	  const form = document.getElementById('contractForm');
+    	  form.addEventListener('submit', function() {
+    	    supplier.persist();
+    	    buyer.persist();
+    	    // 서명 필수라면 아래 검증 추가
+    	    // if (!form.supplierSignature.value || !form.buyerSignature.value) {
+    	    //   alert('서명이 필요합니다.');
+    	    //   event.preventDefault();
+    	    // }
+    	  });
+    	})();
   </script>
 
   <div class="no-print">

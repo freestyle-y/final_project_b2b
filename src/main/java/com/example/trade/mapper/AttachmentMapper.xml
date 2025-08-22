@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.trade.mapper.AttachmentMapper">
+
+  <insert id="insertOne" parameterType="com.example.trade.dto.Attachment" useGeneratedKeys="true" keyProperty="attachmentNo">
+    INSERT INTO attachment
+      (attachment_code, category_code, priority, filepath, filename, create_user, use_status)
+    VALUES
+      (#{attachmentCode}, #{categoryCode}, #{priority}, #{filepath}, #{filename}, #{createUser}, #{useStatus})
+  </insert>
+
+  <insert id="insertBatch">
+    INSERT INTO attachment
+      (attachment_code, category_code, priority, filepath, filename, create_user, use_status)
+    VALUES
+    <foreach collection="list" item="a" separator=",">
+      (#{a.attachmentCode}, #{a.categoryCode}, #{a.priority}, #{a.filepath}, #{a.filename}, #{a.createUser}, #{a.useStatus})
+    </foreach>
+  </insert>
+
+  <select id="selectByCodeAndCategory" resultType="com.example.trade.dto.Attachment">
+    SELECT
+      attachment_no AS attachmentNo,
+      attachment_code AS attachmentCode,
+      category_code AS categoryCode,
+      priority, filepath, filename,
+      create_user AS createUser, create_date AS createDate,
+      update_user AS updateUser, update_date AS updateDate,
+      use_status  AS useStatus
+    FROM attachment
+    WHERE attachment_code = #{param1}
+      AND category_code   = #{param2}
+      AND use_status      = 'Y'
+    ORDER BY priority ASC, attachment_no ASC
+  </select>
+
+</mapper>
