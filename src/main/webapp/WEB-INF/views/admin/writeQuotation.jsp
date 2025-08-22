@@ -7,11 +7,13 @@
 <meta charset="UTF-8">
 <title>견적서 작성</title>
 </head>
-
-<jsp:include page="/WEB-INF/common/header/publicHeader.jsp" />
-
 <body>
-	<jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
+
+<!-- 공통 헤더 -->
+<%@include file="/WEB-INF/common/header/header.jsp"%>
+<!-- 공통 사이드바 -->
+<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
+
 	<h1>견적서 작성</h1>
 
 	<table border="1">
@@ -57,6 +59,10 @@
 	    <input type="hidden" name="quotationNo" />
 	    <input type="hidden" name="subProductRequestNo" />
 	</form>
+	
+<!-- 공통 풋터 -->
+<%@include file="/WEB-INF/common/footer/footer.jsp"%>
+
 </body>
 
 <script>
@@ -74,5 +80,4 @@ function submitQuotationPopup(quotationNo, subProductRequestNo) {
 }
 </script>
 
-<jsp:include page="/WEB-INF/common/footer/footer.jsp" />
 </html>

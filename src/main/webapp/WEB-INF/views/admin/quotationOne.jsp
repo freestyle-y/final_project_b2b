@@ -7,9 +7,13 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 </head>
-<jsp:include page="/WEB-INF/common/header/publicHeader.jsp" />
 <body>
-	<jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
+
+<!-- 공통 헤더 -->
+<%@include file="/WEB-INF/common/header/header.jsp"%>
+<!-- 공통 사이드바 -->
+<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
+
 	<h1>quotationOne</h1>
 	<form action="${pageContext.request.contextPath}/admin/writeQuotation" method="get">
     <!-- ✅ 수정: Spring Security 사용 시 CSRF 토큰 전송 -->
@@ -60,6 +64,9 @@
 	</table>
 	<button type="submit">견적내기</button>
 	</form>
+
+<!-- 공통 풋터 -->
+<%@include file="/WEB-INF/common/footer/footer.jsp"%>
+
 </body>
-<jsp:include page="/WEB-INF/common/footer/footer.jsp" />
 </html>

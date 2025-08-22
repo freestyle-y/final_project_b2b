@@ -7,7 +7,6 @@
 <head>
   <meta charset="UTF-8">
   <title>계약서 작성 - 관리자</title>
-  <jsp:include page="/WEB-INF/common/header/publicHeader.jsp" />
   <style>
     /* 기본 스타일 */
     * {
@@ -436,8 +435,13 @@
   </style>
 </head>
 <body>
+
+<!-- 공통 헤더 -->
+<%@include file="/WEB-INF/common/header/header.jsp"%>
+
   <div class="no-print">
-    <jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
+	<!-- 공통 사이드바 -->
+	<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
   </div>
   
 	<div class="toolbar no-print">
@@ -781,7 +785,8 @@
   </script>
 
   <div class="no-print">
-    <jsp:include page="/WEB-INF/common/footer/footer.jsp" />
+    <!-- 공통 풋터 -->
+	<%@include file="/WEB-INF/common/footer/footer.jsp"%>
   </div>
 </body>
 </html>

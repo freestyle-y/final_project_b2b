@@ -49,12 +49,14 @@
     }
 </style>
 </head>
-
-<jsp:include page="/WEB-INF/common/header/adminHeader.jsp" />
 <body>
-    <jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
 
-    <div class="main-container">
+<!-- 공통 헤더 -->
+<%@include file="/WEB-INF/common/header/header.jsp"%>
+<!-- 공통 사이드바 -->
+<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
+
+	<div class="main-container">
         <h1>admin mainPage</h1>
 		<a href="/admin/quotationList">견적서 목록</a> / 
 		<a href="/admin/writeQuotation?productRequestNo=1">견적서 작성</a> / 
@@ -65,7 +67,10 @@
 		<a href="/admin/manageUser">회원관리</a> /
 		<a href="/admin/contractList">계약서 목록</a> / 
 		<a href="/admin/finalPaymentHistory">잔금 확인 페이지</a>
-    </div>
+	</div>
+
+<!-- 공통 풋터 -->
+<%@include file="/WEB-INF/common/footer/footer.jsp"%>
+
 </body>
-<jsp:include page="/WEB-INF/common/footer/footer.jsp" />
 </html>

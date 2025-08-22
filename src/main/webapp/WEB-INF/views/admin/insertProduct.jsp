@@ -287,9 +287,12 @@
     }
 </script>
 </head>
-<jsp:include page="/WEB-INF/common/header/adminHeader.jsp" />
 <body>
-<jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
+
+<!-- 공통 헤더 -->
+<%@include file="/WEB-INF/common/header/header.jsp"%>
+<!-- 공통 사이드바 -->
+<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
 
 <h1>상품 등록</h1>
 
@@ -391,6 +394,8 @@
 
 </form>
 
-<jsp:include page="/WEB-INF/common/footer/footer.jsp" />
+<!-- 공통 풋터 -->
+<%@include file="/WEB-INF/common/footer/footer.jsp"%>
+
 </body>
 </html>
