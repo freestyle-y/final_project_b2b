@@ -5,12 +5,7 @@
 <head>
 <meta charset="UTF-8">
 <title>주문 상세 정보</title>
-<script>
-function toggleReviewForm(index) {
-    const form = document.getElementById("review-form-" + index);
-    form.style.display = (form.style.display === "none") ? "block" : "none";
-}
-</script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <jsp:include page="/WEB-INF/common/header/publicHeader.jsp" />
 <body>
@@ -39,6 +34,7 @@ function toggleReviewForm(index) {
             <th>수량</th>
             <th>가격</th>
             <th>배송상태</th>
+            <th>구매상태</th>
             <th>기능</th>
         </tr>
     </thead>
@@ -63,18 +59,25 @@ function toggleReviewForm(index) {
                     </c:choose>
                 </td>
                 <td>
+                	<c:choose>
+                		<c:when test="${order.orderStatus == 'OS001'}">결제대기</c:when>
+                		<c:when test="${order.orderStatus == 'OS002'}">결제완료</c:when>
+                		<c:when test="${order.orderStatus == 'OS003'}">구매확정</c:when>
+                	</c:choose>
+                </td>
+                <td>
                     <button onclick="location.href='/personal/deliveryOne?subOrderNo=${order.subOrderNo}'">배송조회</button>
                     <button onclick="location.href='/personal/exchangeReturn?orderDetailNo=${order.orderNo}'">교환/반품</button>
                     <button onclick="toggleReviewForm(${status.index})">리뷰작성</button>
                     <button onclick="location.href='/public/QNAPage'">상품문의</button>
-                    <button onclick="location.href='/personal/confirm?orderDetailNo=${order.orderNo}'">구매확정</button>
+                    <button type="button" class="btn-confirm" onclick="confirmProduct('${order.orderNo}', '${order.subOrderNo}')">구매확정</button>
                     <span style="font-size:12px; color:gray;">(1% 적립 예정)</span>
                 </td>
             </tr>
 
             <!-- 리뷰 작성 폼 -->
             <tr id="review-form-${status.index}" style="display:none;">
-                <td colspan="7" style="text-align:left;">
+                <td colspan="8" style="text-align:left;">
                     <form method="post" action="/personal/addReview">
 						<input type="hidden" name="orderNo" value="${order.orderNo}" />
 						<input type="hidden" name="subOrderNo" value="${order.subOrderNo}" />
@@ -100,6 +103,28 @@ function toggleReviewForm(index) {
         </c:forEach>
     </tbody>
 </table>
+<script>
+function toggleReviewForm(index) {
+    const form = document.getElementById("review-form-" + index);
+    form.style.display = (form.style.display === "none") ? "block" : "none";
+}
+
+function confirmProduct(orderNo, subOrderNo) {
+
+	$.ajax({
+		type: "POST"
+		,url: "/personal/order/confirmProduct"
+		,data: { orderNo: orderNo, subOrderNo: subOrderNo }
+		,success: function(){
+			alert("구매 확정이 되었습니다.")
+			location.reload();
+		},
+		error: function(xhr){
+			alert("구매확정 처리 중 오류가 발생했습니다.")
+		}
+	})
+}
+</script>
 
 </body>
 <jsp:include page="/WEB-INF/common/footer/footer.jsp" />
