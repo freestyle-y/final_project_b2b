@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.trade.dto.SocialLogin;
 import com.example.trade.dto.User;
 import com.example.trade.mapper.UserMapper;
 
@@ -193,5 +194,36 @@ public class MemberService {
 
 	    return "등록된 이메일로 임시 비밀번호를 발송했습니다.";
 	}
+	
+	// 소셜 조회
+	public List<SocialLogin> getLinkedSocials(String userId) {
+	    return userMapper.findSocialByUserId(userId);
+	}
+	
+	// 소셜 계정 추가 연동
+    public void linkSocialAccount(String userId, String socialType, String socialId) {
+        SocialLogin existing = userMapper.findBySocialTypeAndSocialId(socialType, socialId);
+        if (existing != null) {
+            throw new IllegalStateException("이미 다른 계정에 연동된 소셜입니다.");
+        }
+
+        SocialLogin socialLogin = new SocialLogin();
+        socialLogin.setUserId(userId);
+        socialLogin.setSocialType(socialType);
+        socialLogin.setSocialId(socialId);
+
+        userMapper.insert(socialLogin);
+    }
+
+    // 소셜 계정으로 로그인 시 기존 유저 찾기
+    public String findUserIdBySocial(String socialType, String socialId) {
+        SocialLogin socialLogin = userMapper.findBySocialTypeAndSocialId(socialType, socialId);
+        return (socialLogin != null) ? socialLogin.getUserId() : null;
+    }
+
+    // 소셜 연동 해제
+    public void unlinkSocialAccount(String userId, String socialType) {
+        userMapper.deleteByUserIdAndSocialType(userId, socialType);
+    }
 
 }

@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,7 +15,6 @@
 		flex-direction: column;
 	}
 
-	/* 메인 컨텐츠 영역 */
 	.main-content {
 		flex: 1;
 		display: flex;
@@ -64,7 +64,6 @@
 		background-color: #45a049;
 	}
 
-	/* 소셜 로그인 버튼 */
 	.social-login {
 		margin-top: 15px;
 	}
@@ -80,7 +79,6 @@
 		color: #3C1E1E;
 	}
 
-	/* 하단 링크 */
 	.extra-links {
 		margin-top: 15px;
 		display: flex;
@@ -97,59 +95,53 @@
 		text-decoration: underline;
 	}
 	.naver-btn, .kakao-btn {
-    display: block;
-    text-align: center;
-    width: 100%;
-    padding: 12px;
-    border-radius: 4px;
-    font-size: 16px;
-    text-decoration: none;
-    cursor: pointer;
+		display: block;
+		text-align: center;
+		width: 100%;
+		padding: 12px;
+		border-radius: 4px;
+		font-size: 16px;
+		text-decoration: none;
+		cursor: pointer;
 	}
-	
-	/* 네이버 */
-	.naver-btn {
-	    background-color: #03C75A;
-	    color: white;
-	    margin-bottom: 8px;
-	}
-	
-	/* 카카오 */
-	.kakao-btn {
-	    background-color: #FEE500;
-	    color: #3C1E1E;
-	}
-		
 </style>
 </head>
 <jsp:include page="/WEB-INF/common/header/publicHeader.jsp" />
 <body>
 <jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
 
-	<div class="main-content">
-		<div class="login-container">
-			<h1>로그인</h1>
-			<form action="/public/loginAction" method="post" name="loginForm">
-				<input type="text" id="username" name="username" placeholder="아이디" required>
-				<input type="password" id="password" name="password" placeholder="비밀번호" required>
-				<button type="submit">로그인</button>
-			</form>
-			
-			<div class="social-login">
-			    <a href="/oauth2/authorization/naver" class="naver-btn">네이버로 로그인</a>
-			    <a href="/oauth2/authorization/kakao" class="kakao-btn">카카오로 로그인</a>
-			</div>
+<div class="main-content">
+	<div class="login-container">
+		<h1>로그인</h1>
 
-			<div class="extra-links">
-				<a href="/public/joinMember">회원가입</a>
-				<div>
-					<a href="/public/findMemberId">계정찾기</a> | 
-					<a href="/public/findMemberPw">비밀번호 찾기</a>
-				</div>
+		<!-- 실패 메시지 표시 -->
+		<c:if test="${not empty param.errorMsg}">
+			<div style="color: red; margin-bottom: 10px;">
+				${param.errorMsg}
+			</div>
+		</c:if>
+
+		<form action="/public/loginAction" method="post" name="loginForm">
+			<input type="text" id="username" name="username" placeholder="아이디" required>
+			<input type="password" id="password" name="password" placeholder="비밀번호" required>
+			<button type="submit">로그인</button>
+		</form>
+
+		<div class="social-login">
+			<a href="/oauth2/authorization/naver" class="naver-btn">네이버로 로그인</a>
+			<a href="/oauth2/authorization/kakao" class="kakao-btn">카카오로 로그인</a>
+		</div>
+
+		<div class="extra-links">
+			<a href="/public/joinMember">회원가입</a>
+			<div>
+				<a href="/public/findMemberId">계정찾기</a> | 
+				<a href="/public/findMemberPw">비밀번호 찾기</a>
 			</div>
 		</div>
 	</div>
+</div>
 
-	<jsp:include page="/WEB-INF/common/footer/footer.jsp" />
+<jsp:include page="/WEB-INF/common/footer/footer.jsp" />
 </body>
 </html>
