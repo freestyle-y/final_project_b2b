@@ -155,6 +155,8 @@ h1, h3 {
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
+const reward = document.getElementById("availablePoints").value
+console.log(reward);
 	function getPointRuleError(usePoint, total, available) {
 		// 포인트 사용 안 하면 통과
 		if (!usePoint || usePoint <= 0) return "";
@@ -197,6 +199,7 @@ h1, h3 {
 		}
 		refreshPointControls();
 	}
+	console.log("totalAmount.innerText =", document.getElementById("totalAmount").innerText);
 
 	function refreshPointControls() {
 		const total = parseInt(document.getElementById("totalAmount").innerText);

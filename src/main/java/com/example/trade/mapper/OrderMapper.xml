@@ -51,11 +51,23 @@
 	
 	<!-- 회원 적립금 가져오기 -->
 	<select id="getReward" resultType="int">
-		SELECT 
-		    IFNULL(SUM(o.order_reward + o.review_reward), 0) - IFNULL(SUM(rh.reward_use), 0) AS reward
-		FROM `order` o
-		LEFT JOIN reward_history rh ON o.order_no = rh.order_no
-		WHERE order_status = 'OS003' AND user_id = #{userId}
+		SELECT
+			IFNULL((
+				SELECT SUM(o.order_reward + o.review_reward)
+					FROM `order` o
+					WHERE o.user_id = #{userId}
+					AND o.order_status = 'OS003'
+			), 0)
+		-
+			IFNULL((
+				SELECT SUM(rh.reward_use)
+					FROM reward_history rh
+					WHERE rh.order_no IN (
+						SELECT o2.order_no
+							FROM `order` o2
+							WHERE o2.user_id = #{userId}
+					)
+			), 0) AS reward
 	</select>
 	
 	<!-- 결제용 주문 요약 -->
