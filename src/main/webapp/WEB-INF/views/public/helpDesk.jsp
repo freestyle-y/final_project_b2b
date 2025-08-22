@@ -5,14 +5,21 @@
 <meta charset="UTF-8">
 <title>고객센터</title>
 </head>
-<jsp:include page="/WEB-INF/common/header/publicHeader.jsp" />
 <body>
-	<jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
+
+<!-- 공통 헤더 -->
+<%@include file="/WEB-INF/common/header/header.jsp"%>
+<!-- 공통 사이드바 -->
+<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
+
 	<h1>help desk page</h1>
 	<a href="/public/FAQList">자주 묻는 질문</a> /
 	<a href="/member/QNAList">문의 내역</a> /
 	<a href="/member/QNAWrite">1:1 문의</a> /
 	<a href="/public/noticeList">공지사항</a>
+	
+<!-- 공통 풋터 -->
+<%@include file="/WEB-INF/common/footer/footer.jsp"%>
+
 </body>
-<jsp:include page="/WEB-INF/common/footer/footer.jsp" />
 </html>

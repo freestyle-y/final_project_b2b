@@ -106,9 +106,13 @@
 	}
 </style>
 </head>
-<jsp:include page="/WEB-INF/common/header/publicHeader.jsp" />
+
 <body>
-<jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
+
+<!-- 공통 헤더 -->
+<%@include file="/WEB-INF/common/header/header.jsp"%>
+<!-- 공통 사이드바 -->
+<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
 
 <div class="main-content">
 	<div class="login-container">
@@ -142,6 +146,8 @@
 	</div>
 </div>
 
-<jsp:include page="/WEB-INF/common/footer/footer.jsp" />
+<!-- 공통 풋터 -->
+<%@include file="/WEB-INF/common/footer/footer.jsp"%>
+
 </body>
 </html>

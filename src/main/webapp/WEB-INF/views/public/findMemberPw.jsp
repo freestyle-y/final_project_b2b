@@ -62,9 +62,14 @@ $(function(){
 });
 </script>
 </head>
-<jsp:include page="/WEB-INF/common/header/publicHeader.jsp" />
+
 <body>
-<jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
+
+<!-- 공통 헤더 -->
+<%@include file="/WEB-INF/common/header/header.jsp"%>
+<!-- 공통 사이드바 -->
+<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
+
 <h1>비밀번호 찾기</h1>
 
 <!-- 회원 구분 -->
@@ -89,6 +94,8 @@ $(function(){
 
 <button type="button" id="findPwBtn">임시 비밀번호 발급</button>
 
-<jsp:include page="/WEB-INF/common/footer/footer.jsp" />
+<!-- 공통 풋터 -->
+<%@include file="/WEB-INF/common/footer/footer.jsp"%>
+
 </body>
 </html>

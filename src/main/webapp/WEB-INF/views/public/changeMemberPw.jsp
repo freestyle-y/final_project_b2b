@@ -10,9 +10,14 @@
     .success-msg { color: green; font-size: 0.9em; margin-left: 8px; }
 </style>
 </head>
-<jsp:include page="/WEB-INF/common/header/publicHeader.jsp" />
+
 <body>
-    <jsp:include page="/WEB-INF/common/sidebar/publicSidebar.jsp" />
+
+<!-- 공통 헤더 -->
+<%@include file="/WEB-INF/common/header/header.jsp"%>
+<!-- 공통 사이드바 -->
+<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
+
     <h1>비밀번호 변경</h1>
 
     <form id="pwForm" action="/public/changeMemberPw" method="post">
@@ -81,6 +86,8 @@
     });
     </script>
 
+<!-- 공통 풋터 -->
+<%@include file="/WEB-INF/common/footer/footer.jsp"%>
+
 </body>
-<jsp:include page="/WEB-INF/common/footer/footer.jsp" />
 </html>
