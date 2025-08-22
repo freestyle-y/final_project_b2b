@@ -50,7 +50,7 @@ public interface UserMapper {
     int insert(SocialLogin socialLogin);
 
     // 특정 소셜 계정 찾기
-    SocialLogin findBySocialTypeAndSocialId(
+    SocialLogin findAllBySocialTypeAndSocialId(
         @Param("socialType") String socialType,
         @Param("socialId") String socialId
     );

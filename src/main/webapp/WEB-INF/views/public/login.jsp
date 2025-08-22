@@ -113,12 +113,12 @@
 <div class="main-content">
 	<div class="login-container">
 		<h1>로그인</h1>
-
-		<!-- 실패 메시지 표시 -->
+		
+		<!-- 실패 메시지 출력 -->
 		<c:if test="${not empty param.errorMsg}">
-			<div style="color: red; margin-bottom: 10px;">
-				${param.errorMsg}
-			</div>
+			<script>
+				alert("${param.errorMsg}");
+			</script>
 		</c:if>
 
 		<form action="/public/loginAction" method="post" name="loginForm">
