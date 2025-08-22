@@ -70,6 +70,12 @@ public interface ProductMapper {
 	
 	// 상품 요청 리스트 조회
 	List<ProductRequest> productRequestList();
+	// 상품 요청 상세 조회
+	List<Map<String, Object>> productRequestOne(int requestNo);
+	// 상품 요청 수정
+	int updateProductRequest(ProductRequest productRequest);
+	// 상품 요청 삭제
+	int deleteProductRequest(int requestNo); 
 	
 	// 대분류 최대 ID 조회 
 	String selectMaxMajorCategoryId();

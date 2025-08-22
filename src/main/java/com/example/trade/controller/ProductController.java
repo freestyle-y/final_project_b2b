@@ -201,11 +201,48 @@ public class ProductController {
 		        ));
 
 		model.addAttribute("groupedRequests", sortedGroupedRequests);
-
-		    
 		return "biz/productRequestList";
 	}
 	
+	// 상품 요청 상세 조회 페이지
+	@GetMapping("/biz/requestDetail")
+	public String bizRequestDetail(Model model,
+			@RequestParam int requestNo) {
+		List<Map<String, Object>> productRequestOne = productService.selectProductRequestOne(requestNo);
+		//log.info(productRequestOne.toString());
+		model.addAttribute("productRequestOne", productRequestOne);
+		return "biz/requestDetail";
+	}
+	
+	// 상품 요청 수정
+	@GetMapping("biz/editRequest")
+	public String bizEditRequest(Model model,
+			@RequestParam int requestNo) {
+		String loginUserName = SecurityContextHolder.getContext().getAuthentication().getName();
+		//log.info(loginUserName);
+		List<Map<String, Object>> productRequestOne = productService.selectProductRequestOne(requestNo);
+		log.info(productRequestOne.toString());
+		List<Address> bizAddressList = productService.selectBizAddress(loginUserName);
+		log.info(bizAddressList.toString());
+		model.addAttribute("productRequestOne", productRequestOne);
+		model.addAttribute("bizAddressList", bizAddressList);
+		return "biz/editRequest";
+	}
+	
+	// 상품 요청 수정 DB update
+	@PostMapping("biz/editRequest")
+	public String bizEditRequest(@ModelAttribute ProductRequestForm productRequestForm) {
+		//log.info(productRequestForm.toString());
+		productService.updateProductRequests(productRequestForm);
+	    return "redirect:/biz/productRequestList";
+	}
+	
+	// 상품 요청 삭제
+	@GetMapping("biz/deleteRequest")
+	public String bizDeleteRequest(@RequestParam int requestNo) {
+		productService.deleteProductRequest(requestNo);
+		return "redirect:/biz/productRequestList";
+	}
 	
 	// 기업 메인 페이지
 	@GetMapping("/biz/mainPage")

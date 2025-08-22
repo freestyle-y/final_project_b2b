@@ -118,7 +118,7 @@
             <c:set var="items" value="${entry.value}" />
             <c:set var="firstItem" value="${items[0]}" />
 
-            <div class="request-card">
+            <div class="request-card" data-request-no="${requestNo}" style="cursor: pointer;">
                 <div class="request-header">
                     요청번호: <span class="product">${requestNo}</span> / 요청시간: ${firstItem.formattedCreateDate}
                 </div>
@@ -192,6 +192,11 @@
 
             $('#search-input').on('input', function () {
                 filterCards($(this).val());
+            });
+            
+            $('.request-card').on('click', function () {
+                const requestNo = $(this).data('request-no');
+                window.location.href = '/biz/requestDetail?requestNo=' + requestNo;
             });
 
             // 초기 페이지 렌더링

@@ -120,8 +120,6 @@ public class ProductRestController {
 	    }
 	}
 
-
-	
 	// 카테고리별 반환
 	@GetMapping("/product/byCategory")
 	public Map<String, Object> productByCategory(

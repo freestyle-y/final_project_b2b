@@ -12,6 +12,7 @@ import com.example.trade.dto.Category;
 import com.example.trade.dto.Option;
 import com.example.trade.dto.Product;
 import com.example.trade.dto.ProductRequest;
+import com.example.trade.dto.ProductRequestForm;
 import com.example.trade.mapper.ProductMapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -181,6 +182,31 @@ public class ProductService {
 	// 상품 요청 리스트 조회
 	public List<ProductRequest> selectProductRequestList() {
 		return productMapper.productRequestList();
+	}
+	
+	// 상품 요청 상세 조회
+	public List<Map<String, Object>> selectProductRequestOne(int requestNo) {
+		return productMapper.productRequestOne(requestNo);
+	}
+	
+	// 상품 요청 수정
+	public void updateProductRequests(ProductRequestForm form) {
+		List<ProductRequest> productList = form.getProductRequestList();
+        int addressNo = form.getAddressNo();
+        String requests = form.getRequests();
+
+        for (ProductRequest pr : productList) {
+            // 개별 상품 요청에 공통 필드 세팅
+            pr.setAddressNo(addressNo);
+            pr.setRequests(requests);
+            //log.info(pr.toString());
+            productMapper.updateProductRequest(pr);
+        }
+	}
+	
+	// 상품 요청 삭제
+	public void deleteProductRequest(int requestNo) {
+		productMapper.deleteProductRequest(requestNo);
 	}
 	
 	// 카테고리 추가

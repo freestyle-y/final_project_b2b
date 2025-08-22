@@ -329,7 +329,7 @@
 	<select id="productRequestList" resultType="com.example.trade.dto.ProductRequest">
 		SELECT
 		    product_request_no AS productRequestNo,
-		    sub_product_request_no AS subProductRequestNO,
+		    sub_product_request_no AS subProductRequestNo,
 		    address_no AS addressNo,
 		    product_name AS productName,
 		    product_option AS productOption,
@@ -340,6 +340,31 @@
 		    create_date AS createDate
 		FROM
 		    product_request
+		WHERE use_status = 'Y'
+		ORDER BY
+		    product_request_no DESC,
+		    sub_product_request_no ASC;
+	</select>
+	
+	<!-- 상품 요청 상세 조회 -->
+	<select id="productRequestOne" parameterType="int" resultType="map">
+		SELECT
+		    pr.product_request_no AS productRequestNo,
+		    pr.sub_product_request_no AS subProductRequestNo,
+		    pr.address_no AS addressNo,
+		    a.postal,
+		    a.address,
+		    a.detail_address,
+		    pr.product_name AS productName,
+		    pr.product_option AS productOption,
+		    pr.product_quantity AS productQuantity,
+		    pr.requests,
+		    pr.status,
+		    pr.create_user AS createUser,
+		    pr.create_date AS createDate
+		FROM product_request pr INNER JOIN address a
+			ON pr.address_no = a.address_no
+		WHERE product_request_no = #{requestNo}
 		ORDER BY
 		    product_request_no DESC,
 		    sub_product_request_no ASC;
@@ -471,6 +496,29 @@
 	        update_date = NOW()
 	    WHERE user_id = #{userId}
 	      AND product_no = #{productNo}
+	</update>
+	
+	<!-- 상품 요청 수정 -->
+	<update id="updateProductRequest" parameterType="com.example.trade.dto.ProductRequest">
+	    UPDATE product_request
+	    SET
+	        product_name = #{productName},
+	        product_option = #{productOption},
+	        product_quantity = #{productQuantity},
+	        address_no = #{addressNo},
+	        requests = #{requests},
+	        update_user = #{updateUser},
+	        update_date = NOW()
+	    WHERE
+	        product_request_no = #{productRequestNo}
+	        AND sub_product_request_no = #{subProductRequestNo}
+	</update>
+	
+	<!-- 상품 요청 삭제 -->
+	<update id="deleteProductRequest" parameterType="int">
+		UPDATE product_request
+		SET use_status = 'N'
+		WHERE product_request_no = #{requestNo}
 	</update>
 	
 	<!-- 재고 수정 -->
