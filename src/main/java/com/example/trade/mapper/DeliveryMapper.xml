@@ -45,6 +45,7 @@
 			END AS deliveryStatus
 		
 		FROM `order`
-		WHERE sub_order_no = #{subOrderNo};
+		WHERE order_no = #{orderNo}
+		AND sub_order_no = #{subOrderNo}
 	</select>
 </mapper>

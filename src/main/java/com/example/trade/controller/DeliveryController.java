@@ -45,8 +45,8 @@ public class DeliveryController {
 	
 	// 배송 상세 페이지(개인)
 	@GetMapping("/personal/deliveryOne")
-	public String personalDeliveryOne(@RequestParam int subOrderNo, Model model) {
-		List<Map<String, Object>> personalDeliveryOne = deliveryService.getPersonalDeliveryOne(subOrderNo);
+	public String personalDeliveryOne(@RequestParam int orderNo, @RequestParam int subOrderNo, Model model) {
+		List<Map<String, Object>> personalDeliveryOne = deliveryService.getPersonalDeliveryOne(orderNo, subOrderNo);
 		model.addAttribute("personalDeliveryOne", personalDeliveryOne);
 		return "personal/deliveryOne";
 	}

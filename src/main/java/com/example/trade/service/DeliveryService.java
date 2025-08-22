@@ -20,7 +20,7 @@ public class DeliveryService {
 	}
 
 	// 배송 상세 조회(개인)
-	public List<Map<String, Object>> getPersonalDeliveryOne(int subOrderNo) {
-		return deliveryMapper.selectPersonalDeliveryBySubOrderNo(subOrderNo);
+	public List<Map<String, Object>> getPersonalDeliveryOne(int orderNo, int subOrderNo) {
+		return deliveryMapper.selectPersonalDeliveryBySubOrderNo(orderNo, subOrderNo);
 	}
 }
