@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import com.example.trade.dto.Board;
+import com.example.trade.dto.Page;
 import com.example.trade.mapper.BoardMapper;
 
 @Service
@@ -16,8 +17,13 @@ public class BoardService {
 	}
 
 	// 자주 묻는 질문(FAQ) 목록
-	public List<Map<String, Object>> getFAQList() {
-		return boardMapper.selectFAQList();
+	public List<Map<String, Object>> getFAQList(Page page) {
+		return boardMapper.selectFAQList(page);
+	}
+	
+	// FAQ 전체 행 수 조회
+	public int getFAQTotalCount(Page page) {
+		return boardMapper.selectFAQTotalCount(page);
 	}
 
 	// 접속한 사용자의 문의 내역
@@ -39,5 +45,6 @@ public class BoardService {
 	public List<Map<String, Object>> getNoticeOne(int boardNo) {
 		return boardMapper.selectNoticeOne(boardNo);
 	}
+
 
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.trade.dto.Board;
+import com.example.trade.dto.Page;
 import com.example.trade.service.BoardService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -30,9 +31,26 @@ public class BoardController {
 	
 	// 자주 묻는 질문(FAQ)
 	@GetMapping("/public/FAQList")
-	public String FAQList(Model model) {
-		List<Map<String, Object>> FAQList = boardService.getFAQList();
+	public String FAQList(Model model
+						,@RequestParam(defaultValue = "10") int rowPerPage
+						,@RequestParam(defaultValue = "1") int currentPage
+						,@RequestParam(defaultValue = "") String searchWord
+						,@RequestParam(defaultValue = "all") String searchType) {
+		
+	    // Page 객체 생성 (DB 조회 전 totalCount = 0으로 초기화)
+	    Page page = new Page(rowPerPage, currentPage, 0, searchWord, searchType);
+	    
+	    // 전체 행 수 조회
+	    int totalCount = boardService.getFAQTotalCount(page);
+	    page.setTotalCount(totalCount);
+		
+	    // FAQ 리스트 조회
+		List<Map<String, Object>> FAQList = boardService.getFAQList(page);
+		
+		// 모델에 값 전달
 		model.addAttribute("FAQList", FAQList);
+		model.addAttribute("page", page);
+		
 		return "public/FAQList";
 	}
 

@@ -1,15 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.trade.mapper.BoardMapper">
-
 	<!-- 자주 묻는 질문(FAQ) 목록 -->
-	<select id="selectFAQList" resultType="map">
-		SELECT
-			board_no AS boardNo,
-			board_title AS boardTitle,
-			board_code AS boardCode
+	<select id="selectFAQList" parameterType="com.example.trade.dto.Page" resultType="map">
+	SELECT
+	board_no AS boardNo,
+	board_title AS boardTitle,
+	board_content AS boardContent
+	FROM board
+	WHERE board_code = 'BC001'
+	<if test="searchWord != null and searchWord != ''">
+		AND (board_title LIKE CONCAT('%', #{searchWord}, '%')
+		OR board_content LIKE CONCAT('%', #{searchWord}, '%'))
+	</if>
+	ORDER BY board_no DESC
+	LIMIT #{beginRow}, #{rowPerPage}
+	</select>
+	
+	<!-- 자주 묻는 질문(FAQ) 전체 행 수 조회 -->
+	<select id="selectFAQTotalCount" parameterType="com.example.trade.dto.Page" resultType="int">
+		SELECT COUNT(*)
 		FROM board
 		WHERE board_code = 'BC001'
+		<if test="searchWord != null and searchWord != ''">
+		AND (board_title LIKE CONCAT('%', #{searchWord}, '%')
+		OR board_content LIKE CONCAT('%', #{searchWord}, '%'))
+		</if>
 	</select>
 	
 	<!-- 접속한 사용자의 문의 내역 -->
