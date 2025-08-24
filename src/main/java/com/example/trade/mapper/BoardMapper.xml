@@ -72,15 +72,28 @@
 	</select>
 	
 	<!-- 공지사항 목록 조회 -->
-	<select id="selectNoticeList" resultType="map">
+	<select id="selectNoticeList" parameterType="com.example.trade.dto.Page" resultType="map">
 		SELECT
 			board_no AS boardNo,
 			board_title AS boardTitle,
-			board_code AS boardCode,
 			create_date AS createDate,
 			view_count AS viewCount
 		FROM board
 		WHERE board_code = 'BC003'
+		<if test="searchWord != null and searchWord != ''">
+			AND board_title LIKE CONCAT('%', #{searchWord}, '%')
+		</if>
+		ORDER BY board_no DESC
+		LIMIT #{beginRow}, #{rowPerPage}
+	</select>
+	
+	<select id="selectNoticeTotalCount" parameterType="com.example.trade.dto.Page" resultType="int">
+		SELECT COUNT(*)
+		FROM board
+		WHERE board_code = 'BC003'
+		<if test="searchWord != null and searchWord != ''">
+			AND board_title LIKE CONCAT('%', #{searchWord}, '%')
+		</if>
 	</select>
 	
 	<!-- 공지사항 상세 조회 -->

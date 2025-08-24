@@ -52,7 +52,7 @@
 		<c:forEach var="qna" items="${QNAList}">
 			<tr>
 				<td>${qna.boardNo}</td>
-				<td><a href="/member/QNAOne?boardNo=${qna.boardNo}">${qna.boardTitle}</a></td>
+				<td class="a"><a href="/member/QNAOne?boardNo=${qna.boardNo}">${qna.boardTitle}</a></td>
 			</tr>
 		</c:forEach>
 	</table>

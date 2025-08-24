@@ -42,15 +42,17 @@ public class BoardService {
 	}
 
 	// 공지사항 목록 조회
-	public List<Map<String, Object>> getNoticeList() {
-		return boardMapper.selectNoticeList();
+	public List<Map<String, Object>> getNoticeList(Page page) {
+		return boardMapper.selectNoticeList(page);
+	}
+	
+	// 공지사항 전체 행 수 조회
+	public int getNoticeTotalCount(Page page) {
+		return boardMapper.selectNoticeTotalCount(page);
 	}
 
 	// 공지사항 상세 조회
 	public List<Map<String, Object>> getNoticeOne(int boardNo) {
 		return boardMapper.selectNoticeOne(boardNo);
 	}
-
-
-
 }

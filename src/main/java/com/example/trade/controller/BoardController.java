@@ -103,9 +103,26 @@ public class BoardController {
 
 	// 공지사항
 	@GetMapping("/public/noticeList")
-	public String noticeList(Model model) {
-		List<Map<String, Object>> noticeList = boardService.getNoticeList();
+	public String noticeList(Model model
+							,@RequestParam(defaultValue = "10") int rowPerPage
+							,@RequestParam(defaultValue = "1") int currentPage
+							,@RequestParam(defaultValue = "") String searchWord
+							,@RequestParam(defaultValue = "all") String searchType) {
+		
+	    // Page 객체 생성 (DB 조회 전 totalCount = 0으로 초기화)
+	    Page page = new Page(rowPerPage, currentPage, 0, searchWord, searchType);
+	    
+		// 전체 행 수 조회
+		int totalCount = boardService.getNoticeTotalCount(page);
+		page.setTotalCount(totalCount);
+		
+		// 공지사항 조회
+		List<Map<String, Object>> noticeList = boardService.getNoticeList(page);
+		
+		// 모델에 값 전달
 		model.addAttribute("noticeList", noticeList);
+		model.addAttribute("page", page);
+		
 		return "public/noticeList";
 	}
 	

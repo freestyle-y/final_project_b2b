@@ -28,9 +28,11 @@ public interface BoardMapper {
 	List<Map<String, Object>> selectQNAOne(Board board);
 
 	// 공지사항 목록 조회
-	List<Map<String, Object>> selectNoticeList();
+	List<Map<String, Object>> selectNoticeList(Page page);
 
+	// 공지사항 전체 행 수 조회
+	int selectNoticeTotalCount(Page page);
+	
 	// 공지사항 상세 조회
 	List<Map<String, Object>> selectNoticeOne(int boardNo);
-
 }
