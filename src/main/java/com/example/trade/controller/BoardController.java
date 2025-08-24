@@ -1,5 +1,6 @@
 package com.example.trade.controller;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -7,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.trade.dto.Board;
@@ -99,6 +101,26 @@ public class BoardController {
 	@GetMapping("/member/QNAWrite")
 	public String QNAWrite() {
 		return "member/QNAWrite";
+	}
+	
+	// 1:1 문의 내역 등록
+	@PostMapping("/member/QNAWrite")
+	public String QNAWrite(Board board, Principal principal) {
+		// 접속한 사용자 ID 조회
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+		board.setCreateUser(username);
+		
+		// 사용자가 작성한 문의 글 DB에 저장
+		int row = boardService.insertBoard(board);
+		
+		if(row != 0) {
+			int newBoardNo = board.getBoardNo(); // useGeneratedKeys 로 세팅된 boardNo
+			System.out.println("QNA 등록 성공");
+			return "redirect:/member/QNAOne?boardNo=" + newBoardNo;
+		} else {
+			System.out.println("QNA 등록 실패");
+			return "redirect:/member/QNAWrite";
+		}
 	}
 
 	// 공지사항

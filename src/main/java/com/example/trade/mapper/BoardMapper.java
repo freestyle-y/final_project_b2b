@@ -26,6 +26,9 @@ public interface BoardMapper {
 	
 	// 문의 내역 상세 조회
 	List<Map<String, Object>> selectQNAOne(Board board);
+	
+	// 문의 내역 등록
+	int insertBoard(Board board);
 
 	// 공지사항 목록 조회
 	List<Map<String, Object>> selectNoticeList(Page page);

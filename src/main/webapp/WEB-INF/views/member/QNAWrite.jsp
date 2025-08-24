@@ -57,17 +57,14 @@
 
     <!-- 문의 등록 폼 -->
     <form action="/member/QNAWrite" method="post">
-        <label for="boardTitle">제목</label><br/>
-        <input type="text" id="boardTitle" name="boardTitle" required /><br/><br/>
+        <label for="boardTitle">제목</label>
+        <input type="text" id="boardTitle" name="boardTitle" required>
 
-        <label for="boardContent">내용</label><br/>
-        <textarea id="boardContent" name="boardContent" rows="6" required></textarea><br/><br/>
+        <label for="boardContent">내용</label>
+        <textarea id="boardContent" name="boardContent" rows="6" required></textarea>
 
-        <!-- hidden 값 : 구분 코드(BC002), 작성자 -->
-        <input type="hidden" name="boardCode" value="BC002" />
-        <sec:authentication property="name" var="loginId"/>
-        <input type="hidden" name="createUser" value="${loginId}" />
-
+        <!-- hidden 값 : 구분 코드(BC002) -->
+        <input type="hidden" name="boardCode" value="BC002">
         <button type="submit">등록하기</button>
     </form>
 

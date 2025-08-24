@@ -40,6 +40,11 @@ public class BoardService {
 	public List<Map<String, Object>> getQNAOne(Board board) {
 		return boardMapper.selectQNAOne(board);
 	}
+	
+	// 문의 내역 등록
+	public int insertBoard(Board board) {
+		return boardMapper.insertBoard(board);
+	}
 
 	// 공지사항 목록 조회
 	public List<Map<String, Object>> getNoticeList(Page page) {
@@ -55,4 +60,5 @@ public class BoardService {
 	public List<Map<String, Object>> getNoticeOne(int boardNo) {
 		return boardMapper.selectNoticeOne(boardNo);
 	}
+
 }
