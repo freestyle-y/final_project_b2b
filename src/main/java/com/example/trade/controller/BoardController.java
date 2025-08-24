@@ -54,15 +54,32 @@ public class BoardController {
 		return "public/FAQList";
 	}
 
-	// 문의 내역
+	// 접속된 사용자의 문의 내역 조회
 	@GetMapping("/member/QNAList")
-	public String QNAList(Model model) {
+	public String QNAList(Model model
+						,@RequestParam(defaultValue = "10") int rowPerPage
+						,@RequestParam(defaultValue = "1") int currentPage
+						,@RequestParam(defaultValue = "") String searchWord
+						,@RequestParam(defaultValue = "all") String searchType) {
+		
+	    // Page 객체 생성 (DB 조회 전 totalCount = 0으로 초기화)
+	    Page page = new Page(rowPerPage, currentPage, 0, searchWord, searchType);
+	    
 		// 접속한 사용자 ID 조회
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
-		model.addAttribute("username", username);
+		page.setUsername(username);
 		
-		List<Map<String, Object>> QNAList = boardService.getQNAList(username);
+		// 전체 행 수 조회
+		int totalCount = boardService.getQNATotalCount(page);
+		page.setTotalCount(totalCount);
+		
+		// 문의 내역 조회
+		List<Map<String, Object>> QNAList = boardService.getQNAList(page);
+		
+		// 모델에 값 전달
 		model.addAttribute("QNAList", QNAList);
+		model.addAttribute("page", page);
+		
 		return "member/QNAList";
 	}
 	

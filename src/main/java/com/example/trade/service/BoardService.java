@@ -27,8 +27,13 @@ public class BoardService {
 	}
 
 	// 접속한 사용자의 문의 내역
-	public List<Map<String, Object>> getQNAList(String username) {
-		return boardMapper.selectQNAListById(username);
+	public List<Map<String, Object>> getQNAList(Page page) {
+		return boardMapper.selectQNAListById(page);
+	}
+	
+	// 문의 내역 전체 행 수 조회
+	public int getQNATotalCount(Page page) {
+		return boardMapper.selectQNATotalCount(page);
 	}
 
 	// 문의 내역 상세 조회
@@ -45,6 +50,7 @@ public class BoardService {
 	public List<Map<String, Object>> getNoticeOne(int boardNo) {
 		return boardMapper.selectNoticeOne(boardNo);
 	}
+
 
 
 }

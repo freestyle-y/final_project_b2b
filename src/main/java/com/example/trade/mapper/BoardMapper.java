@@ -19,8 +19,11 @@ public interface BoardMapper {
 	int selectFAQTotalCount(Page page);
 
 	// 접속한 사용자의 문의 내역
-	List<Map<String, Object>> selectQNAListById(String username);
+	List<Map<String, Object>> selectQNAListById(Page page);
 
+	// 문의 내역 전체 행 수 조회
+	int selectQNATotalCount(Page page);
+	
 	// 문의 내역 상세 조회
 	List<Map<String, Object>> selectQNAOne(Board board);
 
@@ -29,4 +32,5 @@ public interface BoardMapper {
 
 	// 공지사항 상세 조회
 	List<Map<String, Object>> selectNoticeOne(int boardNo);
+
 }

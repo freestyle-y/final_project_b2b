@@ -3,18 +3,17 @@
 <mapper namespace="com.example.trade.mapper.BoardMapper">
 	<!-- 자주 묻는 질문(FAQ) 목록 -->
 	<select id="selectFAQList" parameterType="com.example.trade.dto.Page" resultType="map">
-	SELECT
-	board_no AS boardNo,
-	board_title AS boardTitle,
-	board_content AS boardContent
-	FROM board
-	WHERE board_code = 'BC001'
-	<if test="searchWord != null and searchWord != ''">
-		AND (board_title LIKE CONCAT('%', #{searchWord}, '%')
-		OR board_content LIKE CONCAT('%', #{searchWord}, '%'))
-	</if>
-	ORDER BY board_no DESC
-	LIMIT #{beginRow}, #{rowPerPage}
+		SELECT
+			board_no AS boardNo,
+			board_title AS boardTitle,
+			board_content AS boardContent
+		FROM board
+		WHERE board_code = 'BC001'
+		<if test="searchWord != null and searchWord != ''">
+			AND board_title LIKE CONCAT('%', #{searchWord}, '%')
+		</if>
+		ORDER BY board_no DESC
+		LIMIT #{beginRow}, #{rowPerPage}
 	</select>
 	
 	<!-- 자주 묻는 질문(FAQ) 전체 행 수 조회 -->
@@ -23,20 +22,34 @@
 		FROM board
 		WHERE board_code = 'BC001'
 		<if test="searchWord != null and searchWord != ''">
-		AND (board_title LIKE CONCAT('%', #{searchWord}, '%')
-		OR board_content LIKE CONCAT('%', #{searchWord}, '%'))
+			AND board_title LIKE CONCAT('%', #{searchWord}, '%')
 		</if>
 	</select>
 	
 	<!-- 접속한 사용자의 문의 내역 -->
-	<select id="selectQNAListById">
+	<select id="selectQNAListById" parameterType="com.example.trade.dto.Page" resultType="map">
 		SELECT
 			board_no AS boardNo,
-			board_title AS boardTitle,
-			board_code AS boardCode
+			board_title AS boardTitle
 		FROM board
 		WHERE board_code = 'BC002'
 		AND create_user = #{username}
+		<if test="searchWord != null and searchWord != ''">
+			AND board_title LIKE CONCAT('%', #{searchWord}, '%')
+		</if>
+		ORDER BY board_no DESC
+		LIMIT #{beginRow}, #{rowPerPage}
+	</select>
+	
+	<!-- 문의 내역 전체 행 수 조회 -->
+	<select id="selectQNATotalCount" parameterType="com.example.trade.dto.Page" resultType="int">
+		SELECT COUNT(*)
+		FROM board
+		WHERE board_code = 'BC002'
+		AND create_user = #{username}
+		<if test="searchWord != null and searchWord != ''">
+			AND board_title LIKE CONCAT('%', #{searchWord}, '%')
+		</if>
 	</select>
 	
 	<!-- 문의 내역 상세 조회 -->

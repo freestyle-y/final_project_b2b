@@ -13,6 +13,9 @@ public class Page {
 
 	// 페이지 블럭 관련
 	private int pageBlock = 5; // 하단에 보여줄 페이지 번호 개수 (ex: 1~5, 6~10)
+	
+	// 사용자 아이디 추가
+	private String username;
 
 	public Page(int rowPerPage, int currentPage, int totalCount, String searchWord, String searchType) {
 		this.rowPerPage = rowPerPage;

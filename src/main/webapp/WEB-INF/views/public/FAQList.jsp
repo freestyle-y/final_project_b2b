@@ -57,21 +57,21 @@
 	<!-- 페이징 영역 -->
 	<div class="pagination">
 		<c:if test="${page.hasPrevBlock()}">
-			<a href="?page=${page.startPage - 1}&searchWord=${page.searchWord}">이전</a>
+			<a href="?currentPage=${page.startPage - 1}&searchWord=${page.searchWord}">이전</a>
 		</c:if>
 
 		<c:forEach begin="${page.startPage}" end="${page.endPage}" var="i">
-			<a href="?page=${i}&searchWord=${page.searchWord}" class="${i == page.currentPage ? 'active' : ''}">${i}</a>
+			<a href="?currentPage=${i}&searchWord=${page.searchWord}" class="${i == page.currentPage ? 'active' : ''}">${i}</a>
 		</c:forEach>
 
 		<c:if test="${page.hasNextBlock()}">
-			<a href="?page=${page.endPage + 1}&searchWord=${page.searchWord}">다음</a>
+			<a href="?currentPage=${page.endPage + 1}&searchWord=${page.searchWord}">다음</a>
 		</c:if>
 	</div>
 
 	<!-- 검색 영역 -->
 	<div style="text-align: center;">
-		<input type="text" id="searchWord" value="${page.searchWord}" placeholder="제목, 내용">
+		<input type="text" id="searchWord" value="${page.searchWord}" placeholder="제목 검색">
 		<button type="button" id="searchBtn">검색</button>
 	</div>
 
@@ -89,7 +89,7 @@
 			const url = new URL(window.location.href);
 
 			url.searchParams.set('searchWord', searchWord);
-			url.searchParams.set('page', 1);
+			url.searchParams.set('currentPage', 1);
 
 			location.href = url.toString();
 		}
