@@ -62,8 +62,6 @@
 		<a href="/admin/quotationListAll">견적서 목록</a> / 
 		<a href="/admin/contractList">계약서 목록</a> / 
 		<a href="/admin/manageUser">회원관리</a> /
-		<a href="/admin/finalPaymentHistory">잔금 확인 페이지</a>
-		<a href="/admin/manageUser">회원관리</a> /
 		<a href="/admin/finalPaymentHistory">잔금 확인 페이지</a> /
 		<a href="/admin/containerList">컨테이너 목록</a>
 		<br>
