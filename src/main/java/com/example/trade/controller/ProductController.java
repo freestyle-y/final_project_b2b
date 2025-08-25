@@ -154,8 +154,10 @@ public class ProductController {
 	
 	// 상품 요청 DB insert
 	@PostMapping("/biz/productRequest")
-	public String productRequest(@ModelAttribute ProductRequestForm form) {
+	public String productRequest(@ModelAttribute ProductRequestForm form,
+			@RequestParam(value = "requestFiles", required = false) List<MultipartFile> requestFiles) {
 	    List<ProductRequest> productRequestList = form.getProductRequestList();
+	    
 	    int addressNo = form.getAddressNo();
 	    String requests = form.getRequests();
 
@@ -166,7 +168,8 @@ public class ProductController {
 	        //log.info(pr.toString());
 	    }
 	    
-	    productService.insertProductRequest(productRequestList);
+	    //log.info(productRequestList.toString());
+	    productService.insertProductRequest(productRequestList, requestFiles);
 	    return "redirect:/biz/productRequestList";
 	}
 	
@@ -219,9 +222,9 @@ public class ProductController {
 		String loginUserName = SecurityContextHolder.getContext().getAuthentication().getName();
 		//log.info(loginUserName);
 		List<Map<String, Object>> productRequestOne = productService.selectProductRequestOne(requestNo);
-		log.info(productRequestOne.toString());
+		//log.info(productRequestOne.toString());
 		List<Address> bizAddressList = productService.selectBizAddress(loginUserName);
-		log.info(bizAddressList.toString());
+		//log.info(bizAddressList.toString());
 		model.addAttribute("productRequestOne", productRequestOne);
 		model.addAttribute("bizAddressList", bizAddressList);
 		return "biz/editRequest";
@@ -229,10 +232,12 @@ public class ProductController {
 	
 	// 상품 요청 수정 DB update
 	@PostMapping("biz/editRequest")
-	public String bizEditRequest(@ModelAttribute ProductRequestForm productRequestForm) {
+	public String bizEditRequest(@ModelAttribute ProductRequestForm productRequestForm,
+			@RequestParam(value = "newFiles", required = false) MultipartFile[] newFiles) {
 		//log.info(productRequestForm.toString());
-		productService.updateProductRequests(productRequestForm);
-	    return "redirect:/biz/productRequestList";
+		productService.updateProductRequests(productRequestForm, newFiles);
+		
+		return "redirect:/biz/productRequestList";
 	}
 	
 	// 상품 요청 삭제

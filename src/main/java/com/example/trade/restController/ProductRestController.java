@@ -191,6 +191,24 @@ public class ProductRestController {
         return categoryList;
     }
 	
+	// 상품 요청 첨부파일 삭제
+	@PostMapping("/biz/deleteAttachment")
+	public String deleteAttachment(int attachmentNo) {
+	    try {
+	        // DB에서 해당 첨부파일 조회 (있으면 업데이트)
+	        int updateCount = productService.deleteAttachment(attachmentNo);
+	        if (updateCount == 1) {
+	            return "success";
+	        } else {
+	            return "삭제할 파일이 존재하지 않거나 이미 삭제된 상태입니다.";
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return "서버 오류 발생";
+	    }
+	}
+
+	
 	// 카테고리 추가
 	@PostMapping("/addCategories")
 	public ResponseEntity<Category> addCategory(@RequestBody Category category) {		

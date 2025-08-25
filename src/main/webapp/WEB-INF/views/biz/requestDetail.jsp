@@ -68,6 +68,29 @@
         </c:forEach>
     </table>
 
+    <!-- 첨부파일 목록 (수정/삭제 버튼 위에 위치) -->
+    <c:set var="firstItem" value="${productRequestOne[0]}" />
+    <div style="margin-top: 20px; margin-bottom: 15px;">
+	    <strong>첨부파일:</strong>
+	    <c:choose>
+	        <c:when test="${not empty firstItem.attachments}">
+	            <ul style="list-style: none; padding-left: 0; margin-top: 5px;">
+	                <c:forEach var="file" items="${firstItem.attachments}">
+	                    <li style="margin-bottom: 5px;">
+	                        <a href="${file.filepath}" download>
+	                            ${file.filename}
+	                        </a>
+	                    </li>
+	                </c:forEach>
+	            </ul>
+	        </c:when>
+	        <c:otherwise>
+	            <span>첨부파일 없음</span>
+	        </c:otherwise>
+	    </c:choose>
+	</div>
+
+
     <c:set var="status" value="${productRequestOne[0].status}" />
     
     <div class="button-area">
@@ -77,6 +100,7 @@
         </c:if>
     </div>
 </div>
+
 
 <!-- 공통 풋터 -->
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>

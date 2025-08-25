@@ -40,7 +40,7 @@
 
 <h1>상품 요청</h1>
 
-<form method="post" action="/biz/productRequest">
+<form method="post" action="/biz/productRequest" enctype="multipart/form-data">
     <div id="product-container">
         <!-- 초기 상품 입력 항목 -->
         <div class="product-group">
@@ -54,7 +54,12 @@
     <button type="button" id="addProductBtn">+ 상품 추가</button>
 
     <br/><br/>
-
+    
+    <div>
+	    <label for="requestFiles"><strong>첨부 파일:</strong></label><br/>
+	    <input type="file" id="requestFiles" name="requestFiles" multiple />
+	</div>
+    
     <div>
         <label for="requests">요청사항:</label><br/>
         <textarea id="requests" name="requests" rows="3" cols="40"></textarea>
