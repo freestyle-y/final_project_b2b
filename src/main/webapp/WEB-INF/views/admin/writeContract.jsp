@@ -448,11 +448,15 @@
 	  <button class="btn btn-primary" type="submit" form="contractForm">작성 완료</button>
 	  <a class="btn" href="${pageContext.request.contextPath}/admin/contractList">목록</a>
 	</div>
+  <p style="color:red;">[DEBUG] quotationNo: ${first.quotationNo}</p>
   
-  <form id="contractForm" method="post" action="${pageContext.request.contextPath}/biz/contract/write">
+  <form id="contractForm" method="post" action="${pageContext.request.contextPath}/admin/contract/write">
     <c:if test="${not empty contractOne}">
       <c:set var="first" value="${contractOne[0]}" />
     </c:if>
+    <!-- 디버깅용으로 value 출력해보기 -->
+<input type="hidden" name="quotationNo" value="${quotationNo}" />
+<p>quotationNo: ${quotationNo}</p>
     <div class="contract-container">
       <div class="contract-header">
         <div class="company-logo">
@@ -464,15 +468,10 @@
       
       <div class="document-info">
         <div class="info-left">
-          <div class="info-item">계약서 번호: 
-            <input type="text" name="contractNo" value="${contractNo}" required 
-            <c:if test="${not empty contractNo}">readonly</c:if> />
-          </div>
           <div class="info-item">계약일자: <span id="today"></span></div>
         </div>
         <div class="info-right">
           <div class="info-item">발행일: <span id="today2"></span></div>
-          <div class="info-item">문서번호: <input type="text" name="documentNo" required /></div>
         </div>
       </div>
       
@@ -512,72 +511,68 @@
 		</div>
 
 
-      <div class="section-title">계약 개요</div>
-      <table class="contract-table">
-        <thead>
-          <tr>
-            <th>계약금</th>
-            <th>잔금</th>
-            <th>계약 총액</th>
-            <th>계약서 작성 일자</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><input type="number" name="downPayment" value="${first.downPayment}" required /></td>
-            <td><input type="number" name="finalPayment" value="${first.finalPayment}" required /></td>
-            <td>
-              <span id="totalAmountDisplay">
-                <c:choose>
-                  <c:when test="${not empty contractOne}">
-                    ₩<fmt:formatNumber value="${first.downPayment + first.finalPayment}" type="number" groupingUsed="true" />
-                  </c:when>
-                  <c:otherwise>-</c:otherwise>
-                </c:choose>
-              </span>
-              <input type="hidden" name="totalAmount" id="totalAmount" />
-            </td>
-            <td><input type="date" name="createDate" required /></td>
-          </tr>
-        </tbody>
-      </table>
+     <div class="section-title">계약 개요</div>
+<table class="contract-table">
+  <thead>
+    <tr>
+      <th>계약금</th>
+      <th>잔금</th>
+      <th>계약 총액</th>
+      <th>계약서 작성 일자</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><input type="number" name="downPayment" required /></td>
+      <td><input type="number" name="finalPayment" required /></td>
+      <td>
+        <span id="totalAmountDisplay">
+          ₩<fmt:formatNumber value="${totalPrice}" type="number" groupingUsed="true"/>
+        </span>
+        <input type="hidden" name="totalAmount" id="totalAmount" value="${totalPrice}" />
+      </td>
+      <td><input type="date" name="createDate" required /></td>
+    </tr>
+  </tbody>
+</table>
+
       
       <div class="section-title">품목 내역</div>
-      <table class="contract-table">
-        <thead>
-          <tr>
-            <th>상품명</th>
-            <th>옵션</th>
-            <th>수량</th>
-          </tr>
-        </thead>
-        <tbody>
-          <c:choose>
-            <c:when test="${not empty contractOne}">
-              <c:forEach var="item" items="${contractOne}">
-                <tr>
-                  <td style="text-align:left">${item.productName}
-                    <input type="hidden" name="productName" value="${item.productName}" />
-                  </td>
-                  <td>${item.productOption}
-                    <input type="hidden" name="productOption" value="${item.productOption}" />
-                  </td>
-                  <td>${item.productQuantity}
-                    <input type="hidden" name="productQuantity" value="${item.productQuantity}" />
-                  </td>
-                </tr>
-              </c:forEach>
-            </c:when>
-            <c:otherwise>
-              <tr>
-                <td><input type="text" name="productName" required /></td>
-                <td><input type="text" name="productOption" /></td>
-                <td><input type="number" name="productQuantity" required /></td>
-              </tr>
-            </c:otherwise>
-          </c:choose>
-        </tbody>
-      </table>
+		<table class="contract-table">
+		  <thead>
+		    <tr>
+		      <th>상품명</th>
+		      <th>옵션</th>
+		      <th>수량</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		    <c:choose>
+		      <c:when test="${not empty quotation and not empty quotation.items}">
+		        <c:forEach var="item" items="${quotation.items}">
+		          <tr>
+		            <td style="text-align:left">${item.productName}
+		              <input type="hidden" name="productName" value="${item.productName}" />
+		            </td>
+		            <td>${item.productOption}
+		              <input type="hidden" name="productOption" value="${item.productOption}" />
+		            </td>
+		            <td>${item.productQuantity}
+		              <input type="hidden" name="productQuantity" value="${item.productQuantity}" />
+		            </td>
+		          </tr>
+		        </c:forEach>
+		      </c:when>
+		      <c:otherwise>
+		        <tr>
+		          <td><input type="text" name="productName" required /></td>
+		          <td><input type="text" name="productOption" /></td>
+		          <td><input type="number" name="productQuantity" required /></td>
+		        </tr>
+		      </c:otherwise>
+		    </c:choose>
+		  </tbody>
+		</table>
       
       <div class="section-title">계약 당사자</div>
       <table class="contract-table">
@@ -591,44 +586,20 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>갑 (공급자)</td>
-            <td>
-              <span>freeStyle</span>
-              <input type="hidden" name="supplierCompanyName" value="freeStyle" />
-            </td>
-            <td>
-              <span>${not empty contractSupplier ? contractSupplier[0].name : ''}</span>
-              <input type="hidden" name="supplierName" value="${not empty contractSupplier ? contractSupplier[0].name : ''}" />
-            </td>
-            <td>
-              <span>${not empty contractSupplier ? contractSupplier[0].phone : ''}</span>
-              <input type="hidden" name="supplierPhone" value="${not empty contractSupplier ? contractSupplier[0].phone : ''}" />
-            </td>
-            <td>
-              <span>${not empty contractSupplier ? contractSupplier[0].address : ''} ${not empty contractSupplier ? contractSupplier[0].detailAddress : ''}</span>
-              <input type="hidden" name="supplierAddress" value="${not empty contractSupplier ? contractSupplier[0].address : ''} ${not empty contractSupplier ? contractSupplier[0].detailAddress : ''}" />
-            </td>
-          </tr>
-          <tr>
-            <td>을 (수요자)</td>
-            <td>
-              <span>${not empty contractUser ? contractUser[0].companyName : ''}</span>
-              <input type="hidden" name="userCompanyName" value="${not empty contractUser ? contractUser[0].companyName : ''}" />
-            </td>
-            <td>
-              <span>${not empty contractUser ? contractUser[0].name : ''}</span>
-              <input type="hidden" name="userName" value="${not empty contractUser ? contractUser[0].name : ''}" />
-            </td>
-            <td>
-              <span>${not empty contractUser ? contractUser[0].phone : ''}</span>
-              <input type="hidden" name="userPhone" value="${not empty contractUser ? contractUser[0].phone : ''}" />
-            </td>
-            <td>
-              <span>${not empty contractUser ? contractUser[0].address : ''} ${not empty contractUser ? contractUser[0].detailAddress : ''}</span>
-              <input type="hidden" name="userAddress" value="${not empty contractUser ? contractUser[0].address : ''} ${not empty contractUser ? contractUser[0].detailAddress : ''}" />
-            </td>
-          </tr>
+			<tr>
+			  <td>갑 (공급자)</td>
+			  <td><span>freeStyle</span></td>
+			  <td><span>${contractSupplier[0].name}</span></td>
+			  <td><span>${contractSupplier[0].phone}</span></td>
+			  <td><span>${contractSupplier[0].address} ${contractSupplier[0].detailAddress}</span></td>
+			</tr>
+			<tr>
+			  <td>을 (수요자)</td>
+			  <td><span>${contractUser[0].companyName}</span></td>
+			  <td><span>${contractUser[0].name}</span></td>
+			  <td><span>${contractUser[0].phone}</span></td>
+			  <td><span>${contractUser[0].address} ${contractUser[0].detailAddress}</span></td>
+			</tr>
         </tbody>
       </table>
 
@@ -692,12 +663,17 @@
       }
 
       function updateTotal() {
-        const down = Number(downEl.value || 0);
-        const fin = Number(finalEl.value || 0);
-        const total = down + fin;
-        totalHidden.value = total;
-        totalDisplay.textContent = formatCurrency(total);
-      }
+    	    const down = Number(downEl.value || 0);
+    	    const fin = Number(finalEl.value || 0);
+    	    const total = down + fin;
+
+    	    // 계약 총액은 견적서 totalPrice 기반으로 고정
+    	    const baseTotal = Number(totalHidden.value || 0);
+
+    	    totalDisplay.textContent = formatCurrency(baseTotal);
+    	    totalHidden.value = baseTotal;
+    	}
+
 
       if (downEl && finalEl) {
         downEl.addEventListener('input', updateTotal);

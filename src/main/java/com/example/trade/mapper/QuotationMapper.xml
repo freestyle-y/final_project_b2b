@@ -1,126 +1,205 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.trade.mapper.QuotationMapper">
-	<select id="getAdminQuotationList" resultType="com.example.trade.dto.Quotation">
-		SELECT 
-		    q.quotation_no AS quotationNo,
-		    q.sub_product_request_no AS subProductRequestNo,
-		    q.product_request_no AS productRequestNo,
-		    q.price AS price,
-		    q.status AS status,
-		    q.refusal_reason AS refusalReason,
-		    q.create_user AS createUser,
-		    q.create_date AS createDate,
-		    pr.product_name AS productName,
-		    pr.product_quantity AS productQuantity
-		FROM quotation q
-		INNER JOIN product_request pr ON q.sub_product_request_no = pr.sub_product_request_no
-		ORDER BY q.quotation_no, q.sub_product_request_no
-	</select>
-
-	<select id="getQuotationList" resultType="com.example.trade.dto.Quotation">
-		SELECT 
-		    q.quotation_no AS quotationNo,
-		    q.sub_product_request_no AS subProductRequestNo,
-		    q.product_request_no AS productRequestNo,
-		    q.price AS price,
-		    q.status AS status,
-		    q.refusal_reason AS refusalReason,
-		    q.create_user AS createUser,
-		    q.create_date AS createDate,
-		    pr.product_name AS productName,
-		    pr.product_quantity AS productQuantity
-		FROM quotation q
-		INNER JOIN product_request pr ON q.sub_product_request_no = pr.sub_product_request_no
-		WHERE pr.create_user = #{userId}
-		ORDER BY q.quotation_no, q.sub_product_request_no
-	</select>
-
-<select id="adminQuotationOne" resultType="com.example.trade.dto.Quotation">
-	SELECT 
-	    q.quotation_no AS quotationNo,
-	    q.sub_product_request_no AS subProductRequestNo,
-	    q.product_request_no AS productRequestNo,
-	    q.price AS price,
-	    q.status AS status,
-	    q.create_user AS createUser,
-	    pr.create_date AS createDate,
-	    pr.product_name AS productName,
-	    pr.product_quantity AS productQuantity,
-	    pr.product_option AS productOption
-	FROM quotation q
-	INNER JOIN product_request pr 
-	    ON q.product_request_no = pr.product_request_no
-	WHERE q.quotation_no = #{quotationNo}
-	  AND q.sub_product_request_no = #{subProductRequestNo}
+<!-- 관리자 전체 견적서 목록 -->
+<select id="getAllAdminQuotations" resultMap="QuotationWithItems">
+    SELECT 
+        q.quotation_no              AS quotation_no,
+        q.product_request_no        AS quotation_product_request_no,
+        q.status                    AS status,
+        q.create_user               AS create_user,
+        q.create_date               AS create_date,
+        qi.item_id                  AS item_id,
+        qi.quotation_no             AS quotation_no,
+        qi.product_request_no       AS item_product_request_no,
+        qi.sub_product_request_no   AS sub_product_request_no,
+        qi.price                    AS price,
+        pr.product_name             AS product_name,
+        pr.product_option           AS product_option,
+        pr.product_quantity         AS product_quantity,
+        pr.create_user              AS requestCompanyUser,
+        u.name                      AS requestCompanyName
+    FROM quotation q
+    LEFT JOIN quotation_item qi ON q.quotation_no = qi.quotation_no
+    LEFT JOIN product_request pr 
+        ON qi.product_request_no = pr.product_request_no
+       AND qi.sub_product_request_no = pr.sub_product_request_no
+    LEFT JOIN user u ON pr.create_user = u.id   -- ✅ user 테이블과 조인
+    WHERE q.use_status = 'Y'
+    ORDER BY q.quotation_no DESC
 </select>
 
-<select id="getQuotationOne" resultType="com.example.trade.dto.Quotation">
-	SELECT 
-	    q.quotation_no AS quotationNo,
-	    q.sub_product_request_no AS subProductRequestNo,
-	    q.price AS price,
-	    q.status AS status,
-	    q.create_user AS createUser,
-	    pr.create_date AS createDate,
-	    pr.product_name AS productName,
-	    pr.product_quantity AS productQuantity,
-	    pr.product_option AS productOption
-	FROM quotation q
-	INNER JOIN product_request pr 
-	    ON q.product_request_no = pr.product_request_no
-	WHERE q.quotation_no = #{quotationNo}
-	  AND q.sub_product_request_no = #{subProductRequestNo}
+
+  <!-- 기업회원 견적서 목록 -->
+  <select id="getQuotationList" resultMap="QuotationWithItems">
+    SELECT 
+        q.quotation_no              AS quotation_no,
+        q.product_request_no        AS quotation_product_request_no,
+        q.status                    AS status,
+        q.create_user               AS create_user,
+        q.create_date               AS create_date,
+        qi.item_id                  AS item_id,
+        qi.quotation_no             AS quotation_no,
+        qi.product_request_no       AS item_product_request_no,
+        qi.sub_product_request_no   AS sub_product_request_no,
+        qi.price                    AS price,
+        pr.product_name             AS product_name,
+        pr.product_option           AS product_option,
+        pr.product_quantity         AS product_quantity
+    FROM quotation q
+    LEFT JOIN quotation_item qi ON q.quotation_no = qi.quotation_no
+    LEFT JOIN product_request pr 
+      ON qi.product_request_no = pr.product_request_no
+     AND qi.sub_product_request_no = pr.sub_product_request_no
+    WHERE pr.create_user = #{userId}
+    ORDER BY q.quotation_no DESC
+  </select>
+
+  <!-- 기업회원 견적서 상세 -->
+  <select id="getQuotationOne" resultMap="QuotationWithItems">
+    SELECT 
+        q.quotation_no              AS quotation_no,
+        q.product_request_no        AS quotation_product_request_no,
+        q.status                    AS status,
+        q.create_user               AS create_user,
+        q.create_date               AS create_date,
+        qi.item_id                  AS item_id,
+        qi.quotation_no             AS quotation_no,
+        qi.product_request_no       AS item_product_request_no,
+        qi.sub_product_request_no   AS sub_product_request_no,
+        qi.price                    AS price,
+        pr.product_name             AS product_name,
+        pr.product_option           AS product_option,
+        pr.product_quantity         AS product_quantity
+    FROM quotation q
+    LEFT JOIN quotation_item qi ON q.quotation_no = qi.quotation_no
+    LEFT JOIN product_request pr 
+      ON qi.product_request_no = pr.product_request_no
+     AND qi.sub_product_request_no = pr.sub_product_request_no
+    WHERE q.quotation_no = #{quotationNo}
+  </select>
+
+  <!-- 관리자 견적서 목록 -->
+<select id="getAdminQuotationList" resultMap="QuotationWithItems">
+    SELECT 
+        q.quotation_no              AS quotation_no,
+        q.product_request_no        AS quotation_product_request_no,
+        q.status                    AS status,
+        q.create_user               AS create_user,
+        q.create_date               AS create_date,
+        qi.item_id                  AS item_id,
+        qi.quotation_no             AS quotation_no,
+        qi.product_request_no       AS item_product_request_no,
+        qi.sub_product_request_no   AS sub_product_request_no,
+        qi.price                    AS price,
+        pr.product_name             AS product_name,
+        pr.product_option           AS product_option,
+        pr.product_quantity         AS product_quantity,
+        pr.create_user              AS requestCompanyUser,   -- 기업 ID
+        u.name                      AS requestCompanyName    -- 기업 이름 ✅ 추가
+    FROM quotation q
+    LEFT JOIN quotation_item qi ON q.quotation_no = qi.quotation_no
+    LEFT JOIN product_request pr 
+      ON qi.product_request_no = pr.product_request_no
+     AND qi.sub_product_request_no = pr.sub_product_request_no
+    LEFT JOIN user u ON pr.create_user = u.id  -- ✅ 조인 추가
+    WHERE q.product_request_no = #{productRequestNo}
+      AND q.use_status = 'Y'
+    ORDER BY q.quotation_no DESC
 </select>
-	
-	<update id="updateStatusAtApprove">
-		UPDATE quotation
-		SET status = '승인'
-		WHERE quotation_no = #{quotationNo} AND sub_product_request_no = #{subProductRequestNo}
-	</update>
-	
-	<update id="updateStatusAtReject">
-		UPDATE quotation
-		SET status = '승인거절'
-			,update_user = #{userId}
-			,refusal_reason = #{rejectionReason}
-			,update_date = NOW()
-		WHERE quotation_no = #{quotationNo} 
-		AND sub_product_request_no = #{subProductRequestNo}
-	</update>
-	
-	<select id="getQuotaionOneByQuotationNo" resultType="com.example.trade.dto.Quotation">
-		SELECT 
-			 q.quotation_no AS quotationNo
-			,q.sub_product_request_no AS subProductRequestNo
-			,q.product_request_no AS productRequestno
-			,q.price ,q.`status`
-			,q.refusal_reason AS refusalReason
-			,q.create_user AS createUser
-			,q.create_date AS createDate
-			,pr.product_name AS productName
-			,pr.product_quantity AS productQuantity
-			,pr.product_option AS productOption
-		FROM quotation q INNER JOIN product_request pr ON q.product_request_no = pr.product_request_no
-		WHERE q.product_request_no = #{productRequestNo}
-	</select>
-	
-	<insert id="insertQuotation" parameterType="com.example.trade.dto.Quotation">
-	    INSERT INTO quotation (
-	        quotation_no,
-	        sub_product_request_no,
-	        product_request_no,
-	        price,
-	        create_user,
-	        create_date
-	    )
-	    VALUES (
-	        #{quotationNo},
-	        #{subProductRequestNo},
-	        #{productRequestNo},
-	        #{price},
-   	        #{userId},
-	        NOW()
-	    )
-	</insert>
+
+
+  <!-- 관리자 견적서 상세 -->
+  <select id="adminQuotationOne" resultMap="QuotationWithItems">
+    SELECT 
+        q.quotation_no              AS quotation_no,
+        q.product_request_no        AS quotation_product_request_no,
+        q.status                    AS status,
+        q.create_user               AS create_user,
+        q.create_date               AS create_date,
+        qi.item_id                  AS item_id,
+        qi.quotation_no             AS quotation_no,
+        qi.product_request_no       AS item_product_request_no,
+        qi.sub_product_request_no   AS sub_product_request_no,
+        qi.price                    AS price,
+        pr.product_name             AS product_name,
+        pr.product_option           AS product_option,
+        pr.product_quantity         AS product_quantity
+    FROM quotation q
+    LEFT JOIN quotation_item qi ON q.quotation_no = qi.quotation_no
+    LEFT JOIN product_request pr 
+      ON qi.product_request_no = pr.product_request_no
+     AND qi.sub_product_request_no = pr.sub_product_request_no
+    WHERE q.quotation_no = #{quotationNo}
+  </select>
+
+  <!-- 견적 작성용: product_request 불러오기 -->
+  <select id="getProductRequestForQuotation" resultType="com.example.trade.dto.QuotationItem">
+    SELECT 
+        pr.product_request_no       AS productRequestNo,
+        pr.sub_product_request_no   AS subProductRequestNo,
+        pr.product_name             AS productName,
+        pr.product_option           AS productOption,
+        pr.product_quantity         AS productQuantity
+    FROM product_request pr
+    WHERE pr.product_request_no = #{productRequestNo}
+  </select>
+
+  <!-- 견적서 마스터 insert -->
+  <insert id="insertQuotationMaster" useGeneratedKeys="true" keyProperty="quotationNo">
+    INSERT INTO quotation (
+        product_request_no, status, create_user, use_status, create_date
+    ) VALUES (
+        #{productRequestNo}, '승인전', #{createUser}, 'Y', NOW()
+    )
+  </insert>
+
+  <!-- 견적서 상품 insert -->
+  <insert id="insertQuotationItem">
+    INSERT INTO quotation_item (
+        quotation_no, product_request_no, sub_product_request_no, price
+    ) VALUES (
+        #{quotationNo}, #{productRequestNo}, #{subProductRequestNo}, #{price}
+    )
+  </insert>
+
+  <!-- 견적 승인 -->
+  <update id="updateStatusAtApprove">
+    UPDATE quotation
+    SET status = '승인'
+    WHERE quotation_no = #{quotationNo}
+  </update>
+
+  <!-- 견적 거절 -->
+  <update id="updateStatusAtReject">
+    UPDATE quotation
+    SET status = '승인거절',
+        update_user = #{userId},
+        refusal_reason = #{rejectionReason},
+        update_date = NOW()
+    WHERE quotation_no = #{quotationNo}
+  </update>
+
+  <!-- ResultMap 정의 -->
+<resultMap id="QuotationWithItems" type="com.example.trade.dto.Quotation">
+    <id property="quotationNo" column="quotation_no"/>
+    <result property="productRequestNo" column="quotation_product_request_no"/>
+    <result property="status" column="status"/>
+    <result property="createUser" column="create_user"/>
+    <result property="createDate" column="create_date"/>
+    <result property="requestCompanyUser" column="requestCompanyUser"/>
+    <result property="requestCompanyName" column="requestCompanyName"/>
+    <collection property="items" ofType="com.example.trade.dto.QuotationItem">
+      <id property="itemId" column="item_id"/>
+      <result property="quotationNo" column="quotation_no"/>
+      <result property="productRequestNo" column="item_product_request_no"/>
+      <result property="subProductRequestNo" column="sub_product_request_no"/>
+      <result property="price" column="price"/>
+      <result property="productName" column="product_name"/>
+      <result property="productOption" column="product_option"/>
+      <result property="productQuantity" column="product_quantity"/>
+    </collection>
+</resultMap>
+
+
 </mapper>

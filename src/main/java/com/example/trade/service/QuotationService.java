@@ -3,46 +3,68 @@ package com.example.trade.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.trade.dto.Quotation;
+import com.example.trade.dto.QuotationItem;
 import com.example.trade.mapper.QuotationMapper;
 
 @Service
 public class QuotationService {
-	private final QuotationMapper quotationMapper;
-	public QuotationService(QuotationMapper quotationMapper) {
-		super();
-		this.quotationMapper = quotationMapper;
-	}
-	public List<Quotation> getQuotationList(String userId) {
+    private final QuotationMapper quotationMapper;
 
-		return quotationMapper.getQuotationList(userId);
-	}
-	public List<Quotation> getQuotationOne(int quotationNo, int subProductRequestNo) {
+    public QuotationService(QuotationMapper quotationMapper) {
+        this.quotationMapper = quotationMapper;
+    }
+    public List<Quotation> getAllAdminQuotations() {
+        return quotationMapper.getAllAdminQuotations();
+    }
+    /** 요청 상품에 대한 견적서 목록 */
+    public List<Quotation> getQuotationList(String userId) {
+        return quotationMapper.getQuotationList(userId);
+    }
 
-		return quotationMapper.getQuotationOne(quotationNo, subProductRequestNo);
-	}
-	public int updateStatusAtApprove(int quotationNo, int subProductRequestNo) {
+    /** 견적서 상세 */
+    public Quotation getQuotationOne(int quotationNo) {
+        return quotationMapper.getQuotationOne(quotationNo);
+    }
 
-		return quotationMapper.updateStatusAtApprove(quotationNo, subProductRequestNo);
-	}
-	public int updateStatusAtReject(int quotationNo, int subProductRequestNo, String rejectionReason, String userId) {
+    /** 관리자 전체 견적서 
+     * @param subProductRequestNo 
+     * @param productRequestNo */
+    public List<Quotation> getAdminQuotationList(int productRequestNo) {
+        return quotationMapper.getAdminQuotationList(productRequestNo);
+    }
 
-		return quotationMapper.updateStatusAtReject(quotationNo, subProductRequestNo, rejectionReason, userId);
-	}
-	public List<Quotation> getQuotationOneByQuotationNo(int productRequestNo) {
+    /** 관리자 견적 상세 */
+    public Quotation adminQuotationOne(int quotationNo) {
+        return quotationMapper.adminQuotationOne(quotationNo);
+    }
 
-		return quotationMapper.getQuotaionOneByQuotationNo(productRequestNo);
-	}
-	public int insertQuotation(String quotationNo, String subProductRequestNo, int price) {
+    /** 상품 불러오기 (견적 작성용) */
+    public List<QuotationItem> getProductRequestForQuotation(int productRequestNo) {
+        return quotationMapper.getProductRequestForQuotation(productRequestNo);
+    }
 
-		return quotationMapper.insertQuotation(quotationNo, subProductRequestNo, price);
-	}
-	public List<Quotation> getAdminQuotationList() {
+    /** 견적서 마스터 INSERT */
+    @Transactional
+    public void insertQuotationMaster(Quotation quotation) {
+        quotationMapper.insertQuotationMaster(quotation);
+    }
 
-		return quotationMapper.getAdminQuotationList();
-	}
-	public List<Quotation> adminQuotationOne(int quotationNo, int subProductRequestNo) {
-		return quotationMapper.adminQuotationOne(quotationNo, subProductRequestNo);
-	}
+    /** 견적서 상품 INSERT */
+    @Transactional
+    public void insertQuotationItem(QuotationItem item) {
+        quotationMapper.insertQuotationItem(item);
+    }
+
+    @Transactional
+    public int updateStatusAtApprove(int quotationNo) {
+        return quotationMapper.updateStatusAtApprove(quotationNo);
+    }
+
+    @Transactional
+    public int updateStatusAtReject(int quotationNo, String rejectionReason, String userId) {
+        return quotationMapper.updateStatusAtReject(quotationNo, rejectionReason, userId);
+    }
 }

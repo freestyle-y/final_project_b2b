@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>견적서 목록</title>
+<title>기업회원 견적서 목록</title>
 <style>
     table { width: 100%; border-collapse: collapse; text-align: center; }
     th, td { border: 1px solid #ccc; padding: 8px; }
@@ -20,33 +20,38 @@
 <!-- 공통 사이드바 -->
 <%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
 
-<h1>견적서 목록</h1>
+<h1>기업회원 견적서 목록</h1>
 <table>
   <thead>
     <tr>
-      <th>quotation_no</th>
-      <th>price</th>
-      <th>status</th>
-      <th>createUser</th>
-      <th>createDate</th>
+      <th>견적서 번호</th>
+      <th>상품정보</th>
+      <th>상태</th>
+      <th>작성자</th>
+      <th>작성일</th>
     </tr>
   </thead>
   <tbody>
-    <c:if test="${not empty quotationGroupedMap}">
-      <c:forEach var="entry" items="${quotationGroupedMap}">
-        <c:set var="list" value="${entry.value}" />
-        <c:set var="first" value="${list[0]}" />
-        <tr>
-          <td>
-            <a href="/biz/quotationOne?quotationNo=${first.quotationNo}&subProductRequestNo=${first.subProductRequestNo}">${first.quotationNo}-${first.subProductRequestNo}</a>
-          </td>
-          <td>₩<fmt:formatNumber value="${first.price}" type="number" groupingUsed="true"/></td>
-          <td>${first.status}</td>
-          <td>${first.createUser}</td>
-          <td>${fn:replace(first.createDate, 'T', ' ')}</td>
-        </tr>
-      </c:forEach>
-    </c:if>
+    <c:forEach var="q" items="${quotationList}">
+      <tr>
+        <td>
+          <!-- 견적서 번호 클릭 시 상세 페이지 이동 -->
+          <a href="${pageContext.request.contextPath}/biz/quotationOne?quotationNo=${q.quotationNo}">
+            ${q.quotationNo}
+          </a>
+        </td>
+        <td>
+          <!-- 견적서에 속한 상품들 출력 -->
+          <c:forEach var="item" items="${q.items}">
+            ${item.productName} (${item.productQuantity}) 
+            - ₩<fmt:formatNumber value="${item.price}" type="number" groupingUsed="true"/><br/>
+          </c:forEach>
+        </td>
+        <td>${q.status}</td>
+        <td>${q.createUser}</td>
+        <td>${fn:replace(q.createDate, 'T', ' ')}</td>
+      </tr>
+    </c:forEach>
   </tbody>
 </table>
 

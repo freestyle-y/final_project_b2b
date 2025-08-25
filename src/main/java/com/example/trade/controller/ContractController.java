@@ -23,17 +23,21 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.example.trade.dto.Attachment;
 import com.example.trade.dto.Contract;
 import com.example.trade.dto.ContractSignForm;
+import com.example.trade.dto.Quotation;
 import com.example.trade.service.AttachmentService;
 import com.example.trade.service.ContractService;
+import com.example.trade.service.QuotationService;
 
 @Controller
 public class ContractController {
 	private final ContractService contractService;
 	private final AttachmentService attachmentService;
-	public ContractController(ContractService contractService, AttachmentService attachmentService) {
+	private final QuotationService quotationService;
+	public ContractController(ContractService contractService, AttachmentService attachmentService, QuotationService quotationService) {
 		super();
 		this.contractService = contractService;
 		this.attachmentService = attachmentService;
+		this.quotationService = quotationService;
 	}
 
 	// 클래스 내부 필드에 추가
@@ -55,18 +59,28 @@ public class ContractController {
 	
 	// 기업 회원 계약서 상세 페이지
 	@GetMapping("/biz/contractOne")
-	public String contractOne(@RequestParam("contractNo") int contractNo
-							 ,Principal principal
-							 ,Model model) {
-		String userId = principal.getName();
-		List<Contract> contractOne = contractService.getContractOne(contractNo, userId);
-		List<Contract> contractUser = contractService.getContractUser(userId);
-		List<Contract> contractSupplier = contractService.getContractSupplier(contractNo);
-		
-		model.addAttribute("contractUser", contractUser);
-		model.addAttribute("contractOne", contractOne);
-		model.addAttribute("contractSupplier", contractSupplier);
-		return "biz/contractOne";
+	public String contractOne(@RequestParam("contractNo") int contractNo,
+	                          Principal principal,
+	                          Model model) {
+	    String userId = principal.getName();
+	    List<Contract> contractOne = contractService.getContractOne(contractNo, userId);
+	    List<Contract> contractUser = contractService.getContractUser(userId);
+	    List<Contract> contractSupplier = contractService.getContractSupplier(contractNo);
+
+	    // ✅ 총액 계산
+	    int totalPrice = 0;
+	    for (Contract c : contractOne) {
+	        if (c.getPrice() != 0 && c.getProductQuantity() != 0) {
+	            totalPrice += c.getPrice() * c.getProductQuantity();
+	        }
+	    }
+
+	    model.addAttribute("contractUser", contractUser);
+	    model.addAttribute("contractOne", contractOne);
+	    model.addAttribute("contractSupplier", contractSupplier);
+	    model.addAttribute("totalPrice", totalPrice); // JSP에서 출력 가능
+
+	    return "biz/contractOne";
 	}
 	
 	// 관리자 계약서 목록 페이지
@@ -81,43 +95,116 @@ public class ContractController {
 	@GetMapping("/admin/contractOne")
 	public String contractOne(@RequestParam("contractNo") int contractNo, Model model) {
 	    List<Contract> contractOne = contractService.getContractOneForAdmin(contractNo);
-	    // 관리자 페이지에서도 갑/을 정보를 노출하려면 공급자/수요자 모두 모델에 담아 전달
 	    List<Contract> contractSupplier = contractService.getContractSupplier(contractNo);
 	    List<Contract> contractUser = contractService.getContractUserByContractNo(contractNo);
+	    System.out.println("contractNo: " + contractNo);
+	    System.out.println("contractOne size: " + (contractOne != null ? contractOne.size() : "null"));
+	    // ✅ 총액 계산
+	    int totalPrice = 0;
+	    for (Contract c : contractOne) {
+	        if (c.getPrice() != 0 && c.getProductQuantity() != 0) {
+	        	System.out.println("→ 계약번호: " + c.getContractNo() + ", 계약금: " + c.getDownPayment());
+	            totalPrice += c.getPrice() * c.getProductQuantity();
+	        }
+	    }
 
 	    List<Attachment> signs = attachmentService.findContractSigns(contractNo);
 	    Attachment supplierSign = null;
 	    Attachment buyerSign = null;
 	    for (Attachment a : signs) {
-	        // 우선순위로 구분(저장 시 priority: 1=supplier, 2=buyer)
 	        if (a.getPriority() == 1 && supplierSign == null) supplierSign = a;
-	        if (a.getPriority() == 2 && buyerSign == null)    buyerSign    = a;
+	        if (a.getPriority() == 2 && buyerSign == null) buyerSign = a;
 	    }
+
 	    model.addAttribute("supplierSign", supplierSign);
 	    model.addAttribute("buyerSign", buyerSign);
-	    
 	    model.addAttribute("contractOne", contractOne);
 	    model.addAttribute("contractSupplier", contractSupplier);
 	    model.addAttribute("contractUser", contractUser);
+	    model.addAttribute("totalPrice", totalPrice); // JSP에서 출력 가능
 
 	    return "admin/contractOne";
 	}
 	
 	// 관리자 계약서 작성 페이지
 	@GetMapping("/admin/writeContract")
-	public String writeContract(@RequestParam(value = "contractNo", required = false) Integer contractNo, Model model) {
-		// 목록에서 넘어온 contractNo가 있으면 관련 정보(품목/당사자)를 미리 채움
-		if (contractNo != null) {
-			List<Contract> contractOne = contractService.getContractOneForAdmin(contractNo);
-			List<Contract> contractSupplier = contractService.getContractSupplier(contractNo);
-			List<Contract> contractUser = contractService.getContractUserByContractNo(contractNo);
-			model.addAttribute("contractOne", contractOne);
-			model.addAttribute("contractSupplier", contractSupplier);
-			model.addAttribute("contractUser", contractUser);
-			model.addAttribute("contractNo", contractNo);
-		}
-		return "admin/writeContract";
+	public String writeContract(@RequestParam("quotationNo") int quotationNo, Model model) {
+
+	    // 견적서 기반 데이터 조회
+	    Quotation quotation = quotationService.getQuotationOne(quotationNo);
+	    model.addAttribute("quotation", quotation);
+
+	    // 공급자 (견적 작성자)
+	    List<Contract> contractSupplier = contractService.getContractSupplierByQuotation(quotationNo);
+	    // 수요자 (상품요청 작성자)
+	    List<Contract> contractUser = contractService.getContractUserByQuotation(quotationNo);
+
+	    // ✅ 총액 = 각 상품별 price 합산
+	    int totalPrice = 0;
+	    if (quotation != null && quotation.getItems() != null) {
+	        for (var item : quotation.getItems()) {
+	            totalPrice += item.getPrice();   // 단가×수량이 아니라 이미 입력한 총액 그대로 합산
+	        }
+	    }
+	    model.addAttribute("totalPrice", totalPrice);
+	    model.addAttribute("quotationNo", quotationNo);
+	    model.addAttribute("contractSupplier", contractSupplier);
+	    model.addAttribute("contractUser", contractUser);
+
+	    return "admin/writeContract";
 	}
+
+	@PostMapping("/admin/contract/write")
+	public String writeContractAdmin(
+	        @ModelAttribute ContractSignForm form,
+	        Principal principal,
+	        RedirectAttributes ra
+	) throws IOException {  // ✅ IOException 위임
+
+	    String quotationNoStr = form.getQuotationNo();
+	    String downPaymentStr = form.getDownPayment();
+	    String finalPaymentStr = form.getFinalPayment();
+
+	    int quotationNo = Integer.parseInt(quotationNoStr);
+	    int downPayment = Integer.parseInt(downPaymentStr.replaceAll(",", ""));
+	    int finalPayment = Integer.parseInt(finalPaymentStr.replaceAll(",", ""));
+
+	    String userId = (principal != null) ? principal.getName() : "admin";
+
+	    Contract contract = new Contract();
+	    contract.setQuotationNo(quotationNo);
+	    contract.setDownPayment(downPayment);
+	    contract.setFinalPayment(finalPayment);
+	    contract.setCreateUser(userId);
+	    contract.setUseStatus("Y");
+
+	    contractService.insertContract(contract);
+	    int newContractNo = contract.getContractNo();
+
+	    // ✅ 서명 저장
+	    List<Attachment> toSave = new ArrayList<>();
+
+	    if (StringUtils.hasText(form.getSupplierSignature())) {
+	        Attachment a = saveSignatureDataUrl(form.getSupplierSignature(), newContractNo, 1, "supplier", userId);
+	        if (a != null) toSave.add(a);
+	    }
+
+	    if (StringUtils.hasText(form.getBuyerSignature())) {
+	        Attachment a = saveSignatureDataUrl(form.getBuyerSignature(), newContractNo, 2, "buyer", userId);
+	        if (a != null) toSave.add(a);
+	    }
+
+	    if (!toSave.isEmpty()) {
+	        attachmentService.saveAll(toSave);
+	    }
+
+	    ra.addFlashAttribute("msg", "계약서와 서명이 저장되었습니다.");
+	    return "redirect:/admin/contractOne?contractNo=" + newContractNo;
+	}
+
+
+
+
 	
 	
 	@PostMapping("/biz/contract/write")
@@ -193,7 +280,7 @@ public class ContractController {
         // Attachment 레코드 생성
         Attachment att = new Attachment();
         att.setAttachmentCode("CONTRACT_SIGN");
-        att.setCategoryCode(contractNo);
+        att.setCategoryCode(String.valueOf(contractNo));
         att.setPriority(priority);
         att.setFilepath(URL_PREFIX + relDir);   // ex) /uploads/signatures/2025/08
         att.setFilename(filename);

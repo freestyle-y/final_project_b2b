@@ -8,11 +8,7 @@
 </head>
 <body>
 <h2>견적 작성하기</h2>
-
-<form action="/admin/submitQuotation" method="post">
-    <input type="hidden" name="quotationNo" value="${quotationList[0].quotationNo}" />
-    <input type="hidden" name="subProductRequestNo" value="${quotationList[0].subProductRequestNo}" />
-    
+<form action="${pageContext.request.contextPath}/admin/submitQuotation" method="post">
     <table border="1">
         <thead>
             <tr>
@@ -23,17 +19,37 @@
             </tr>
         </thead>
         <tbody>
-            <c:forEach var="q" items="${quotationList}" varStatus="s">
-                <tr>
-                    <td>${q.productName}</td>
-                    <td>${q.productQuantity}</td>
-                    <td>${q.productOption}</td>
-                    <td>
-                        <input type="number" name="price" required placeholder="₩ 가격">
-                    </td>
-                    <td>
-                </tr>
-            </c:forEach>
+            <!-- 신규 작성 (product_request에서 불러온 상품 목록) -->
+            <c:if test="${not empty quotationItems}">
+                <c:forEach var="item" items="${quotationItems}">
+                    <tr>
+                        <td>${item.productName}</td>
+                        <td>${item.productQuantity}</td>
+                        <td>${item.productOption}</td>
+                        <td>
+                            <input type="number" name="prices" required placeholder="₩ 가격">
+                            <input type="hidden" name="productRequestNos" value="${item.productRequestNo}">
+                            <input type="hidden" name="subProductRequestNos" value="${item.subProductRequestNo}">
+                        </td>
+                    </tr>
+                </c:forEach>
+            </c:if>
+
+            <!-- 기존 견적 수정 (quotation + items) -->
+            <c:if test="${not empty quotation}">
+                <c:forEach var="item" items="${quotation.items}">
+                    <tr>
+                        <td>${item.productName}</td>
+                        <td>${item.productQuantity}</td>
+                        <td>${item.productOption}</td>
+                        <td>
+                            <input type="number" name="prices" value="${item.price}" required>
+                            <input type="hidden" name="productRequestNos" value="${item.productRequestNo}">
+                            <input type="hidden" name="subProductRequestNos" value="${item.subProductRequestNo}">
+                        </td>
+                    </tr>
+                </c:forEach>
+            </c:if>
         </tbody>
     </table>
     

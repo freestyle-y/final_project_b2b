@@ -3,6 +3,7 @@ package com.example.trade.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.trade.dto.Contract;
 import com.example.trade.mapper.ContractMapper;
@@ -46,5 +47,21 @@ public class ContractService {
 
 	public List<Contract> getContractUserByContractNo(int contractNo) {
 		return contractMapper.getContractUserByContractNo(contractNo);
+	}
+
+	public List<Contract> getContractSupplierByQuotation(int quotationNo) {
+		return contractMapper.getContractSupplierByQuotation(quotationNo);
+	}
+
+	public List<Contract> getContractUserByQuotation(int quotationNo) {
+		return contractMapper.getContractUserByQuotation(quotationNo);
+	}
+
+	@Transactional
+	public int insertContract(Contract contract) {
+	    System.out.println("🔥 Service insertContract 진입: " + contract);
+	    int result = contractMapper.insertContract(contract);
+	    System.out.println("🔥 Mapper insert 결과: " + result);
+	    return result;
 	}
 }

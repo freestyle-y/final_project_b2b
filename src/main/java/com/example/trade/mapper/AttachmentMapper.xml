@@ -18,20 +18,21 @@
     </foreach>
   </insert>
 
-  <select id="selectByCodeAndCategory" resultType="com.example.trade.dto.Attachment">
-    SELECT
-      attachment_no AS attachmentNo,
-      attachment_code AS attachmentCode,
-      category_code AS categoryCode,
-      priority, filepath, filename,
-      create_user AS createUser, create_date AS createDate,
-      update_user AS updateUser, update_date AS updateDate,
-      use_status  AS useStatus
-    FROM attachment
-    WHERE attachment_code = #{param1}
-      AND category_code   = #{param2}
-      AND use_status      = 'Y'
-    ORDER BY priority ASC, attachment_no ASC
-  </select>
+<select id="selectByCodeAndCategory" resultType="com.example.trade.dto.Attachment">
+  SELECT
+    attachment_no AS attachmentNo,
+    attachment_code AS attachmentCode,
+    category_code AS categoryCode,
+    priority, filepath, filename,
+    create_user AS createUser, create_date AS createDate,
+    update_user AS updateUser, update_date AS updateDate,
+    use_status  AS useStatus
+  FROM attachment
+  WHERE attachment_code = #{code}
+    AND category_code   = #{category}
+    AND use_status      = 'Y'
+  ORDER BY priority ASC, attachment_no ASC
+</select>
+
 
 </mapper>

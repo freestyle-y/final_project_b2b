@@ -424,7 +424,7 @@ body {
 	<div class="toolbar no-print">
 		<button class="btn btn-primary" onclick="window.print()">PDF/인쇄</button>
 		<a class="btn"
-			href="${pageContext.request.contextPath}/biz/contractList">목록</a>
+			href="${pageContext.request.contextPath}/admin/contractList">목록</a>
 	</div>
 
 	<div class="contract-container">
@@ -437,24 +437,20 @@ body {
 		</div>
 
 		<div class="document-info">
-			<div class="info-left">
-				<div class="info-item">
-					계약서 번호:
-					<c:if test="${not empty contractOne}">${contractOne[0].contractNo}</c:if>
-				</div>
-				<div class="info-item">
-					계약일자: <span id="today"></span>
-				</div>
-			</div>
-			<div class="info-right">
-				<div class="info-item">
-					발행일: <span id="today2"></span>
-				</div>
-				<div class="info-item">
-					문서번호:
-					<c:if test="${not empty contractOne}">${contractOne[0].contractNo}</c:if>
-				</div>
-			</div>
+		  <div class="info-left">
+		    <div class="info-item">
+		      계약서 번호:
+		      <c:if test="${not empty contractOne}">${contractOne[0].contractNo}</c:if>
+		    </div>
+		    <div class="info-item">
+		      계약일자: ${first.formattedCreateDate}
+		    </div>
+		  </div>
+		  <div class="info-right">
+		    <div class="info-item">
+		      발행일: <span id="today2"></span>
+		    </div>
+		  </div>
 		</div>
 
 		<div class="signature-section">
@@ -499,29 +495,35 @@ body {
 
 			<div class="section-title">계약 개요</div>
 			<table class="contract-table">
-				<thead>
-					<tr>
-						<th>계약서 번호</th>
-						<th>계약금</th>
-						<th>잔금</th>
-						<th>계약 총액</th>
-						<th>계약서 작성 일자</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>${first.contractNo}</td>
-						<td>₩<fmt:formatNumber value="${first.downPayment}"
-								type="number" groupingUsed="true" /></td>
-						<td>₩<fmt:formatNumber value="${first.finalPayment}"
-								type="number" groupingUsed="true" /></td>
-						<td>₩<fmt:formatNumber
-								value="${first.downPayment + first.finalPayment}" type="number"
-								groupingUsed="true" /></td>
-						<td>${first.formattedCreateDate}</td>
-					</tr>
-				</tbody>
+			  <thead>
+			    <tr>
+			      <th>문서번호</th>
+			      <th>계약금</th>
+			      <th>잔금</th>
+			      <th>계약 총액</th>
+			      <th>계약서 작성 일자</th>
+			    </tr>
+			  </thead>
+			  <tbody>
+			    <tr>
+			      <td>
+			        <c:choose>
+			          <c:when test="${not empty contractOne and not empty contractOne[0].contractNo}">
+			            ${contractOne[0].contractNo}
+			          </c:when>
+			          <c:otherwise>
+			            미발급
+			          </c:otherwise>
+			        </c:choose>
+			      </td>
+			      <td>₩<fmt:formatNumber value="${first.downPayment}" type="number" groupingUsed="true" /></td>
+			      <td>₩<fmt:formatNumber value="${first.finalPayment}" type="number" groupingUsed="true" /></td>
+			      <td>₩<fmt:formatNumber value="${first.downPayment + first.finalPayment}" type="number" groupingUsed="true" /></td>
+			      <td>${first.formattedCreateDate}</td>
+			    </tr>
+			  </tbody>
 			</table>
+
 
 			<div class="section-title">품목 내역</div>
 			<table class="contract-table">
