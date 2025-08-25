@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Contract {
-	private int contractNo;
+	private Integer contractNo;
 	private int quotationNo;
 	private int downPayment;
 	private String downPaymentStatus;
@@ -24,7 +24,6 @@ public class Contract {
 	private String updateUser;
 	private LocalDateTime updateDate;
 	private String useStatus;
-	
 	public String getFormattedCreateDate() {
 		if (createDate == null) return "";
 		return createDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -35,8 +34,8 @@ public class Contract {
 	// product_request 조인
 	private String productName;
 	private String productOption;
-	private String productQuantity;
-	
+	private int productQuantity;
+	private int price;
 	// user 조인
 	private String name;
 	private String companyName;

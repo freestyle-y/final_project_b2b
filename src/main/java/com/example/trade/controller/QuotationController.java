@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.trade.dto.Quotation;
+import com.example.trade.dto.QuotationItem;
 import com.example.trade.service.QuotationService;
 
 @Controller
@@ -25,148 +26,156 @@ public class QuotationController {
 		this.quotationService = quotationService;
 	}
 	
-	// 관리자 견적서 목록
-	@GetMapping("/admin/quotationList")
-    public String adminQuotationList(Model model) {
-        List<Quotation> adminQuotationList = quotationService.getAdminQuotationList();
-
-        // 2. 견적서 리스트를 정렬
-        //    1차 기준: subProductRequestNo (재견적서 번호)
-        //    2차 기준: quotationNo (견적서 번호)
-        //    → 즉, "재견적서 번호"가 우선적으로 정렬되도록 보장
-        adminQuotationList.sort(Comparator
-            .comparing(Quotation::getQuotationNo)           // 첫 번째 정렬 기준: 견적서 번호
-            .thenComparing(Quotation::getSubProductRequestNo)); // 두 번째 정렬 기준: 재견적서 번호
-
-        // 3. 그룹핑 결과를 담을 Map 준비
-        //    Key   : "subProductRequestNo_quotationNo_price" 문자열
-        //    Value : 해당 Key에 속하는 Quotation 객체 리스트
-        //    LinkedHashMap 사용 → 입력 순서 보장 (정렬된 순서대로 유지)
-        Map<String, List<Quotation>> quotationGroupedMap = new LinkedHashMap<>();
-
-        // 4. 견적서 리스트를 순회하면서 그룹핑 처리
-        for (Quotation q : adminQuotationList) {
-            // Key 생성 규칙:
-            //   subProductRequestNo + "_" + quotationNo + "_" + price
-            //   예: "1_1_8000000"
-            String key = q.getSubProductRequestNo() + "_" + q.getQuotationNo() + "_" + q.getPrice();
-            // Key가 없으면 새 리스트 생성, 있으면 기존 리스트에 추가
-            quotationGroupedMap.computeIfAbsent(key, k -> new ArrayList<>()).add(q);
-        }
-        // 5. JSP(View)에서 사용할 데이터 등록
-        //    JSP에서는 ${quotationGroupedMap} 으로 접근 가능
-        model.addAttribute("quotationGroupedMap", quotationGroupedMap);
-		return "admin/quotationList";
+	// 관리자 전체 견적서 목록
+	@GetMapping("/admin/quotationListAll")
+	public String adminQuotationListAll(Model model) {
+	    List<Quotation> quotationList = quotationService.getAllAdminQuotations();
+	    model.addAttribute("quotationList", quotationList);
+	    return "admin/quotationList";
 	}
+	
+	// 관리자 견적서 (요청 상품에 대한)
+	@GetMapping("/admin/quotationList")
+	public String adminQuotationList(@RequestParam("productRequestNo") int productRequestNo, Model model) {
+	    List<Quotation> quotationList = quotationService.getAdminQuotationList(productRequestNo);
+	    model.addAttribute("quotationList", quotationList);
+	    return "admin/quotationList";
+	}
+
+	
 	
 	// 관리자 견적서 상세페이지
 	@GetMapping("/admin/quotationOne")
-	public String adminQuotationOne(Model model
-							  ,@RequestParam("quotationNo") int quotationNo
-							  ,@RequestParam("subProductRequestNo") int subProductRequestNo) {
-		List<Quotation> adminQuotationOne = quotationService.adminQuotationOne(quotationNo, subProductRequestNo);
-		model.addAttribute("adminQuotationOne", adminQuotationOne);
-		return "admin/quotationOne";
-	}
-	
-	// 관리자 견적서 작성 페이지
-	@GetMapping("/admin/writeQuotation")
-	public String writeQuotation(@RequestParam("productRequestNo") int productRequestNo
-	                            ,@RequestParam("quotationNo") int quotationNo
-	                            ,@RequestParam("subProductRequestNo") int subProductRequestNo,
-	                             Model model) {
-		List<Quotation> quotationOne = quotationService.getQuotationOneByQuotationNo(productRequestNo);
-
-		quotationOne.sort(Comparator
-			.comparing(Quotation::getQuotationNo)
-			.thenComparing(Quotation::getSubProductRequestNo));
-
-		Map<String, List<Quotation>> groupList = new LinkedHashMap<>();
-		for (Quotation q : quotationOne) {
-			String key = q.getQuotationNo() + "_" + q.getSubProductRequestNo() + "_" + q.getPrice();
-			groupList.computeIfAbsent(key, k -> new ArrayList<>()).add(q);
-		}
-
-		model.addAttribute("groupList", groupList);
-		model.addAttribute("productRequestNo", productRequestNo);
-		return "admin/writeQuotation";
+	public String adminQuotationOne(Model model,
+	                                @RequestParam("quotationNo") int quotationNo) {
+	    Quotation adminQuotationOne = quotationService.adminQuotationOne(quotationNo);
+	    model.addAttribute("adminQuotationOne", adminQuotationOne);
+	    return "admin/quotationOne";
 	}
 
 	// 관리자 견적서 작성 팝업 페이지
 	@GetMapping("/admin/writeQuotationForm")
-	public String writeQuotationForm(@RequestParam("quotationNo") int quotationNo
-									 ,@RequestParam("subProductRequestNo") int subProductRequestNo
-									 ,Model model) {
-		List<Quotation> quotationList = quotationService.getQuotationOne(quotationNo, subProductRequestNo);
-		model.addAttribute("quotationList", quotationList);
-		return "admin/writeQuotationForm";
+	public String writeQuotationForm(@RequestParam("productRequestNo") int productRequestNo,
+	                                 @RequestParam(value="quotationNo", required=false, defaultValue="0") int quotationNo,
+	                                 Model model) {
+
+	    if (quotationNo == 0) {
+	        // 신규 작성 → product_request에서 상품 가져오기
+	        List<QuotationItem> quotationItems = quotationService.getProductRequestForQuotation(productRequestNo);
+	        model.addAttribute("quotationItems", quotationItems);
+	    } else {
+	        // 기존 견적 수정 → 견적서 + 상품들 가져오기
+	        Quotation quotation = quotationService.getQuotationOne(quotationNo);
+	        model.addAttribute("quotation", quotation);
+	    }
+
+	    return "admin/writeQuotationForm";
+	}
+	
+	// 관리자 견적서 수정
+	@GetMapping("/admin/modifyQuotationForm")
+	public String modifyQuotationForm(@RequestParam("quotationNo") int quotationNo, Model model) {
+	    Quotation quotation = quotationService.getQuotationOne(quotationNo);
+	    model.addAttribute("quotation", quotation);
+	    return "admin/modifyQuotationForm";
+	}
+	
+	// 관리자 견적서 수정 POST
+	@PostMapping("/admin/modifyQuotation")
+	public String modifyQuotation(
+	        @RequestParam("quotationNo") int quotationNo,
+	        @RequestParam("itemId") List<Integer> itemId,
+	        @RequestParam("price") List<Integer> price) {
+
+	    for (int i = 0; i < itemId.size(); i++) {
+	        QuotationItem item = new QuotationItem();
+	        item.setItemId(itemId.get(i));
+	        item.setPrice(price.get(i));
+	        quotationService.updateQuotationItem(item);
+	    }
+
+	    return "redirect:/admin/quotationListAll";
 	}
 
-    // 기업 회원 견적서 목록 페이지
-    @GetMapping("/biz/quotationList")
-    public String quotationList(@RequestParam String userId, Model model) {
-        List<Quotation> quotationList = quotationService.getQuotationList(userId);
 
-        // 2. 견적서 리스트를 정렬
-        //    1차 기준: subProductRequestNo (재견적서 번호)
-        //    2차 기준: quotationNo (견적서 번호)
-        //    → 즉, "재견적서 번호"가 우선적으로 정렬되도록 보장
-        quotationList.sort(Comparator
-            .comparing(Quotation::getQuotationNo)           // 첫 번째 정렬 기준: 견적서 번호
-            .thenComparing(Quotation::getSubProductRequestNo)); // 두 번째 정렬 기준: 재견적서 번호
+	// 관리자 견적서 삭제
+	@PostMapping("/admin/deleteQuotation")
+	public String deleteQuotation(@RequestParam("quotationNo") int quotationNo
+								 ,@RequestParam("productRequestNo") int productRequestNo) {
+		int row = quotationService.deleteQuotation(quotationNo, productRequestNo);
+		return "redirect:/admin/quotationListAll";
+	}
 
-        // 3. 그룹핑 결과를 담을 Map 준비
-        //    Key   : "subProductRequestNo_quotationNo_price" 문자열
-        //    Value : 해당 Key에 속하는 Quotation 객체 리스트
-        //    LinkedHashMap 사용 → 입력 순서 보장 (정렬된 순서대로 유지)
-        Map<String, List<Quotation>> quotationGroupedMap = new LinkedHashMap<>();
+	
+	// 관리자 견적서 작성 POST
+	@PostMapping("/admin/submitQuotation")
+	public String submitQuotation(
+	        @RequestParam("productRequestNos") List<Integer> productRequestNos,
+	        @RequestParam("subProductRequestNos") List<Integer> subProductRequestNos,
+	        @RequestParam("prices") List<Integer> prices,
+	        Principal principal) {
 
-        // 4. 견적서 리스트를 순회하면서 그룹핑 처리
-        for (Quotation q : quotationList) {
-            // Key 생성 규칙:
-            //   subProductRequestNo + "_" + quotationNo + "_" + price
-            //   예: "1_1_8000000"
-            String key = q.getSubProductRequestNo() + "_" + q.getQuotationNo() + "_" + q.getPrice();
-            // Key가 없으면 새 리스트 생성, 있으면 기존 리스트에 추가
-            quotationGroupedMap.computeIfAbsent(key, k -> new ArrayList<>()).add(q);
-        }
-        // 5. JSP(View)에서 사용할 데이터 등록
-        //    JSP에서는 ${quotationGroupedMap} 으로 접근 가능
-        model.addAttribute("quotationGroupedMap", quotationGroupedMap);
+	    String userId = principal.getName();
 
-        return "biz/quotationList";
-    }
+	    // 1. 마스터 insert
+	    Quotation quotation = new Quotation();
+	    quotation.setProductRequestNo(productRequestNos.get(0));
+	    quotation.setCreateUser(userId);
+	    quotationService.insertQuotationMaster(quotation);
+	    int quotationNo = quotation.getQuotationNo();
+
+	    // 2. 상품들 insert
+	    for (int i = 0; i < subProductRequestNos.size(); i++) {
+	        QuotationItem item = new QuotationItem();
+	        item.setQuotationNo(quotationNo);
+	        item.setProductRequestNo(productRequestNos.get(i));
+	        item.setSubProductRequestNo(subProductRequestNos.get(i));
+	        item.setPrice(prices.get(i));
+	        quotationService.insertQuotationItem(item);
+	    }
+
+	    return "admin/popupClose";
+	}
+
+	// 기업 회원 견적서 목록 페이지
+	@GetMapping("/biz/quotationList")
+	public String quotationList(Principal principal, Model model) {
+	    String userId = principal.getName();
+	    List<Quotation> quotationList = quotationService.getQuotationList(userId);
+
+	    // 정렬만 필요하면 단순히 quotationNo 기준
+	    quotationList.sort(Comparator.comparing(Quotation::getQuotationNo));
+
+	    // JSP에서 q.items 직접 출력 가능 → 그룹핑 불필요
+	    model.addAttribute("quotationList", quotationList);
+
+	    return "biz/quotationList";
+	}
+
 
 	// 기업회원 견적서 상세 페이지
-	@GetMapping("/biz/quotationOne")
-	public String quotationOne(Model model
-							  ,@RequestParam("quotationNo") int quotationNo
-							  ,@RequestParam("subProductRequestNo") int subProductRequestNo) {
-		List<Quotation> quotationOne = quotationService.getQuotationOne(quotationNo, subProductRequestNo);
-		model.addAttribute("quotationOne", quotationOne);
-		return "biz/quotationOne";
-	}
+    @GetMapping("/biz/quotationOne")
+    public String quotationOne(Model model,
+                               @RequestParam("quotationNo") int quotationNo) {
+        Quotation quotationOne = quotationService.getQuotationOne(quotationNo);
+        model.addAttribute("quotationOne", quotationOne);
+        return "biz/quotationOne";
+    }
 	
 	// 기업회원 견적서 승인
-	@PostMapping("/biz/quotationApprove")
-	public String quotationApprove(@RequestParam("quotationNo") int quotationNo
-								  ,@RequestParam("subProductRequestNo") int subProductRequestNo) {
-		int row = quotationService.updateStatusAtApprove(quotationNo, subProductRequestNo);
-		
-	    return "redirect:/biz/quotationOne?quotationNo=" + quotationNo + "&subProductRequestNo=" + subProductRequestNo;
-	}
+    @PostMapping("/biz/quotationApprove")
+    public String quotationApprove(@RequestParam("quotationNo") int quotationNo) {
+        quotationService.updateStatusAtApprove(quotationNo);
+        return "redirect:/biz/quotationOne?quotationNo=" + quotationNo;
+    }
 	
 	// 기업회원 견적서 거절
-	@PostMapping("/biz/quotationReject")
-	public String quotationReject(@RequestParam("quotationNo") int quotationNo
-								 ,@RequestParam("subProductRequestNo") int subProductRequestNo
-								 ,@RequestParam("rejectionReason") String rejectionReason
-								 ,Principal principal) {
-		String userId = principal.getName();
-		
-		int row = quotationService.updateStatusAtReject(quotationNo, subProductRequestNo, rejectionReason, userId);
-		
-		return "redirect:/biz/quotationOne?quotationNo=" + quotationNo + "&subProductRequestNo=" + subProductRequestNo;
-	}
-	
+    @PostMapping("/biz/quotationReject")
+    public String quotationReject(@RequestParam("quotationNo") int quotationNo,
+                                 @RequestParam("rejectionReason") String rejectionReason,
+                                 Principal principal) {
+        String userId = principal.getName();
+        quotationService.updateStatusAtReject(quotationNo, rejectionReason, userId);
+        return "redirect:/biz/quotationOne?quotationNo=" + quotationNo;
+    }
 }

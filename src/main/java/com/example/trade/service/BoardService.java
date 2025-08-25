@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import com.example.trade.dto.Board;
+import com.example.trade.dto.Comment;
 import com.example.trade.dto.Page;
 import com.example.trade.mapper.BoardMapper;
 
@@ -41,11 +42,41 @@ public class BoardService {
 		return boardMapper.selectQNAOne(board);
 	}
 	
-	// 문의 내역 등록
+	// 1:1 문의 등록
 	public int insertBoard(Board board) {
 		return boardMapper.insertBoard(board);
 	}
-
+	
+	// 1:1 문의 수정
+	public int updateQNA(Board board) {
+		return boardMapper.updateQNA(board);
+	}
+	
+	// 1:1 문의 삭제(비활성화)
+	public int deleteQNA(Board board) {
+		return boardMapper.deleteQNA(board);
+	}
+	
+	// 댓글 조회
+	public List<Map<String, Object>> getCommentByBoardNo(int boardNo) {
+		return boardMapper.selectCommentByBoardNo(boardNo);
+	}
+	
+	// 댓글 등록
+	public int insertComment(Comment comment) {
+		return boardMapper.insertComment(comment);
+	}
+	
+	// 댓글 수정
+	public int updateComment(Comment comment) {
+		return boardMapper.updateComment(comment);
+	}
+	
+	// 댓글 삭제
+	public int deleteComment(Comment comment) {
+		return boardMapper.deleteComment(comment);
+	}
+	
 	// 공지사항 목록 조회
 	public List<Map<String, Object>> getNoticeList(Page page) {
 		return boardMapper.selectNoticeList(page);
@@ -60,5 +91,4 @@ public class BoardService {
 	public List<Map<String, Object>> getNoticeOne(int boardNo) {
 		return boardMapper.selectNoticeOne(boardNo);
 	}
-
 }

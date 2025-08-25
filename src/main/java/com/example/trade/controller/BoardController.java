@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.trade.dto.Board;
+import com.example.trade.dto.Comment;
 import com.example.trade.dto.Page;
 import com.example.trade.service.BoardService;
 
@@ -25,7 +26,7 @@ public class BoardController {
 		this.boardService = boardService;
 	}
 	
-	// 고객센터
+	// 고객센터 페이지
 	@GetMapping("/public/helpDesk")
 	public String helpDesk() {
 		return "public/helpDesk";
@@ -88,15 +89,47 @@ public class BoardController {
 	// 문의 내역 상세 조회
 	@GetMapping("/member/QNAOne")
 	public String QNAOne(Board board, Model model) {
+		
 		// 접속한 사용자 ID 조회
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
 		board.setCreateUser(username);
 		
+		// 문의 내역 상세 조회
 		List<Map<String, Object>> QNAOne = boardService.getQNAOne(board);
+		
+		// 댓글 조회
+		List<Map<String, Object>> commentList = boardService.getCommentByBoardNo(board.getBoardNo());
+		
+	    // 댓글 간격(depth) 계산
+		for(Map<String, Object> comment : commentList) {
+			// 기본 depth = 0 (최상위 댓글)
+			int depth = 0;
+			
+			// 현재 댓글의 부모 댓글 번호 가져오기
+			Integer parent = (Integer)comment.get("parentCommentNo");
+			
+			// 부모가 존재하면 계속 위로 따라가면서 depth 계산
+			while(parent != null) {
+				for(Map<String, Object> c : commentList) {
+					// 현재 댓글의 parent와 일치하는 commentNo 발견 시
+					if(c.get("commentNo").equals(parent)) {
+						depth++;
+						parent = (Integer)c.get("parentCommentNo"); // 부모의 부모로 이동
+						break; // 부모 찾은 후 내부 for문 종료
+					}
+				}
+			}
+			comment.put("depth", depth);
+		}
+		
+		// 모델에 값 전달
 		model.addAttribute("QNAOne", QNAOne);
+		model.addAttribute("commentList", commentList);
+		model.addAttribute("username", username);
+		
 		return "member/QNAOne";
 	}
-
+	
 	// 1:1 문의 작성 페이지
 	@GetMapping("/member/QNAWrite")
 	public String QNAWrite() {
@@ -122,7 +155,126 @@ public class BoardController {
 			return "redirect:/member/QNAWrite";
 		}
 	}
+	
+	// 1:1 문의 수정 페이지
+	@GetMapping("/member/QNAUpdate")
+	public String QNAUpdate(Board board, Model model) {
+		
+		// 접속한 사용자 ID 조회
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+		board.setCreateUser(username);
+		
+		// dto로 전달받은 boardNo 기준으로 문의글 조회
+		List<Map<String, Object>> QNAOne = boardService.getQNAOne(board);
+		
+		// 모델에 값 전달
+		model.addAttribute("QNAOne", QNAOne);
 
+		return "member/QNAUpdate";
+	}
+	
+	// 1:1 문의 수정 처리
+	@PostMapping("/member/QNAUpdate")
+	public String QNAUpdate(Board board, Principal principal) {
+		
+		// 로그인 사용자 확인
+		String username = principal.getName();
+		board.setUpdateUser(username);
+
+		// 문의글 수정
+		int row = boardService.updateQNA(board);
+
+		if(row != 0) {
+			System.out.println("QNA 수정 성공");
+			return "redirect:/member/QNAOne?boardNo=" + board.getBoardNo();
+		} else {
+			System.out.println("QNA 수정 실패");
+			return "redirect:/member/QNAUpdate?boardNo=" + board.getBoardNo();
+		}
+	}
+	
+	// 1:1 문의 삭제(비활성화)
+	@PostMapping("/member/QNADelete")
+	public String QNADelete(Board board, Principal principal) {
+		
+		// 로그인 사용자 확인
+		String username = principal.getName();
+		board.setUpdateUser(username);
+
+		// 문의글 삭제(비활성화)
+		int row = boardService.deleteQNA(board);
+
+		if(row != 0) {
+			System.out.println("QNA 삭제 성공");
+			return "redirect:/member/QNAList";
+		} else {
+			System.out.println("QNA 삭제 실패");
+			return "redirect:/member/QNAOne?boardNo=" + board.getBoardNo();
+		}
+	}
+
+	// 댓글 등록
+	@PostMapping("/member/commentWrite")
+	public String commentWrite(Comment comment, Principal principal) {
+		
+		// 로그인 사용자 ID
+		comment.setCreateUser(principal.getName());
+		
+		// 댓글 DB에 저장
+		int row = boardService.insertComment(comment);
+		
+		if(row != 0) {
+			System.out.println("댓글 등록 성공");
+			// 등록 후 다시 상세 페이지로 redirect
+			return "redirect:/member/QNAOne?boardNo=" + comment.getBoardNo();
+		} else {
+			System.out.println("댓글 등록 실패");
+			return "redirect:/member/QNAOne?boardNo=" + comment.getBoardNo();
+		}
+	}
+	
+	// 댓글 수정
+	@PostMapping("/member/commentUpdate")
+	public String updateComment(Comment comment, Principal principal) {
+		
+		// 로그인 사용자
+		String username = principal.getName();
+
+		// 업데이트 정보 세팅
+		comment.setUpdateUser(username);
+
+		int row = boardService.updateComment(comment);
+		
+		if(row != 0) {
+			System.out.println("댓글 수정 성공");
+			// 수정 후 다시 상세 페이지로 redirect
+			return "redirect:/member/QNAOne?boardNo=" + comment.getBoardNo();
+		} else {
+			System.out.println("댓글 수정 실패");
+			return "redirect:/member/QNAOne?boardNo=" + comment.getBoardNo();
+		}
+	}
+	
+	// 댓글 삭제(비활성화)
+	@PostMapping("/member/deleteComment")
+	public String deleteComment(Comment comment, Principal principal) {
+		// 로그인 사용자 ID
+		String username = principal.getName();
+		comment.setUpdateUser(username);
+
+		// 해당 댓글의 use_status 값 'N'으로 변경
+		int row = boardService.deleteComment(comment);
+		
+		if(row != 0) {
+			System.out.println("댓글 삭제 성공");
+			// 변경 후 해당 게시글 상세로 리다이렉트
+			return "redirect:/member/QNAOne?boardNo=" + comment.getBoardNo();
+		} else {
+			System.out.println("댓글 삭제 실패");
+			return "redirect:/member/QNAOne?boardNo=" + comment.getBoardNo();
+		}
+	}
+	
 	// 공지사항
 	@GetMapping("/public/noticeList")
 	public String noticeList(Model model

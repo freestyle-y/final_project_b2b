@@ -26,4 +26,12 @@ public interface ContractMapper {
 	// 관리자 화면에서 계약번호로 을(수요자) 정보를 조회
 	List<Contract> getContractUserByContractNo(int contractNo);
 
+	List<Contract> getContractSupplierByQuotation(int quotationNo);
+
+	List<Contract> getContractUserByQuotation(int quotationNo);
+
+	int insertContract(Contract contract);
+
+	void deleteContract(int contractNo, int quotationNo);
+
 }
