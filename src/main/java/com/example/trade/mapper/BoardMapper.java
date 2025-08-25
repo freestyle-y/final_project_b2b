@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.example.trade.dto.Board;
+import com.example.trade.dto.Comment;
 import com.example.trade.dto.Page;
 
 @Mapper
@@ -26,6 +27,18 @@ public interface BoardMapper {
 	
 	// 문의 내역 상세 조회
 	List<Map<String, Object>> selectQNAOne(Board board);
+	
+	// 댓글 조회
+	List<Map<String, Object>> selectCommentByBoardNo(int boardNo);
+	
+	// 댓글 등록
+	int insertComment(Comment comment);
+	
+	// 댓글 수정
+	int updateComment(Comment comment);
+	
+	// 댓글 삭제
+	int deleteComment(Comment comment);
 	
 	// 문의 내역 등록
 	int insertBoard(Board board);

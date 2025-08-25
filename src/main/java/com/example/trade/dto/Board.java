@@ -14,6 +14,7 @@ public class Board {
 	private String boardTitle;
 	private String boardContent;
 	private String boardCode;
+	private String subCode;
 	private String createUser;
 	private LocalDateTime createDate;
 	private String updateUser;

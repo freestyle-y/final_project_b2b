@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Comment {
 	private int commentNo;
-	private int parentCommentNo;
+	private Integer parentCommentNo; // null 허용을 위해 Integer로 변경
 	private String commentContent;
 	private int boardNo;
 	private String createUser;
