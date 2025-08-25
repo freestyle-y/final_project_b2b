@@ -5,8 +5,20 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.example.trade.dto.Board;
+import com.example.trade.dto.Page;
+
 @Mapper
 public interface AdminMapper {
+	
+	// 자주 묻는 질문(FAQ) 목록
+	List<Map<String, Object>> selectFAQList(Page page);
+	
+	// 자주 묻는 질문(FAQ) 전체 행 수 조회
+	int selectFAQTotalCount(Page page);
+	
+	// 자주 묻는 질문(FAQ) 상세 조회
+	Board selectFAQOne(Board board);
 
 	// 로그인 이력 조회
 	List<Map<String, Object>> selectLoginHistory();
@@ -16,5 +28,4 @@ public interface AdminMapper {
 
 	// 기업 회원의 배송 현황 조회
 	List<Map<String, Object>> selectBizDeliveryList();
-
 }
