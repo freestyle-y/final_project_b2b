@@ -22,4 +22,20 @@
 		DELETE FROM container
 		WHERE container_no = #{containerNo}
 	</delete>
+	
+	<select id="getContainerOne" parameterType="int" resultType="com.example.trade.dto.Container">
+	SELECT container_no AS containerNo,
+	       container_location AS containerLocation,
+	       contract_order_no AS contractOrderNo
+	FROM container
+	WHERE container_no = #{containerNo}
+</select>
+
+<update id="updateContainer" parameterType="com.example.trade.dto.Container">
+	UPDATE container
+	SET container_location = #{containerLocation},
+	    contract_order_no = #{contractOrderNo}
+	WHERE container_no = #{containerNo}
+</update>
+	
 </mapper>

@@ -26,5 +26,10 @@ public class ContainerService {
 	public void deleteContainer(int containerNo) {
 		containerMapper.deleteContainer(containerNo);
 	}
-
+	public Container getContainerOne(int containerNo) {
+		return containerMapper.getContainerOne(containerNo);
+	}
+	public void updateContainer(Container container) {
+		containerMapper.updateContainer(container);
+	}
 }

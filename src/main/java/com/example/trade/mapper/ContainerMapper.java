@@ -15,4 +15,8 @@ public interface ContainerMapper {
 
 	void deleteContainer(int containerNo);
 
+	Container getContainerOne(int containerNo);
+
+	void updateContainer(Container container);
+
 }

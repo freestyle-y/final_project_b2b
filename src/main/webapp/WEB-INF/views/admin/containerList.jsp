@@ -41,10 +41,10 @@
     </thead>
     <tbody>
         <c:forEach var="con" items="${containerList}">
-			<input type="hidden" name="containerNo" value="${con.containerNo}">
             <tr>
             	<td>
             		<input type="checkbox">
+					<input type="hidden" name="containerNo" value="${con.containerNo}">
             	</td>
                 <td>${con.containerNo}</td>
                 <td>${con.containerLocation}</td>
@@ -57,6 +57,16 @@
 	<button type="button" onclick="deleteContainer()">삭제</button>
 </form>
 <script>
+	function modifyContainer(){
+		const checked = document.querySelector("input[type='checkbox']:checked");
+		if (!checked) {
+			alert("수정할 컨테이너를 선택하세요.");
+			return;
+		}
+		const containerNo = checked.closest("tr").querySelector("input[name='containerNo']").value;
+		location.href = "/admin/modifyContainerForm?containerNo=" + containerNo;
+	}
+
 	function deleteContainer(){
 		if (!confirm("정말 삭제하시겠습니까?")) return;
 
