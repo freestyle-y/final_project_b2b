@@ -42,6 +42,21 @@ public class BoardService {
 		return boardMapper.selectQNAOne(board);
 	}
 	
+	// 1:1 문의 등록
+	public int insertBoard(Board board) {
+		return boardMapper.insertBoard(board);
+	}
+	
+	// 1:1 문의 수정
+	public int updateQNA(Board board) {
+		return boardMapper.updateQNA(board);
+	}
+	
+	// 1:1 문의 삭제(비활성화)
+	public int deleteQNA(Board board) {
+		return boardMapper.deleteQNA(board);
+	}
+	
 	// 댓글 조회
 	public List<Map<String, Object>> getCommentByBoardNo(int boardNo) {
 		return boardMapper.selectCommentByBoardNo(boardNo);
@@ -60,11 +75,6 @@ public class BoardService {
 	// 댓글 삭제
 	public int deleteComment(Comment comment) {
 		return boardMapper.deleteComment(comment);
-	}
-	
-	// 문의 내역 등록
-	public int insertBoard(Board board) {
-		return boardMapper.insertBoard(board);
 	}
 	
 	// 공지사항 목록 조회
