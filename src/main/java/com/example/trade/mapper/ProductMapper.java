@@ -81,10 +81,16 @@ public interface ProductMapper {
 	List<ProductRequest> productRequestList();
 	// 상품 요청 상세 조회
 	List<Map<String, Object>> productRequestOne(int requestNo);
+	// 상품 요청 첨부파일 조회
+	List<Map<String, Object>> attachmentByRequestNo(int requestNo);
 	// 상품 요청 수정
 	int updateProductRequest(ProductRequest productRequest);
+	// 상품 요청 첨부파일 삭제
+	int deleteAttachment(int attachmentNo);
 	// 상품 요청 삭제
 	int deleteProductRequest(int requestNo); 
+	// 상품에 대한 첨부파일 모두 삭제
+	int deleteProductAttachment(int requestNo);
 	
 	// 대분류 최대 ID 조회 
 	String selectMaxMajorCategoryId();
@@ -107,9 +113,11 @@ public interface ProductMapper {
 	// 초기 재고 등록(개수 : 0)
 	void insertInventory(int productNo, int optionNo);
 	
-	// 최대 priority 찾기
+	// 최대 priority 찾기(이미지)
 	Integer findMaxPriorityByCategoryCode(int categoryCode);
-	// 이미지 저장
+	// 최대 priority 찾기(첨부파일)
+	Integer findMaxPriorityByRequestNo(int requestNo);
+	// 파일 저장
 	void insertAttachment(Attachment attachment);
 	
 	// 재고 목록 조회

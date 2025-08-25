@@ -3,6 +3,7 @@ package com.example.trade.service;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,8 @@ import lombok.extern.slf4j.Slf4j;
 public class ProductService {
 	private final ProductMapper productMapper;
 
+	private static final String UPLOAD_DIR = "C:/uploads/product/";
+	
 	public ProductService(ProductMapper productMapper) {
 		this.productMapper = productMapper;
 	}
@@ -170,7 +173,6 @@ public class ProductService {
 	    return result;
 	}
 
-	
 	// 카테고리(대분류) 목록
 	public List<Category> selectMajorCategory() {
 		return productMapper.majorCategory();
@@ -247,7 +249,7 @@ public class ProductService {
 	}
 	
 	// 상품 요청 입력
-	public void insertProductRequest(List<ProductRequest> list) {
+	public void insertProductRequest(List<ProductRequest> list, List<MultipartFile> files) {
 		
         // 첫 번째 상품 insert (subProductRequestNo = 1)
         ProductRequest first = list.get(0);
@@ -257,6 +259,7 @@ public class ProductService {
         
         // 자동 생성된 productRequestNo 가져오기
         int productRequestNo = first.getProductRequestNo();
+        String createUser = first.getCreateUser();
         
         // 두 번째 상품부터는 같은 productRequestNo, subProductRequestNo 증가하면서 insert
         int subNo = 2;
@@ -267,6 +270,38 @@ public class ProductService {
             pr.setUseStatus("Y");
             productMapper.insertProductRequest(pr);
         }
+        
+        // 2. 첨부파일 저장
+        if (files != null && !files.isEmpty()) {
+            int priority = 1;
+            for (MultipartFile file : files) {
+                if (!file.isEmpty()) {
+                    try {
+                        String originalFileName = file.getOriginalFilename();
+                        String uniqueFileName = UUID.randomUUID().toString().replace("-", "");
+                        uniqueFileName += "_" + originalFileName;
+                        
+                        File saveFile = new File(UPLOAD_DIR + uniqueFileName);
+                        saveFile.getParentFile().mkdirs();
+                        file.transferTo(saveFile);
+
+                        Attachment attachment = new Attachment();
+                        attachment.setCategoryCode(productRequestNo);
+                        attachment.setAttachmentCode("PRODUCT_REQUEST_FILE");
+                        attachment.setFilename(originalFileName);
+                        attachment.setFilepath("/uploads/product/" + uniqueFileName);
+                        attachment.setUseStatus("Y");
+                        attachment.setCreateUser(createUser);
+                        attachment.setPriority(priority++);
+
+                        productMapper.insertAttachment(attachment);
+
+                    } catch (IOException e) {
+                        throw new RuntimeException("파일 업로드 실패: " + file.getOriginalFilename(), e);
+                    }
+                }
+            }
+        }
 	}
 	
 	// 상품 요청 리스트 조회
@@ -276,11 +311,39 @@ public class ProductService {
 	
 	// 상품 요청 상세 조회
 	public List<Map<String, Object>> selectProductRequestOne(int requestNo) {
-		return productMapper.productRequestOne(requestNo);
+		List<Map<String, Object>> requestDetails = productMapper.productRequestOne(requestNo);
+		List<Map<String, Object>> attachmentList = productMapper.attachmentByRequestNo(requestNo);
+
+	    Map<Integer, List<Map<String, Object>>> attachmentMap = new HashMap<>();
+	    for (Map<String, Object> attach : attachmentList) {
+	        Integer reqNo = (Integer) attach.get("requestNo");
+	        String filepath = (String) attach.get("filepath");
+	        String filename = (String) attach.get("filename");
+	        Integer attachmentNo = (Integer) attach.get("attchmentNo");
+	        
+	        Map<String, Object> fileInfo = new HashMap<>();
+	        fileInfo.put("filepath", filepath);
+	        fileInfo.put("filename", filename);
+	        fileInfo.put("attachmentNo", attachmentNo);
+	        
+	        attachmentMap.computeIfAbsent(reqNo, k -> new ArrayList<>()).add(fileInfo);
+	    }
+
+		for (Map<String, Object> detail : requestDetails) {
+		    Integer reqNo = (Integer) detail.get("productRequestNo");
+		    detail.put("attachments", attachmentMap.getOrDefault(reqNo, Collections.emptyList()));
+		}
+
+		return requestDetails;
+	}
+	
+	// 상품 요청 첨부파일 삭제
+	public int deleteAttachment(int attachmentNo) {
+		return productMapper.deleteAttachment(attachmentNo);
 	}
 	
 	// 상품 요청 수정
-	public void updateProductRequests(ProductRequestForm form) {
+	public void updateProductRequests(ProductRequestForm form, MultipartFile[] files) {
 		List<ProductRequest> productList = form.getProductRequestList();
         int addressNo = form.getAddressNo();
         String requests = form.getRequests();
@@ -292,11 +355,55 @@ public class ProductService {
             //log.info(pr.toString());
             productMapper.updateProductRequest(pr);
         }
+        
+        int requestNo = productList.get(0).getProductRequestNo();
+        String createUser = productList.get(0).getCreateUser();
+        
+        Integer maxPriority = productMapper.findMaxPriorityByCategoryCode(requestNo);
+	    int priority = (maxPriority != null) ? maxPriority + 1 : 1;
+	    
+		for (MultipartFile file : files) {
+            if (!file.isEmpty()) {
+                try {
+                    // 1. 원본 파일명
+                    String originalFileName = file.getOriginalFilename();
+
+                    // 2. 고유한 파일명 생성 (중복 방지)
+                    String uniqueFileName = UUID.randomUUID().toString().replace("-", "");
+                    uniqueFileName += "_" + originalFileName;
+                    
+                    // 3. 저장할 경로 생성
+                    File saveFile = new File(UPLOAD_DIR + uniqueFileName);
+
+                    // 디렉토리가 없으면 생성
+                    saveFile.getParentFile().mkdirs();
+
+                    // 4. 로컬에 파일 저장
+                    file.transferTo(saveFile);
+
+                    // 5. DB 저장
+                    Attachment attachment = new Attachment();
+                    attachment.setCategoryCode(requestNo);
+                    attachment.setAttachmentCode("PRODUCT_REQUEST_FILE");
+                    attachment.setFilename(originalFileName); // 원본 파일명
+                    attachment.setFilepath("/uploads/product/" + uniqueFileName); // 웹에서 접근 가능한 경로
+                    attachment.setUseStatus("Y");
+                    attachment.setCreateUser(createUser); // 또는 로그인 유저 ID
+                    attachment.setPriority(priority++);
+                    
+                    productMapper.insertAttachment(attachment);
+
+                } catch (IOException e) {
+                    throw new RuntimeException("파일 업로드 실패: " + file.getOriginalFilename(), e);
+                }
+            }
+        }
 	}
 	
 	// 상품 요청 삭제
 	public void deleteProductRequest(int requestNo) {
 		productMapper.deleteProductRequest(requestNo);
+		productMapper.deleteProductAttachment(requestNo);
 	}
 	
 	// 카테고리 추가
@@ -370,9 +477,7 @@ public class ProductService {
 		// 2. 재고 테이블에 초기 재고(0) 등록
 		productMapper.insertInventory(resolvedProductNo, product.getOptionNo());
 	}
-	
-	private static final String UPLOAD_DIR = "C:/uploads/product/";
-	
+
 	// 상품 이미지 등록
 	public void insertProductImages(int productNo, List<MultipartFile> imageFiles, String loginUserName) {
 		Integer maxPriority = productMapper.findMaxPriorityByCategoryCode(productNo);
