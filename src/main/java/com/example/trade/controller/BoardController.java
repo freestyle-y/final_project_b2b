@@ -26,7 +26,7 @@ public class BoardController {
 		this.boardService = boardService;
 	}
 	
-	// 고객센터
+	// 고객센터 페이지
 	@GetMapping("/public/helpDesk")
 	public String helpDesk() {
 		return "public/helpDesk";
@@ -130,6 +130,89 @@ public class BoardController {
 		return "member/QNAOne";
 	}
 	
+	// 1:1 문의 작성 페이지
+	@GetMapping("/member/QNAWrite")
+	public String QNAWrite() {
+		return "member/QNAWrite";
+	}
+	
+	// 1:1 문의 내역 등록
+	@PostMapping("/member/QNAWrite")
+	public String QNAWrite(Board board, Principal principal) {
+		// 접속한 사용자 ID 조회
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+		board.setCreateUser(username);
+		
+		// 사용자가 작성한 문의 글 DB에 저장
+		int row = boardService.insertBoard(board);
+		
+		if(row != 0) {
+			int newBoardNo = board.getBoardNo(); // useGeneratedKeys 로 세팅된 boardNo
+			System.out.println("QNA 등록 성공");
+			return "redirect:/member/QNAOne?boardNo=" + newBoardNo;
+		} else {
+			System.out.println("QNA 등록 실패");
+			return "redirect:/member/QNAWrite";
+		}
+	}
+	
+	// 1:1 문의 수정 페이지
+	@GetMapping("/member/QNAUpdate")
+	public String QNAUpdate(Board board, Model model) {
+		
+		// 접속한 사용자 ID 조회
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+		board.setCreateUser(username);
+		
+		// dto로 전달받은 boardNo 기준으로 문의글 조회
+		List<Map<String, Object>> QNAOne = boardService.getQNAOne(board);
+		
+		// 모델에 값 전달
+		model.addAttribute("QNAOne", QNAOne);
+
+		return "member/QNAUpdate";
+	}
+	
+	// 1:1 문의 수정 처리
+	@PostMapping("/member/QNAUpdate")
+	public String QNAUpdate(Board board, Principal principal) {
+		
+		// 로그인 사용자 확인
+		String username = principal.getName();
+		board.setUpdateUser(username);
+
+		// 문의글 수정
+		int row = boardService.updateQNA(board);
+
+		if(row != 0) {
+			System.out.println("QNA 수정 성공");
+			return "redirect:/member/QNAOne?boardNo=" + board.getBoardNo();
+		} else {
+			System.out.println("QNA 수정 실패");
+			return "redirect:/member/QNAUpdate?boardNo=" + board.getBoardNo();
+		}
+	}
+	
+	// 1:1 문의 삭제(비활성화)
+	@PostMapping("/member/QNADelete")
+	public String QNADelete(Board board, Principal principal) {
+		
+		// 로그인 사용자 확인
+		String username = principal.getName();
+		board.setUpdateUser(username);
+
+		// 문의글 삭제(비활성화)
+		int row = boardService.deleteQNA(board);
+
+		if(row != 0) {
+			System.out.println("QNA 삭제 성공");
+			return "redirect:/member/QNAList";
+		} else {
+			System.out.println("QNA 삭제 실패");
+			return "redirect:/member/QNAOne?boardNo=" + board.getBoardNo();
+		}
+	}
+
 	// 댓글 등록
 	@PostMapping("/member/commentWrite")
 	public String commentWrite(Comment comment, Principal principal) {
@@ -191,33 +274,7 @@ public class BoardController {
 			return "redirect:/member/QNAOne?boardNo=" + comment.getBoardNo();
 		}
 	}
-
-	// 1:1 문의 작성 페이지
-	@GetMapping("/member/QNAWrite")
-	public String QNAWrite() {
-		return "member/QNAWrite";
-	}
 	
-	// 1:1 문의 내역 등록
-	@PostMapping("/member/QNAWrite")
-	public String QNAWrite(Board board, Principal principal) {
-		// 접속한 사용자 ID 조회
-		String username = SecurityContextHolder.getContext().getAuthentication().getName();
-		board.setCreateUser(username);
-		
-		// 사용자가 작성한 문의 글 DB에 저장
-		int row = boardService.insertBoard(board);
-		
-		if(row != 0) {
-			int newBoardNo = board.getBoardNo(); // useGeneratedKeys 로 세팅된 boardNo
-			System.out.println("QNA 등록 성공");
-			return "redirect:/member/QNAOne?boardNo=" + newBoardNo;
-		} else {
-			System.out.println("QNA 등록 실패");
-			return "redirect:/member/QNAWrite";
-		}
-	}
-
 	// 공지사항
 	@GetMapping("/public/noticeList")
 	public String noticeList(Model model

@@ -19,6 +19,8 @@
 	<a href="/member/QNAWrite">1:1 문의</a> /
 	<a href="/public/noticeList">공지사항</a>
 	
+	<h3>고객센터 페이지입니다.</h3>
+	
 <!-- 공통 풋터 -->
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>
 

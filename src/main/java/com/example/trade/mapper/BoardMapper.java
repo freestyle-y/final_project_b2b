@@ -28,6 +28,15 @@ public interface BoardMapper {
 	// 문의 내역 상세 조회
 	List<Map<String, Object>> selectQNAOne(Board board);
 	
+	// 1:1 문의 등록
+	int insertBoard(Board board);
+	
+	// 1:1 문의 수정
+	int updateQNA(Board board);
+	
+	// 1:1 문의 삭제(비활성화)
+	int deleteQNA(Board board);
+	
 	// 댓글 조회
 	List<Map<String, Object>> selectCommentByBoardNo(int boardNo);
 	
@@ -40,9 +49,6 @@ public interface BoardMapper {
 	// 댓글 삭제
 	int deleteComment(Comment comment);
 	
-	// 문의 내역 등록
-	int insertBoard(Board board);
-
 	// 공지사항 목록 조회
 	List<Map<String, Object>> selectNoticeList(Page page);
 

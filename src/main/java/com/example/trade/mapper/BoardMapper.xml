@@ -9,6 +9,7 @@
 			board_content AS boardContent
 		FROM board
 		WHERE board_code = 'BC001'
+		AND use_status = 'Y'
 		<if test="searchWord != null and searchWord != ''">
 			AND board_title LIKE CONCAT('%', #{searchWord}, '%')
 		</if>
@@ -21,6 +22,7 @@
 		SELECT COUNT(*)
 		FROM board
 		WHERE board_code = 'BC001'
+		AND use_status = 'Y'
 		<if test="searchWord != null and searchWord != ''">
 			AND board_title LIKE CONCAT('%', #{searchWord}, '%')
 		</if>
@@ -34,6 +36,7 @@
 		FROM board
 		WHERE board_code = 'BC002'
 		AND create_user = #{username}
+		AND use_status = 'Y'
 		<if test="searchWord != null and searchWord != ''">
 			AND board_title LIKE CONCAT('%', #{searchWord}, '%')
 		</if>
@@ -47,6 +50,7 @@
 		FROM board
 		WHERE board_code = 'BC002'
 		AND create_user = #{username}
+		AND use_status = 'Y'
 		<if test="searchWord != null and searchWord != ''">
 			AND board_title LIKE CONCAT('%', #{searchWord}, '%')
 		</if>
@@ -69,7 +73,40 @@
 		WHERE board_no = #{boardNo}
 		AND board_code = 'BC002'
 		AND create_user = #{createUser}
+		AND use_status = 'Y'
 	</select>
+	
+	<!-- 1:1 문의 등록 -->
+	<insert id="insertBoard" parameterType="com.example.trade.dto.Board" useGeneratedKeys="true" keyProperty="boardNo">
+		INSERT INTO board (
+			board_title, board_content, board_code, create_user
+		) VALUES (
+			#{boardTitle}, #{boardContent}, #{boardCode}, #{createUser}
+		)
+	</insert>
+	
+	<!-- 1:1 문의 수정 -->
+	<update id="updateQNA" parameterType="com.example.trade.dto.Board">
+		UPDATE board SET
+			board_title = #{boardTitle},
+			board_content = #{boardContent},
+			update_user = #{updateUser},
+			update_date = NOW()
+		WHERE board_no = #{boardNo}
+		AND board_code = 'BC002'
+		AND create_user = #{updateUser}
+	</update>
+	
+	<!-- 1:1 문의 삭제(비활성화) -->
+	<update id="deleteQNA" parameterType="com.example.trade.dto.Board">
+		UPDATE board SET
+			update_user = #{updateUser},
+			update_date = NOW(),
+			use_status = 'N'
+		WHERE board_no = #{boardNo}
+		AND board_code = 'BC002'
+		AND create_user = #{updateUser}
+	</update>
 	
 	<!-- 댓글 조회 -->
 	<select id="selectCommentByBoardNo" parameterType="int" resultType="map">
@@ -121,15 +158,6 @@
 		AND create_user = #{updateUser}
 	</update>
 	
-	<!-- 문의 내역 등록 -->
-	<insert id="insertBoard" parameterType="com.example.trade.dto.Board" useGeneratedKeys="true" keyProperty="boardNo">
-		INSERT INTO board (
-			board_title, board_content, board_code, create_user
-		) VALUES (
-			#{boardTitle}, #{boardContent}, #{boardCode}, #{createUser}
-		)
-	</insert>
-	
 	<!-- 공지사항 목록 조회 -->
 	<select id="selectNoticeList" parameterType="com.example.trade.dto.Page" resultType="map">
 		SELECT
@@ -139,6 +167,7 @@
 			view_count AS viewCount
 		FROM board
 		WHERE board_code = 'BC003'
+		AND use_status = 'Y'
 		<if test="searchWord != null and searchWord != ''">
 			AND board_title LIKE CONCAT('%', #{searchWord}, '%')
 		</if>
@@ -146,10 +175,12 @@
 		LIMIT #{beginRow}, #{rowPerPage}
 	</select>
 	
+	<!-- 공지사항 전체 행 수 조회 -->
 	<select id="selectNoticeTotalCount" parameterType="com.example.trade.dto.Page" resultType="int">
 		SELECT COUNT(*)
 		FROM board
 		WHERE board_code = 'BC003'
+		AND use_status = 'Y'
 		<if test="searchWord != null and searchWord != ''">
 			AND board_title LIKE CONCAT('%', #{searchWord}, '%')
 		</if>
@@ -170,5 +201,6 @@
 			view_count AS viewCount
 		FROM board
 		WHERE board_no = #{boardNo}
+		AND use_status = 'Y'
 	</select>
 </mapper>

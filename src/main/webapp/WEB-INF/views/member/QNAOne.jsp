@@ -66,6 +66,20 @@
 		</c:forEach>
 	</table>
 
+	<a href="/member/QNAList">목록</a>
+	<!-- 로그인 사용자와 작성자가 같을 때만 수정 노출 -->
+	<c:forEach var="qna" items="${QNAOne}">
+		<c:if test="${qna.createUser eq username}">
+			<!-- 수정 -->
+            / <a href="/member/QNAUpdate?boardNo=${qna.boardNo}">수정</a>
+			<!-- 삭제 -->
+			/ <form action="/member/QNADelete" method="post" style="display: inline;">
+				<input type="hidden" name="boardNo" value="${qna.boardNo}">
+				<button type="submit" class="delete-btn" onclick="return confirm('정말 문의글을 삭제하시겠습니까?');">삭제</button>
+			</form>
+		</c:if>
+	</c:forEach>
+
 	<h2>댓글</h2>
 
 	<!-- 댓글 리스트 -->
