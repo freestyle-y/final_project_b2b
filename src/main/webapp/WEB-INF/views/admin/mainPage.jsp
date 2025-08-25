@@ -66,7 +66,8 @@
 		<a href="/admin/alarmWrite">알림 등록</a> /
 		<a href="/admin/bizDeliveryList">기업 회원 배송 현황</a> /
 		<a href="/admin/manageUser">회원관리</a> /
-		<a href="/admin/finalPaymentHistory">잔금 확인 페이지</a>
+		<a href="/admin/finalPaymentHistory">잔금 확인 페이지</a> /
+		<a href="/admin/containerList">컨테이너 목록</a>
 	</div>
 
 <!-- 공통 풋터 -->

@@ -68,4 +68,12 @@ public class ContractService {
 	public void deleteContract(int contractNo, int quotationNo) {
 		contractMapper.deleteContract(contractNo, quotationNo);
 	}
+
+    public Contract getContractByContractNo(int contractNo) {
+        return contractMapper.getContractByContractNo(contractNo);
+    }
+    
+    public void updateContract(Contract contract) {
+        contractMapper.updateContract(contract);
+    }
 }

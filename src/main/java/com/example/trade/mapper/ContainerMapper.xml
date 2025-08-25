@@ -1,11 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.trade.mapper.ContainerMapper">
-	<insert id="insertContainer" parameterType="String">
-		INSERT INTO {
-		container_location, contract_no
-		} VALUES {
-		#{containerLocation}, #{contractNo}
-		}
+	<insert id="insertContainer" parameterType="com.example.trade.dto.Container">
+		INSERT INTO container (
+			container_location,
+			contract_order_no
+		) VALUES (
+			#{containerLocation},
+			#{contractNo}
+		)
 	</insert>
+	
+	<select id="getContainerList" resultType="com.example.trade.dto.Container">
+		SELECT container_no AS containerNo
+			  ,container_location AS containerLocation
+			  ,contract_order_no AS contractOrderNo
+		FROM container
+	</select>
+	
+	<delete id="deleteContainer">
+		DELETE FROM container
+		WHERE container_no = #{containerNo}
+	</delete>
+	
+	<select id="getContainerOne" parameterType="int" resultType="com.example.trade.dto.Container">
+	SELECT container_no AS containerNo,
+	       container_location AS containerLocation,
+	       contract_order_no AS contractOrderNo
+	FROM container
+	WHERE container_no = #{containerNo}
+</select>
+
+<update id="updateContainer" parameterType="com.example.trade.dto.Container">
+	UPDATE container
+	SET container_location = #{containerLocation},
+	    contract_order_no = #{contractOrderNo}
+	WHERE container_no = #{containerNo}
+</update>
+	
 </mapper>

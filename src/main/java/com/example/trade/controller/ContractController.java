@@ -202,6 +202,41 @@ public class ContractController {
 	    return "redirect:/admin/contractOne?contractNo=" + newContractNo;
 	}
 
+	@GetMapping("/admin/modifyContractForm")
+	public String modifyContractForm(@RequestParam("contractNo") int contractNo,
+	                                 @RequestParam("quotationNo") int quotationNo,
+	                                 Model model) {
+
+	    Contract contract = contractService.getContractByContractNo(contractNo);
+	    model.addAttribute("contract", contract);
+	    model.addAttribute("quotationNo", quotationNo);
+
+	    return "admin/modifyContractForm";
+	}
+
+	@PostMapping("/admin/modifyContract")
+	public String modifyContract(@RequestParam("contractNo") int contractNo,
+	                             @RequestParam("quotationNo") int quotationNo,
+	                             @RequestParam("downPayment") String downPaymentStr,
+	                             @RequestParam("finalPayment") String finalPaymentStr,
+	                             RedirectAttributes ra) {
+
+	    int downPayment = Integer.parseInt(downPaymentStr.replaceAll(",", ""));
+	    int finalPayment = Integer.parseInt(finalPaymentStr.replaceAll(",", ""));
+
+	    Contract contract = new Contract();
+	    contract.setContractNo(contractNo);
+	    contract.setQuotationNo(quotationNo);
+	    contract.setDownPayment(downPayment);
+	    contract.setFinalPayment(finalPayment);
+
+	    contractService.updateContract(contract);
+
+	    ra.addFlashAttribute("msg", "계약서가 수정되었습니다.");
+	    return "redirect:/admin/contractOne?contractNo=" + contractNo;
+	}
+
+	
 	// 관리자 견적서 삭제
 	@PostMapping("/admin/deleteContract")
 	public String deleteContract(@RequestParam("contractNo") int contractNo

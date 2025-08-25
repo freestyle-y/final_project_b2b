@@ -1,7 +1,10 @@
 package com.example.trade.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
+import com.example.trade.dto.Container;
 import com.example.trade.mapper.ContainerMapper;
 
 @Service
@@ -16,4 +19,17 @@ public class ContainerService {
 		return containerMapper.insertContainer(contractNo, containerLocation);
 	}
 
+	public List<Container> getContainerList() {
+		return containerMapper.getContainerList();
+	}
+
+	public void deleteContainer(int containerNo) {
+		containerMapper.deleteContainer(containerNo);
+	}
+	public Container getContainerOne(int containerNo) {
+		return containerMapper.getContainerOne(containerNo);
+	}
+	public void updateContainer(Container container) {
+		containerMapper.updateContainer(container);
+	}
 }

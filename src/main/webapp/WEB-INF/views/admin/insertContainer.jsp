@@ -25,10 +25,11 @@
 		<tr>
 			<td>주문 번호</td>
 			<th>
-				<input type="text" value="${contractNo}" readOnly>
+				<input type="text" name="contractNo" value="${contractNo}" readOnly>
 			</th>
 		</tr>
 	</table>
+	<button type="submit">입력</button>
 	</form>
 
 <!-- 공통 풋터 -->
