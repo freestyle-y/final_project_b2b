@@ -16,7 +16,7 @@
 <%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
 
 <h1>견적서 상세</h1>
-<form method="GET" action="/admin/writeContract">
+<form id="quotationForm" method="GET" action="/admin/writeContract">
     <c:if test="${not empty _csrf}">
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
     </c:if>
@@ -27,6 +27,7 @@
 
     <table border="1">
         <tr>
+        	<th>선택</th>
             <th>견적서 번호</th>
             <th>상태</th>
             <th>작성자</th>
@@ -42,6 +43,9 @@
             <tr>
                 <c:if test="${status.first}">
                     <!-- 공통 정보는 첫 행에서만 rowspan -->
+                    <td rowspan="${rowCount}">
+                    	<input type="checkbox" id="ckQuotation" name="ckQuotation">
+                    </td>
                     <td rowspan="${rowCount}">${adminQuotationOne.quotationNo}</td>
                     <td rowspan="${rowCount}">${adminQuotationOne.status}</td>
                     <td rowspan="${rowCount}">${adminQuotationOne.createUser}</td>
@@ -56,8 +60,26 @@
         </c:forEach>
     </table>
     <button type="submit">계약서 작성</button>
+    <button type="button" id="modifyBtn" onclick="modifyQuotation()">수정</button>
+    <button type="button" id="deleteBtn" onclick="deleteQuotation()">삭제</button>    
 </form>
+<script>
+	function modifyQuotation() {
+		const form = document.getElementById("quotationForm");
+		form.action = "/admin/modifyQuotation";
+		form.method = "post";
+		form.submit();
+	}
 
+	function deleteQuotation() {
+		if (!confirm("정말 삭제하시겠습니까?")) return;
+
+		const form = document.getElementById("quotationForm");
+		form.action = "/admin/deleteQuotation";
+		form.method = "post";
+		form.submit();
+	}
+</script>
 <!-- 공통 풋터 -->
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>
 

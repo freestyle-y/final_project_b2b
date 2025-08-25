@@ -43,4 +43,8 @@ public interface QuotationMapper {
     int updateStatusAtReject(@Param("quotationNo") int quotationNo,
                              @Param("rejectionReason") String rejectionReason,
                              @Param("userId") String userId);
+
+	int deleteQuotation(int quotationNo, int productRequestNo);
+
+	void deleteQuotationItemsByQuotationNo(int quotationNo);
 }

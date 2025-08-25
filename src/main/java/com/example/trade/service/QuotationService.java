@@ -67,4 +67,9 @@ public class QuotationService {
     public int updateStatusAtReject(int quotationNo, String rejectionReason, String userId) {
         return quotationMapper.updateStatusAtReject(quotationNo, rejectionReason, userId);
     }
+    @Transactional
+	public int deleteQuotation(int quotationNo, int productRequestNo) {
+    	quotationMapper.deleteQuotationItemsByQuotationNo(quotationNo);
+		return quotationMapper.deleteQuotation(quotationNo, productRequestNo);
+	}
 }

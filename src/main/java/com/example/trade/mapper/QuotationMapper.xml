@@ -179,6 +179,17 @@
         update_date = NOW()
     WHERE quotation_no = #{quotationNo}
   </update>
+  
+	<delete id="deleteQuotationItemsByQuotationNo">
+	    DELETE FROM quotation_item WHERE quotation_no = #{quotationNo}
+	</delete>
+	
+	<delete id="deleteQuotation">
+		DELETE FROM quotation
+		WHERE quotation_no = #{quotationNo}
+		AND product_request_no = #{productRequestNo}
+	</delete>
+
 
   <!-- ResultMap 정의 -->
 <resultMap id="QuotationWithItems" type="com.example.trade.dto.Quotation">

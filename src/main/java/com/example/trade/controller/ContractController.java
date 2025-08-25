@@ -280,7 +280,7 @@ public class ContractController {
         // Attachment 레코드 생성
         Attachment att = new Attachment();
         att.setAttachmentCode("CONTRACT_SIGN");
-        att.setCategoryCode(String.valueOf(contractNo));
+        att.setCategoryCode(contractNo);
         att.setPriority(priority);
         att.setFilepath(URL_PREFIX + relDir);   // ex) /uploads/signatures/2025/08
         att.setFilename(filename);

@@ -72,6 +72,13 @@ public class QuotationController {
 	    return "admin/writeQuotationForm";
 	}
 
+	// 관리자 견적서 삭제
+	@PostMapping("/admin/deleteQuotation")
+	public String deleteQuotation(@RequestParam("quotationNo") int quotationNo
+								 ,@RequestParam("productRequestNo") int productRequestNo) {
+		int row = quotationService.deleteQuotation(quotationNo, productRequestNo);
+		return "redirect:/admin/quotationListAll";
+	}
 
 	
 	// 관리자 견적서 작성 POST
@@ -101,7 +108,7 @@ public class QuotationController {
 	        quotationService.insertQuotationItem(item);
 	    }
 
-	    return "redirect:/admin/quotationList?productRequestNo=" + productRequestNos.get(0);
+	    return "admin/popupClose";
 	}
 
 	// 기업 회원 견적서 목록 페이지
