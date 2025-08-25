@@ -72,4 +72,8 @@ public class QuotationService {
     	quotationMapper.deleteQuotationItemsByQuotationNo(quotationNo);
 		return quotationMapper.deleteQuotation(quotationNo, productRequestNo);
 	}
+    public void updateQuotationItem(QuotationItem item) {
+        quotationMapper.updateQuotationItem(item);
+    }
+
 }

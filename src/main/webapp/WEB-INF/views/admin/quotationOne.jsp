@@ -65,10 +65,8 @@
 </form>
 <script>
 	function modifyQuotation() {
-		const form = document.getElementById("quotationForm");
-		form.action = "/admin/modifyQuotation";
-		form.method = "post";
-		form.submit();
+		const quotationNo = document.querySelector("input[name='quotationNo']").value;
+		location.href = "/admin/modifyQuotationForm?quotationNo=" + quotationNo;
 	}
 
 	function deleteQuotation() {

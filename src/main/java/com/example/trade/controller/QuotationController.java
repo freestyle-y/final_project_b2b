@@ -71,6 +71,32 @@ public class QuotationController {
 
 	    return "admin/writeQuotationForm";
 	}
+	
+	// 관리자 견적서 수정
+	@GetMapping("/admin/modifyQuotationForm")
+	public String modifyQuotationForm(@RequestParam("quotationNo") int quotationNo, Model model) {
+	    Quotation quotation = quotationService.getQuotationOne(quotationNo);
+	    model.addAttribute("quotation", quotation);
+	    return "admin/modifyQuotationForm";
+	}
+	
+	// 관리자 견적서 수정 POST
+	@PostMapping("/admin/modifyQuotation")
+	public String modifyQuotation(
+	        @RequestParam("quotationNo") int quotationNo,
+	        @RequestParam("itemId") List<Integer> itemId,
+	        @RequestParam("price") List<Integer> price) {
+
+	    for (int i = 0; i < itemId.size(); i++) {
+	        QuotationItem item = new QuotationItem();
+	        item.setItemId(itemId.get(i));
+	        item.setPrice(price.get(i));
+	        quotationService.updateQuotationItem(item);
+	    }
+
+	    return "redirect:/admin/quotationListAll";
+	}
+
 
 	// 관리자 견적서 삭제
 	@PostMapping("/admin/deleteQuotation")

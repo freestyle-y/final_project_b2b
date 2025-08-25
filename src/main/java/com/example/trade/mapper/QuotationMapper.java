@@ -47,4 +47,6 @@ public interface QuotationMapper {
 	int deleteQuotation(int quotationNo, int productRequestNo);
 
 	void deleteQuotationItemsByQuotationNo(int quotationNo);
+
+	void updateQuotationItem(QuotationItem item);
 }

@@ -190,6 +190,11 @@
 		AND product_request_no = #{productRequestNo}
 	</delete>
 
+	<update id="updateQuotationItem">
+	    UPDATE quotation_item
+	    SET price = #{price}
+	    WHERE item_id = #{itemId}
+	</update>
 
   <!-- ResultMap 정의 -->
 <resultMap id="QuotationWithItems" type="com.example.trade.dto.Quotation">
