@@ -84,7 +84,7 @@ public class ProductController {
 		List<Category> majorCategoryList = productService.selectMajorCategory();
 		List<Map<String, Object>> productList = productService.selectProductListByCategory(null, null);
 		//log.info(majorCategoryList.toString());
-		log.info(productList.toString());
+		//log.info(productList.toString());
 		model.addAttribute("majorCategoryList", majorCategoryList);
 		model.addAttribute("productList", productList);
 		return "personal/productList";
@@ -282,6 +282,10 @@ public class ProductController {
 
 	    commonInfo.put("productNo", first.get("productNo"));
 	    commonInfo.put("productName", first.get("productName"));
+	    
+	    // 이미지 경로 리스트는 공통 정보로 담기 (옵션마다 중복된 값이므로 첫 번째에서만 추출)
+	    List<String> imagePaths = (List<String>) first.get("imagePaths");
+	    commonInfo.put("imagePaths", imagePaths);
 
 	    List<Map<String, Object>> productReview = productService.selectProductReview(productNo);
 	    //log.info(productReview.toString());

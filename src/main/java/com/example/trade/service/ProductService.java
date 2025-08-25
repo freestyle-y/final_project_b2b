@@ -230,7 +230,21 @@ public class ProductService {
 	
 	// 상품 상세 페이지 보기(기업, 관리자용)
 	public List<Map<String, Object>> selectProductOne(int productNo) {
-		return productMapper.productOne(productNo);
+	    List<Map<String, Object>> productList = productMapper.productOne(productNo);
+	    List<Map<String, Object>> imageList = productMapper.productImage(productNo);
+
+	    Map<Integer, List<String>> imageMap = new HashMap<>();
+	    for (Map<String, Object> image : imageList) {
+	        String filepath = (String) image.get("filepath");
+	        imageMap.computeIfAbsent(productNo, k -> new ArrayList<>()).add(filepath);
+	    }
+
+	    for (Map<String, Object> product : productList) {
+	        List<String> filepaths = imageMap.get(productNo);
+	        product.put("imagePaths", filepaths);
+	    }
+
+	    return productList;
 	}
 	
 	// 상품별 리뷰 보기
@@ -359,7 +373,7 @@ public class ProductService {
         int requestNo = productList.get(0).getProductRequestNo();
         String createUser = productList.get(0).getCreateUser();
         
-        Integer maxPriority = productMapper.findMaxPriorityByCategoryCode(requestNo);
+        Integer maxPriority = productMapper.findMaxPriorityByRequestNo(requestNo);
 	    int priority = (maxPriority != null) ? maxPriority + 1 : 1;
 	    
 		for (MultipartFile file : files) {

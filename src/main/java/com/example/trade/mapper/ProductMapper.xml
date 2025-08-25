@@ -465,7 +465,7 @@
 	<select id="findMaxPriorityByRequestNo" resultType="int">
 	    SELECT MAX(priority)
 	    FROM attachment
-	    WHERE attachment_code = 'PRODUCT_REQUSET_FILE'
+	    WHERE attachment_code = 'PRODUCT_REQUEST_FILE'
 	    AND category_code = #{requestNo}
 	</select>
 	

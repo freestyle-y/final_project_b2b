@@ -77,6 +77,63 @@
         color: white;
         border-color: #333;
     }
+    
+        .image-slider {
+	    position: relative;
+	    width: 250px;
+	    margin: 20px 0;
+	    overflow: hidden;
+	}
+	
+	.slide {
+	    min-width: 100%;
+	    max-width: 150px;  /* 이미지 최대 너비 */
+	    max-height: 200px; /* 이미지 최대 높이 */
+	    object-fit: contain;
+	    user-select: none;
+	}
+
+
+	.slides-container {
+	    display: flex;
+	    transition: transform 0.3s ease-in-out;
+	}
+	
+	.prev-btn, .next-btn {
+	    position: absolute;
+	    top: 50%;
+	    transform: translateY(-50%);
+	    background: rgba(0,0,0,0.5);
+	    border: none;
+	    color: white;
+	    font-size: 24px;
+	    padding: 6px 12px;
+	    cursor: pointer;
+	    z-index: 10;
+	    border-radius: 3px;
+	}
+
+	.prev-btn { left: 10px; }
+	.next-btn { right: 10px; }
+	
+	.dots-container {
+	    text-align: center;
+	    margin-top: 10px;
+	}
+	
+	.dot {
+	    display: inline-block;
+	    width: 10px;
+	    height: 10px;
+	    margin: 0 4px;
+	    background-color: #bbb;
+	    border-radius: 50%;
+	    cursor: pointer;
+	}
+	
+	.dot.active {
+	    background-color: #333;
+	}
 </style>
 </head>
 <body>
@@ -87,6 +144,24 @@
 <%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
 
 <h2>${product.productName}</h2>
+
+<div class="image-slider">
+    <button class="prev-btn">&lt;</button>
+    
+    <div class="slides-container">
+        <c:forEach var="imgPath" items="${product.imagePaths}">
+            <img src="${pageContext.request.contextPath}${imgPath}" alt="${product.productName}" class="slide" />
+        </c:forEach>
+    </div>
+    
+    <button class="next-btn">&gt;</button>
+    
+    <div class="dots-container">
+        <c:forEach var="imgPath" items="${product.imagePaths}" varStatus="status">
+            <span class="dot" data-index="${status.index}"></span>
+        </c:forEach>
+    </div>
+</div>
 
 <!-- 평균 평점 및 리뷰 -->
 <div id="review-summary">
@@ -195,6 +270,40 @@ $(function() {
         renderPagination($cards.length, $cards);
     }
 
+    $(function() {
+        const $slidesContainer = $('.slides-container');
+        const $slides = $('.slide');
+        const $dots = $('.dot');
+        const totalSlides = $slides.length;
+        let currentIndex = 0;
+
+        function updateSlider(index) {
+            // 이미지 이동
+            $slidesContainer.css('transform', 'translateX(' + (-index * 100) + '%)');
+            // 점 활성화 변경
+            $dots.removeClass('active').eq(index).addClass('active');
+        }
+
+        $('.next-btn').click(function() {
+            currentIndex = (currentIndex + 1) % totalSlides;
+            updateSlider(currentIndex);
+        });
+
+        $('.prev-btn').click(function() {
+            currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+            updateSlider(currentIndex);
+        });
+
+        $dots.click(function() {
+            const index = $(this).data('index');
+            currentIndex = index;
+            updateSlider(currentIndex);
+        });
+
+        // 초기 상태 세팅
+        updateSlider(currentIndex);
+    });
+    
     // 정렬
     $('#sort-select').on('change', function () {
         const sortType = $(this).val();

@@ -115,7 +115,6 @@
 	}
 </style>
 
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(function () {
@@ -130,7 +129,8 @@ $(function () {
 	        productName: $(this).data('name'),
 	        price: parseInt($(this).data('price')),
 	        productStatus: $(this).data('status'),
-	        productNo: $(this).data('product-no')
+	        productNo: $(this).data('product-no'),
+	        imagePath: $(this).find('img').attr('src') || null
 	    });
 	});
 
@@ -148,16 +148,29 @@ $(function () {
 	        const soldOutClass = item.productStatus === "일시품절" ? "sold-out" : "";
 	        const formattedPrice = item.price.toLocaleString('ko-KR') + ' 원';
 
-	        const productCardHtml =
-	            '<div class="product-card ' + soldOutClass + '">' +
+	        const imageHtml = item.imagePath
+            ? '<img src="' + item.imagePath + '" alt="' + item.productName + '" style="width: 100%; height: 100%; object-fit: cover;" />'
+            : '<span style="color: #ccc; font-size: 12px;">이미지 없음</span>';
+
+            const productCardHtml =
+	            '<div class="product-card ' + soldOutClass + '" ' +
+	                'data-name="' + item.productName + '" ' +
+	                'data-price="' + item.price + '" ' +
+	                'data-status="' + item.productStatus + '" ' +
+	                'data-product-no="' + item.productNo + '">' +
+
+	                '<div class="product-image" style="width: 100%; height: 150px; display: flex; align-items: center; justify-content: center;">' +
+	                    imageHtml +
+	                '</div>' +
+
 	                '<div class="product-name">' + item.productName + '</div>' +
-	                '<div class="product-price">' + formattedPrice + '</div>' +
+	                '<div class="product-price">' + formattedPrice + ' 원</div>' +
 	                '<div class="product-status">' + item.productStatus + '</div>' +
 	            '</div>';
 
 	        const productHtml = item.productStatus === "일시품절"
 	            ? productCardHtml
-	            : '<a href="/biz/productOne?productNo=' + item.productNo + '">' + productCardHtml + '</a>';
+	            : '<a href="/biz/productOne?productNo=' + item.productNo + '" style="text-decoration: none; color: inherit;">' + productCardHtml + '</a>';
 
 	        container.append(productHtml);
 	    });
@@ -165,6 +178,7 @@ $(function () {
 	    renderPagination();
 	}
 
+	
 	function renderPagination() {
 	    const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 	    const pagination = $('#pagination');
@@ -181,6 +195,7 @@ $(function () {
 	    }
 	}
 
+	
 	$('#search-input').on('input', function () {
 	    const keyword = $(this).val().toLowerCase();
 	    filteredProducts = allProducts.filter(item => item.productName.toLowerCase().includes(keyword));
@@ -207,13 +222,15 @@ $(function () {
 						productName: item.productName,
 						price: parseInt(item.price),
 						productStatus: item.productStatus,
-						productNo: item.productNo
+						productNo: item.productNo,
+						imagePath: item.imagePath || null
 					};
 				});
 				filteredProducts = allProducts.slice();
 				currentPage = 1;
 				renderPage(currentPage);
 
+				
 				$('.middle-category-list > div').off('click').on('click', function () {
 					const middleCategoryId = $(this).data('id');
 					$.ajax({
@@ -225,7 +242,8 @@ $(function () {
 									productName: item.productName,
 									price: parseInt(item.price),
 									productStatus: item.productStatus,
-									productNo: item.productNo
+									productNo: item.productNo,
+									imagePath: item.imagePath || null
 								};
 							});
 							filteredProducts = allProducts.slice();
@@ -272,23 +290,58 @@ $(function () {
 		<c:forEach var="item" items="${productList}">
 			<c:choose>
 				<c:when test="${item.productStatus == '일시품절'}">
+					<!-- 일시품절: 링크 제거 -->
 					<div class="product-card sold-out"
 					     data-name="${item.productName}"
 					     data-price="${item.price}"
 					     data-status="${item.productStatus}"
 					     data-product-no="${item.productNo}">
+					     
+						<!-- ✅ 썸네일 이미지 영역 -->
+						<div class="product-image" style="width: 100%; height: 150px; display: flex; align-items: center; justify-content: center;">
+							<c:choose>
+								<c:when test="${not empty item.imagePath}">
+									<img src="${pageContext.request.contextPath}${item.imagePath}"
+									     alt="${item.productName}"
+									     style="width: 100%; height: 100%; object-fit: cover;" />
+								</c:when>
+								<c:otherwise>
+									<span style="color: #ccc; font-size: 12px;">이미지 없음</span>
+								</c:otherwise>
+							</c:choose>
+						</div>
+	
+						<!-- 상품 정보 -->
 						<div class="product-name">${item.productName}</div>
 						<div class="product-price">${item.price} 원</div>
 						<div class="product-status">${item.productStatus}</div>
 					</div>
 				</c:when>
+	
 				<c:otherwise>
-					<a href="/biz/productOne?productNo=${item.productNo}">
+					<!-- 판매중: 링크 적용 -->
+					<a href="/biz/productOne?productNo=${item.productNo}" style="text-decoration: none; color: inherit;">
 						<div class="product-card"
 						     data-name="${item.productName}"
 						     data-price="${item.price}"
 						     data-status="${item.productStatus}"
 						     data-product-no="${item.productNo}">
+						     
+							<!-- ✅ 썸네일 이미지 영역 -->
+							<div class="product-image" style="width: 100%; height: 150px; display: flex; align-items: center; justify-content: center;">
+								<c:choose>
+									<c:when test="${not empty item.imagePath}">
+										<img src="${pageContext.request.contextPath}${item.imagePath}"
+										     alt="${item.productName}"
+										     style="width: 100%; height: 100%; object-fit: cover;" />
+									</c:when>
+									<c:otherwise>
+										<span style="color: #ccc; font-size: 12px;">이미지 없음</span>
+									</c:otherwise>
+								</c:choose>
+							</div>
+	
+							<!-- 상품 정보 -->
 							<div class="product-name">${item.productName}</div>
 							<div class="product-price">${item.price} 원</div>
 							<div class="product-status">${item.productStatus}</div>
