@@ -43,6 +43,12 @@
 <%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
 	
 	<h1>자주 묻는 질문</h1>
+	
+	<a href="/public/FAQList">자주 묻는 질문</a> /
+	<a href="/member/QNAList">문의 내역</a> /
+	<a href="/member/QNAWrite">1:1 문의</a> /
+	<a href="/public/noticeList">공지사항</a>
+	
 	<table>
 		<c:forEach var="faq" items="${FAQList}">
 			<tr	class="faq-question" style="cursor:pointer;">

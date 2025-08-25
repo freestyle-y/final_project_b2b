@@ -7,12 +7,7 @@
 <style>
     body {
         font-family: Arial, sans-serif;
-        text-align: center;
-        margin: 0;
-        padding: 0;
-    }
-    h1 {
-        margin-top: 30px;
+        text-align: left;
     }
     form {
         width: 400px;
@@ -54,6 +49,11 @@
 <%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
 	
     <h1>1:1 문의 등록</h1>
+    
+   	<a href="/public/FAQList">자주 묻는 질문</a> /
+	<a href="/member/QNAList">문의 내역</a> /
+	<a href="/member/QNAWrite">1:1 문의</a> /
+	<a href="/public/noticeList">공지사항</a>
 
     <!-- 문의 등록 폼 -->
     <form action="/member/QNAWrite" method="post">
