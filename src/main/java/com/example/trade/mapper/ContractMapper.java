@@ -32,4 +32,6 @@ public interface ContractMapper {
 
 	int insertContract(Contract contract);
 
+	void deleteContract(int contractNo, int quotationNo);
+
 }

@@ -64,4 +64,8 @@ public class ContractService {
 	    System.out.println("🔥 Mapper insert 결과: " + result);
 	    return result;
 	}
+
+	public void deleteContract(int contractNo, int quotationNo) {
+		contractMapper.deleteContract(contractNo, quotationNo);
+	}
 }

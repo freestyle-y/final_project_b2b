@@ -202,9 +202,16 @@ public class ContractController {
 	    return "redirect:/admin/contractOne?contractNo=" + newContractNo;
 	}
 
+	// 관리자 견적서 삭제
+	@PostMapping("/admin/deleteContract")
+	public String deleteContract(@RequestParam("contractNo") int contractNo
+	    						,@RequestParam("quotationNo") int quotationNo) {
+		
+		contractService.deleteContract(contractNo, quotationNo);
+		return "redirect:/admin/contractList";
+	}
 
-
-
+	
 	
 	
 	@PostMapping("/biz/contract/write")

@@ -14,10 +14,11 @@
 <%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
 
 	<h1>관리자 계약서 목록</h1>
-
+	<form id="contractForm">
 	<table border="1" style="border-collapse:collapse; text-align:center;">
 		<thead>
 			<tr>
+				<th>선택</th>
 				<th>계약번호</th>
 				<th>견적번호</th>
 				<th>계약금</th>
@@ -33,6 +34,10 @@
 		<tbody>
 			<c:forEach var="con" items="${contractList}">
 				<tr>
+					<td>
+						<input type="checkbox" name="selectedContracts" value="${con.contractNo}" />
+						<!-- ✔️ 체크된 항목만 넘기려면 이렇게 -->
+					</td>
 					<td>
 						<a href="${pageContext.request.contextPath}/admin/contractOne?contractNo=${con.contractNo}">
 							${con.contractNo}
@@ -51,10 +56,15 @@
 					<td>${con.finalPaymentDate}</td>
 					<td>${con.createUser}</td>
 					<td>${con.createDate}</td>
+			
+					<input type="hidden" name="contractNo" value="${con.contractNo}" />
+					<input type="hidden" name="quotationNo" value="${con.quotationNo}" />
+			
 					<form method="get" action="/admin/writeContract">
 						<input type="hidden" name="contractNo" value="${con.contractNo}" />
 						<td><button type="submit">작성하기</button></td>
 					</form>
+			
 					<form method="get" action="/admin/insertContainer">
 						<input type="hidden" name="contractNo" value="${con.contractNo}" />
 						<td><button type="submit">컨테이너 입력</button></td>
@@ -63,7 +73,22 @@
 			</c:forEach>
 		</tbody>
 	</table>
+	<button type="button" onclick="modifyContract()">수정</button>
+	<button type="button" onclick="deleteContract()">삭제</button>
+	</form>
+<script>
+	function modifyContract(){
+	
+	}
+	function deleteContract(){
+		if (!confirm("정말 삭제하시겠습니까?")) return;
 
+		const form = document.getElementById("contractForm");
+		form.action = "/admin/deleteContract";
+		form.method = "post";
+		form.submit();
+	}
+</script>
 <!-- 공통 풋터 -->
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>
 

@@ -119,5 +119,10 @@
   )
 </insert>
 
+<delete id="deleteContract">
+	DELETE FROM contract
+	WHERE contract_no = #{contractNo}
+	AND quotation_No = #{quotationNo}
+</delete>
 	
 </mapper>
