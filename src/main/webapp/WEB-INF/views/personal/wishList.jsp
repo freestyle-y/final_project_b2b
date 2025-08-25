@@ -171,11 +171,29 @@
         </div>
 
         <c:forEach var="item" items="${wishList}">
-		    <div class="wishlist-item">
+		    <div class="wishlist-item" style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+		        
+		        <!-- ✅ 체크박스 -->
 		        <input type="checkbox" class="item-checkbox" name="productNoList" value="${item.productNo}">
-		        <div class="product-name">
 		
-		            <%-- 판매중인 경우: 링크 표시 --%>
+		        <!-- ✅ 썸네일 이미지 -->
+				<div class="product-image" style="width: 50px; height: 50px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+				    <c:choose>
+				        <c:when test="${not empty item.imagePath}">
+				            <img src="${pageContext.request.contextPath}${item.imagePath}"
+				                 alt="${item.productName}"
+				                 style="width: 100%; height: 100%; object-fit: cover; border-radius: 5px;" />
+				        </c:when>
+				        <c:otherwise>
+				            <span style="color: #ccc; font-size: 10px;">이미지 없음</span>
+				        </c:otherwise>
+				    </c:choose>
+				</div>
+
+
+		
+		        <!-- ✅ 상품명 -->
+		        <div class="product-name">
 		            <c:choose>
 		                <c:when test="${item.productStatus == 'GS002'}">
 		                    <a href="/personal/productOne?productNo=${item.productNo}"
@@ -183,8 +201,6 @@
 		                        ${item.productName}
 		                    </a>
 		                </c:when>
-		
-		                <%-- 나머지 상태: 링크 없음, 상태 표시 --%>
 		                <c:otherwise>
 		                    <span style="color: gray;">
 		                        ${item.productName}
@@ -199,10 +215,10 @@
 		                    </span>
 		                </c:otherwise>
 		            </c:choose>
-		
 		        </div>
 		    </div>
 		</c:forEach>
+
 
         <!-- 삭제 버튼 -->
         <button type="button" id="deleteBtn" onclick="deleteSelected()">삭제</button>

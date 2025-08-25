@@ -116,6 +116,7 @@
 </style>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(function () {
 	let allProducts = [];
@@ -129,13 +130,14 @@ $(function () {
 	        productName: $(this).data('name'),
 	        price: parseInt($(this).data('price')),
 	        productStatus: $(this).data('status'),
-	        productNo: $(this).data('product-no')
+	        productNo: $(this).data('product-no'),
+	        imagePath: $(this).find('img').attr('src') || null
 	    });
 	});
 
 	filteredProducts = allProducts.slice();
 
-	// 페이지 렌더링
+	// ✅ 페이지 렌더링
 	function renderPage(page) {
 	    const container = $('#product-container');
 	    container.empty();
@@ -147,8 +149,21 @@ $(function () {
 	        const soldOutClass = item.productStatus === "일시품절" ? "sold-out" : "";
 	        const formattedPrice = item.price.toLocaleString('ko-KR');
 
+	        const imageHtml = item.imagePath
+	            ? '<img src="' + item.imagePath + '" alt="' + item.productName + '" style="width: 100%; height: 100%; object-fit: cover;" />'
+	            : '<span style="color: #ccc; font-size: 12px;">이미지 없음</span>';
+
 	        const productCardHtml =
-	            '<div class="product-card ' + soldOutClass + '">' +
+	            '<div class="product-card ' + soldOutClass + '" ' +
+	                'data-name="' + item.productName + '" ' +
+	                'data-price="' + item.price + '" ' +
+	                'data-status="' + item.productStatus + '" ' +
+	                'data-product-no="' + item.productNo + '">' +
+
+	                '<div class="product-image" style="width: 100%; height: 150px; display: flex; align-items: center; justify-content: center;">' +
+	                    imageHtml +
+	                '</div>' +
+
 	                '<div class="product-name">' + item.productName + '</div>' +
 	                '<div class="product-price">' + formattedPrice + ' 원</div>' +
 	                '<div class="product-status">' + item.productStatus + '</div>' +
@@ -156,7 +171,7 @@ $(function () {
 
 	        const productHtml = item.productStatus === "일시품절"
 	            ? productCardHtml
-	            : '<a href="/personal/productOne?productNo=' + item.productNo + '">' + productCardHtml + '</a>';
+	            : '<a href="/personal/productOne?productNo=' + item.productNo + '" style="text-decoration: none; color: inherit;">' + productCardHtml + '</a>';
 
 	        container.append(productHtml);
 	    });
@@ -192,7 +207,7 @@ $(function () {
 	// 대분류 클릭
 	$('.major-category-list > div').click(function () {
 		const categoryId = $(this).data('id');
-		
+
 		$.ajax({
 			url: '/product/byCategory?parentId=' + categoryId,
 			type: 'get',
@@ -202,19 +217,20 @@ $(function () {
 					categoryHtml += '<div data-id="' + cat.categoryId + '">' + cat.categoryName + '</div>';
 				});
 				$('.middle-category-list').html(categoryHtml);
-				
+
 				allProducts = data.productList.map(function(item){
 					return {
 						productName: item.productName,
 						price: parseInt(item.price),
 						productStatus: item.productStatus,
-						productNo: item.productNo
+						productNo: item.productNo,
+						imagePath: item.imagePath || null
 					};
 				});
 				filteredProducts = allProducts.slice();
 				currentPage = 1;
 				renderPage(currentPage);
-				
+
 				// 중분류 클릭
 				$('.middle-category-list > div').off('click').on('click', function() {
 					const middleCategoryId = $(this).data('id');
@@ -227,7 +243,8 @@ $(function () {
 									productName: item.productName,
 									price: parseInt(item.price),
 									productStatus: item.productStatus,
-									productNo: item.productNo
+									productNo: item.productNo,
+									imagePath: item.imagePath || null
 								};
 							});
 							filteredProducts = allProducts.slice();
@@ -246,9 +263,11 @@ $(function () {
 		});
 	});
 
+	// 초기 렌더링
 	renderPage(currentPage);
 });
 </script>
+
 </head>
 <body>
 
@@ -280,19 +299,52 @@ $(function () {
 					     data-price="${item.price}"
 					     data-status="${item.productStatus}"
 					     data-product-no="${item.productNo}">
+					     
+						<!-- ✅ 썸네일 이미지 영역 -->
+						<div class="product-image" style="width: 100%; height: 150px; display: flex; align-items: center; justify-content: center;">
+							<c:choose>
+								<c:when test="${not empty item.imagePath}">
+									<img src="${pageContext.request.contextPath}${item.imagePath}"
+									     alt="${item.productName}"
+									     style="width: 100%; height: 100%; object-fit: cover;" />
+								</c:when>
+								<c:otherwise>
+									<span style="color: #ccc; font-size: 12px;">이미지 없음</span>
+								</c:otherwise>
+							</c:choose>
+						</div>
+	
+						<!-- 상품 정보 -->
 						<div class="product-name">${item.productName}</div>
 						<div class="product-price">${item.price} 원</div>
 						<div class="product-status">${item.productStatus}</div>
 					</div>
 				</c:when>
+	
 				<c:otherwise>
 					<!-- 판매중: 링크 적용 -->
-					<a href="/personal/productOne?productNo=${item.productNo}">
+					<a href="/personal/productOne?productNo=${item.productNo}" style="text-decoration: none; color: inherit;">
 						<div class="product-card"
 						     data-name="${item.productName}"
 						     data-price="${item.price}"
 						     data-status="${item.productStatus}"
 						     data-product-no="${item.productNo}">
+						     
+							<!-- ✅ 썸네일 이미지 영역 -->
+							<div class="product-image" style="width: 100%; height: 150px; display: flex; align-items: center; justify-content: center;">
+								<c:choose>
+									<c:when test="${not empty item.imagePath}">
+										<img src="${pageContext.request.contextPath}${item.imagePath}"
+										     alt="${item.productName}"
+										     style="width: 100%; height: 100%; object-fit: cover;" />
+									</c:when>
+									<c:otherwise>
+										<span style="color: #ccc; font-size: 12px;">이미지 없음</span>
+									</c:otherwise>
+								</c:choose>
+							</div>
+	
+							<!-- 상품 정보 -->
 							<div class="product-name">${item.productName}</div>
 							<div class="product-price">${item.price} 원</div>
 							<div class="product-status">${item.productStatus}</div>
@@ -302,6 +354,7 @@ $(function () {
 			</c:choose>
 		</c:forEach>
 	</div>
+
 
 	<div class="pagination" id="pagination"></div>
 	

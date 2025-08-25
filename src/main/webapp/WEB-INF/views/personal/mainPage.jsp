@@ -92,23 +92,20 @@
 	    <c:forEach var="item" items="${productList}">
 	        <div class="product-card" data-name="${item.productName}">
 	
-	            <!-- ⭐ 이미지 영역 추가 -->
-	            <div class="product-image">
-	                <c:choose>
-	                    <c:when test="${not empty item.imagePath}">
-	                        <img src="${pageContext.request.contextPath}${item.imagePath}" 
-	                             alt="${item.productName}" 
-	                             style="width: 100%; height: 150px; object-fit: cover;" />
-	                    </c:when>
-	                    <c:otherwise>
-	                        <!-- 기본 이미지 경로 -->
-	                        <img src="${pageContext.request.contextPath}/images/default_product.jpg" 
-	                             alt="기본 이미지" 
-	                             style="width: 100%; height: 150px; object-fit: cover;" />
-	                    </c:otherwise>
-	                </c:choose>
-	            </div>
-	
+	            <div class="product-image" style="width: 100%; height: 150px; display: flex; justify-content: center; align-items: center;">
+				    <c:choose>
+				        <c:when test="${not empty item.imagePath}">
+				            <img src="${pageContext.request.contextPath}${item.imagePath}" 
+				                 alt="${item.productName}" 
+				                 style="max-width: 100%; max-height: 100%; object-fit: contain;" />
+				        </c:when>
+				        <c:otherwise>
+				            <!-- 비어 있는 이미지 박스 유지 -->
+				            <span style="color: #ccc; font-size: 14px;">이미지 없음</span>
+				        </c:otherwise>
+				    </c:choose>
+				</div>
+
 	            <!-- 상품 이름 -->
 	            <div class="product-name">
 	                <c:choose>

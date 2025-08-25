@@ -2,6 +2,7 @@ package com.example.trade.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +53,7 @@ public class ProductService {
 	    for (Map<String, Object> product : productList) {
 	        Integer productNo = ((Number) product.get("productNo")).intValue();
 	        String filepath = imageMap.get(productNo);
-	        product.put("imagePath", filepath); // jsp에서 ${imagePath}로 사용 가능
+	        product.put("imagePath", filepath);
 	    }
 
 	    return productList;
@@ -61,7 +62,23 @@ public class ProductService {
 	
 	// 개인 찜 목록 보기
 	public List<Map<String, Object>> selectWishList(String id) {
-		return productMapper.wishList(id);
+		List<Map<String, Object>> productList = productMapper.wishList(id);
+	    List<Map<String, Object>> imageList = productMapper.productMainImage();
+
+	    Map<Integer, String> imageMap = new HashMap<>();
+	    for (Map<String, Object> image : imageList) {
+	        Integer productNo = ((Number) image.get("productNo")).intValue();
+	        String filepath = (String) image.get("filepath");
+	        imageMap.put(productNo, filepath);
+	    }
+
+	    for (Map<String, Object> product : productList) {
+	        Integer productNo = ((Number) product.get("productNo")).intValue();
+	        String filepath = imageMap.get(productNo);
+	        product.put("imagePath", filepath);
+	    }
+
+	    return productList;
 	}
 	
 	// 개인 찜 삭제
@@ -71,7 +88,23 @@ public class ProductService {
 	
 	// 개인 장바구니 목록 보기
 	public List<Map<String, Object>> selectShoppingCart(String id) {
-		return productMapper.shoppingCart(id);
+		List<Map<String, Object>> productList = productMapper.shoppingCart(id);
+	    List<Map<String, Object>> imageList = productMapper.productMainImage();
+
+	    Map<Integer, String> imageMap = new HashMap<>();
+	    for (Map<String, Object> image : imageList) {
+	        Integer productNo = ((Number) image.get("productNo")).intValue();
+	        String filepath = (String) image.get("filepath");
+	        imageMap.put(productNo, filepath);
+	    }
+
+	    for (Map<String, Object> product : productList) {
+	        Integer productNo = ((Number) product.get("productNo")).intValue();
+	        String filepath = imageMap.get(productNo);
+	        product.put("imagePath", filepath);
+	    }
+
+	    return productList;
 	}
 	
 	// 개인 장바구니 수량 변경
@@ -150,7 +183,23 @@ public class ProductService {
 	
 	// 카테고리별 상품 목록 보기(판매중, 일시품절만)
 	public List<Map<String, Object>> selectProductListByCategory(String parentId, String middleId) {
-		return productMapper.productListByCategory(parentId, middleId);
+		List<Map<String, Object>> productList = productMapper.productListByCategory(parentId, middleId);
+	    List<Map<String, Object>> imageList = productMapper.productMainImage();
+
+	    Map<Integer, String> imageMap = new HashMap<>();
+	    for (Map<String, Object> image : imageList) {
+	        Integer productNo = ((Number) image.get("productNo")).intValue();
+	        String filepath = (String) image.get("filepath");
+	        imageMap.put(productNo, filepath);
+	    }
+
+	    for (Map<String, Object> product : productList) {
+	        Integer productNo = ((Number) product.get("productNo")).intValue();
+	        String filepath = imageMap.get(productNo);
+	        product.put("imagePath", filepath);
+	    }
+
+	    return productList;
 	}
 	
 	// 카테고리별 상품 목록 보기(전체)
@@ -160,7 +209,21 @@ public class ProductService {
 
 	// 상품 상세 페이지 보기(개인용)
 	public List<Map<String, Object>> selectPersonalProductOne(String id, int productNo) {
-		return productMapper.personalProductOne(id, productNo);
+	    List<Map<String, Object>> productList = productMapper.personalProductOne(id, productNo);
+	    List<Map<String, Object>> imageList = productMapper.productImage(productNo);
+
+	    Map<Integer, List<String>> imageMap = new HashMap<>();
+	    for (Map<String, Object> image : imageList) {
+	        String filepath = (String) image.get("filepath");
+	        imageMap.computeIfAbsent(productNo, k -> new ArrayList<>()).add(filepath);
+	    }
+
+	    for (Map<String, Object> product : productList) {
+	        List<String> filepaths = imageMap.get(productNo);
+	        product.put("imagePaths", filepaths);
+	    }
+
+	    return productList;
 	}
 	
 	// 상품 상세 페이지 보기(기업, 관리자용)

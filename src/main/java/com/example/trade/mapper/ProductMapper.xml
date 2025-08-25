@@ -58,6 +58,18 @@
 		    AND priority = 1
 	</select>
 	
+	<!-- 상품 하나에 대한 모든 이미지 -->
+	<select id="productImage" parameterType="int" resultType="map">
+		SELECT 
+		    category_code AS productNo,
+		    filepath
+		FROM 
+		    attachment
+		WHERE 
+		    attachment_code = 'PRODUCT_IMAGE'
+		    AND category_code = #{productNo}
+	</select>
+	
 	<!-- 개인 찜 목록 보기 -->
 	<select id="wishList" parameterType="String" resultType="map">
 		SELECT 
@@ -125,7 +137,6 @@
 	      AND option_no = #{optionNo}
 	      AND use_status = 'Y'
 	</select>
-	
 	
 	<!-- 재고 조회 -->
 	<select id="findInventoryQuantity" resultType="int">
@@ -415,11 +426,12 @@
 	    FROM product
 	</select>
 	
-	<!-- attachment 최대 priority 조회 -->
+	<!-- attachment 이미지 최대 priority 조회 -->
 	<select id="findMaxPriorityByCategoryCode" resultType="int">
 	    SELECT MAX(priority)
 	    FROM attachment
-	    WHERE category_code = #{categoryCode}
+	    WHERE attachment_code = 'PRODUCT_IMAGE'
+	    AND category_code = #{categoryCode}
 	</select>
 	
 	<!-- 재고 목록 조회 -->

@@ -318,6 +318,22 @@
                    onchange="updateTotal()"
                    <c:if test="${isSoldOut}">disabled</c:if> />
 
+			<!-- ✅ 썸네일 이미지 영역 추가 -->
+	        <div class="item-thumbnail" style="margin-right: 10px;">
+	            <div class="product-image" style="width: 50px; height: 50px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+	                <c:choose>
+	                    <c:when test="${not empty item.imagePath}">
+	                        <img src="${pageContext.request.contextPath}${item.imagePath}"
+	                             alt="${item.productName}"
+	                             style="width: 100%; height: 100%; object-fit: cover; border-radius: 5px;" />
+	                    </c:when>
+	                    <c:otherwise>
+	                        <span style="color: #ccc; font-size: 10px;">이미지 없음</span>
+	                    </c:otherwise>
+	                </c:choose>
+	            </div>
+	        </div>
+        
             <div class="item-info">
                 <div class="item-name">${item.productName}</div>
                 <div class="item-option">옵션: ${item.optionNameValue}</div>

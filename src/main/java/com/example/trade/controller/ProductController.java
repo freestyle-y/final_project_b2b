@@ -84,7 +84,7 @@ public class ProductController {
 		List<Category> majorCategoryList = productService.selectMajorCategory();
 		List<Map<String, Object>> productList = productService.selectProductListByCategory(null, null);
 		//log.info(majorCategoryList.toString());
-		//log.info(productList.toString());
+		log.info(productList.toString());
 		model.addAttribute("majorCategoryList", majorCategoryList);
 		model.addAttribute("productList", productList);
 		return "personal/productList";
@@ -110,6 +110,10 @@ public class ProductController {
 	    String wishUseStatus = (String) first.get("wishUseStatus");
 	    commonInfo.put("isWish", "Y".equalsIgnoreCase(wishUseStatus));
 	    
+	    // 이미지 경로 리스트는 공통 정보로 담기 (옵션마다 중복된 값이므로 첫 번째에서만 추출)
+	    List<String> imagePaths = (List<String>) first.get("imagePaths");
+	    commonInfo.put("imagePaths", imagePaths);
+	    
 	    // 옵션 리스트 생성
 	    List<Map<String, Object>> optionList = new ArrayList<>();
 	    for (Map<String, Object> item : productOne) {
@@ -125,6 +129,8 @@ public class ProductController {
 	    //log.info(productReview.toString());
 	    Double avgProductRate = productService.avgProductRate(productNo);
 	    //log.info(avgProductRate + "");
+	    
+	    //log.info(commonInfo.toString());
 	    
 	    model.addAttribute("product", commonInfo);
 	    model.addAttribute("optionList", optionList);
@@ -362,7 +368,7 @@ public class ProductController {
 		//log.info(loginUserName);
 		
 		productService.insertProductImages(productNo, imageFiles, loginUserName);
-		return "";
+		return "redirect:/admin/mainPage";
 	}
 	
 	// 재고 목록 페이지
