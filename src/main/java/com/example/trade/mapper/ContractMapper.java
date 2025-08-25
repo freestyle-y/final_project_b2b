@@ -34,4 +34,8 @@ public interface ContractMapper {
 
 	void deleteContract(int contractNo, int quotationNo);
 
+	Contract getContractByContractNo(int contractNo);
+
+	void updateContract(Contract contract);
+
 }

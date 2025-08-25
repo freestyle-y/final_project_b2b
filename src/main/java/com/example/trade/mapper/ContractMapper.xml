@@ -124,5 +124,24 @@
 	WHERE contract_no = #{contractNo}
 	AND quotation_No = #{quotationNo}
 </delete>
-	
+
+<select id="getContractByContractNo" resultType="com.example.trade.dto.Contract">
+	SELECT 
+		contract_no AS contractNo,
+		quotation_no AS quotationNo,
+		down_payment AS downPayment,
+		final_payment AS finalPayment,
+		final_payment_date AS finalPaymentDate
+	FROM contract
+	WHERE contract_no = #{contractNo}
+</select>
+
+<update id="updateContract" parameterType="com.example.trade.dto.Contract">
+	UPDATE contract
+	SET 
+		down_payment = #{downPayment},
+		final_payment = #{finalPayment}
+	WHERE contract_no = #{contractNo}
+</update>
+
 </mapper>

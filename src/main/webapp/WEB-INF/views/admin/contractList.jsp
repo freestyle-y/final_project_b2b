@@ -36,7 +36,7 @@
 				<tr>
 					<td>
 						<input type="checkbox" name="selectedContracts" value="${con.contractNo}" />
-						<!-- ✔️ 체크된 항목만 넘기려면 이렇게 -->
+						<input type="hidden" class="quotationNo" value="${con.quotationNo}" />
 					</td>
 					<td>
 						<a href="${pageContext.request.contextPath}/admin/contractOne?contractNo=${con.contractNo}">
@@ -56,20 +56,24 @@
 					<td>${con.finalPaymentDate}</td>
 					<td>${con.createUser}</td>
 					<td>${con.createDate}</td>
-			
-					<input type="hidden" name="contractNo" value="${con.contractNo}" />
-					<input type="hidden" name="quotationNo" value="${con.quotationNo}" />
-			
-					<form method="get" action="/admin/writeContract">
-						<input type="hidden" name="contractNo" value="${con.contractNo}" />
-						<td><button type="submit">작성하기</button></td>
-					</form>
-			
-					<form method="get" action="/admin/insertContainer">
-						<input type="hidden" name="contractNo" value="${con.contractNo}" />
-						<td><button type="submit">컨테이너 입력</button></td>
-					</form>
+				
+					<!-- 계약서 작성 form -->
+					<td>
+						<form method="get" action="/admin/writeContract" style="display:inline;">
+							<input type="hidden" name="contractNo" value="${con.contractNo}" />
+							<button type="submit">작성하기</button>
+						</form>
+					</td>
+				
+					<!-- 컨테이너 입력 form -->
+					<td>
+						<form method="get" action="/admin/insertContainer" style="display:inline;">
+							<input type="hidden" name="contractNo" value="${con.contractNo}" />
+							<button type="submit">컨테이너 입력</button>
+						</form>
+					</td>
 				</tr>
+
 			</c:forEach>
 		</tbody>
 	</table>
@@ -77,9 +81,19 @@
 	<button type="button" onclick="deleteContract()">삭제</button>
 	</form>
 <script>
-	function modifyContract(){
+	function modifyContract() {
+		const checked = document.querySelector("input[name='selectedContracts']:checked");
+		if (!checked) {
+			alert("수정할 계약을 선택하세요.");
+			return;
+		}
+		const contractNo = checked.value;
+		const row = checked.closest("tr");
+		const quotationNo = row.querySelector(".quotationNo").value;
 	
+		location.href = "/admin/modifyContractForm?contractNo=" + contractNo + "&quotationNo=" + quotationNo;
 	}
+
 	function deleteContract(){
 		if (!confirm("정말 삭제하시겠습니까?")) return;
 
