@@ -74,7 +74,7 @@
     <h3>상품 이미지 등록</h3>
     <form action="/admin/uploadProductImage" method="post" enctype="multipart/form-data">
         <input type="hidden" name="productNo" value="${product.productNo}" />
-        <input type="file" name="imageFile" accept="image/*" required />
+        <input type="file" name="imageFiles" accept="image/*" multiple required />
         <button type="submit">이미지 업로드</button>
     </form>
 </div>

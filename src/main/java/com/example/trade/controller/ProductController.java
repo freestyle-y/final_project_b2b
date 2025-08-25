@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.trade.dto.Address;
 import com.example.trade.dto.Category;
@@ -34,17 +35,8 @@ public class ProductController {
 	public ProductController(ProductService productService) {
 		this.productService = productService;
 	}
-
-	// 상품 후기 페이지(개인)
-	@GetMapping("/personal/reviewList")
-	public String personalReviewList(Model model) {
-		List<Map<String, Object>> reviewList = productService.selectReviewList();
-		//log.info(reviewList.toString());
-		model.addAttribute("reviewList", reviewList);
-		return "personal/reviewList";
-	}
 	
-	// 상품 후기 페이지(전체)
+	// 상품 후기 페이지
 	@GetMapping("/public/reviewList")
 	public String publicReviewList(Model model) {
 		List<Map<String, Object>> reviewList = productService.selectReviewList();
@@ -360,6 +352,17 @@ public class ProductController {
 	    model.addAttribute("product", commonInfo);
 	    model.addAttribute("optionList", optionList);
 		return "admin/productOne";
+	}
+	
+	// 상품 이미지 등록
+	@PostMapping("/admin/uploadProductImage")
+	public String uploadProductImage(@RequestParam int productNo, 
+			@RequestParam("imageFiles") List<MultipartFile> imageFiles) {
+		String loginUserName = SecurityContextHolder.getContext().getAuthentication().getName();
+		//log.info(loginUserName);
+		
+		productService.insertProductImages(productNo, imageFiles, loginUserName);
+		return "";
 	}
 	
 	// 재고 목록 페이지

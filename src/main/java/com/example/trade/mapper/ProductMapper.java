@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.example.trade.dto.Address;
+import com.example.trade.dto.Attachment;
 import com.example.trade.dto.Category;
 import com.example.trade.dto.Option;
 import com.example.trade.dto.Product;
@@ -18,6 +19,9 @@ public interface ProductMapper {
 	List<Map<String, Object>> reviewList();
 	// 상품 목록(찜 많은순)
 	List<Map<String, Object>> productListByWish();
+	// 상품 대표 이미지 보기
+	List<Map<String, Object>> productMainImage();
+	
 	// 개인 찜 목록 보기
 	List<Map<String, Object>> wishList(String id);
 	// 개인 찜 삭제(하나 ~ 여러개)
@@ -99,6 +103,11 @@ public interface ProductMapper {
 	int insertProduct(Product product);
 	// 초기 재고 등록(개수 : 0)
 	void insertInventory(int productNo, int optionNo);
+	
+	// 최대 priority 찾기
+	Integer findMaxPriorityByCategoryCode(int categoryCode);
+	// 이미지 저장
+	void insertAttachment(Attachment attachment);
 	
 	// 재고 목록 조회
 	List<Map<String, Object>> inventoryList();

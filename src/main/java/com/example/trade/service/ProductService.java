@@ -1,13 +1,18 @@
 package com.example.trade.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.trade.dto.Address;
+import com.example.trade.dto.Attachment;
 import com.example.trade.dto.Category;
 import com.example.trade.dto.Option;
 import com.example.trade.dto.Product;
@@ -34,8 +39,25 @@ public class ProductService {
 	
 	// 상품 목록(찜 많은순)
 	public List<Map<String, Object>> selectProductByWish() {
-		return productMapper.productListByWish();
+	    List<Map<String, Object>> productList = productMapper.productListByWish();
+	    List<Map<String, Object>> imageList = productMapper.productMainImage();
+
+	    Map<Integer, String> imageMap = new HashMap<>();
+	    for (Map<String, Object> image : imageList) {
+	        Integer productNo = ((Number) image.get("productNo")).intValue();
+	        String filepath = (String) image.get("filepath");
+	        imageMap.put(productNo, filepath);
+	    }
+
+	    for (Map<String, Object> product : productList) {
+	        Integer productNo = ((Number) product.get("productNo")).intValue();
+	        String filepath = imageMap.get(productNo);
+	        product.put("imagePath", filepath); // jsp에서 ${imagePath}로 사용 가능
+	    }
+
+	    return productList;
 	}
+
 	
 	// 개인 찜 목록 보기
 	public List<Map<String, Object>> selectWishList(String id) {
@@ -284,6 +306,51 @@ public class ProductService {
 		
 		// 2. 재고 테이블에 초기 재고(0) 등록
 		productMapper.insertInventory(resolvedProductNo, product.getOptionNo());
+	}
+	
+	private static final String UPLOAD_DIR = "C:/uploads/product/";
+	
+	// 상품 이미지 등록
+	public void insertProductImages(int productNo, List<MultipartFile> imageFiles, String loginUserName) {
+		Integer maxPriority = productMapper.findMaxPriorityByCategoryCode(productNo);
+	    int priority = (maxPriority != null) ? maxPriority + 1 : 1;
+	    
+		for (MultipartFile file : imageFiles) {
+            if (!file.isEmpty()) {
+                try {
+                    // 1. 원본 파일명
+                    String originalFileName = file.getOriginalFilename();
+
+                    // 2. 고유한 파일명 생성 (중복 방지)
+                    String uniqueFileName = UUID.randomUUID().toString().replace("-", "");
+                    uniqueFileName += "_" + originalFileName;
+                    
+                    // 3. 저장할 경로 생성
+                    File saveFile = new File(UPLOAD_DIR + uniqueFileName);
+
+                    // 디렉토리가 없으면 생성
+                    saveFile.getParentFile().mkdirs();
+
+                    // 4. 로컬에 파일 저장
+                    file.transferTo(saveFile);
+
+                    // 5. DB 저장
+                    Attachment attachment = new Attachment();
+                    attachment.setCategoryCode(productNo); // 상품 번호
+                    attachment.setAttachmentCode("PRODUCT_IMAGE");
+                    attachment.setFilename(originalFileName); // 원본 파일명
+                    attachment.setFilepath("/uploads/product/" + uniqueFileName); // 웹에서 접근 가능한 경로
+                    attachment.setUseStatus("Y");
+                    attachment.setCreateUser(loginUserName); // 또는 로그인 유저 ID
+                    attachment.setPriority(priority++);
+                    
+                    productMapper.insertAttachment(attachment);
+
+                } catch (IOException e) {
+                    throw new RuntimeException("파일 업로드 실패: " + file.getOriginalFilename(), e);
+                }
+            }
+        }
 	}
 	
 	// 재고 조회
