@@ -44,35 +44,36 @@
 	
 	<h1>자주 묻는 질문</h1>
 	
-	<a href="/public/FAQList">자주 묻는 질문</a> /
-	<a href="/member/QNAList">문의 내역</a> /
-	<a href="/member/QNAWrite">1:1 문의</a> /
-	<a href="/public/noticeList">공지사항</a>
+   	<a href="/admin/FAQList">자주 묻는 질문</a> /
+	<a href="/admin/QNAList">문의 내역</a> /
+	<a href="/admin/noticeList">공지사항</a>
 	
 	<table>
+		<tr>
+			<th>번호</th>
+			<th>제목</th>
+			<th>작성자</th>
+			<th>작성일시</th>
+			<th>수정자</th>
+			<th>수정일시</th>
+			<th>사용 여부</th>
+			<th>조회수</th>
+		</tr>
+		<c:forEach var="faq" items="${FAQList}">
 			<tr>
-				<th>번호</th>
-				<th>제목</th>
-				<th>작성자</th>
-				<th>작성일시</th>
-				<th>수정자</th>
-				<th>수정일시</th>
-				<th>사용여부</th>
-				<th>조회수</th>
+				<td>${faq.boardNo}</td>
+				<td><a href="/admin/FAQOne?boardNo=${faq.boardNo}">${faq.boardTitle}</a></td>
+				<td>${faq.createUser}</td>
+				<td>${faq.createDate}</td>
+				<td>${faq.updateUser}</td>
+				<td>${faq.updateDate}</td>
+				<td>${faq.useStatus}</td>
+				<td>${faq.viewCount}</td>
 			</tr>
-			<c:forEach var="faq" items="${FAQList}">
-				<tr>
-					<td>${faq.boardNo}</td>
-					<td><a href="/admin/FAQOne?boardNo=${faq.boardNo}">${faq.boardTitle}</a></td>
-					<td>${faq.createUser}</td>
-					<td>${faq.createDate}</td>
-					<td>${faq.updateUser}</td>
-					<td>${faq.updateDate}</td>
-					<td>${faq.useStatus}</td>
-					<td>${faq.viewCount}</td>
-				</tr>
-			</c:forEach>
+		</c:forEach>
 	</table>
+	
+	<a href="/admin/FAQWrite">FAQ 등록</a>
 
 	<!-- 페이징 영역 -->
 	<div class="pagination">

@@ -30,6 +30,21 @@ public class AdminService {
 	public Board getFAQOne(Board board) {
 		return adminMapper.selectFAQOne(board);
 	}
+	
+	// 자주 묻는 질문(FAQ) 등록
+	public int insertBoard(Board board) {
+		return adminMapper.insertBoard(board);
+	}
+	
+	// FAQ 수정
+	public int updateFAQ(Board board) {
+		return adminMapper.updateBoard(board);
+	}
+
+	// FAQ 삭제
+	public int deleteFAQ(Board board) {
+		return adminMapper.deleteBoard(board);
+	}
 
 	// 로그인 이력 조회
 	public List<Map<String, Object>> getLoginHistory() {

@@ -1,11 +1,13 @@
 package com.example.trade.controller;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.trade.dto.Board;
@@ -65,8 +67,77 @@ public class AdminController {
 		
 		// 모델에 값 전달
 		model.addAttribute("FAQOne", FAQOne);
-		
 		return "admin/FAQOne";
+	}
+	
+	// 자주 묻는 질문(FAQ) 등록 페이지
+	@GetMapping("/admin/FAQWrite")
+	public String FAQWriteForm() {
+	    return "admin/FAQWrite";
+	}
+
+	// 자주 묻는 질문(FAQ) 등록 처리
+	@PostMapping("/admin/FAQWrite")
+	public String FAQWrite(Board board, Principal principal) {
+		
+		// 로그인 사용자 ID 세팅
+		String username = principal.getName();
+		board.setCreateUser(username);
+
+		int row = adminService.insertBoard(board);
+		
+		if(row != 0) {
+			System.out.println("FAQ 등록 성공");
+			return "redirect:/admin/FAQOne?boardNo=" + board.getBoardNo();
+		} else {
+			System.out.println("FAQ 등록 실패");
+			return "redirect:/admin/FAQWrite";
+		}
+	}
+	
+	// FAQ 수정 페이지
+	@GetMapping("/admin/FAQUpdate")
+	public String FAQUpdateForm(Board board, Model model) {
+		// 상세 조회
+		Board FAQOne = adminService.getFAQOne(board);
+		model.addAttribute("FAQOne", FAQOne);
+		return "admin/FAQUpdate";
+	}
+
+	// FAQ 수정 처리
+	@PostMapping("/admin/FAQUpdate")
+	public String FAQUpdate(Board board, Principal principal) {
+		// 접속한 사용자 ID
+		String username = principal.getName();
+		board.setUpdateUser(username);
+
+		int row = adminService.updateFAQ(board);
+		
+		if(row != 0) {
+			System.out.println("FAQ 수정 성공");
+			return "redirect:/admin/FAQOne?boardNo=" + board.getBoardNo();
+		} else {
+			System.out.println("FAQ 수정 실패");
+			return "redirect:/admin/FAQUpdate?boardNo=" + + board.getBoardNo();
+		}
+	}
+	
+	// FAQ 삭제 처리
+	@PostMapping("/admin/FAQDelete")
+	public String FAQDelete(Board board, Principal principal) {
+		// 접속한 사용자 ID
+		String username = principal.getName();
+		board.setUpdateUser(username);
+
+		int row = adminService.deleteFAQ(board);
+		
+		if(row != 0) {
+			System.out.println("FAQ 삭제 성공");
+			return "redirect:/admin/FAQList";
+		} else {
+			System.out.println("FAQ 삭제 실패");
+			return "redirect:/admin/FAQOne?boardNo=" + + board.getBoardNo();
+		}
 	}
 	
 	// 로그인 이력 조회 페이지

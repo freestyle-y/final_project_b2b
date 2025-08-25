@@ -14,9 +14,9 @@
 
 	<h1>고객센터 관리</h1>
 	
-	<a href="/admin/FAQList">자주 묻는 질문</a> /
-	<a href="/member/QNAList">문의 내역</a> /
-	<a href="/public/noticeList">공지사항</a>
+   	<a href="/admin/FAQList">자주 묻는 질문</a> /
+	<a href="/admin/QNAList">문의 내역</a> /
+	<a href="/admin/noticeList">공지사항</a>
 	
 	<h3>고객센터 관리 페이지입니다.</h3>
 	

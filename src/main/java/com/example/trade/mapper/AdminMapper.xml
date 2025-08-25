@@ -47,6 +47,34 @@
 		FROM board
 		WHERE board_no = #{boardNo}
 	</select>
+	
+	<!-- 자주 묻는 질문(FAQ) 등록 -->
+	<insert id="insertBoard" parameterType="com.example.trade.dto.Board" useGeneratedKeys="true" keyProperty="boardNo">
+	INSERT INTO board
+		(board_title, board_content, board_code, create_user)
+	VALUES
+		(#{boardTitle}, #{boardContent}, #{boardCode}, #{createUser})
+	</insert>
+	
+	<!-- FAQ 수정 -->
+	<update id="updateBoard" parameterType="com.example.trade.dto.Board">
+		UPDATE board SET
+			board_title = #{boardTitle},
+			board_content = #{boardContent},
+			update_user = #{updateUser},
+			update_date = NOW(),
+			use_status = #{useStatus}
+		WHERE board_no = #{boardNo}
+	</update>
+	
+	<!-- FAQ 삭제 -->
+	<update id="deleteBoard" parameterType="com.example.trade.dto.Board">
+		UPDATE board SET
+			update_user = #{updateUser},
+			update_date = NOW(),
+			use_status = 'N'
+		WHERE board_no = #{boardNo}
+	</update>
 
 	<!-- 로그인 이력 조회 -->
 	<select id="selectLoginHistory" resultType="map">

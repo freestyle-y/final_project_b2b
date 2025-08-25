@@ -19,6 +19,15 @@ public interface AdminMapper {
 	
 	// 자주 묻는 질문(FAQ) 상세 조회
 	Board selectFAQOne(Board board);
+	
+	// 자주 묻는 질문(FAQ) 등록
+	int insertBoard(Board board);
+	
+	// FAQ 수정
+	int updateBoard(Board board);
+	
+	// FAQ 삭제
+	int deleteBoard(Board board);
 
 	// 로그인 이력 조회
 	List<Map<String, Object>> selectLoginHistory();
