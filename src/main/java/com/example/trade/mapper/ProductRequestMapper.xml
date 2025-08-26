@@ -3,15 +3,17 @@
 <mapper namespace="com.example.trade.mapper.ProductRequestMapper">
 	<select id="getProductRequestList" resultType="com.example.trade.dto.ProductRequest">
 		SELECT 
-			product_request_no AS productRequestNo
-			,sub_product_request_no AS subProductRequestNo
-			,address_no AS addressNo
-			,product_name AS productName
-			,product_option AS productOption
-			,product_quantity AS productQuantity
-			,requests ,status
-			,create_user AS createUser
-			,create_date AS createDate
-		FROM product_request
+			p.product_request_no AS productRequestNo
+			,p.sub_product_request_no AS subProductRequestNo
+			,p.address_no AS addressNo
+			,p.product_name AS productName
+			,p.product_option AS productOption
+			,p.product_quantity AS productQuantity
+			,p.requests AS requests , p.`status` AS status
+			,p.create_user AS createUser
+			,p.create_date AS createDate
+			,q.`status` AS quotationStatus
+		FROM product_request p LEFT OUTER JOIN quotation q 
+		ON p.product_request_no = q.product_request_no
 	</select>
 </mapper>

@@ -26,7 +26,7 @@ public class ProductRequestController {
 	public String productRequestList(Model model, Principal principal) {
 	    String userId = principal.getName();
 	    List<ProductRequest> list = productRequestService.getProductRequestList();
-
+	    
 	    // productRequestNo 기준으로 묶기
 	    Map<Integer, List<ProductRequest>> grouped = list.stream()
 	        .collect(Collectors.groupingBy(ProductRequest::getProductRequestNo, LinkedHashMap::new, Collectors.toList()));

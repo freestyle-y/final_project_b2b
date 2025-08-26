@@ -27,7 +27,6 @@
 				<th>잔금 납입일</th>
 				<th>작성자</th>
 				<th>작성일자</th>
-				<th>계약서 작성하기</th>
 				<th>컨테이너 상품 입력</th>
 			</tr>
 		</thead>
@@ -56,15 +55,6 @@
 					<td>${con.finalPaymentDate}</td>
 					<td>${con.createUser}</td>
 					<td>${con.createDate}</td>
-				
-					<!-- 계약서 작성 form -->
-					<td>
-						<form method="get" action="/admin/writeContract" style="display:inline;">
-							<input type="hidden" name="contractNo" value="${con.contractNo}" />
-							<button type="submit">작성하기</button>
-						</form>
-					</td>
-				
 					<!-- 컨테이너 입력 form -->
 					<td>
 						<form method="get" action="/admin/insertContainer" style="display:inline;">

@@ -24,4 +24,8 @@ public class ProductRequest {
 	private String updateUser;
 	private LocalDateTime updateDate;
 	private String useStatus;
+	
+	// quotatio 조인
+	private String quotationStatus;
+
 }

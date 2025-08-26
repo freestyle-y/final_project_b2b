@@ -26,7 +26,7 @@
        AND qi.sub_product_request_no = pr.sub_product_request_no
     LEFT JOIN user u ON pr.create_user = u.id   -- ✅ user 테이블과 조인
     WHERE q.use_status = 'Y'
-    ORDER BY q.quotation_no DESC
+    ORDER BY q.product_request_no, q.quotation_no ASC
 </select>
 
 
