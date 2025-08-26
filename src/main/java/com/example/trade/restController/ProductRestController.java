@@ -194,9 +194,11 @@ public class ProductRestController {
 	// 상품 요청 첨부파일 삭제
 	@PostMapping("/biz/deleteAttachment")
 	public String deleteAttachment(int attachmentNo) {
+		String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+		
 	    try {
 	        // DB에서 해당 첨부파일 조회 (있으면 업데이트)
-	        int updateCount = productService.deleteAttachment(attachmentNo);
+	        int updateCount = productService.deleteAttachment(userId, attachmentNo);
 	        if (updateCount == 1) {
 	            return "success";
 	        } else {
@@ -208,7 +210,6 @@ public class ProductRestController {
 	    }
 	}
 
-	
 	// 카테고리 추가
 	@PostMapping("/addCategories")
 	public ResponseEntity<Category> addCategory(@RequestBody Category category) {		
@@ -236,8 +237,53 @@ public class ProductRestController {
 		//log.info(product.toString());
 		String userId = SecurityContextHolder.getContext().getAuthentication().getName();
 		
-		productService.changeProductStatus(userId, product.getProductNo(), product.getUseStatus());
+		productService.changeProductUseStatus(userId, product.getProductNo(), product.getUseStatus());
 		return "success";
+	}
+	
+	// 상품 상태 수정
+	@PostMapping("/admin/updateProductStatus")
+	public ResponseEntity<String> updateProductStatus(@RequestBody Map<String, Object> data) {
+		String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+		int productNo = (Integer)data.get("productNo");
+	    String productStatus = data.get("productStatus").toString();
+
+	    productService.updateProductStatus(userId, productNo, productStatus);
+	    return ResponseEntity.ok("success");
+	}
+	
+	// 상품 이미지 삭제
+	@PostMapping("/admin/deleteProductImage")
+	public ResponseEntity<String> deleteProductImage(@RequestBody Map<String, String> data) {
+		String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+		int productNo = Integer.parseInt(data.get("productNo"));
+	    String imagePath = data.get("imagePath");
+
+	    log.info(data.toString());
+	    try {
+	        productService.deleteProductImage(userId, productNo, imagePath);
+	        return ResponseEntity.ok("success");
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
+	    }
+	}
+	
+	
+	// 상품 옵션 가격 수정
+	@PostMapping("/admin/updateProductPrices")
+	public ResponseEntity<String> updatePrices(@RequestBody Map<String, Object> data) {
+		String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+		int productNo = Integer.parseInt(data.get("productNo").toString());
+	    List<Map<String, Object>> priceUpdates = (List<Map<String, Object>>) data.get("priceUpdates");
+
+	    for (Map<String, Object> item : priceUpdates) {
+	    	int optionNo = Integer.parseInt(item.get("optionNo").toString());
+	        int price = Integer.parseInt(item.get("price").toString());
+
+	        productService.updateProductOptionPrice(userId, productNo, optionNo, price);
+	    }
+
+	    return ResponseEntity.ok("success");
 	}
 	
 	// 창고 리스트

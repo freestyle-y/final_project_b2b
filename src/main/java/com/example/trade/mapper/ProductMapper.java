@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import com.example.trade.dto.Address;
 import com.example.trade.dto.Attachment;
 import com.example.trade.dto.Category;
+import com.example.trade.dto.CommTbl;
 import com.example.trade.dto.Option;
 import com.example.trade.dto.Product;
 import com.example.trade.dto.ProductRequest;
@@ -86,11 +87,11 @@ public interface ProductMapper {
 	// 상품 요청 수정
 	int updateProductRequest(ProductRequest productRequest);
 	// 상품 요청 첨부파일 삭제
-	int deleteAttachment(int attachmentNo);
+	int deleteAttachment(@Param("userId") String userId, @Param("attachmentNo") int attachmentNo);
 	// 상품 요청 삭제
-	int deleteProductRequest(int requestNo); 
+	int deleteProductRequest(@Param("userId") String userId, @Param("requestNo") int requestNo); 
 	// 상품에 대한 첨부파일 모두 삭제
-	int deleteProductAttachment(int requestNo);
+	int deleteProductAttachment(@Param("userId") String userId, @Param("requestNo") int requestNo);
 	
 	// 대분류 최대 ID 조회 
 	String selectMaxMajorCategoryId();
@@ -120,13 +121,22 @@ public interface ProductMapper {
 	// 파일 저장
 	void insertAttachment(Attachment attachment);
 	
+	// 상품 상태 리스트 조회
+	List<CommTbl> productStatusCode();
+	// 상품 상태 변경
+	int updateProductStatus(@Param("userId") String userId, @Param("productNo") int productNo, @Param("productStatus") String productStatus);
+	// 상품 옵션 가격 변경
+	int updateProductOptionPrice(@Param("userId") String userId, @Param("productNo") int productNo,@Param("optionNo") int optionNo, @Param("price") int price);
+	// 상품 이미지 삭제
+	int deleteProductImage(@Param("userId") String userId, @Param("productNo") int productNo, @Param("imagePath") String imagePath);
+	
 	// 재고 목록 조회
 	List<Map<String, Object>> inventoryList();
 	// 재고 수정
 	int updateInventoryQuantity(@Param("inventoryId") int inventoryId, @Param("quantity") int quantity);
 	
 	// 상품 사용여부 변경
-	int updateProductStatus(@Param("userId") String userId, @Param("productNo") int productNo, @Param("useStatus") String useStatus);
+	int updateProductUseStatus(@Param("userId") String userId, @Param("productNo") int productNo, @Param("useStatus") String useStatus);
 	
 	// 창고 주소 불러오기
 	List<Address> warehouse(String id);

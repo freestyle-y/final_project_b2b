@@ -505,6 +505,17 @@
 		WHERE user_id = #{id}
 	</select>
 	
+	<!-- 상품 상태 리스트 조회 -->
+	<select id="productStatusCode">
+		SELECT 
+			code_number AS codeNumber, 
+			code_name AS codeName
+		FROM comm_tbl 
+		WHERE use_status = 'Y' 
+		AND code_number LIKE 'GS%' 
+		ORDER BY parameter2
+	</select>
+
 	<!-- 찜 테이블에 찜 삽입 -->
 	<insert id="insertWish">
 		INSERT INTO wish_list (user_id, product_no, use_status, create_user)
@@ -556,7 +567,7 @@
 			product_no, option_no, product_name, product_status,
 			category_id, price, create_user, use_status)
 		VALUES (
-			#{productNo}, #{optionNo}, #{productName}, 'GS002',
+			#{productNo}, #{optionNo}, #{productName}, 'GS001',
 			#{categoryId}, #{price}, #{createUser}, 'Y')
 	</insert>
 	
@@ -572,7 +583,7 @@
 	<update id="deleteByUserNameAndProductNos">
 		UPDATE wish_list
 		SET use_status = 'N',
-			update_user = 'personal001',
+			update_user = #{userName},
 			update_date = NOW()
 		WHERE user_id = #{userName}
 		AND product_no IN
@@ -610,16 +621,20 @@
 	</update>
 	
 	<!-- 상품 요청 첨부파일 삭제 -->
-	<update id="deleteAttachment" parameterType="int">
+	<update id="deleteAttachment">
 	    UPDATE attachment
-	    SET use_status = 'N'
+	    SET use_status = 'N',
+	    	update_user = #{userId},
+	        update_date = NOW()
 	    WHERE attachment_no = #{attachmentNo}
 	</update>
 	
 	<!-- 상품에 대한 첨부파일 모두 삭제 -->
-	<update id="deleteProductAttachment" parameterType="int">
+	<update id="deleteProductAttachment">
 	    UPDATE attachment
-	    SET use_status = 'N'
+	    SET use_status = 'N',
+	    	update_user = #{userId},
+	        update_date = NOW()
 	    WHERE category_code = #{requestNo}
 	    AND attachment_code = 'PRODUCT_REQUEST_FILE'
 	</update>
@@ -641,10 +656,41 @@
 	</update>
 	
 	<!-- 상품 요청 삭제 -->
-	<update id="deleteProductRequest" parameterType="int">
+	<update id="deleteProductRequest">
 		UPDATE product_request
-		SET use_status = 'N'
+		SET use_status = 'N',
+	    	update_user = #{userId},
+	        update_date = NOW()
 		WHERE product_request_no = #{requestNo}
+	</update>
+	
+	<!-- 상품 상태 변경 -->
+	<update id="updateProductStatus">
+		UPDATE product
+	    SET product_status = #{productStatus},
+	    	update_user = #{userId},
+	    	update_date = NOW()
+	    WHERE product_no = #{productNo}
+	</update>
+	
+	<!-- 상품 옵션 가격 변경 -->
+	<update id="updateProductOptionPrice">
+		UPDATE product
+		SET price = #{price},
+	    	update_user = #{userId},
+	    	update_date = NOW()
+		WHERE product_no = #{productNo}
+		AND option_no = #{optionNo}
+	</update>
+	
+	<!-- 상품 이미지 삭제 -->
+	<update id="deleteProductImage">
+		UPDATE attachment
+		SET use_status = 'N',
+			update_user = #{userId},
+			update_date = NOW()
+		WHERE category_code = #{productNo}
+			AND filepath = #{imagePath}
 	</update>
 	
 	<!-- 재고 수정 -->
@@ -655,7 +701,7 @@
 	</update>
 	
 	<!-- 상품 사용여부 변경 -->
-	<update id="updateProductStatus">
+	<update id="updateProductUseStatus">
 		UPDATE product
 	    SET use_status = #{useStatus},
 	    	update_user = #{userId},

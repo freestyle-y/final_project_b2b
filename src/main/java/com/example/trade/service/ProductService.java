@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.trade.dto.Address;
 import com.example.trade.dto.Attachment;
 import com.example.trade.dto.Category;
+import com.example.trade.dto.CommTbl;
 import com.example.trade.dto.Option;
 import com.example.trade.dto.Product;
 import com.example.trade.dto.ProductRequest;
@@ -206,7 +207,23 @@ public class ProductService {
 	
 	// 카테고리별 상품 목록 보기(전체)
 	public List<Map<String, Object>> selectAllProductListByCategory(String parentId, String middleId) {
-		return productMapper.allProductListByCategory(parentId, middleId);
+		List<Map<String, Object>> productList = productMapper.allProductListByCategory(parentId, middleId);
+	    List<Map<String, Object>> imageList = productMapper.productMainImage();
+
+	    Map<Integer, String> imageMap = new HashMap<>();
+	    for (Map<String, Object> image : imageList) {
+	        Integer productNo = ((Number) image.get("productNo")).intValue();
+	        String filepath = (String) image.get("filepath");
+	        imageMap.put(productNo, filepath);
+	    }
+
+	    for (Map<String, Object> product : productList) {
+	        Integer productNo = ((Number) product.get("productNo")).intValue();
+	        String filepath = imageMap.get(productNo);
+	        product.put("imagePath", filepath);
+	    }
+
+	    return productList;
 	}
 
 	// 상품 상세 페이지 보기(개인용)
@@ -352,8 +369,8 @@ public class ProductService {
 	}
 	
 	// 상품 요청 첨부파일 삭제
-	public int deleteAttachment(int attachmentNo) {
-		return productMapper.deleteAttachment(attachmentNo);
+	public int deleteAttachment(String userId, int attachmentNo) {
+		return productMapper.deleteAttachment(userId, attachmentNo);
 	}
 	
 	// 상품 요청 수정
@@ -415,9 +432,9 @@ public class ProductService {
 	}
 	
 	// 상품 요청 삭제
-	public void deleteProductRequest(int requestNo) {
-		productMapper.deleteProductRequest(requestNo);
-		productMapper.deleteProductAttachment(requestNo);
+	public void deleteProductRequest(String userId, int requestNo) {
+		productMapper.deleteProductRequest(userId, requestNo);
+		productMapper.deleteProductAttachment(userId, requestNo);
 	}
 	
 	// 카테고리 추가
@@ -473,7 +490,7 @@ public class ProductService {
 	}
 	
 	// 상품 등록
-	public void insertProduct(Product product) {
+	public void insertProduct(Product product, List<MultipartFile> productImages) {
         // 1. product_no 설정
         Integer existingProductNo = productMapper.findProductNoByName(product.getProductName());
 
@@ -488,7 +505,47 @@ public class ProductService {
         product.setProductNo(resolvedProductNo);
 		productMapper.insertProduct(product);
 		
-		// 2. 재고 테이블에 초기 재고(0) 등록
+		// 2. 이미지 있다면 이미지 삽입
+	    int priority = 1;
+	    
+		for (MultipartFile file : productImages) {
+            if (!file.isEmpty()) {
+                try {
+                    // 1. 원본 파일명
+                    String originalFileName = file.getOriginalFilename();
+
+                    // 2. 고유한 파일명 생성 (중복 방지)
+                    String uniqueFileName = UUID.randomUUID().toString().replace("-", "");
+                    uniqueFileName += "_" + originalFileName;
+                    
+                    // 3. 저장할 경로 생성
+                    File saveFile = new File(UPLOAD_DIR + uniqueFileName);
+
+                    // 디렉토리가 없으면 생성
+                    saveFile.getParentFile().mkdirs();
+
+                    // 4. 로컬에 파일 저장
+                    file.transferTo(saveFile);
+
+                    // 5. DB 저장
+                    Attachment attachment = new Attachment();
+                    attachment.setCategoryCode(resolvedProductNo); // 상품 번호
+                    attachment.setAttachmentCode("PRODUCT_IMAGE");
+                    attachment.setFilename(originalFileName); // 원본 파일명
+                    attachment.setFilepath("/uploads/product/" + uniqueFileName); // 웹에서 접근 가능한 경로
+                    attachment.setUseStatus("Y");
+                    attachment.setCreateUser(product.getCreateUser());// 또는 로그인 유저 ID
+                    attachment.setPriority(priority++);
+                    
+                    productMapper.insertAttachment(attachment);
+
+                } catch (IOException e) {
+                    throw new RuntimeException("파일 업로드 실패: " + file.getOriginalFilename(), e);
+                }
+            }
+        }
+		
+		// 3. 재고 테이블에 초기 재고(0) 등록
 		productMapper.insertInventory(resolvedProductNo, product.getOptionNo());
 	}
 
@@ -535,6 +592,26 @@ public class ProductService {
         }
 	}
 	
+	// 상품 상태 리스트 조회
+	public List<CommTbl> getProductStatusCode() {
+		return productMapper.productStatusCode();
+	}
+	
+	// 상품 상태 변경
+	public void updateProductStatus(String userId, int productNo, String productStatus) {
+		productMapper.updateProductStatus(userId, productNo, productStatus);
+	}
+	
+	// 상품 옵션 가격 변경
+	public void updateProductOptionPrice(String userId, int productNo, int optionNo, int price) {
+		productMapper.updateProductOptionPrice(userId, productNo, optionNo, price);
+	}
+	
+	// 상품 이미지 삭제
+	public void deleteProductImage(String userId, int productNo, String imagePath) {
+		productMapper.deleteProductImage(userId, productNo, imagePath);
+	}
+	
 	// 재고 조회
 	public List<Map<String, Object>> selectInventoryList() {
 		return productMapper.inventoryList();
@@ -546,8 +623,8 @@ public class ProductService {
 	}
 	
 	// 상품 사용여부 변경
-	public void changeProductStatus(String userId, int productNo, String useStatus) {
-		productMapper.updateProductStatus(userId, productNo, useStatus);
+	public void changeProductUseStatus(String userId, int productNo, String useStatus) {
+		productMapper.updateProductUseStatus(userId, productNo, useStatus);
 	}
 	
 	// 창고 주소 불러오기

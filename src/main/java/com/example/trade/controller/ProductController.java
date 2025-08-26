@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.trade.dto.Address;
 import com.example.trade.dto.Category;
+import com.example.trade.dto.CommTbl;
 import com.example.trade.dto.Option;
 import com.example.trade.dto.Product;
 import com.example.trade.dto.ProductRequest;
@@ -235,15 +236,16 @@ public class ProductController {
 	public String bizEditRequest(@ModelAttribute ProductRequestForm productRequestForm,
 			@RequestParam(value = "newFiles", required = false) MultipartFile[] newFiles) {
 		//log.info(productRequestForm.toString());
-		productService.updateProductRequests(productRequestForm, newFiles);
-		
+		productService.updateProductRequests(productRequestForm, newFiles);		
 		return "redirect:/biz/productRequestList";
 	}
 	
 	// 상품 요청 삭제
 	@GetMapping("biz/deleteRequest")
 	public String bizDeleteRequest(@RequestParam int requestNo) {
-		productService.deleteProductRequest(requestNo);
+		String loginUserName = SecurityContextHolder.getContext().getAuthentication().getName();
+		
+		productService.deleteProductRequest(loginUserName, requestNo);
 		return "redirect:/biz/productRequestList";
 	}
 	
@@ -320,10 +322,11 @@ public class ProductController {
 	
 	// 상품 등록 DB insert
 	@PostMapping("/admin/insertProduct")
-	public String insertProduct(Product product) {
+	public String insertProduct(Product product,
+			@RequestParam("productImage") List<MultipartFile> productImages) {
 		//log.info(product.toString());
-		productService.insertProduct(product);
-		return "redirect:/admin/mainPage";
+		productService.insertProduct(product, productImages);
+		return "redirect:/admin/inventoryList";
 	}
 	
 	// 관리자 상품 목록 페이지
@@ -332,7 +335,7 @@ public class ProductController {
 		List<Category> majorCategoryList = productService.selectMajorCategory();
 		List<Map<String, Object>> productList = productService.selectAllProductListByCategory(null, null);
 		//log.info(majorCategoryList.toString());
-		log.info(productList.toString());
+		//log.info(productList.toString());
 		model.addAttribute("majorCategoryList", majorCategoryList);
 		model.addAttribute("productList", productList);	
 		return "admin/productList";
@@ -352,6 +355,11 @@ public class ProductController {
 
 	    commonInfo.put("productNo", first.get("productNo"));
 	    commonInfo.put("productName", first.get("productName"));
+	    commonInfo.put("productStatus", first.get("productStatus"));
+	    
+	    // 이미지 경로 리스트는 공통 정보로 담기 (옵션마다 중복된 값이므로 첫 번째에서만 추출)
+	    List<String> imagePaths = (List<String>) first.get("imagePaths");
+	    commonInfo.put("imagePaths", imagePaths);
 	    
 	    // 옵션 리스트 생성
 	    List<Map<String, Object>> optionList = new ArrayList<>();
@@ -364,8 +372,11 @@ public class ProductController {
 	        optionList.add(opt);
 	    }
 	    
+	    List<CommTbl> productStatus = productService.getProductStatusCode();
+	    
 	    model.addAttribute("product", commonInfo);
 	    model.addAttribute("optionList", optionList);
+	    model.addAttribute("productStatus", productStatus);
 		return "admin/productOne";
 	}
 	
@@ -377,7 +388,7 @@ public class ProductController {
 		//log.info(loginUserName);
 		
 		productService.insertProductImages(productNo, imageFiles, loginUserName);
-		return "redirect:/admin/mainPage";
+		return "redirect:/admin/productOne?productNo=" + productNo;
 	}
 	
 	// 재고 목록 페이지

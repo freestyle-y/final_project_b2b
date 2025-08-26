@@ -182,7 +182,8 @@ $(function () {
 	        price: $(this).data('price'),
 	        productStatus: $(this).data('status'),
 	        useStatus: $(this).data('usestatus'),
-	        productNo: $(this).data('product-no')
+	        productNo: $(this).data('product-no'),
+	        imagePath: $(this).find('img').attr('src') || null
 	    });
 	});
 
@@ -196,6 +197,11 @@ $(function () {
 	    const pageItems = filteredProducts.slice(start, end);
 
 	    pageItems.forEach(function(item) {
+
+	    	const imageHtml = item.imagePath
+            ? '<img src="' + item.imagePath + '" alt="' + item.productName + '" style="width: 100%; height: 100%; object-fit: cover;" />'
+            : '<span style="color: #ccc; font-size: 12px;">이미지 없음</span>';
+
 	        const productCardHtml =
 	            '<div class="product-card" ' +
 					'data-name="' + item.productName + '" ' +
@@ -203,6 +209,11 @@ $(function () {
 					'data-status="' + item.productStatus + '" ' +
 					'data-usestatus="' + item.useStatus + '" ' +
 					'data-product-no="' + item.productNo + '">' +
+					
+	                '<div class="product-image" style="width: 100%; height: 150px; display: flex; align-items: center; justify-content: center;">' +
+	                    imageHtml +
+	                '</div>' +
+   
 	                '<div class="product-name">' + item.productName + '</div>' +
 	                '<div class="product-price">' + item.price.toLocaleString('ko-KR') + ' 원</div>' +
 	                '<div class="product-status">상태: ' + item.productStatus + '</div>' +
@@ -266,7 +277,8 @@ $(function () {
 						price: item.price,
 						productStatus: item.productStatus,
 						useStatus: item.useStatus,
-						productNo: item.productNo
+						productNo: item.productNo,
+						imagePath: item.imagePath || null
 					};
 				});
 				filteredProducts = allProducts.slice();
@@ -285,7 +297,8 @@ $(function () {
 									price: item.price,
 									productStatus: item.productStatus,
 									useStatus: item.useStatus,
-									productNo: item.productNo
+									productNo: item.productNo,
+									imagePath: item.imagePath || null
 								};
 							});
 							filteredProducts = allProducts.slice();
@@ -358,6 +371,20 @@ $(function () {
 				     data-status="${item.productStatus}"
 				     data-usestatus="${item.useStatus}"
 				     data-product-no="${item.productNo}">
+				     
+				     <!-- ✅ 썸네일 이미지 영역 -->
+					<div class="product-image" style="width: 100%; height: 150px; display: flex; align-items: center; justify-content: center;">
+						<c:choose>
+							<c:when test="${not empty item.imagePath}">
+								<img src="${pageContext.request.contextPath}${item.imagePath}"
+								     alt="${item.productName}"
+								     style="width: 100%; height: 100%; object-fit: cover;" />
+							</c:when>
+							<c:otherwise>
+								<span style="color: #ccc; font-size: 12px;">이미지 없음</span>
+							</c:otherwise>
+						</c:choose>
+					</div>
 					<div class="product-name">${item.productName}</div>
 					'<div class="product-price">' + item.price.toLocaleString('ko-KR') + ' 원</div>'
 					<div class="product-status">상태: ${item.productStatus}</div>

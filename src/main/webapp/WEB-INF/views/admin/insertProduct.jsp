@@ -306,7 +306,7 @@
 
     <div class="form-group">
         <label>이미지 등록:</label>
-        <input type="file" name="productImage">
+        <input type="file" name="productImage" accept="image/*" multiple>
     </div>
 
     <!-- 대분류 선택 및 추가 -->
