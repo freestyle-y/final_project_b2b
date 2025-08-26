@@ -11,6 +11,7 @@ import com.example.trade.dto.Attachment;
 import com.example.trade.dto.Category;
 import com.example.trade.dto.CommTbl;
 import com.example.trade.dto.Option;
+import com.example.trade.dto.Order;
 import com.example.trade.dto.Product;
 import com.example.trade.dto.ProductRequest;
 
@@ -51,6 +52,11 @@ public interface ProductMapper {
     int checkCart(@Param("userId") String userId, @Param("productNo") int productNo, @Param("optionNo") int optionNo);
     // 장바구니에 담기
     int insertCart(@Param("userId") String userId, @Param("productNo") int productNo, @Param("optionNo") int optionNo, @Param("quantity") int quantity);
+    
+    // 최대 order_no 조회
+    Integer findMaxOrderNo();
+    // 주문 데이터 삽입
+    void insertOrder(Order order);
     
 	// 카테고리(대분류) 목록
 	List<Category> majorCategory();

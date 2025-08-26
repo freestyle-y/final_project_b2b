@@ -312,7 +312,15 @@
 
         <div class="cart-item ${isSoldOut ? 'sold-out' : ''}"
         	data-cart-id="${item.cartId}"
-     		data-inventory-quantity="${item.inventoryQuantity}">
+	     	data-user-id="${item.userId}"
+		    data-product-no="${item.productNo}"
+		    data-option-no="${item.optionNo}"
+		    data-product-name="${item.productName}"
+		    data-option-name="${item.optionName}"
+		    data-option-name-value="${item.optionNameValue}"
+		    data-quantity="${item.quantity}"
+		    data-price="${item.price}"
+		    data-inventory-quantity="${item.inventoryQuantity}">
             <input type="checkbox" class="item-checkbox"
                    data-total-price="${itemTotal}"
                    onchange="updateTotal()"
@@ -367,7 +375,7 @@
         <div class="total-reward-point">
             적립금: <span id="totalRewardPoint">0원</span>
         </div>
-        <button class="buy-btn" onclick="location.href='/purchase'">구매하기</button>
+        <button class="buy-btn" onclick="handleBuyClick()">구매하기</button>
     </div>
 </div>
 
@@ -378,6 +386,53 @@
     window.onload = function() {
         updateTotal();
     };
+    
+    function handleBuyClick() {
+        // 체크된 체크박스 중 disabled가 아닌 것 확인
+        const checkedBoxes = document.querySelectorAll('.item-checkbox:not(:disabled):checked');
+        if (checkedBoxes.length === 0) {
+            alert('구매할 상품을 선택해주세요.');
+            return;
+        }
+        
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "/personal/purchase";
+        form.style.display = "none";
+
+        checkedBoxes.forEach((checkbox, index) => {
+            const item = checkbox.closest('.cart-item');
+
+            const userId = item.getAttribute('data-user-id');
+            const productNo = item.getAttribute('data-product-no');
+            const optionNo = item.getAttribute('data-option-no');
+            const productName = item.getAttribute('data-product-name');
+            const optionName = item.getAttribute('data-option-name');
+            const optionNameValue = item.getAttribute('data-option-name-value');
+            const price = item.getAttribute('data-price');
+            const quantity = item.querySelector('input[type="text"]').value;
+
+            form.appendChild(createHiddenInput("purchaseList[" + index + "].userId", userId));
+            form.appendChild(createHiddenInput("purchaseList[" + index + "].productNo", productNo));
+            form.appendChild(createHiddenInput("purchaseList[" + index + "].optionNo", optionNo));
+            form.appendChild(createHiddenInput("purchaseList[" + index + "].productName", productName));
+            form.appendChild(createHiddenInput("purchaseList[" + index + "].optionName", optionName));
+            form.appendChild(createHiddenInput("purchaseList[" + index + "].optionNameValue", optionNameValue));
+            form.appendChild(createHiddenInput("purchaseList[" + index + "].orderQuantity", quantity));
+            form.appendChild(createHiddenInput("purchaseList[" + index + "].price", price));
+        });
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+    
+    function createHiddenInput(name, value) {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = name;
+        input.value = value;
+        return input;
+    }
 </script>
 
 </body>

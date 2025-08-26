@@ -18,6 +18,7 @@ import com.example.trade.dto.Attachment;
 import com.example.trade.dto.Category;
 import com.example.trade.dto.CommTbl;
 import com.example.trade.dto.Option;
+import com.example.trade.dto.Order;
 import com.example.trade.dto.Product;
 import com.example.trade.dto.ProductRequest;
 import com.example.trade.dto.ProductRequestForm;
@@ -137,6 +138,25 @@ public class ProductService {
 	    return result > 0;
 	}
 
+	// 장바구니에 담긴 상품 구매
+	public String saveOrders(List<Order> orderList) {
+        Integer maxOrderNo = productMapper.findMaxOrderNo();
+        int newOrderNo = (maxOrderNo != null ? maxOrderNo : 0) + 1;
+
+        int subOrderNo = 1;
+        for (Order order : orderList) {
+        	order.setOrderNo(String.valueOf(newOrderNo));
+            order.setSubOrderNo(String.valueOf(subOrderNo++));
+            order.setOrderStatus("OS001");
+            order.setDeliveryStatus("DS001");
+            order.setCreateUser(order.getUserId());
+            productMapper.insertOrder(order);
+        }
+        
+        return String.valueOf(newOrderNo);
+    }
+	
+	
 	// 찜 토글
 	public boolean toggleWish(String userId, int productNo, boolean wish) {
 	    Map<String, Object> param = new HashMap<>();

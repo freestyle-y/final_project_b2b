@@ -17,14 +17,16 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-
+import com.example.trade.TradeApplication;
 import com.example.trade.dto.Address;
 import com.example.trade.dto.Category;
 import com.example.trade.dto.CommTbl;
 import com.example.trade.dto.Option;
+import com.example.trade.dto.Order;
 import com.example.trade.dto.Product;
 import com.example.trade.dto.ProductRequest;
 import com.example.trade.dto.ProductRequestForm;
+import com.example.trade.dto.PurchaseListWrapper;
 import com.example.trade.service.ProductService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @Slf4j
 public class ProductController {
+
 	private final ProductService productService;
 	public ProductController(ProductService productService) {
 		this.productService = productService;
@@ -77,6 +80,20 @@ public class ProductController {
 		model.addAttribute("loginUserName", loginUserName);
 		model.addAttribute("shoppingCartList", shoppingCartList);
 		return "personal/shoppingCart";
+	}
+	
+	// 구매 처리
+	@PostMapping("/personal/purchase")
+	public String purchase(@ModelAttribute PurchaseListWrapper wrapper, Model model) {
+		List<Order> purchaseList = wrapper.getPurchaseList();
+		//log.info(purchaseList.toString());
+		
+		String orderNo = null;
+		if (purchaseList != null && !purchaseList.isEmpty()) {
+	        orderNo = productService.saveOrders(purchaseList);
+	    }
+	    
+	    return "redirect:/personal/payment?orderNo=" + orderNo;
 	}
 	
 	// 상품 목록

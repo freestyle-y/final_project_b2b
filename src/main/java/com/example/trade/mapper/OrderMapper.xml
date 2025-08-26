@@ -45,7 +45,7 @@
 	        o.update_date          AS updateDate,
 	        o.use_status           AS useStatus,
 	        a.main_address		   AS mainAddress
-	    FROM `order` o INNER JOIN address a ON o.address_no = a.address_no
+	    FROM `order` o LEFT JOIN address a ON o.address_no = a.address_no
 	    WHERE order_no = #{orderNo}
 	</select>
 	

@@ -143,7 +143,6 @@
     .image-slider {
 	    position: relative;
 	    width: 250px;
-	    height: 200px;
 	    margin: 20px 0;
 	    overflow: hidden;
 	}
@@ -154,24 +153,11 @@
 	    max-height: 200px; /* 이미지 최대 높이 */
 	    object-fit: contain;
 	    user-select: none;
-	    height: 100%;
-	}
-
-	.no-image-slide {
-	    width: 100%;
-	    height: 200px;
-	    display: flex;
-	    justify-content: center;
-	    align-items: center;
-	    color: #aaa;
-	    font-size: 16px;
-	    font-weight: bold;
 	}
 
 	.slides-container {
 	    display: flex;
 	    transition: transform 0.3s ease-in-out;
-	    height: 100%;
 	}
 	
 	.prev-btn, .next-btn {
@@ -225,18 +211,9 @@
 	    <button class="prev-btn">&lt;</button>
 	    
 	    <div class="slides-container">
-		    <c:choose>
-		        <c:when test="${not empty product.imagePaths}">
-		            <c:forEach var="imgPath" items="${product.imagePaths}">
-		                <img src="${pageContext.request.contextPath}${imgPath}" alt="${product.productName}" class="slide" />
-		            </c:forEach>
-		        </c:when>
-		        <c:otherwise>
-		            <div class="slide no-image-slide">
-		                이미지 없음
-		            </div>
-		        </c:otherwise>
-		    </c:choose>
+		     <c:forEach var="imgPath" items="${product.imagePaths}">
+	            <img src="${pageContext.request.contextPath}${imgPath}" alt="${product.productName}" class="slide" />
+	        </c:forEach>
 		</div>
 
 	    
@@ -538,11 +515,6 @@
             const totalSlides = $slides.length;
             let currentIndex = 0;
 
-            if (totalSlides > 1) {
-                // 슬라이더 동작
-                updateSlider(currentIndex);
-            }
-            
             function updateSlider(index) {
                 // 이미지 이동
                 $slidesContainer.css('transform', 'translateX(' + (-index * 100) + '%)');
