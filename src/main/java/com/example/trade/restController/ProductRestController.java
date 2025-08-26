@@ -227,7 +227,9 @@ public class ProductRestController {
 	// 재고 수량 수정
 	@PostMapping("/updateInventoryQuantity")
     public String updateInventoryQuantity(@RequestBody Inventory inventory) {
-        productService.updateInventoryQuantity(inventory.getInventoryId(), inventory.getQuantity());
+		log.info(inventory.toString());
+		String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        productService.updateInventoryQuantity(userId, inventory.getInventoryId(), inventory.getQuantity(), inventory.getProductNo(), inventory.getOptionNo());
         return "success";
 	}
 	

@@ -164,7 +164,7 @@ $(function () {
 	                '</div>' +
 
 	                '<div class="product-name">' + item.productName + '</div>' +
-	                '<div class="product-price">' + formattedPrice + ' 원</div>' +
+	                '<div class="product-price">' + formattedPrice + '</div>' +
 	                '<div class="product-status">' + item.productStatus + '</div>' +
 	            '</div>';
 
@@ -313,7 +313,7 @@ $(function () {
 	
 						<!-- 상품 정보 -->
 						<div class="product-name">${item.productName}</div>
-						<div class="product-price">${item.price} 원</div>
+						<div class="product-price">${item.price}</div>
 						<div class="product-status">${item.productStatus}</div>
 					</div>
 				</c:when>
@@ -343,7 +343,7 @@ $(function () {
 	
 							<!-- 상품 정보 -->
 							<div class="product-name">${item.productName}</div>
-							<div class="product-price">${item.price} 원</div>
+							<div class="product-price">${item.price}</div>
 							<div class="product-status">${item.productStatus}</div>
 						</div>
 					</a>

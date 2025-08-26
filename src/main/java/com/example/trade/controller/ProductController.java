@@ -355,7 +355,6 @@ public class ProductController {
 
 	    commonInfo.put("productNo", first.get("productNo"));
 	    commonInfo.put("productName", first.get("productName"));
-	    commonInfo.put("productStatus", first.get("productStatus"));
 	    
 	    // 이미지 경로 리스트는 공통 정보로 담기 (옵션마다 중복된 값이므로 첫 번째에서만 추출)
 	    List<String> imagePaths = (List<String>) first.get("imagePaths");
@@ -369,6 +368,7 @@ public class ProductController {
 	        opt.put("price", item.get("price"));
 	        opt.put("quantity", item.get("quantity"));
 	        opt.put("optionNo", item.get("optionNo"));
+	        opt.put("productStatus", item.get("productStatus"));
 	        optionList.add(opt);
 	    }
 	    

@@ -134,6 +134,8 @@ public interface ProductMapper {
 	List<Map<String, Object>> inventoryList();
 	// 재고 수정
 	int updateInventoryQuantity(@Param("inventoryId") int inventoryId, @Param("quantity") int quantity);
+	// 상품+옵션 상태 변경
+	int updateProductAndOptionStatus(@Param("userId") String userId, @Param("productNo") int productNo, @Param("optionNo") int optionNo, @Param("productStatus") String productStatus);
 	
 	// 상품 사용여부 변경
 	int updateProductUseStatus(@Param("userId") String userId, @Param("productNo") int productNo, @Param("useStatus") String useStatus);

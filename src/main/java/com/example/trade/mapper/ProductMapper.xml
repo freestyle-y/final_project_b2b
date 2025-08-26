@@ -19,30 +19,29 @@
 	<!-- 상품 목록(찜 많은순) -->
 	<select id="productListByWish" resultType="map">
 		SELECT
-			p.product_no AS productNo,
-		    p.product_name AS productName,
-		    p.product_status AS productStatus,
+		    p.product_no AS productNo,
+		    MIN(p.product_name) AS productName,
+		    CASE
+		        WHEN SUM(CASE WHEN p.product_status = 'GS002' THEN 1 ELSE 0 END) > 0 THEN 'GS002'
+		        ELSE 'GS003'
+		    END AS productStatus,
 		    IFNULL(w.wish_count, 0) AS wishCount
-		FROM 
-		    product p
+		FROM product p
 		LEFT JOIN (
 		    SELECT 
 		        product_no, 
 		        COUNT(*) AS wish_count
-		    FROM 
-		        wish_list
-		    WHERE 
-		        use_status = 'Y'
-		    GROUP BY 
-		        product_no
+		    FROM wish_list
+		    WHERE use_status = 'Y'
+		    GROUP BY product_no
 		) w ON p.product_no = w.product_no
 		WHERE 
 		    p.use_status = 'Y'
-		AND (p.product_status = 'GS002' OR p.product_status = 'GS003')
+		    AND p.product_status IN ('GS002', 'GS003')
 		GROUP BY 
 		    p.product_no
 		ORDER BY 
-		    wish_count DESC
+		    wishCount DESC
 		LIMIT 0, 10
 	</select>
 
@@ -84,19 +83,23 @@
 	<!-- 개인 찜 목록 보기 -->
 	<select id="wishList" parameterType="String" resultType="map">
 		SELECT 
-			p.product_no AS productNo, 
-		    p.product_name AS productName, 
-		    c.category_name AS categoryName, 
-		    p.use_status AS productUseStatus,
-		    p.product_status AS productStatus
+		    p.product_no AS productNo, 
+		    MIN(p.product_name) AS productName, 
+		    MIN(c.category_name) AS categoryName, 
+		    MIN(p.use_status) AS productUseStatus,
+		    CASE
+		        WHEN SUM(CASE WHEN p.product_status = 'GS002' THEN 1 ELSE 0 END) > 0 THEN 'GS002'
+		        ELSE 'GS003'
+		    END AS productStatus
 		FROM wish_list w
-		INNER JOIN product p
-		    ON w.product_no = p.product_no
-		INNER JOIN category c
-			 ON p.category_id = c.category_id
-		WHERE w.user_id = #{id}
-		  AND w.use_status = 'Y'
-		GROUP BY p.product_no;
+		INNER JOIN product p ON w.product_no = p.product_no
+		INNER JOIN category c ON p.category_id = c.category_id
+		WHERE 
+		    w.user_id = #{id}
+		    AND w.use_status = 'Y'
+		    AND p.product_status IN ('GS002', 'GS003')
+		GROUP BY 
+		    p.product_no
 	</select>
 	
 	<!-- 개인 장바구니 목록 보기 -->
@@ -198,29 +201,39 @@
 		    FROM category c1
 		    LEFT JOIN category c2 ON c1.parent_category = c2.category_id
 		    LEFT JOIN category c3 ON c2.parent_category = c3.category_id
+		),
+		product_filtered AS (
+		    SELECT *
+		    FROM product
+		    WHERE use_status = 'Y'
+		      AND product_status IN ('GS002', 'GS003')
+		),
+		product_status_agg AS (
+		    SELECT
+		        product_no,
+		        CASE
+		            WHEN SUM(CASE WHEN product_status = 'GS002' THEN 1 ELSE 0 END) > 0 THEN '판매중'
+		            ELSE '일시품절'
+		        END AS productStatus
+		    FROM product_filtered
+		    GROUP BY product_no
 		)
 		SELECT 
-		    p.product_no AS productNo,
-		    p.product_name AS productName,
-		    p.price,
-		    CASE p.product_status
-		        WHEN 'GS001' THEN '판매대기'
-		        WHEN 'GS002' THEN '판매중'
-		        WHEN 'GS003' THEN '일시품절'
-		        WHEN 'GS004' THEN '영구중단'
-		        ELSE '알수없음'
-		    END AS productStatus,
+		    pf.product_no AS productNo,
+		    MIN(pf.product_name) AS productName,
+		    MIN(pf.price) AS price,
+		    psa.productStatus,
 		    cp.category_id_lv1 AS categoryIdLv1,
 		    cp.category_id_lv2 AS categoryIdLv2,
 		    cp.category_id_lv3 AS categoryIdLv3
-		FROM product p
-		LEFT JOIN category_path cp 
-			ON p.category_id = cp.category_id
-		WHERE p.use_status = 'Y'
-			AND (p.product_status = 'GS002' OR p.product_status = 'GS003')
-		AND (#{parentId} IS NULL OR category_id_lv1 = #{parentId})
-		AND (#{middleId} IS NULL OR category_id_lv2 = #{middleId})
-		GROUP BY product_no
+		FROM product_filtered pf
+		LEFT JOIN category_path cp ON pf.category_id = cp.category_id
+		JOIN product_status_agg psa ON pf.product_no = psa.product_no
+		WHERE (#{parentId} IS NULL OR cp.category_id_lv1 = #{parentId})
+		  AND (#{middleId} IS NULL OR cp.category_id_lv2 = #{middleId})
+		GROUP BY pf.product_no, psa.productStatus, cp.category_id_lv1, cp.category_id_lv2, cp.category_id_lv3
+		ORDER BY pf.product_no
+
 	</select>
 	
 	<!-- 카테고리별 상품 목록 보기(전체) -->
@@ -253,22 +266,23 @@
 		    p.product_name AS productName,
 		    p.price,
 		    p.use_status AS useStatus,
-		    CASE p.product_status
-		        WHEN 'GS001' THEN '판매대기'
-		        WHEN 'GS002' THEN '판매중'
-		        WHEN 'GS003' THEN '일시품절'
-		        WHEN 'GS004' THEN '영구중단'
-		        ELSE '알수없음'
+		    CASE 
+		        WHEN MAX(CASE WHEN p.product_status = 'GS002' THEN 1 ELSE 0 END) = 1 THEN '판매중'
+		        ELSE
+		            CASE MAX(p.product_status)
+		                WHEN 'GS001' THEN '판매대기'
+		                WHEN 'GS003' THEN '일시품절'
+		                WHEN 'GS004' THEN '영구중단'
+		                ELSE '알수없음'
+		            END
 		    END AS productStatus,
 		    cp.category_id_lv1 AS categoryIdLv1,
 		    cp.category_id_lv2 AS categoryIdLv2,
 		    cp.category_id_lv3 AS categoryIdLv3
 		FROM product p
 		LEFT JOIN category_path cp 
-			ON p.category_id = cp.category_id
-		WHERE (#{parentId} IS NULL OR category_id_lv1 = #{parentId})
-		AND (#{middleId} IS NULL OR category_id_lv2 = #{middleId})
-		GROUP BY product_no
+		    ON p.category_id = cp.category_id
+		GROUP BY p.product_no
 	</select>
 	
 	<!-- 상품 상세 페이지 보기(개인용) -->
@@ -673,6 +687,16 @@
 	    WHERE product_no = #{productNo}
 	</update>
 	
+	<!-- 상품+옵션 상태 변경 -->
+	<update id="updateProductAndOptionStatus">
+		UPDATE product
+	    SET product_status = #{productStatus},
+	    	update_user = #{userId},
+	    	update_date = NOW()
+	    WHERE product_no = #{productNo}
+	    AND option_no = #{optionNo}
+	</update>
+
 	<!-- 상품 옵션 가격 변경 -->
 	<update id="updateProductOptionPrice">
 		UPDATE product

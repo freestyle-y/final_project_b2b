@@ -55,15 +55,10 @@
             border-color: #333;
         }
 
-        /* 재고 추가 버튼 위치 */
-        .add-button-container {
-            text-align: center;
-            margin-bottom: 20px;
-        }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        function updateQuantity(inventoryId) {
+        function updateQuantity(inventoryId, productNo, optionNo) {
             const $input = $('#qty-' + inventoryId);
             const quantity = $input.val();
 
@@ -78,6 +73,8 @@
                 contentType: 'application/json',
                 data: JSON.stringify({
                     inventoryId: inventoryId,
+                    productNo: productNo,
+                    optionNo: optionNo,
                     quantity: quantity
                 }),
                 success: function(response) {
@@ -186,7 +183,7 @@
                 filterItems($(this).val());
             });
 
-            $('.add-button-container').after($search);
+            $('h1').after($search);
 
             // 초기 렌더링
             renderPage(currentPage);
@@ -202,11 +199,6 @@
 
 <h1>재고 관리</h1>
 
-<!-- ✅ 재고 추가 버튼 -->
-<div class="add-button-container">
-    <button onclick="">+ 재고 추가</button>
-</div>
-
 <!-- 모달창 -->
 <div id="warehouseModal" style="display:none; position:fixed; top:30%; left:30%; background:#fff; border:1px solid #ccc; padding:20px; z-index:999;">
     <div id="warehouseModalBody"></div>
@@ -218,7 +210,6 @@
     <c:forEach var="item" items="${inventoryList}">
         <div class="inventory-item">
             <div><strong>상품명:</strong> <span class="product-name">${item.productName}</span></div>
-            <div><strong>옵션값:</strong> ${item.optionNameValue}</div>
             <div><strong>가격:</strong> <fmt:formatNumber value="${item.price}" type="number" groupingUsed="true" />원</div>
             <div><strong>주소:</strong>
 			    <c:choose>
@@ -233,7 +224,8 @@
             <div>
                 <label>수량:</label>
                 <input type="number" id="qty-${item.inventoryId}" value="${item.quantity}" min="0" />
-                <button type="button" onclick="updateQuantity(${item.inventoryId})">재고 수정</button>
+                <button type="button" onclick="updateQuantity(${item.inventoryId}, ${item.productNo}, ${item.optionNo})">재고 수정</button>
+
             </div>
 
             <div id="status-${item.inventoryId}" class="status-msg"></div>

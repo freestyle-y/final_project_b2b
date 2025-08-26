@@ -618,7 +618,13 @@ public class ProductService {
 	}
 	
 	// 재고 수정
-	public void updateInventoryQuantity(int inventoryId, int quantity) {
+	public void updateInventoryQuantity(String userId, int inventoryId, int quantity, int productNo, int optionNo) {
+		// 수량이 0이 아니면 -> 판매상태 판매중으로
+		if (quantity != 0) {
+			productMapper.updateProductAndOptionStatus(userId, productNo, optionNo, "GS002");
+		} else { // 수량이 0이면 -> 판매상태 일시품절으로
+			productMapper.updateProductAndOptionStatus(userId, productNo, optionNo, "GS003");
+		}
 		productMapper.updateInventoryQuantity(inventoryId, quantity);
 	}
 	

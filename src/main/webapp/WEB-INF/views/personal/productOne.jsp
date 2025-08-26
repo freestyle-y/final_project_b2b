@@ -143,6 +143,7 @@
     .image-slider {
 	    position: relative;
 	    width: 250px;
+	    height: 200px;
 	    margin: 20px 0;
 	    overflow: hidden;
 	}
@@ -153,12 +154,24 @@
 	    max-height: 200px; /* 이미지 최대 높이 */
 	    object-fit: contain;
 	    user-select: none;
+	    height: 100%;
 	}
 
+	.no-image-slide {
+	    width: 100%;
+	    height: 200px;
+	    display: flex;
+	    justify-content: center;
+	    align-items: center;
+	    color: #aaa;
+	    font-size: 16px;
+	    font-weight: bold;
+	}
 
 	.slides-container {
 	    display: flex;
 	    transition: transform 0.3s ease-in-out;
+	    height: 100%;
 	}
 	
 	.prev-btn, .next-btn {
@@ -212,10 +225,20 @@
 	    <button class="prev-btn">&lt;</button>
 	    
 	    <div class="slides-container">
-	        <c:forEach var="imgPath" items="${product.imagePaths}">
-	            <img src="${pageContext.request.contextPath}${imgPath}" alt="${product.productName}" class="slide" />
-	        </c:forEach>
-	    </div>
+		    <c:choose>
+		        <c:when test="${not empty product.imagePaths}">
+		            <c:forEach var="imgPath" items="${product.imagePaths}">
+		                <img src="${pageContext.request.contextPath}${imgPath}" alt="${product.productName}" class="slide" />
+		            </c:forEach>
+		        </c:when>
+		        <c:otherwise>
+		            <div class="slide no-image-slide">
+		                이미지 없음
+		            </div>
+		        </c:otherwise>
+		    </c:choose>
+		</div>
+
 	    
 	    <button class="next-btn">&gt;</button>
 	    
@@ -239,14 +262,16 @@
     <div>
         <label for="optionSelect">옵션 선택:</label><br/>
         <select id="optionSelect" name="option">
-            <c:forEach var="opt" items="${optionList}">
-                <option value="${opt.optionNo}" 
-                        data-price="${opt.price}" 
-                        data-quantity="${opt.quantity}">
-                    ${opt.optionNameValue}
-                </option>
-            </c:forEach>
-        </select>
+		    <c:forEach var="opt" items="${optionList}">
+		        <option value="${opt.optionNo}" 
+		                data-price="${opt.price}" 
+		                data-quantity="${opt.quantity}"
+		                <c:if test="${opt.quantity == 0}">disabled</c:if>>
+		            ${opt.optionNameValue} 
+		            <c:if test="${opt.quantity == 0}">(품절)</c:if>
+		        </option>
+		    </c:forEach>
+		</select>
     </div>
 
     <!-- 가격 및 적립금 표시 -->
@@ -513,6 +538,11 @@
             const totalSlides = $slides.length;
             let currentIndex = 0;
 
+            if (totalSlides > 1) {
+                // 슬라이더 동작
+                updateSlider(currentIndex);
+            }
+            
             function updateSlider(index) {
                 // 이미지 이동
                 $slidesContainer.css('transform', 'translateX(' + (-index * 100) + '%)');

@@ -104,16 +104,19 @@
     <h3>상품 정보</h3>
     <p><strong>상품명:</strong> ${product.productName}</p>
     <div class="form-group">
-	    <label><strong>상품 상태:</strong></label>
+	    <label><strong>상품 상태 변경:</strong></label>
 	    <select id="productStatusSelect" data-product-no="${product.productNo}">
-	        <c:forEach var="status" items="${productStatus}">
-	            <option value="${status.codeNumber}" 
-	                <c:if test="${status.codeNumber == product.productStatus}">selected</c:if>>
-	                ${status.codeName}
-	            </option>
-	        </c:forEach>
-	    </select>
+		    <c:forEach var="status" items="${productStatus}">
+		        <c:if test="${status.codeNumber == 'GS001' || status.codeNumber == 'GS004'}">
+		            <option value="${status.codeNumber}" 
+		                <c:if test="${status.codeNumber == product.productStatus}">selected</c:if>>
+		                ${status.codeName}
+		            </option>
+		        </c:if>
+		    </c:forEach>
+		</select>
 	</div>
+	
     <div class="image-slider">
 	    <button class="prev-btn">&lt;</button>
 	    
