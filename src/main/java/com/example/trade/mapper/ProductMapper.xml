@@ -110,6 +110,7 @@
 			p.product_no AS productNo, 
 			p.option_no AS optionNo,
 			p.product_name AS productName,
+			o.option_name AS optionName,
 			o.option_name_value AS optionNameValue,
 			sc.quantity,
 			i.quantity AS inventoryQuantity,
@@ -152,6 +153,12 @@
 	      AND use_status = 'Y'
 	</select>
 	
+	<!-- 최대 order_no 조회 -->
+	<select id="findMaxOrderNo" resultType="int">
+        SELECT COALESCE(MAX(order_no), 0)
+		FROM `order`
+    </select>
+    
 	<!-- 재고 조회 -->
 	<select id="findInventoryQuantity" resultType="int">
 	    SELECT quantity
@@ -540,6 +547,16 @@
 	<insert id="insertCart" parameterType="map">
 	    INSERT INTO shopping_cart (user_id, product_no, option_no, quantity, create_user, use_status)
 	    VALUES (#{userId}, #{productNo}, #{optionNo}, #{quantity}, #{userId}, 'Y')
+	</insert>
+	
+	<!-- 주문 데이터 삽입 -->
+	<insert id="insertOrder" parameterType="com.example.trade.dto.Order">
+		INSERT INTO `order` (order_no, sub_order_no, user_id, product_no, option_no, 
+				product_name, option_name, option_name_value, order_quantity, price,
+				order_status, delivery_status, create_user, use_status)
+        VALUES (#{orderNo}, #{subOrderNo}, #{userId}, #{productNo}, #{optionNo}, 
+        		#{productName}, #{optionName}, #{optionNameValue}, #{orderQuantity}, #{price},
+        		#{orderStatus}, #{deliveryStatus}, #{createUser}, 'Y')
 	</insert>
 	
 	<!-- 상품 요청 입력 -->
