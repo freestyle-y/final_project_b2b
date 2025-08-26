@@ -502,18 +502,46 @@
 				</div>
 
 				<!-- 을 서명 -->
-				<div class="signature-box">
-					<div class="signature-label">을 (수요자) 서명</div>
-					<div class="signature-field">
-						<c:choose>
-							<c:when test="${not empty buyerSign}">
-								<img src="${buyerSign.filepath}/${buyerSign.filename}"
-									alt="buyer signature"
-									style="max-width: 100%; max-height: 60px; object-fit: contain;" />
-							</c:when>
-							<c:otherwise>서명 없음</c:otherwise>
-						</c:choose>
-					</div>
+				<div class="signature-box" id="sig-buyer">
+				  <div class="signature-label">을 (수요자) 서명</div>
+				
+				  <c:choose>
+				    <c:when test="${not empty buyerSign}">
+				      <div class="signature-field">
+				        <img src="${buyerSign.filepath}/${buyerSign.filename}"
+				             alt="buyer signature"
+				             style="max-width:100%; max-height:60px; object-fit:contain;" />
+				      </div>
+				    </c:when>
+				
+				    <c:when test="${not empty supplierSign}">
+				      <form id="buyerSignForm" action="${pageContext.request.contextPath}/biz/contract/write"
+				            method="post"
+				            class="no-print">
+				
+				        <c:if test="${not empty _csrf}">
+				          <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+				        </c:if>
+				
+			
+				        <input type="hidden" name="contractNo" value="${contractOne[0].contractNo}"/>
+				        <input type="hidden" name="buyerSignature" id="buyerSignature"/>
+				
+				        <div class="signature-field" style="padding:0;">
+				          <canvas id="buyerCanvas" style="width:100%; height:60px;"></canvas>
+				        </div>
+				
+				        <div style="margin-top:8px;">
+				          <button type="button" class="btn" id="clearBuyer">지우기</button>
+				          <button type="submit" class="btn btn-primary" id="submitBuyer">서명 제출</button>
+				        </div>
+				      </form>
+				    </c:when>
+				
+				    <c:otherwise>
+				      <div class="signature-field">관리자 서명 완료 후 서명 가능합니다.</div>
+				    </c:otherwise>
+				  </c:choose>
 				</div>
 
 			</div>
@@ -695,14 +723,51 @@
     </div>
   </div>
   
-  <script>
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+  <script>    
     (function () {
-      const d = new Date();
-      const z = n => String(n).padStart(2, '0');
-      const today = d.getFullYear() + '-' + z(d.getMonth() + 1) + '-' + z(d.getDate());
-      document.getElementById('today').textContent = today;
-      document.getElementById('today2').textContent = today;
-    })();
+        const canvas = document.getElementById('buyerCanvas');
+        const form   = document.getElementById('buyerSignForm');
+        if (!canvas || !form) return; // 서명 폼이 없는 경우(이미 서명됨/관리자 미서명) 종료
+
+        // SignaturePad 생성
+        const sigPad = new SignaturePad(canvas, {
+          minWidth: 0.8,
+          maxWidth: 2.5,
+          throttle: 16
+        });
+
+        // 고해상도 디스플레이 대비 캔버스 리사이즈
+        function resizeCanvas() {
+          const ratio = Math.max(window.devicePixelRatio || 1, 1);
+          const rect = canvas.getBoundingClientRect();
+          canvas.width  = rect.width  * ratio;
+          canvas.height = rect.height * ratio;
+          const ctx = canvas.getContext('2d');
+          ctx.scale(ratio, ratio);
+          sigPad.clear();
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // 지우기
+        const clearBtn = document.getElementById('clearBuyer');
+        if (clearBtn) {
+          clearBtn.addEventListener('click', function () {
+            sigPad.clear();
+          });
+        }
+
+        // 제출 시 DataURL 저장
+        form.addEventListener('submit', function (e) {
+          if (sigPad.isEmpty()) {
+            e.preventDefault();
+            alert('서명을 입력해주세요.');
+            return;
+          }
+          document.getElementById('buyerSignature').value = sigPad.toDataURL('image/png');
+        });
+      })();
   </script>
   
   <div class="no-print">

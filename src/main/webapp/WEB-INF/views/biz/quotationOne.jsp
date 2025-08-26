@@ -40,13 +40,11 @@
     <c:forEach var="item" items="${quotationOne.items}" varStatus="status">
         <tr>
             <c:if test="${status.first}">
-                <!-- ✅ 첫 번째 행에서만 공통 정보 출력 + rowspan 적용 -->
                 <td rowspan="${rowCount}">${quotationOne.quotationNo}</td>
                 <td rowspan="${rowCount}">${quotationOne.status}</td>
                 <td rowspan="${rowCount}">${quotationOne.createUser}</td>
                 <td rowspan="${rowCount}">${quotationOne.createDate}</td>
             </c:if>
-            <!-- ✅ 상품별 정보는 매 행 출력 -->
             <td>${item.productName}</td>
             <td>${item.productOption}</td>
             <td>${item.productQuantity}</td>
@@ -54,27 +52,21 @@
         </tr>
     </c:forEach>
 </table>
-    <button type="submit">승인</button>
+	<c:if test="${quotationOne.status ne '승인'}">
+	    <button type="submit">승인</button>
+	</c:if>
 </form>
-
-<!-- 거절 Form -->
 <form action="${pageContext.request.contextPath}/biz/quotationReject" method="post" id="rejectForm" style="margin-top:20px;">
-    <c:if test="${not empty _csrf}">
-        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-    </c:if>
-    <!-- ✅ 거절 시에도 quotationNo만 전송 -->
     <input type="hidden" name="quotationNo" value="${quotationOne.quotationNo}"/>
-
-    <!-- 거절 버튼 / 사유 입력 -->
-    <button type="button" onclick="showRejectionBox()">거절</button>
-
-    <div id="rejectionBox" style="display:none; margin-top:10px;">
-        <label for="rejectionReason">거절 사유 입력:</label><br>
-        <textarea name="rejectionReason" id="rejectionReason" rows="4" cols="60" placeholder="사유를 입력해주세요" required></textarea><br>
-        <button type="submit">제출</button>
-    </div>
+    <c:if test="${quotationOne.status ne '승인거절'}">
+	    <button type="button" onclick="showRejectionBox()">거절</button>
+	    <div id="rejectionBox" style="display:none; margin-top:10px;">
+	        <label for="rejectionReason">거절 사유 입력:</label><br>
+	        <textarea name="rejectionReason" id="rejectionReason" rows="4" cols="60" placeholder="사유를 입력해주세요" required></textarea><br>
+	        <button type="submit">제출</button>
+	    </div>
+    </c:if>
 </form>
-
 <!-- 공통 풋터 -->
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>
 

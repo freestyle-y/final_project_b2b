@@ -76,6 +76,105 @@
 		WHERE board_no = #{boardNo}
 	</update>
 
+	<!-- QNA 목록 조회 -->
+	<select id="selectQNAListById" parameterType="com.example.trade.dto.Page" resultType="map">
+		SELECT
+			board_no AS boardNo,
+			board_title AS boardTitle,
+			board_content AS boardContent,
+			create_user AS createUser,
+			create_date AS createDate,
+			update_user AS updateUser,
+			update_date AS updateDate,
+			use_status AS useStatus,
+			view_count AS viewCount
+		FROM board
+		WHERE board_code = 'BC002'
+		<if test="searchWord != null and searchWord != ''">
+			AND board_title LIKE CONCAT('%', #{searchWord}, '%')
+		</if>
+		ORDER BY board_no DESC
+		LIMIT #{beginRow}, #{rowPerPage}
+	</select>
+	
+	<!-- QNA 목록 전체 행 수 조회 -->
+	<select id="selectQNATotalCount" parameterType="com.example.trade.dto.Page" resultType="int">
+		SELECT COUNT(*)
+		FROM board
+		WHERE board_code = 'BC002'
+		<if test="searchWord != null and searchWord != ''">
+			AND board_title LIKE CONCAT('%', #{searchWord}, '%')
+		</if>
+	</select>
+	
+	<!-- QNA 상세 조회 -->
+	<select id="selectQNAOne" parameterType="com.example.trade.dto.Board" resultType="map">
+		SELECT
+			board_no AS boardNo,
+			board_title AS boardTitle,
+			board_content AS boardContent,
+			board_code AS boardCode,
+			create_user AS createUser,
+			create_date AS createDate,
+			update_user AS updateUser,
+			update_date AS updateDate,
+			use_status AS useStatus,
+			view_count AS viewCount
+		FROM board
+		WHERE board_no = #{boardNo}
+		AND board_code = 'BC002'
+	</select>
+	
+	<!-- 댓글 조회 -->
+	<select id="selectCommentByBoardNo" parameterType="int" resultType="map">
+		SELECT
+			comment_no AS commentNo,
+			parent_comment_no AS parentCommentNo,
+			comment_content AS commentContent,
+			board_no AS boardNo,
+			create_user AS createUser,
+			create_date AS createDate,
+			update_user AS updateUser,
+			update_date AS updateDate,
+			use_status AS useStatus
+		FROM comment
+		WHERE board_no = #{boardNo}
+		AND use_status = 'Y'
+		ORDER BY COALESCE(parent_comment_no, comment_no), comment_no
+	</select>
+	
+	<!-- 댓글 등록 -->
+	<insert id="insertComment" parameterType="com.example.trade.dto.Comment">
+		INSERT INTO comment (
+			parent_comment_no, comment_content, board_no, create_user
+		)
+		VALUES (
+			#{parentCommentNo}, #{commentContent}, #{boardNo}, #{createUser}
+		)
+	</insert>
+	
+	<!-- 댓글 수정 -->
+	<update id="updateComment" parameterType="com.example.trade.dto.Comment">
+		UPDATE comment SET
+			comment_content = #{commentContent},
+			update_user = #{updateUser},
+			update_date = NOW()
+		WHERE comment_no = #{commentNo}
+		AND board_no = #{boardNo}
+		AND use_status = 'Y'
+	</update>
+	
+	<!-- 댓글 삭제 -->
+	<update id="deleteComment">
+		UPDATE comment SET
+			update_user = #{updateUser},
+			update_date = NOW(),
+			use_status = 'N'
+		WHERE comment_no = #{commentNo}
+		AND board_no = #{boardNo}
+		AND create_user = #{updateUser}
+	</update>
+	
 	<!-- 로그인 이력 조회 -->
 	<select id="selectLoginHistory" resultType="map">
 		SELECT

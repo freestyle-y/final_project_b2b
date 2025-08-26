@@ -423,8 +423,7 @@ body {
 
 	<div class="toolbar no-print">
 		<button class="btn btn-primary" onclick="window.print()">PDF/인쇄</button>
-		<a class="btn"
-			href="${pageContext.request.contextPath}/admin/contractList">목록</a>
+		<a class="btn" href="${pageContext.request.contextPath}/admin/contractList">목록</a>
 	</div>
 
 	<div class="contract-container">
