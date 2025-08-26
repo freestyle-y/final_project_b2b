@@ -57,7 +57,8 @@ public class OrderService {
     }
 
     @Transactional
-    public void saveMethodAndPoints(String orderNo, String methodKor, int usePoint) {
+    public void saveMethodAndPoints(String orderNo, String methodKor, int usePoint, Integer addressNo) {
+        orderMapper.updateDeliveryAddress(orderNo, addressNo);
         orderMapper.savePaymentMethod(orderNo, methodKor);
         if (usePoint > 0) orderMapper.insertUsedPoint(orderNo, usePoint);
     }

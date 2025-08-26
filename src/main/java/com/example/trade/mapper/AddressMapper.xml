@@ -38,6 +38,7 @@
     <select id="getMainAddress" resultType="com.example.trade.dto.Address">
     	SELECT
     		 user_id AS userId
+    		,address_no AS addressNo
     		,postal
     		,address
     		,detail_address AS detailAddress

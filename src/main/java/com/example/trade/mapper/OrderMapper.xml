@@ -173,6 +173,12 @@
 		)	
 	</insert>
 	
+	<update id="updateDeliveryAddress">
+	    UPDATE `order`
+	    SET address_no = #{addressNo}
+	    WHERE order_no = #{orderNo}
+	</update>
+	
 	<!-- 결제 방식 입력 -->
 	<update id="savePaymentMethod">
 		UPDATE `order`

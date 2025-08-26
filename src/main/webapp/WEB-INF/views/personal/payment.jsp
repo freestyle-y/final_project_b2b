@@ -150,7 +150,7 @@ h1, h3 {
 			<p>기본 배송지: <strong id="selectedAddress">${add.address} 	${add.detailAddress }</strong></p>
 			<p>별칭 : <strong id="selectedAddressNickname">${add.nickname}</strong></p>
 		</c:forEach>
-		<input type="hidden" id="selectedAddressId" name="addressNo" value="${orderList[0].addressNo}">
+		<input type="hidden" id="selectedAddressId" name="addressNo" value="${mainAddress[0].addressNo}">
 		<button type="button" class="btn" onclick="openAddressPopup()">배송지 변경</button>
 
 		<h3>배송 요청사항</h3>
@@ -165,223 +165,180 @@ h1, h3 {
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
-	function getPointRuleError(usePoint, total, available) {
-		// 포인트 사용 안 하면 통과
-		if (!usePoint || usePoint <= 0) return "";
-		
-		if (total < 10000) return "물품 가격이 10,000원 이상이어야 적립금을 사용할 수 있습니다.";
-		if (usePoint < 1000) return "적립금은 최소 1,000원 이상 사용 가능합니다.";
-		if (usePoint % 100 !== 0) return "적립금은 100원 단위로만 사용 가능합니다.";
-		
-		const maxPoint = Math.floor((total * 0.1) / 100) * 100; // 구매가 10%를 100원 단위로 내림
-		if (usePoint > maxPoint) return `적립금은 구매 가격의 10%(${maxPoint}원)를 넘을 수 없습니다.`;
-		if (usePoint > available) return "보유 적립금을 초과했습니다.";
-		
-		return "";
-	}
-	function updateFinalAmount() {
-		const total     = parseInt(document.getElementById("totalAmount").innerText);
-		const available = parseInt(document.getElementById("availablePoints").value);
-		let usePoint    = parseInt(document.getElementById("usePoints").value || 0);
-		
-		if (usePoint < 0) usePoint = 0;
-		
-		const err = getPointRuleError(usePoint, total, available);
-		const errorDiv = document.getElementById("pointError");
-		const payBtn = document.getElementById("payBtn");
+  function getPointRuleError(usePoint, total, available) {
+    if (!usePoint || usePoint <= 0) return "";
+    if (total < 10000) return "물품 가격이 10,000원 이상이어야 적립금을 사용할 수 있습니다.";
+    if (usePoint < 1000) return "적립금은 최소 1,000원 이상 사용 가능합니다.";
+    if (usePoint % 100 !== 0) return "적립금은 100원 단위로만 사용 가능합니다.";
+    const maxPoint = Math.floor((total * 0.1) / 100) * 100;
+    if (usePoint > maxPoint) return `적립금은 구매 가격의 10%(${maxPoint}원)를 넘을 수 없습니다.`;
+    if (usePoint > available) return "보유 적립금을 초과했습니다.";
+    return "";
+  }
 
-		if (err) {
-			errorDiv.textContent = err;
-			document.getElementById("finalAmount").innerText = total; // 차감 금지
-			payBtn.disabled = true;                                   // 버튼 막기
-		} else {
-			errorDiv.textContent = "";
-			// 클램핑(보유 한도 내, 10% 내, 100원 단위 유지)
-			const maxPoint = Math.floor((total * 0.1) / 100) * 100;
-			usePoint = Math.min(usePoint, available, maxPoint);
-			usePoint = Math.floor(usePoint / 100) * 100;
-			document.getElementById("usePoints").value = usePoint;
-			document.getElementById("finalAmount").innerText = total - usePoint;
-			
-			payBtn.disabled = false;
-		}
-		refreshPointControls();
-	}
-	
-	function refreshPointControls() {
-		const total = parseInt(document.getElementById("totalAmount").innerText);
-		const available  = parseInt(document.getElementById("availablePoints").value);
-		const useInput   = document.getElementById("usePoints");
-		const allBtn     = document.getElementById("useAllBtn");
-		const maxNote    = document.getElementById("pointMaxNote");
-		
-		const maxByRate  = Math.floor((total * 0.1) / 100) * 100; // 10%를 100원 단위 내림
-		const maxUsable  = Math.min(available, maxByRate);
-		const eligible   = (total >= 10000) && (maxUsable >= 1000);
-		
-		useInput.disabled = !eligible;
-		allBtn.disabled   = !eligible;
-	}
-	
-	function useAllPoints() {
-		const total     = parseInt(document.getElementById("totalAmount").innerText);
-		const available = parseInt(document.getElementById("availablePoints").value);
-		
-		// ❌ 1만원 미만이면 사용 불가: 0으로 고정하고 종료
-		if (total < 10000) {
-			document.getElementById("usePoints").value = 0;
-			updateFinalAmount();
-			return;
-		}
-		
-		// 총액의 10% 한도(100원 단위 내림)와 보유 포인트 중 작은 값
-		const tenPctCap = Math.floor((total * 0.1) / 100) * 100;
-		let usePoint    = Math.min(available, tenPctCap);
-		
-		// 100원 단위로 내림
-		usePoint = Math.floor(usePoint / 100) * 100;
-		
-		// ❌ 최소 1,000원 미만이면 사용하지 않음
-		if (usePoint < 1000) {
-			document.getElementById("usePoints").value = 0;
-			updateFinalAmount();
-			return;
-		}
-		
-		document.getElementById("usePoints").value = usePoint;
-		updateFinalAmount();
-	}
-	
-	window.onload = function() {
-	    document.querySelectorAll("input[name='paymentMethod']").forEach(radio => {
-	        radio.addEventListener("change", function() {
-	            const bankInfo = document.getElementById("bankInfo");
-	            const cardInfo = document.getElementById("cardInfo");
-	
-	            bankInfo.style.display = (this.value === "bank") ? "block" : "none";
-	            cardInfo.style.display = (this.value === "card") ? "block" : "none";
-	        });
-	    });
-	
-	    document.getElementById("usePoints").addEventListener("input", updateFinalAmount);
-	    updateFinalAmount();
-	    refreshPointControls(); 
-	};
-	
-	function openAddressPopup() {
-	    let userId = "${orderList[0].userId}";
-	    window.open("/personal/addressPopup?user_id=" + userId, "addressPopup", "width=800,height=600,scrollbars=yes");
-	}
-	
-	function showPasswordPopup() {
-		const method = document.querySelector("input[name='paymentMethod']:checked").value;
-		if (method === "bank") {
-			  updateDeliveryRequest()
-			    .done(function () {
-			      const total     = parseInt(document.getElementById("totalAmount").innerText);
-			      const available = parseInt(document.getElementById("availablePoints").value);
-			      let usePoint    = parseInt(document.getElementById("usePoints").value || 0);
+  function updateFinalAmount() {
+    const total = parseInt(document.getElementById("totalAmount").innerText);
+    const available = parseInt(document.getElementById("availablePoints").value);
+    let usePoint = parseInt(document.getElementById("usePoints").value || 0);
+    if (usePoint < 0) usePoint = 0;
+    const err = getPointRuleError(usePoint, total, available);
+    const errorDiv = document.getElementById("pointError");
+    const payBtn = document.getElementById("payBtn");
+    if (err) {
+      errorDiv.textContent = err;
+      document.getElementById("finalAmount").innerText = total;
+      payBtn.disabled = true;
+    } else {
+      errorDiv.textContent = "";
+      const maxPoint = Math.floor((total * 0.1) / 100) * 100;
+      usePoint = Math.min(usePoint, available, maxPoint);
+      usePoint = Math.floor(usePoint / 100) * 100;
+      document.getElementById("usePoints").value = usePoint;
+      document.getElementById("finalAmount").innerText = total - usePoint;
+      payBtn.disabled = false;
+    }
+    refreshPointControls();
+  }
 
-			      const err = getPointRuleError(usePoint, total, available);
-			      if (err) { alert(err); return; }
+  function refreshPointControls() {
+    const total = parseInt(document.getElementById("totalAmount").innerText);
+    const available = parseInt(document.getElementById("availablePoints").value);
+    const maxByRate = Math.floor((total * 0.1) / 100) * 100;
+    const maxUsable = Math.min(available, maxByRate);
+    const eligible = (total >= 10000) && (maxUsable >= 1000);
+    document.getElementById("usePoints").disabled = !eligible;
+    document.getElementById("useAllBtn").disabled = !eligible;
+  }
 
-			      // 규칙에 맞춰 클램프
-			      const maxPoint = Math.floor((total * 0.1) / 100) * 100;
-			      usePoint = Math.max(0, Math.min(usePoint, available, maxPoint));
-			      usePoint = Math.floor(usePoint / 100) * 100;
+  function useAllPoints() {
+    const total = parseInt(document.getElementById("totalAmount").innerText);
+    const available = parseInt(document.getElementById("availablePoints").value);
+    if (total < 10000) {
+      document.getElementById("usePoints").value = 0;
+      updateFinalAmount();
+      return;
+    }
+    const tenPctCap = Math.floor((total * 0.1) / 100) * 100;
+    let usePoint = Math.min(available, tenPctCap);
+    usePoint = Math.floor(usePoint / 100) * 100;
+    if (usePoint < 1000) {
+      document.getElementById("usePoints").value = 0;
+      updateFinalAmount();
+      return;
+    }
+    document.getElementById("usePoints").value = usePoint;
+    updateFinalAmount();
+  }
 
-			      $.ajax({
-			        type: "POST",
-			        url: "/personal/payment/saveMethodAndPoints",
-			        contentType: "application/json",
-			        data: JSON.stringify({
-			          orderNo: "${orderList[0].orderNo}",
-			          paymentMethod: "bank",
-			          usePoint: usePoint
-			        }),
-			        success: function () {
-			          alert("계좌이체가 선택되었습니다. 기업 계좌로 입금 후 주문이 완료됩니다.");
-			          location.href = "/personal/orderList";
-			        },
-			        error: function () { alert("결제수단/적립금 저장 실패"); }
-			      });
-			    })
-			    .fail(function () { alert("배송요청 저장 실패"); });
-			  return;
-			}
+  window.onload = function () {
+    document.querySelectorAll("input[name='paymentMethod']").forEach(radio => {
+      radio.addEventListener("change", function () {
+        document.getElementById("bankInfo").style.display = (this.value === "bank") ? "block" : "none";
+        document.getElementById("cardInfo").style.display = (this.value === "card") ? "block" : "none";
+      });
+    });
+    document.getElementById("usePoints").addEventListener("input", updateFinalAmount);
+    updateFinalAmount();
+    refreshPointControls();
+  };
 
-		
-		// ✅ 포인트 규칙 검사
-		const total     = parseInt(document.getElementById("totalAmount").innerText);
-		const available = parseInt(document.getElementById("availablePoints").value);
-		const usePoint  = parseInt(document.getElementById("usePoints").value || 0);
-		const err = getPointRuleError(usePoint, total, available);
-		if (err) { alert(err); return; }
-		
-		const userId = "${orderList[0].userId}";
-			$.ajax({
-				type: "GET"
-				,url: "/personal/payment/simplePassword"
-				,data: { userId }
-				,dataType: "json"
-				,success: function(hasPassword) {
-					window.open("/personal/passwordPopup?userId=" + userId, "passwordPopup", "width=400, height=300");
-				},
-			error: function() { alert("비밀번호 등록 유무 확인 중 오류 발생"); }
-			});
-	}
-	
-	function updateDeliveryRequest() {
-		const orderNo = "${orderList[0].orderNo}";
-		const deliveryRequest = document.querySelector("textarea[name='deliveryRequest']").value.trim();
-		
-		return $.ajax({
-			type: "POST"
-			,url: "/personal/payment/deliveryRequest"
-			,data: JSON.stringify({ orderNo: orderNo, deliveryRequest: deliveryRequest })
-			,contentType: "application/json"
-		});
-	}
-	
-	// 팝업에서 호출할 결제 완료 함수
-function completePayment() {
-  updateDeliveryRequest()
-    .done(function () {
-      const method    = document.querySelector("input[name='paymentMethod']:checked").value;
-      const total     = parseInt(document.getElementById("totalAmount").innerText);
+  function openAddressPopup() {
+    let userId = "${orderList[0].userId}";
+    window.open("/personal/addressPopup?user_id=" + userId, "addressPopup", "width=800,height=600,scrollbars=yes");
+  }
+
+  function updateDeliveryRequest() {
+    const orderNo = "${orderList[0].orderNo}";
+    const deliveryRequest = document.querySelector("textarea[name='deliveryRequest']").value.trim();
+    return $.ajax({
+      type: "POST",
+      url: "/personal/payment/deliveryRequest",
+      data: JSON.stringify({ orderNo, deliveryRequest }),
+      contentType: "application/json"
+    });
+  }
+
+  function showPasswordPopup() {
+    const method = document.querySelector("input[name='paymentMethod']:checked").value;
+    const addressNo = parseInt(document.getElementById("selectedAddressId").value);
+    if (method === "bank") {
+      updateDeliveryRequest().done(function () {
+        const total = parseInt(document.getElementById("totalAmount").innerText);
+        const available = parseInt(document.getElementById("availablePoints").value);
+        let usePoint = parseInt(document.getElementById("usePoints").value || 0);
+        const err = getPointRuleError(usePoint, total, available);
+        if (err) { alert(err); return; }
+        const maxPoint = Math.floor((total * 0.1) / 100) * 100;
+        usePoint = Math.max(0, Math.min(usePoint, available, maxPoint));
+        usePoint = Math.floor(usePoint / 100) * 100;
+        $.ajax({
+          type: "POST",
+          url: "/personal/payment/saveMethodAndPoints",
+          contentType: "application/json",
+          data: JSON.stringify({
+            orderNo: "${orderList[0].orderNo}",
+            paymentMethod: "bank",
+            usePoint: usePoint,
+            addressNo: addressNo
+          }),
+          success: function () {
+            alert("계좌이체가 선택되었습니다. 기업 계좌로 입금 후 주문이 완료됩니다.");
+            location.href = "/personal/orderList";
+          },
+          error: function () { alert("결제수단/적립금 저장 실패"); }
+        });
+      }).fail(function () { alert("배송요청 저장 실패"); });
+      return;
+    }
+
+    const total = parseInt(document.getElementById("totalAmount").innerText);
+    const available = parseInt(document.getElementById("availablePoints").value);
+    const usePoint = parseInt(document.getElementById("usePoints").value || 0);
+    const err = getPointRuleError(usePoint, total, available);
+    if (err) { alert(err); return; }
+
+    const userId = "${orderList[0].userId}";
+    $.ajax({
+      type: "GET",
+      url: "/personal/payment/simplePassword",
+      data: { userId },
+      dataType: "json",
+      success: function (hasPassword) {
+        window.open("/personal/passwordPopup?userId=" + userId, "passwordPopup", "width=400, height=300");
+      },
+      error: function () { alert("비밀번호 등록 유무 확인 중 오류 발생"); }
+    });
+  }
+
+  function completePayment() {
+    updateDeliveryRequest().done(function () {
+      const method = document.querySelector("input[name='paymentMethod']:checked").value;
+      const total = parseInt(document.getElementById("totalAmount").innerText);
       const available = parseInt(document.getElementById("availablePoints").value);
-      let usePoint    = parseInt(document.getElementById("usePoints").value || 0);
-
-      // 1) 규칙 검사
+      const addressNo = parseInt(document.getElementById("selectedAddressId").value);
+      let usePoint = parseInt(document.getElementById("usePoints").value || 0);
       const err = getPointRuleError(usePoint, total, available);
       if (err) { alert(err); return; }
-
-      // 2) 클램프(보유/10%/100원 단위)
       const maxPoint = Math.floor((total * 0.1) / 100) * 100;
       usePoint = Math.max(0, Math.min(usePoint, available, maxPoint));
       usePoint = Math.floor(usePoint / 100) * 100;
 
-      // 3) 결제 데이터
       const data = {
         orderNo: "${orderList[0].orderNo}",
         name: "${orderList[0].productName}",
         totalPrice: Math.max(0, total - usePoint),
         usePoint: usePoint,
         userId: "${orderList[0].userId}",
-        paymentMethod: method
+        paymentMethod: method,
+        addressNo: addressNo
       };
 
-      // 카드결제: 저장만 하고 끝
       if (method === "card") {
         $.ajax({
           type: "POST",
           url: "/personal/payment/saveMethodAndPoints",
           contentType: "application/json",
-          data: JSON.stringify({
-            orderNo: data.orderNo,
-            paymentMethod: "card",
-            usePoint: data.usePoint
-          }),
+          data: JSON.stringify(data),
           success: function () {
             alert("카드결제가 완료되었습니다.");
             location.href = "/personal/orderList";
@@ -391,17 +348,12 @@ function completePayment() {
         return;
       }
 
-      // 카카오페이: 먼저 저장 → 저장 성공 시 ready 호출
       if (method === "kakaopay") {
         $.ajax({
           type: "POST",
           url: "/personal/payment/saveMethodAndPoints",
           contentType: "application/json",
-          data: JSON.stringify({
-            orderNo: data.orderNo,
-            paymentMethod: "kakaopay",
-            usePoint: data.usePoint
-          }),
+          data: JSON.stringify(data),
           success: function () {
             $.ajax({
               type: "POST",
@@ -412,7 +364,7 @@ function completePayment() {
                 name: data.name,
                 totalPrice: data.totalPrice
               }),
-              success: function(response) {
+              success: function (response) {
                 if (response.next_redirect_pc_url) {
                   const win = window.open(
                     response.next_redirect_pc_url,
@@ -426,12 +378,8 @@ function completePayment() {
                   alert("카카오페이 결제 요청 실패");
                 }
               },
-              error: function(xhr) {
-                alert(
-                  (xhr.responseJSON && xhr.responseJSON.message)
-                  ? xhr.responseJSON.message
-                  : "카카오페이 결제 중 오류 발생"
-                );
+              error: function (xhr) {
+                alert((xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : "카카오페이 결제 중 오류 발생");
               }
             });
           },
@@ -441,40 +389,36 @@ function completePayment() {
         });
         return;
       }
-
-      // (참고) 계좌이체는 showPasswordPopup() 쪽에서 이미 저장 후 안내 처리됨
-    })
-    .fail(function () {
+    }).fail(function () {
       alert("배송요청 저장 실패");
     });
-}
-	
-	function addCard() {
-		const formData = {
-			userId: "${orderList[0].userId}",
-			financialInstitution: document.querySelector("input[name='financialInstitution']").value,
-			accountNumber: document.querySelector("input[name='accountNumber']").value,
-			cardExpiration: document.querySelector("input[name='cardExpiration']").value,
-			cardCvc: document.querySelector("input[name='cardCvc']").value,
-			cardPassword: document.querySelector("input[name='cardPassword']").value,
-			isDefault: document.querySelector("input[name='isDefault']").checked ? "Y" : "N"
-		};
-	
-		$.ajax({
-			type: "POST",
-			url: "/personal/payment/addCard"
-			,data: JSON.stringify(formData)
-			,contentType: "application/json"
-			,success: function() {
-				alert("카드가 등록되었습니다.");
-				location.reload();
-			},
-			error: function(xhr, status, error) {
-				console.error("카드 등록 실패:", error);
-				alert("카드 등록 중 오류가 발생했습니다.");
-			}
-		});
-	 }
+  }
+
+  function addCard() {
+    const formData = {
+      userId: "${orderList[0].userId}",
+      financialInstitution: document.querySelector("input[name='financialInstitution']").value,
+      accountNumber: document.querySelector("input[name='accountNumber']").value,
+      cardExpiration: document.querySelector("input[name='cardExpiration']").value,
+      cardCvc: document.querySelector("input[name='cardCvc']").value,
+      cardPassword: document.querySelector("input[name='cardPassword']").value,
+      isDefault: document.querySelector("input[name='isDefault']").checked ? "Y" : "N"
+    };
+    $.ajax({
+      type: "POST",
+      url: "/personal/payment/addCard",
+      data: JSON.stringify(formData),
+      contentType: "application/json",
+      success: function () {
+        alert("카드가 등록되었습니다.");
+        location.reload();
+      },
+      error: function (xhr, status, error) {
+        console.error("카드 등록 실패:", error);
+        alert("카드 등록 중 오류가 발생했습니다.");
+      }
+    });
+  }
 </script>
 </body>
 </html>

@@ -58,17 +58,17 @@ public class PaymentRestController {
 
     // ✅ 결제 수단 및 포인트 저장
     @PostMapping("/saveMethodAndPoints")
-    public void saveMethodAndPoints(@RequestBody Map<String, Object> req) {
-        String orderNo = (String) req.get("orderNo");
-        String paymentMethod = (String) req.get("paymentMethod");
-        int usePoint = req.get("usePoint") == null ? 0 : Integer.parseInt(req.get("usePoint").toString());
-
+    public void saveMethodAndPoints(@RequestBody Map<String, Object> request) {
+        String orderNo = (String) request.get("orderNo");
+        String paymentMethod = (String) request.get("paymentMethod");
+        int usePoint = request.get("usePoint") == null ? 0 : Integer.parseInt(request.get("usePoint").toString());
+        Integer addressNo = request.get("addressNo") != null ? Integer.parseInt(request.get("addressNo").toString()) : null;
         String methodKor = switch (paymentMethod) {
             case "kakaopay" -> "카카오페이";
             case "bank"     -> "계좌이체";
             case "card"     -> "카드결제";
             default         -> "기타";
         };
-        orderService.saveMethodAndPoints(orderNo, methodKor, usePoint);
+        orderService.saveMethodAndPoints(orderNo, methodKor, usePoint, addressNo);
     }
 }

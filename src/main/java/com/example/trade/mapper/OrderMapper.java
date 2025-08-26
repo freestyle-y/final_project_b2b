@@ -26,4 +26,5 @@ public interface OrderMapper {
 	int savePaymentMethod(@Param("orderNo") String orderNo
 						 ,@Param("methodKor") String methodKor);
 	int updateOrderStatus(String orderNo, String subOrderNo);
+	void updateDeliveryAddress(String orderNo, Integer addressNo);
 }
