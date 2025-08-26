@@ -1,5 +1,6 @@
 package com.example.trade.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -28,6 +29,8 @@ public class Contract {
 		if (createDate == null) return "";
 		return createDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 	}
+	private BigDecimal totalFp;
+	private BigDecimal totalDp;	
 	// comm_tbl 조인
 	private String codeName;
 	

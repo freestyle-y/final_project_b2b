@@ -59,9 +59,16 @@
             </tr>
         </c:forEach>
     </table>
-    <button type="submit">계약서 작성</button>
-    <button type="button" id="modifyBtn" onclick="modifyQuotation()">수정</button>
-    <button type="button" id="deleteBtn" onclick="deleteQuotation()">삭제</button>    
+    <c:if test="${adminQuotationOne.status eq '승인' }">
+    	<button type="submit">계약서 작성</button>
+    </c:if>
+    <c:if test="${adminQuotationOne.status eq '승인거절' }">
+    	<button type="button" onclick="reWriteQuotation()">견적서 재작성</button>
+    </c:if>
+    <c:if test="${adminQuotationOne.status eq '승인전'}">
+	    <button type="button" id="modifyBtn" onclick="modifyQuotation()">수정</button>
+	    <button type="button" id="deleteBtn" onclick="deleteQuotation()">삭제</button>    
+    </c:if>
 </form>
 <script>
 	function modifyQuotation() {
@@ -77,6 +84,11 @@
 		form.method = "post";
 		form.submit();
 	}
+	
+    function reWriteQuotation() {
+        const productRequestNo = document.querySelector("input[name='productRequestNo']").value;
+        location.href = "/admin/quotationList?productRequestNo=" + productRequestNo;
+    }
 </script>
 <!-- 공통 풋터 -->
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>

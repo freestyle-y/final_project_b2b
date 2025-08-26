@@ -8,5 +8,6 @@
 		 	,final_payment AS finalPayment
 		 	,contract_no AS contractNo
 		FROM contract
+		
 	</select>
 </mapper>
