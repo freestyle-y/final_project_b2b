@@ -38,4 +38,8 @@ public interface ContractMapper {
 
 	void updateContract(Contract contract);
 
+	void updateDownPayment(int contractNo);
+
+	void updateFinalPayment(int contractNo);
+
 }

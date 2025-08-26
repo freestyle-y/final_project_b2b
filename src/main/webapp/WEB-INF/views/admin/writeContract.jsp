@@ -431,7 +431,7 @@ body {
 	<c:if test="${not empty contractOne}">
 		<c:set var="first" value="${contractOne[0]}" />
 	</c:if>
-	<p>quotationNo: ${quotationNo}</p>
+	<input type="hidden" name="quotationNo" value="${quotationNo}" />
 		<div class="contract-container">
 			<div class="contract-header">
 				<div class="company-logo">
@@ -442,6 +442,10 @@ body {
 			</div>
 			<div class="document-info">
 				<div class="info-left">
+					<div class="info-item">
+			 			견적서 번호: ${quotationNo}
+			 			<br>
+					</div>
 					<div class="info-item">
 						계약일자: <span id="today"></span>
 					</div>

@@ -48,7 +48,9 @@
 			,quotation_no AS quotationNo
 			,down_payment AS downPayment
 			,down_payment_status AS downPaymentStatus
+			,down_payment_date AS downPaymentDate
 			,final_payment AS finalPayment
+			,final_payment_status AS finalPaymentStatus
 			,final_payment_date AS finalPaymentDate
 			,create_user AS createUser
 			,create_date AS createDate
@@ -65,10 +67,11 @@
         pr.product_name AS productName,
         pr.product_option AS productOption,
         pr.product_quantity AS productQuantity,
-        qi.price AS price
+        qi.price AS price,
+        q.create_date AS quotationCreateDate
     FROM contract c
     JOIN quotation q ON c.quotation_no = q.quotation_no
-    JOIN quotation_item qi ON q.quotation_no = qi.quotation_no
+    LEFT JOIN quotation_item qi ON q.quotation_no = qi.quotation_no
     JOIN product_request pr 
         ON qi.product_request_no = pr.product_request_no
        AND qi.sub_product_request_no = pr.sub_product_request_no
@@ -139,9 +142,26 @@
 <update id="updateContract" parameterType="com.example.trade.dto.Contract">
 	UPDATE contract
 	SET 
-		down_payment = #{downPayment},
-		final_payment = #{finalPayment}
+		 down_payment = #{downPayment}
+		,final_payment = #{finalPayment}
+		,down_payment_date = #{downPaymentDate}
+		,final_payment_date = #{finalPaymentDate}
 	WHERE contract_no = #{contractNo}
+</update>
+
+<update id="updateDownPayment" parameterType="com.example.trade.dto.Contract">
+    UPDATE contract
+    SET  down_payment_status = 'PS002'
+    	,down_payment_date = NOW()
+    	,final_payment_date = DATE_ADD(NOW(), INTERVAL 15 DAY)
+    WHERE contract_no = #{contractNo}
+</update>
+
+<update id="updateFinalPayment" parameterType="com.example.trade.dto.Contract">
+    UPDATE contract
+    SET  final_payment_status = 'PS002'
+    	,final_payment_date = NOW()
+    WHERE contract_no = #{contractNo}
 </update>
 
 </mapper>

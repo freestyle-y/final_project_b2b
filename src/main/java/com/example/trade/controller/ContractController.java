@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.security.Principal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -48,41 +49,6 @@ public class ContractController {
 	private String URL_PREFIX;
 	
 	
-	// 기업 회원 계약서 목록 페이지
-	@GetMapping("/biz/contractList")
-	public String contractList(Principal principal, Model model) {
-		String userId = principal.getName();
-		List<Contract> contractList = contractService.getContractList(userId);
-		model.addAttribute("contractList", contractList);
-		return "biz/contractList";
-	}
-	
-	// 기업 회원 계약서 상세 페이지
-	@GetMapping("/biz/contractOne")
-	public String contractOne(@RequestParam("contractNo") int contractNo,
-	                          Principal principal,
-	                          Model model) {
-	    String userId = principal.getName();
-	    List<Contract> contractOne = contractService.getContractOne(contractNo, userId);
-	    List<Contract> contractUser = contractService.getContractUser(userId);
-	    List<Contract> contractSupplier = contractService.getContractSupplier(contractNo);
-
-	    // ✅ 총액 계산
-	    int totalPrice = 0;
-	    for (Contract c : contractOne) {
-	        if (c.getPrice() != 0 && c.getProductQuantity() != 0) {
-	            totalPrice += c.getPrice() * c.getProductQuantity();
-	        }
-	    }
-
-	    model.addAttribute("contractUser", contractUser);
-	    model.addAttribute("contractOne", contractOne);
-	    model.addAttribute("contractSupplier", contractSupplier);
-	    model.addAttribute("totalPrice", totalPrice); // JSP에서 출력 가능
-
-	    return "biz/contractOne";
-	}
-	
 	// 관리자 계약서 목록 페이지
 	@GetMapping("/admin/contractList")
 	public String contractList(Model model) {
@@ -102,6 +68,7 @@ public class ContractController {
 	    // ✅ 총액 계산
 	    int totalPrice = 0;
 	    for (Contract c : contractOne) {
+	    	
 	        if (c.getPrice() != 0 && c.getProductQuantity() != 0) {
 	        	System.out.println("→ 계약번호: " + c.getContractNo() + ", 계약금: " + c.getDownPayment());
 	            totalPrice += c.getPrice() * c.getProductQuantity();
@@ -155,11 +122,9 @@ public class ContractController {
 	}
 
 	@PostMapping("/admin/contract/write")
-	public String writeContractAdmin(
-	        @ModelAttribute ContractSignForm form,
-	        Principal principal,
-	        RedirectAttributes ra
-	) throws IOException {  // ✅ IOException 위임
+	public String writeContractAdmin(@ModelAttribute ContractSignForm form
+									,Principal principal
+									,RedirectAttributes ra) throws IOException {  // ✅ IOException 위임
 
 	    String quotationNoStr = form.getQuotationNo();
 	    String downPaymentStr = form.getDownPayment();
@@ -215,11 +180,13 @@ public class ContractController {
 	}
 
 	@PostMapping("/admin/modifyContract")
-	public String modifyContract(@RequestParam("contractNo") int contractNo,
-	                             @RequestParam("quotationNo") int quotationNo,
-	                             @RequestParam("downPayment") String downPaymentStr,
-	                             @RequestParam("finalPayment") String finalPaymentStr,
-	                             RedirectAttributes ra) {
+	public String modifyContract(@RequestParam("contractNo") int contractNo
+	                            ,@RequestParam("quotationNo") int quotationNo
+	                            ,@RequestParam("downPayment") String downPaymentStr
+	                            ,@RequestParam("finalPayment") String finalPaymentStr
+	                            ,@RequestParam("downPaymentDate") LocalDateTime downPaymentDate
+	                            ,@RequestParam("finalPaymentDate") LocalDateTime finalPaymentDate
+	                            ,RedirectAttributes ra) {
 
 	    int downPayment = Integer.parseInt(downPaymentStr.replaceAll(",", ""));
 	    int finalPayment = Integer.parseInt(finalPaymentStr.replaceAll(",", ""));
@@ -229,6 +196,8 @@ public class ContractController {
 	    contract.setQuotationNo(quotationNo);
 	    contract.setDownPayment(downPayment);
 	    contract.setFinalPayment(finalPayment);
+	    contract.setDownPaymentDate(downPaymentDate);
+	    contract.setFinalPaymentDate(finalPaymentDate);
 
 	    contractService.updateContract(contract);
 
@@ -246,8 +215,54 @@ public class ContractController {
 		return "redirect:/admin/contractList";
 	}
 
+	// 잔금 입금 상태 입력
+	@PostMapping("/admin/insertDownPayment")
+	public String downPayment(@RequestParam("contractNo") int contractNo) {
+		contractService.updateDownPayment(contractNo);
+		return "redirect:/admin/contractList";
+	}
+
+	// 계약금 잔금 입금 상태 입력
+	@PostMapping("/admin/insertFinalPayment")
+	public String finalPayment(@RequestParam("contractNo") int contractNo) {
+		contractService.updateFinalPayment(contractNo);
+		return "redirect:/admin/contractList";
+	}
 	
+	// 기업 회원 계약서 목록 페이지
+	@GetMapping("/biz/contractList")
+	public String contractList(Principal principal, Model model) {
+		String userId = principal.getName();
+		List<Contract> contractList = contractService.getContractList(userId);
+		model.addAttribute("contractList", contractList);
+		return "biz/contractList";
+	}
 	
+	// 기업 회원 계약서 상세 페이지
+	@GetMapping("/biz/contractOne")
+	public String contractOne(@RequestParam("contractNo") int contractNo,
+			Principal principal,
+			Model model) {
+		String userId = principal.getName();
+		List<Contract> contractOne = contractService.getContractOne(contractNo, userId);
+		List<Contract> contractUser = contractService.getContractUser(userId);
+		List<Contract> contractSupplier = contractService.getContractSupplier(contractNo);
+		
+		// ✅ 총액 계산
+		int totalPrice = 0;
+		for (Contract c : contractOne) {
+			if (c.getPrice() != 0 && c.getProductQuantity() != 0) {
+				totalPrice += c.getPrice() * c.getProductQuantity();
+			}
+		}
+		
+		model.addAttribute("contractUser", contractUser);
+		model.addAttribute("contractOne", contractOne);
+		model.addAttribute("contractSupplier", contractSupplier);
+		model.addAttribute("totalPrice", totalPrice); // JSP에서 출력 가능
+		
+		return "biz/contractOne";
+	}
 	
 	@PostMapping("/biz/contract/write")
     public String writeContract(

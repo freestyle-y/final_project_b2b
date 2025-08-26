@@ -27,7 +27,6 @@
 
     <table border="1">
         <tr>
-        	<th>선택</th>
             <th>견적서 번호</th>
             <th>상태</th>
             <th>작성자</th>
@@ -43,9 +42,6 @@
             <tr>
                 <c:if test="${status.first}">
                     <!-- 공통 정보는 첫 행에서만 rowspan -->
-                    <td rowspan="${rowCount}">
-                    	<input type="checkbox" id="ckQuotation" name="ckQuotation">
-                    </td>
                     <td rowspan="${rowCount}">${adminQuotationOne.quotationNo}</td>
                     <td rowspan="${rowCount}">${adminQuotationOne.status}</td>
                     <td rowspan="${rowCount}">${adminQuotationOne.createUser}</td>

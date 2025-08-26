@@ -414,12 +414,12 @@ body {
 </style>
 </head>
 <body>
-	<div class="no-print">
-		<!-- 공통 헤더 -->
-		<%@include file="/WEB-INF/common/header/header.jsp"%>
-		<!-- 공통 사이드바 -->
-		<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
-	</div>
+<div class="no-print">
+<!-- 공통 헤더 -->
+<%@include file="/WEB-INF/common/header/header.jsp"%>
+<!-- 공통 사이드바 -->
+<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
+</div>
 
 	<div class="toolbar no-print">
 		<button class="btn btn-primary" onclick="window.print()">PDF/인쇄</button>
@@ -443,13 +443,23 @@ body {
 		      <c:if test="${not empty contractOne}">${contractOne[0].contractNo}</c:if>
 		    </div>
 		    <div class="info-item">
-		      계약일자: ${first.formattedCreateDate}
+		      계약일자:
+				<c:choose>
+					<c:when test="${not empty contractOne[0].formattedQuotationCreateDate}">
+						${contractOne[0].formattedQuotationCreateDate}
+					</c:when>
+				</c:choose>
 		    </div>
 		  </div>
 		  <div class="info-right">
-		    <div class="info-item">
-		      발행일: <span id="today2"></span>
-		    </div>
+			<div class="info-item">
+				발행일:
+				<c:choose>
+					<c:when test="${not empty contractOne[0].formattedCreateDate}">
+						${contractOne[0].formattedCreateDate}
+					</c:when>
+				</c:choose>
+			</div>
 		  </div>
 		</div>
 

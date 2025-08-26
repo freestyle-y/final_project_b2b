@@ -76,4 +76,13 @@ public class ContractService {
     public void updateContract(Contract contract) {
         contractMapper.updateContract(contract);
     }
+
+	public void updateDownPayment(int contractNo) {
+		contractMapper.updateDownPayment(contractNo);
+	}
+
+	public void updateFinalPayment(int contractNo) {
+		contractMapper.updateFinalPayment(contractNo);
+	
+	}
 }

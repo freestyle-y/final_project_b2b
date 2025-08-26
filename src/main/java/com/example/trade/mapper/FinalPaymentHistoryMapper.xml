@@ -4,10 +4,16 @@
 	namespace="com.example.trade.mapper.FinalPaymentHistoryMapper">
 	<select id="getFinalList" resultType="com.example.trade.dto.Contract">
 		SELECT 
-			 down_payment AS downPayment
-		 	,final_payment AS finalPayment
-		 	,contract_no AS contractNo
-		FROM contract
-		
+			 c.down_payment AS downPayment
+			,c.down_payment_date AS downPaymentDate
+			,c.down_payment_status AS downPaymentStatus
+		 	,c.final_payment AS finalPayment
+		 	,c.final_payment_date AS finalPaymentDate
+		 	,c.final_payment_status AS finalPaymentStatus
+		 	,c.contract_no AS contractNo
+		 	,ct.container_no AS containerNo
+		 	,cd.contract_delivery_status AS contractDeliveryStatus
+		FROM contract c LEFT OUTER JOIN container ct ON c.contract_no = ct.contract_order_no
+						LEFT OUTER JOIN contract_delivery cd ON ct.container_no = cd.container_no;
 	</select>
 </mapper>

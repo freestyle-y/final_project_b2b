@@ -25,12 +25,21 @@ public class Contract {
 	private String updateUser;
 	private LocalDateTime updateDate;
 	private String useStatus;
+	
 	public String getFormattedCreateDate() {
 		if (createDate == null) return "";
-		return createDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+		return createDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 	}
-	private BigDecimal totalFp;
-	private BigDecimal totalDp;	
+	public String getFormattedDownPaymentDate() {
+		if (downPaymentDate == null) return "";
+		return downPaymentDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+	}
+
+	public String getFormattedFinalPaymentDate() {
+		if (finalPaymentDate == null) return "";
+		return finalPaymentDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+	}
+	
 	// comm_tbl 조인
 	private String codeName;
 	
@@ -45,4 +54,17 @@ public class Contract {
 	private String address;
 	private String detailAddress;
 	private String phone;
+	
+	// container 조인
+	private int containerNo;
+	
+	// quotation 조인
+	private LocalDateTime quotationCreateDate;
+	public String getFormattedQuotationCreateDate() {
+		if (quotationCreateDate == null) return "";
+		return quotationCreateDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+	}
+	
+	// container_delivery 조인
+	private String contractDeliveryStatus;
 }
