@@ -121,6 +121,7 @@ public class ContractController {
 	    return "admin/writeContract";
 	}
 
+	// 관리자 계약서 전송
 	@PostMapping("/admin/contract/write")
 	public String writeContractAdmin(@ModelAttribute ContractSignForm form
 									,Principal principal
@@ -167,6 +168,7 @@ public class ContractController {
 	    return "redirect:/admin/contractOne?contractNo=" + newContractNo;
 	}
 
+	// 관리자 계약서 수정폼
 	@GetMapping("/admin/modifyContractForm")
 	public String modifyContractForm(@RequestParam("contractNo") int contractNo,
 	                                 @RequestParam("quotationNo") int quotationNo,
@@ -178,7 +180,8 @@ public class ContractController {
 
 	    return "admin/modifyContractForm";
 	}
-
+	
+	// 관리자 계약서 수정폼 전송
 	@PostMapping("/admin/modifyContract")
 	public String modifyContract(@RequestParam("contractNo") int contractNo
 	                            ,@RequestParam("quotationNo") int quotationNo
@@ -206,7 +209,7 @@ public class ContractController {
 	}
 
 	
-	// 관리자 견적서 삭제
+	// 관리자 계약서 삭제
 	@PostMapping("/admin/deleteContract")
 	public String deleteContract(@RequestParam("contractNo") int contractNo
 	    						,@RequestParam("quotationNo") int quotationNo) {
@@ -215,17 +218,17 @@ public class ContractController {
 		return "redirect:/admin/contractList";
 	}
 
-	// 잔금 입금 상태 입력
-	@PostMapping("/admin/insertDownPayment")
-	public String downPayment(@RequestParam("contractNo") int contractNo) {
-		contractService.updateDownPayment(contractNo);
-		return "redirect:/admin/contractList";
-	}
-
-	// 계약금 잔금 입금 상태 입력
+	// 관리자 계약금 잔금 입금 상태 입력
 	@PostMapping("/admin/insertFinalPayment")
 	public String finalPayment(@RequestParam("contractNo") int contractNo) {
 		contractService.updateFinalPayment(contractNo);
+		return "redirect:/admin/contractList";
+	}
+	
+	// 관리자 잔금 입금 상태 입력
+	@PostMapping("/admin/insertDownPayment")
+	public String downPayment(@RequestParam("contractNo") int contractNo) {
+		contractService.updateDownPayment(contractNo);
 		return "redirect:/admin/contractList";
 	}
 	
@@ -243,11 +246,12 @@ public class ContractController {
 	public String contractOne(@RequestParam("contractNo") int contractNo,
 			Principal principal,
 			Model model) {
+
 		String userId = principal.getName();
 		List<Contract> contractOne = contractService.getContractOne(contractNo, userId);
 		List<Contract> contractUser = contractService.getContractUser(userId);
 		List<Contract> contractSupplier = contractService.getContractSupplier(contractNo);
-		
+
 		// ✅ 총액 계산
 		int totalPrice = 0;
 		for (Contract c : contractOne) {
@@ -255,15 +259,55 @@ public class ContractController {
 				totalPrice += c.getPrice() * c.getProductQuantity();
 			}
 		}
-		
+
+		// ✅ 서명 이미지 조회 추가
+		List<Attachment> signs = attachmentService.findContractSigns(contractNo);
+		Attachment supplierSign = null;
+		Attachment buyerSign = null;
+		for (Attachment a : signs) {
+			if (a.getPriority() == 1 && supplierSign == null) supplierSign = a;
+			if (a.getPriority() == 2 && buyerSign == null) buyerSign = a;
+		}
+		model.addAttribute("supplierSign", supplierSign);
+		model.addAttribute("buyerSign", buyerSign);
+
 		model.addAttribute("contractUser", contractUser);
 		model.addAttribute("contractOne", contractOne);
 		model.addAttribute("contractSupplier", contractSupplier);
-		model.addAttribute("totalPrice", totalPrice); // JSP에서 출력 가능
-		
+		model.addAttribute("totalPrice", totalPrice);
+
 		return "biz/contractOne";
 	}
+
+	// 기업회원 서명 jsp
+	@GetMapping("/biz/writeContract")
+	public String writeContractPage(@RequestParam("contractNo") int contractNo
+								   ,Principal principal
+								   ,Model model) {
+		String userId = principal.getName();
+		List<Contract> contractOne = contractService.getContractOne(contractNo, userId);
+		if (contractOne == null || contractOne.isEmpty()) {
+			model.addAttribute("error", "접근 권한이 없습니다.");
+			return "error/403";
+		}
 	
+	
+		List<Attachment> signs = attachmentService.findContractSigns(contractNo);
+		Attachment supplierSign = null;
+		Attachment buyerSign = null;
+		for (Attachment a : signs) {
+			if (a.getPriority() == 1 && supplierSign == null) supplierSign = a;
+			if (a.getPriority() == 2 && buyerSign == null) buyerSign = a;
+		}
+	
+	
+		model.addAttribute("supplierSign", supplierSign);
+		model.addAttribute("buyerSign", buyerSign);
+		model.addAttribute("contractOne", contractOne);
+		return "biz/writeContract";
+	}
+	
+	// 기업회원 서명 전송
 	@PostMapping("/biz/contract/write")
     public String writeContract(
             @ModelAttribute ContractSignForm form,
@@ -297,7 +341,7 @@ public class ContractController {
         }
 
         ra.addFlashAttribute("msg", "계약서 서명이 저장되었습니다.");
-        return "redirect:/admin/contractOne?contractNo=" + contractNo;
+        return "redirect:/biz/contractOne?contractNo=" + contractNo;
     }
 
     /**
