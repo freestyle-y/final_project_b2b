@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import com.example.trade.dto.Board;
+import com.example.trade.dto.Comment;
 import com.example.trade.dto.Page;
 import com.example.trade.mapper.AdminMapper;
 
@@ -44,6 +45,41 @@ public class AdminService {
 	// FAQ 삭제
 	public int deleteFAQ(Board board) {
 		return adminMapper.deleteBoard(board);
+	}
+	
+	// QNA 목록 조회
+	public List<Map<String, Object>> getQNAList(Page page) {
+		return adminMapper.selectQNAListById(page);
+	}
+	
+	// QNA 목록 전체 행 수 조회
+	public int getQNATotalCount(Page page) {
+		return adminMapper.selectQNATotalCount(page);
+	}
+	
+	// QNA 상세 조회
+	public List<Map<String, Object>> getQNAOne(Board board) {
+		return adminMapper.selectQNAOne(board);
+	}
+	
+	// 댓글 조회
+	public List<Map<String, Object>> getCommentByBoardNo(int boardNo) {
+		return adminMapper.selectCommentByBoardNo(boardNo);
+	}
+	
+	// 댓글 등록
+	public int insertComment(Comment comment) {
+		return adminMapper.insertComment(comment);
+	}
+	
+	// 댓글 수정
+	public int updateComment(Comment comment) {
+		return adminMapper.updateComment(comment);
+	}
+	
+	// 댓글 삭제
+	public int deleteComment(Comment comment) {
+		return adminMapper.deleteComment(comment);
 	}
 
 	// 로그인 이력 조회
