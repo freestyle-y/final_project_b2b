@@ -134,7 +134,11 @@ h1, h3 {
 			<button type="button" id="useAllBtn" class="btn" onclick="useAllPoints()">전액 사용</button>
 			<div id="pointError" class="error"></div>
 				<div class="note" id="pointRuleNote">
-					적립금 사용 규칙: ① 주문금액 10,000원 이상 ② 최소 1,000원 ③ 100원 단위 ④ 주문금액의 10% 이내
+					적립금 사용 규칙<br>
+					① 주문금액 10,000원 이상 사용 가능<br> 
+					② 최소 1,000원 이상 사용 가능<br>
+					③ 100원 단위로 사용 가능<br>
+					④ 주문금액의 10% 이내만 사용 가능
 				</div>
 			<div class="note" id="pointMaxNote"></div>
 		</p>
@@ -161,8 +165,6 @@ h1, h3 {
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
-const reward = document.getElementById("availablePoints").value
-console.log(reward);
 	function getPointRuleError(usePoint, total, available) {
 		// 포인트 사용 안 하면 통과
 		if (!usePoint || usePoint <= 0) return "";
@@ -205,8 +207,7 @@ console.log(reward);
 		}
 		refreshPointControls();
 	}
-	console.log("totalAmount.innerText =", document.getElementById("totalAmount").innerText);
-
+	
 	function refreshPointControls() {
 		const total = parseInt(document.getElementById("totalAmount").innerText);
 		const available  = parseInt(document.getElementById("availablePoints").value);
@@ -218,14 +219,8 @@ console.log(reward);
 		const maxUsable  = Math.min(available, maxByRate);
 		const eligible   = (total >= 10000) && (maxUsable >= 1000);
 		
-		maxNote.textContent = `최대 사용 가능: ${maxUsable}원 (보유 ${available}원, 한도 ${maxByRate}원)`;
-		
 		useInput.disabled = !eligible;
 		allBtn.disabled   = !eligible;
-		if (!eligible) {
-			useInput.value = 0;
-			document.getElementById("finalAmount").innerText = total;
-		}
 	}
 	
 	function useAllPoints() {

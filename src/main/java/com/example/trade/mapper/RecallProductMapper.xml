@@ -3,7 +3,7 @@
 <mapper namespace="com.example.trade.mapper.RecallProductMapper">
 	<update id="updateContractDeliveryStatus">
 		UPDATE contract_delivery
-		SET contract_delivery_status = 'DS008'
+		SET contract_delivery_status = 'DS009'
 		WHERE container_no = #{containerNo}
 	</update>
 	
@@ -25,6 +25,7 @@
 				     INNER JOIN product_request pr ON q.product_request_no = pr.product_request_no
 				     INNER JOIN address a ON cd.address_no = a.address_no
 				     INNER JOIN user u ON a.user_id = u.id
+	WHERE cd.contract_delivery_status = 'DS009'
 	</select>
 	
 	<update id="updateContractDeliveryRollback">

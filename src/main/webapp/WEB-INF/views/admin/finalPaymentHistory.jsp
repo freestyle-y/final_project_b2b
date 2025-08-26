@@ -54,10 +54,10 @@
 
 				<th>회수 버튼</th>
 				<td>
-				  <c:if test="${list.contractDeliveryStatus ne 'DS008'}">
+				  <c:if test="${list.contractDeliveryStatus ne 'DS009'}">
 				    <button type="button" class="retrieval-btn" style="display:none;" data-container-no="${list.containerNo}" onclick="recallProduct(this)">상품회수</button>
 				  </c:if>
-				  <c:if test="${list.contractDeliveryStatus eq 'DS008'}">
+				  <c:if test="${list.contractDeliveryStatus eq 'DS009'}">
 				    <button type="button" data-container-no="${list.containerNo}" onclick="recallProductCancel(this)">회수취소</button>
 				  </c:if>
 				</td>
