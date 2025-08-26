@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.trade.dto.Order;
 import com.example.trade.service.DeliveryService;
 
 @Controller
@@ -49,5 +50,13 @@ public class DeliveryController {
 		List<Map<String, Object>> personalDeliveryOne = deliveryService.getPersonalDeliveryOne(orderNo, subOrderNo);
 		model.addAttribute("personalDeliveryOne", personalDeliveryOne);
 		return "personal/deliveryOne";
+	}
+	
+	// 교환/반품 신청 페이지(개인)
+	@GetMapping("/personal/exchangeReturn")
+	public String exchangeReturn(Order order, Model model) {
+		model.addAttribute("orderNo", order.getOrderNo());
+		model.addAttribute("subOrderNo", order.getSubOrderNo());
+		return "personal/exchangeReturn";
 	}
 }

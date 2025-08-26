@@ -70,7 +70,7 @@
                 </td>
                 <td>
                     <button onclick="location.href='/personal/deliveryOne?orderNo=${order.orderNo}&subOrderNo=${order.subOrderNo}'">배송조회</button>
-                    <button onclick="location.href='/personal/exchangeReturn?orderDetailNo=${order.orderNo}'">교환/반품</button>
+                    <button onclick="location.href='/personal/exchangeReturn?orderNo=${order.orderNo}&subOrderNo=${order.subOrderNo}'">교환/반품</button>
                     <button onclick="toggleReviewForm(${status.index})">리뷰작성</button>
                     <button onclick="location.href='/member/QNAWrite'">상품문의</button>
                     <button type="button" class="btn-confirm" onclick="confirmProduct('${order.orderNo}', '${order.subOrderNo}')">구매확정</button>
