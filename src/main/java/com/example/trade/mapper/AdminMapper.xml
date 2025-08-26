@@ -175,6 +175,76 @@
 		AND create_user = #{updateUser}
 	</update>
 	
+	<!-- 공지사항 목록 조회 -->
+	<select id="selectNoticeList" parameterType="com.example.trade.dto.Page" resultType="map">
+		SELECT
+			board_no AS boardNo,
+			board_title AS boardTitle,
+			board_content AS boardContent,
+			create_user AS createUser,
+			create_date AS createDate,
+			update_user AS updateUser,
+			update_date AS updateDate,
+			use_status AS useStatus,
+			view_count AS viewCount
+		FROM board
+		WHERE board_code = 'BC003'
+		<if test="searchWord != null and searchWord != ''">
+			AND board_title LIKE CONCAT('%', #{searchWord}, '%')
+		</if>
+		ORDER BY board_no DESC
+		LIMIT #{beginRow}, #{rowPerPage}
+	</select>
+	
+	<!-- 공지사항 전체 행 수 조회 -->
+	<select id="selectNoticeTotalCount" parameterType="com.example.trade.dto.Page" resultType="int">
+		SELECT COUNT(*)
+		FROM board
+		WHERE board_code = 'BC003'
+		<if test="searchWord != null and searchWord != ''">
+			AND board_title LIKE CONCAT('%', #{searchWord}, '%')
+		</if>
+	</select>
+	
+	<!-- 공지사항 상세 조회 -->
+	<select id="selectNoticeOne" parameterType="int" resultType="com.example.trade.dto.Board">
+		SELECT
+			board_no AS boardNo,
+			board_title AS boardTitle,
+			board_content AS boardContent,
+			board_code AS boardCode,
+			create_user AS createUser,
+			create_date AS createDate,
+			update_user AS updateUser,
+			update_date AS updateDate,
+			use_status AS useStatus,
+			view_count AS viewCount
+		FROM board
+		WHERE board_no = #{boardNo}
+	</select>
+	
+	<!-- 공지사항 수정 -->
+	<update id="updateNotice" parameterType="com.example.trade.dto.Board">
+		UPDATE board SET
+			board_title = #{boardTitle},
+			board_content = #{boardContent},
+			update_user = #{updateUser},
+			update_date = NOW(),
+			use_status = #{useStatus}
+		WHERE board_no = #{boardNo}
+		AND board_code = 'BC003'
+	</update>
+	
+	<!-- 공지사항 삭제 -->
+	<update id="deleteNotice" parameterType="com.example.trade.dto.Board">
+		UPDATE board SET
+			update_user = #{updateUser},
+			update_date = NOW(),
+			use_status = 'N'
+		WHERE board_no = #{boardNo}
+		AND board_code = 'BC003'
+	</update>
+	
 	<!-- 로그인 이력 조회 -->
 	<select id="selectLoginHistory" resultType="map">
 		SELECT

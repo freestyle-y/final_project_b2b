@@ -82,6 +82,31 @@ public class AdminService {
 		return adminMapper.deleteComment(comment);
 	}
 
+	// 공지사항 목록 조회
+	public List<Map<String, Object>> getNoticeList(Page page) {
+		return adminMapper.selectNoticeList(page);
+	}
+	
+	// 공지사항 전체 행 수 조회
+	public int getNoticeTotalCount(Page page) {
+		return adminMapper.selectNoticeTotalCount(page);
+	}
+	
+	// 공지사항 상세 조회
+	public Board getNoticeOne(Board board) {
+		return adminMapper.selectNoticeOne(board);
+	}
+	
+	// 공지사항 수정
+	public int updateNotice(Board board) {
+		return adminMapper.updateNotice(board);
+	}
+	
+	// 공지사항 삭제
+	public int deleteNotice(Board board) {
+		return adminMapper.deleteNotice(board);
+	}
+	
 	// 로그인 이력 조회
 	public List<Map<String, Object>> getLoginHistory() {
 		return adminMapper.selectLoginHistory();

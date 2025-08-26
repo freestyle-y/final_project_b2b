@@ -273,6 +273,65 @@ public class AdminController {
 		}
 	}
 	
+	// 공지사항 목록 조회
+	@GetMapping("/admin/noticeList")
+	public String noticeList(Model model
+							,@RequestParam(defaultValue = "10") int rowPerPage
+							,@RequestParam(defaultValue = "1") int currentPage
+							,@RequestParam(defaultValue = "") String searchWord
+							,@RequestParam(defaultValue = "all") String searchType) {
+		
+	    // Page 객체 생성 (DB 조회 전 totalCount = 0으로 초기화)
+	    Page page = new Page(rowPerPage, currentPage, 0, searchWord, searchType);
+	    
+		// 전체 행 수 조회
+		int totalCount = adminService.getNoticeTotalCount(page);
+		page.setTotalCount(totalCount);
+		
+		// 공지사항 조회
+		List<Map<String, Object>> noticeList = adminService.getNoticeList(page);
+		
+		// 모델에 값 전달
+		model.addAttribute("noticeList", noticeList);
+		model.addAttribute("page", page);
+		
+		return "admin/noticeList";
+	}
+	
+	// 공지사항 상세 조회
+	@GetMapping("/admin/noticeOne")
+	public String noticeOne(Board board, Model model) {
+		Board noticeOne = adminService.getNoticeOne(board);
+		model.addAttribute("noticeOne", noticeOne);
+		return "admin/noticeOne";
+	}
+	
+	// 공지사항 수정 페이지
+	@GetMapping("/admin/noticeUpdate")
+	public String noticeUpdate(Board board, Model model) {
+		Board noticeOne = adminService.getNoticeOne(board);
+		model.addAttribute("noticeOne", noticeOne);
+		return "admin/noticeUpdate";
+	}
+
+	// 공지사항 수정 처리
+	@PostMapping("/admin/noticeUpdate")
+	public String noticeUpdate(Board board, Principal principal) {
+		String username = principal.getName(); // 로그인한 관리자
+		board.setUpdateUser(username);
+		adminService.updateNotice(board);
+		return "redirect:/admin/noticeOne?boardNo=" + board.getBoardNo();
+	}
+	
+	// 공지사항 삭제
+	@PostMapping("/admin/noticeDelete")
+	public String noticeDelete(Board board, Principal principal) {
+		String username = principal.getName(); // 로그인한 관리자
+		board.setUpdateUser(username);
+		adminService.deleteNotice(board);
+		return "redirect:/admin/noticeList";
+	}
+	
 	// 로그인 이력 조회 페이지
 	@GetMapping("/admin/loginHistory")
 	public String loginHistory(Model model) {

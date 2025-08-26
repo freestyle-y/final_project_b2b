@@ -51,6 +51,21 @@ public interface AdminMapper {
 	// 댓글 삭제
 	int deleteComment(Comment comment);
 	
+	// 공지사항 목록 조회
+	List<Map<String, Object>> selectNoticeList(Page page);
+
+	// 공지사항 전체 행 수 조회
+	int selectNoticeTotalCount(Page page);
+	
+	// 공지사항 상세 조회
+	Board selectNoticeOne(Board board);
+	
+	// 공지사항 수정
+	int updateNotice(Board board);
+	
+	// 공지사항 삭제
+	int deleteNotice(Board board);
+	
 	// 로그인 이력 조회
 	List<Map<String, Object>> selectLoginHistory();
 
