@@ -20,11 +20,16 @@
     }
     label {
         font-weight: bold;
+        display: block;
+        margin-top: 10px;
+        margin-bottom: 5px;
     }
-    input[type="text"], textarea {
+    input[type="text"], 
+    input[type="number"],
+    textarea {
         width: 100%;
         padding: 6px;
-        margin: 8px 0 15px 0;
+        margin-bottom: 15px;
         box-sizing: border-box;
     }
     button {
@@ -41,8 +46,8 @@
         background-color: #45a049;
     }
     #exchangeBox, #returnBox {
-    margin-top: 15px;
-	}
+        margin-top: 15px;
+    }
 </style>
 </head>
 <body>
@@ -59,18 +64,26 @@
     	<input type="hidden" name="orderNo" value="${orderNo}">
     	<input type="hidden" name="subOrderNo" value="${subOrderNo}">
     	
-		<label for="type">구분</label>
-		<select id="type" name="type" required onchange="toggleReason()">
+		<label for="deliveryStatus">구분</label>
+		<select id="deliveryStatus" name="deliveryStatus" required onchange="toggleReason()">
 			<option value="DS006" selected>교환</option>
 			<option value="DS004">반품</option>
 		</select>
 		
+		<!-- 교환 -->
 		<div id="exchangeBox">
+			<label for="exchangeQuantity">교환 수량</label>
+			<input type="number" id="exchangeQuantity" name="exchangeQuantity" min="1" max="${orderQuantity}" required>
+			
 			<label for="exchangeReason">교환 사유</label>
 			<textarea id="exchangeReason" name="exchangeReason" rows="6" required></textarea>
 		</div>
 		
+		<!-- 반품 -->
 		<div id="returnBox" style="display:none;">
+			<label for="returnQuantity">반품 수량</label>
+			<input type="number" id="returnQuantity" name="returnQuantity" min="1" max="${orderQuantity}" disabled required>
+			
 			<label for="returnReason">반품 사유</label>
 			<textarea id="returnReason" name="returnReason" rows="6" disabled required></textarea>
 		</div>
@@ -83,21 +96,31 @@
 
 <script>
 	function toggleReason() {
-		const type = document.getElementById("type").value;
+		const deliveryStatus = document.getElementById("deliveryStatus").value;
+
 		const exchangeBox = document.getElementById("exchangeBox");
 		const returnBox = document.getElementById("returnBox");
+
+		const exchangeQuantity = document.getElementById("exchangeQuantity");
+		const returnQuantity = document.getElementById("returnQuantity");
 		const exchangeReason = document.getElementById("exchangeReason");
 		const returnReason = document.getElementById("returnReason");
 
-		if (type === "DS006") { // 교환
+		if (deliveryStatus === "DS006") { // 교환
 			exchangeBox.style.display = "block";
+			exchangeQuantity.disabled = false;
 			exchangeReason.disabled = false;
+
 			returnBox.style.display = "none";
+			returnQuantity.disabled = true;
 			returnReason.disabled = true;
 		} else { // 반품
 			returnBox.style.display = "block";
+			returnQuantity.disabled = false;
 			returnReason.disabled = false;
+
 			exchangeBox.style.display = "none";
+			exchangeQuantity.disabled = true;
 			exchangeReason.disabled = true;
 		}
 	}

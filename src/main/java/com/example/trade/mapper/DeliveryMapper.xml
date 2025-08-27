@@ -48,4 +48,27 @@
 		WHERE order_no = #{orderNo}
 		AND sub_order_no = #{subOrderNo}
 	</select>
+	
+	<!-- 교환/반품 신청 처리 -->
+	<update id="updateExchangeReturn" parameterType="com.example.trade.dto.Order">
+		UPDATE `order`
+		<set>
+			<if test="deliveryStatus == 'DS006'"> <!-- 교환 -->
+				exchange_quantity = #{exchangeQuantity},
+				exchange_reason = #{exchangeReason},
+				exchange_request_time = NOW(),
+				delivery_status = #{deliveryStatus},
+			</if>
+			<if test="deliveryStatus == 'DS004'"> <!-- 반품 -->
+				return_quantity = #{returnQuantity},
+				return_reason = #{returnReason},
+				return_request_time = NOW(),
+				delivery_status = #{deliveryStatus},
+			</if>
+			update_user = #{updateUser},
+			update_date = NOW()
+		</set>
+		WHERE order_no = #{orderNo}
+		AND sub_order_no = #{subOrderNo}
+	</update>
 </mapper>

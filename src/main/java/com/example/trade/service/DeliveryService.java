@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.example.trade.dto.Order;
 import com.example.trade.mapper.DeliveryMapper;
 
 @Service
@@ -22,5 +23,10 @@ public class DeliveryService {
 	// 배송 상세 조회(개인)
 	public List<Map<String, Object>> getPersonalDeliveryOne(int orderNo, int subOrderNo) {
 		return deliveryMapper.selectPersonalDeliveryBySubOrderNo(orderNo, subOrderNo);
+	}
+
+	// 교환/반품 신청 처리
+	public int requestExchangeReturn(Order order) {
+		return deliveryMapper.updateExchangeReturn(order);
 	}
 }
