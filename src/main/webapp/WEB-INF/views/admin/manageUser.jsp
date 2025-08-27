@@ -107,6 +107,8 @@
             <option value="CS004" ${status=='CS004'?'selected':''}>가입대기</option>
         </select>
     </label>
+    <input type="text" name="keyword" placeholder="아이디/이름/이메일 검색"
+		value="${keyword}" style="padding:6px; border:1px solid #ccc; border-radius:5px;">
     <button type="submit">조회</button>
 </form>
 
@@ -162,7 +164,26 @@
         </c:forEach>
     </tbody>
 </table>
-
+	<!-- 페이징 -->
+	<div style="text-align:center; margin-top:20px;">
+	    <c:if test="${page > 1}">
+	        <a href="?page=1&type=${type}&status=${status}&keyword=${keyword}">&lt;&lt;</a>
+	        <a href="?page=${startPage-1}&type=${type}&status=${status}&keyword=${keyword}">&lt;</a>
+	    </c:if>
+	
+	    <c:forEach var="i" begin="${startPage}" end="${endPage}">
+	        <a href="?page=${i}&type=${type}&status=${status}&keyword=${keyword}"
+	           style="margin:0 5px; ${i==page?'font-weight:bold; color:red;':''}">
+	           ${i}
+	        </a>
+	    </c:forEach>
+	
+	    <c:if test="${endPage < totalPage}">
+	        <a href="?page=${endPage+1}&type=${type}&status=${status}&keyword=${keyword}">&gt;</a>
+	        <a href="?page=${totalPage}&type=${type}&status=${status}&keyword=${keyword}">&gt;&gt;</a>
+	    </c:if>
+	</div>
+	
     <!-- 공통 풋터 -->
 	<%@include file="/WEB-INF/common/footer/footer.jsp"%>
 

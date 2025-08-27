@@ -24,6 +24,8 @@ public interface UserMapper {
 	
 	// 회원목록 조회
 	List<User> findUser(Map<String, Object> params);
+	int countUser(Map<String, Object> params);
+
 	
 	// 가입승인
 	void approveUser(@Param("id") String id, @Param("updateUser") String updateUser);

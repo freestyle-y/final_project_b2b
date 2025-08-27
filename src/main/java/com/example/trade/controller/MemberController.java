@@ -29,7 +29,7 @@ public class MemberController {
     }
     
 	// 마이페이지
-    @GetMapping("/public/myPage")
+    @GetMapping("/member/myPage")
     public String myPage(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String id = auth.getName();
@@ -40,7 +40,7 @@ public class MemberController {
         
         // 연동된 소셜 계정 조회
         model.addAttribute("socialList", memberService.getLinkedSocials(user.getId()));
-        return "public/myPage";
+        return "member/myPage";
     }
 
 	// 로그인
@@ -99,14 +99,14 @@ public class MemberController {
 	}
 	
 	// 비밀번호 변경
-	@GetMapping("/public/changeMemberPw")
+	@GetMapping("/member/changeMemberPw")
 	public String changeMemberPw(Model model) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String id = auth.getName();
 		model.addAttribute("id", id);
-		return "public/changeMemberPw";
+		return "member/changeMemberPw";
 	}
-	@PostMapping("/public/changeMemberPw")
+	@PostMapping("/member/changeMemberPw")
 	public String changeMemberPw(@RequestParam String nowPw,
 								@RequestParam String newPw,
 								RedirectAttributes redirectAttributes,
@@ -117,13 +117,13 @@ public class MemberController {
 		model.addAttribute("id", user.getId());
 		if (!passwordEncoder.matches(nowPw, user.getPassword())) {
 	        redirectAttributes.addFlashAttribute("error", "현재 비밀번호가 일치하지 않습니다.");
-	        return "redirect:/public/changeMemberPw"; // 다시 폼으로
+	        return "redirect:/member/changeMemberPw"; // 다시 폼으로
 	    }
 
 	    // 비밀번호 변경
 	    memberService.updatePw(user.getId(), passwordEncoder.encode(newPw));
 	    redirectAttributes.addFlashAttribute("success", "비밀번호가 변경되었습니다.");
-		return "redirect:/public/changeMemberPw";
+		return "redirect:/member/changeMemberPw";
 	}
 	
 	// 적립금 페이지
@@ -136,13 +136,30 @@ public class MemberController {
 	// 회원 목록 조회
 	@GetMapping("/admin/manageUser")
 	public String manageUser(@RequestParam(required = false) String type,
-							@RequestParam(required = false) String status,
-							Model model) {
-		List<User> users = memberService.getMembers(type, status);
-		model.addAttribute("users", users);
-		model.addAttribute("type", type);
-		model.addAttribute("status", status);
-		System.out.println(users);
-		return "admin/manageUser"; // JSP
+	                        @RequestParam(required = false) String status,
+	                        @RequestParam(required = false) String keyword,
+	                        @RequestParam(defaultValue = "1") int page,
+	                        Model model) {
+	    int pageSize = 10; // 한 페이지에 10행
+	    int totalCount = memberService.countMembers(type, status, keyword);
+	    int totalPage = (int) Math.ceil((double) totalCount / pageSize);
+
+	    // 페이징 블록 (1~10, 11~20)
+	    int blockSize = 10;
+	    int startPage = ((page - 1) / blockSize) * blockSize + 1;
+	    int endPage = Math.min(startPage + blockSize - 1, totalPage);
+
+	    List<User> users = memberService.getMembers(type, status, keyword, page, pageSize);
+
+	    model.addAttribute("users", users);
+	    model.addAttribute("type", type);
+	    model.addAttribute("status", status);
+	    model.addAttribute("keyword", keyword);
+	    model.addAttribute("page", page);
+	    model.addAttribute("totalPage", totalPage);
+	    model.addAttribute("startPage", startPage);
+	    model.addAttribute("endPage", endPage);
+
+	    return "admin/manageUser";
 	}
 }

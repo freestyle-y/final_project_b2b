@@ -83,13 +83,26 @@ public class MemberService {
 	    userMapper.insertUser(user);
 	}
 	
-	// 회원 목록 조회
-    public List<User> getMembers(String type, String status) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("customerCategory", type);
-        params.put("customerStatus", status);
-        return userMapper.findUser(params);
-    }
+	// 회원 목록 조회 (검색 + 페이징)
+	public List<User> getMembers(String type, String status, String keyword, int page, int pageSize) {
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("customerCategory", type);
+	    params.put("customerStatus", status);
+	    params.put("searchKeyword", keyword);
+	    params.put("offset", (page - 1) * pageSize);
+	    params.put("pageSize", pageSize);
+
+	    return userMapper.findUser(params);
+	}
+
+	// 총 회원 수
+	public int countMembers(String type, String status, String keyword) {
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("customerCategory", type);
+	    params.put("customerStatus", status);
+	    params.put("searchKeyword", keyword);
+	    return userMapper.countUser(params);
+	}
 
     // 기업회원 가입 승인
     @Transactional

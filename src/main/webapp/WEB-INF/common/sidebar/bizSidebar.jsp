@@ -54,7 +54,7 @@
 
 <aside aria-label="Quick Actions" class="fs-sidebar">
   <a href="/public/helpDesk" class="fs-btn fs-dark-900" title="고객센터">고객센터</a>
-  <a href="/public/myPage" class="fs-btn fs-dark-800" title="마이페이지">마이페이지</a>
+  <a href="/member/myPage" class="fs-btn fs-dark-800" title="마이페이지">마이페이지</a>
   <button type="button" id="goTopBtn" class="fs-btn fs-green" title="최상단 이동">↑ 최상단</button>
 </aside>
 

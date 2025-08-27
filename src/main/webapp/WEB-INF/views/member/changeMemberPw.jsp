@@ -32,7 +32,7 @@
 	</script>
 	</c:if>
 	
-    <form id="pwForm" action="/public/changeMemberPw" method="post">
+    <form id="pwForm" action="/member/changeMemberPw" method="post">
     	<input type="hidden" name="id" value="${id}">
         <div>
             현재 비밀번호 : 

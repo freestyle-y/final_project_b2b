@@ -134,7 +134,7 @@ public class SecurityConfig {
 					targetUrl = savedRequest.getRedirectUrl();
 					
 					// 로그인 페이지(/public/login)에서 로그인한 경우는 제외
-					if(targetUrl.contains("/public/login") || targetUrl.startsWith("http")) {
+					if(targetUrl.contains("/public/login")) {
 						targetUrl = null;
 					}
 				}
