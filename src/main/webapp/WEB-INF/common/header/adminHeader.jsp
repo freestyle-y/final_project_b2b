@@ -30,7 +30,7 @@
 
       <!-- 메인 메뉴 -->
       <nav aria-label="Main Navigation" style="display:flex; gap:18px; font-size:15px; margin-top:auto;">
-        <a href="/categories"         style="text-decoration:none; color:#111827;">상품 카테고리</a>
+        <a href=""         style="text-decoration:none; color:#111827;">상품 카테고리</a>
         <a href="/biz/productRequest" style="text-decoration:none; color:#111827;">구매 견적 요청</a>
         <a href="/public/reviewList"  style="text-decoration:none; color:#111827;">상품 후기</a>
       </nav>

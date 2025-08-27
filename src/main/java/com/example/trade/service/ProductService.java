@@ -2,6 +2,8 @@ package com.example.trade.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -36,6 +38,7 @@ public class ProductService {
 	private final ProductMapper productMapper;
 
 	private static final String UPLOAD_DIR = "C:/uploads/product/";
+	private static final String UPLOAD_DIR_STATIC = "src/main/resources/static/uploads/product/";
 	
 	public ProductService(ProductMapper productMapper) {
 		this.productMapper = productMapper;
@@ -368,10 +371,16 @@ public class ProductService {
                         String uniqueFileName = UUID.randomUUID().toString().replace("-", "");
                         uniqueFileName += "_" + originalFileName;
                         
+                        // 1) 로컬 디스크 저장
                         File saveFile = new File(UPLOAD_DIR + uniqueFileName);
                         saveFile.getParentFile().mkdirs();
                         file.transferTo(saveFile);
 
+                        // 2) static 리소스 폴더에도 저장
+                        File saveFileStatic = new File(UPLOAD_DIR_STATIC + uniqueFileName);
+                        saveFileStatic.getParentFile().mkdirs();
+                        Files.copy(saveFile.toPath(), saveFileStatic.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                        
                         Attachment attachment = new Attachment();
                         attachment.setCategoryCode(productRequestNo);
                         attachment.setAttachmentCode("PRODUCT_REQUEST_FILE");
@@ -461,13 +470,16 @@ public class ProductService {
                     
                     // 3. 저장할 경로 생성
                     File saveFile = new File(UPLOAD_DIR + uniqueFileName);
-
                     // 디렉토리가 없으면 생성
                     saveFile.getParentFile().mkdirs();
-
                     // 4. 로컬에 파일 저장
                     file.transferTo(saveFile);
 
+                    // 2) static 리소스 폴더에도 저장
+                    File saveFileStatic = new File(UPLOAD_DIR_STATIC + uniqueFileName);
+                    saveFileStatic.getParentFile().mkdirs();
+                    Files.copy(saveFile.toPath(), saveFileStatic.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    
                     // 5. DB 저장
                     Attachment attachment = new Attachment();
                     attachment.setCategoryCode(requestNo);
@@ -576,13 +588,16 @@ public class ProductService {
                     
                     // 3. 저장할 경로 생성
                     File saveFile = new File(UPLOAD_DIR + uniqueFileName);
-
                     // 디렉토리가 없으면 생성
                     saveFile.getParentFile().mkdirs();
-
                     // 4. 로컬에 파일 저장
                     file.transferTo(saveFile);
 
+                    // 2) static 리소스 폴더에도 저장
+                    File saveFileStatic = new File(UPLOAD_DIR_STATIC + uniqueFileName);
+                    saveFileStatic.getParentFile().mkdirs();
+                    Files.copy(saveFile.toPath(), saveFileStatic.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    
                     // 5. DB 저장
                     Attachment attachment = new Attachment();
                     attachment.setCategoryCode(resolvedProductNo); // 상품 번호
@@ -622,13 +637,15 @@ public class ProductService {
                     
                     // 3. 저장할 경로 생성
                     File saveFile = new File(UPLOAD_DIR + uniqueFileName);
-
                     // 디렉토리가 없으면 생성
                     saveFile.getParentFile().mkdirs();
-
                     // 4. 로컬에 파일 저장
                     file.transferTo(saveFile);
 
+                    File saveFileStatic = new File(UPLOAD_DIR_STATIC + uniqueFileName);
+                    saveFileStatic.getParentFile().mkdirs();
+                    Files.copy(saveFile.toPath(), saveFileStatic.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    
                     // 5. DB 저장
                     Attachment attachment = new Attachment();
                     attachment.setCategoryCode(productNo); // 상품 번호
@@ -642,6 +659,7 @@ public class ProductService {
                     productMapper.insertAttachment(attachment);
 
                 } catch (IOException e) {
+                	 e.printStackTrace();
                     throw new RuntimeException("파일 업로드 실패: " + file.getOriginalFilename(), e);
                 }
             }

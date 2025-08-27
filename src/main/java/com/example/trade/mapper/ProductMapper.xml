@@ -240,7 +240,6 @@
 		  AND (#{middleId} IS NULL OR cp.category_id_lv2 = #{middleId})
 		GROUP BY pf.product_no, psa.productStatus, cp.category_id_lv1, cp.category_id_lv2, cp.category_id_lv3
 		ORDER BY pf.product_no
-
 	</select>
 	
 	<!-- 카테고리별 상품 목록 보기(전체) -->
@@ -289,6 +288,8 @@
 		FROM product p
 		LEFT JOIN category_path cp 
 		    ON p.category_id = cp.category_id
+		WHERE (#{parentId} IS NULL OR cp.category_id_lv1 = #{parentId})
+		  AND (#{middleId} IS NULL OR cp.category_id_lv2 = #{middleId})
 		GROUP BY p.product_no
 	</select>
 	
@@ -573,7 +574,7 @@
 				order_status, delivery_status, create_user, use_status)
         VALUES (#{orderNo}, #{subOrderNo}, #{userId}, #{addressNo}, #{productNo}, #{optionNo}, 
         		#{productName}, #{optionName}, #{optionNameValue}, #{orderQuantity}, #{price},
-        		#{orderStatus}, #{deliveryStatus}, #{createUser}, 'Y')
+        		#{orderStatus}, #{deliveryStatus}, #{createUser}, 'N')
 	</insert>
 	
 	<!-- 상품 요청 입력 -->

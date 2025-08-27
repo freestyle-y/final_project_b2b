@@ -22,6 +22,9 @@ public class WebConfig implements WebMvcConfigurer {
         String pattern  = (urlPrefix.endsWith("/")) ? (urlPrefix + "**") : (urlPrefix + "/**");
 
         registry.addResourceHandler(pattern)
-                .addResourceLocations(location);
+		        .addResourceLocations(
+		                location,                                // 외부 경로 (C:/uploads)
+		                "classpath:/static" + urlPrefix          // 정적 리소스 경로 (/static/uploads/...)
+		        );
     }
 }

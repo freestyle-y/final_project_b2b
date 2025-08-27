@@ -185,6 +185,7 @@
 		UPDATE `order`
 			SET payment_type = #{methodKor}
 			,payment_time = NOW()
+			,use_status = 'Y'
 		WHERE order_no = #{orderNo}
 	</update>
 	
