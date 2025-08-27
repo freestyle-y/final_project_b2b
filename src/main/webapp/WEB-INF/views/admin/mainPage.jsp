@@ -68,10 +68,11 @@
 		<br>
 		<br>
 		<a href="/admin/helpDesk">고객센터 관리</a> /
+		<a href="/admin/personalDeliveryList">개인 회원 배송 관리</a> /
+		<a href="/admin/bizDeliveryList">기업 회원 배송 관리</a> /
 		<a href="/admin/loginHistory">로그인 이력</a> /
 		<a href="/admin/alarmList">알림 목록</a> /
 		<a href="/admin/alarmWrite">알림 등록</a> /
-		<a href="/admin/bizDeliveryList">기업 회원 배송 현황</a>
 	</div>
 
 <!-- 공통 풋터 -->

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.example.trade.dto.Board;
 import com.example.trade.dto.Comment;
@@ -74,4 +75,16 @@ public interface AdminMapper {
 
 	// 기업 회원의 배송 현황 조회
 	List<Map<String, Object>> selectBizDeliveryList();
+
+	// 개인 회원 배송 현황 조회
+	List<Map<String, Object>> selectPersonalDeliveryList(Page page);
+
+	// 개인 회원 배송 전체 행 수 조회
+	int selectPersonalDeliveryTotalCount(Page page);
+
+	// 개인 회원 배송 상태 변경
+	int updatePersonalDelivery(@Param("orderNo") String orderNo,
+					            @Param("subOrderNo") String subOrderNo,
+					            @Param("deliveryStatus") String deliveryStatus,
+					            @Param("updateUser") String updateUser);
 }

@@ -361,4 +361,56 @@ public class AdminController {
 		model.addAttribute("bizDeliveryList", bizDeliveryList);
 		return "admin/bizDeliveryList";
 	}
+	
+	// 개인 회원 배송 현황 페이지
+	@GetMapping("/admin/personalDeliveryList")
+	public String personalDeliveryList(Model model
+									,@RequestParam(defaultValue = "10") int rowPerPage
+									,@RequestParam(defaultValue = "1") int currentPage
+									,@RequestParam(defaultValue = "") String searchWord
+									,@RequestParam(defaultValue = "all") String searchType) {
+		
+	    // Page 객체 생성 (DB 조회 전 totalCount = 0으로 초기화)
+	    Page page = new Page(rowPerPage, currentPage, 0, searchWord, searchType);
+	    
+		// 전체 행 수 조회
+		int totalCount = adminService.getPersonalDeliveryTotalCount(page);
+		page.setTotalCount(totalCount);
+		
+		// 개인 회원 배송 현황 조회
+		List<Map<String, Object>> personalDeliveryList = adminService.getPersonalDeliveryList(page);
+		
+		// 모델에 값 전달
+		model.addAttribute("personalDeliveryList", personalDeliveryList);
+		model.addAttribute("page", page);
+		
+		return "admin/personalDeliveryList";
+	}
+	
+	// 개인 회원 배송 변경 페이지
+    @GetMapping("/admin/personalDeliveryUpdate")
+    public String personalDeliveryUpdate(@RequestParam String orderNo,
+	                                     @RequestParam String subOrderNo,
+	                                     Model model) {
+        model.addAttribute("orderNo", orderNo);
+        model.addAttribute("subOrderNo", subOrderNo);
+        return "admin/personalDeliveryUpdate";
+    }
+
+    // 개인 회원 배송 상태 변경 처리
+    @PostMapping("/admin/personalDeliveryUpdate")
+    public String personalDeliveryUpdate(@RequestParam String orderNo,
+                                       @RequestParam String subOrderNo,
+                                       @RequestParam String deliveryStatus,
+                                       Model model, Principal principal) {
+    	
+    	String updateUser = principal.getName();
+    	
+    	model.addAttribute("orderNo", orderNo);
+        model.addAttribute("subOrderNo", subOrderNo);
+        model.addAttribute("deliveryStatus", deliveryStatus);
+        model.addAttribute("updateUser", updateUser);
+        adminService.updatePersonalDelivery(orderNo, subOrderNo, deliveryStatus, updateUser);
+        return "redirect:/admin/personalDeliveryList";
+    }
 }

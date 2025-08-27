@@ -13,6 +13,6 @@ public class DeliveryHistory {
 	private int deliveryHistoryNo;
 	private int orderNo;
 	private int subOrderNo;
-	private LocalDateTime time;
+	private LocalDateTime updateDate;
 	private String status;
 }
