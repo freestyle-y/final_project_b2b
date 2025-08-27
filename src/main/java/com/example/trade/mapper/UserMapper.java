@@ -49,7 +49,7 @@ public interface UserMapper {
 	
 	// 소셜로그인
 	// 소셜 계정 추가
-    int insert(SocialLogin socialLogin);
+    int insertSocial(SocialLogin socialLogin);
 
     // 특정 소셜 계정 찾기
     SocialLogin findAllBySocialTypeAndSocialId(

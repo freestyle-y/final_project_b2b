@@ -8,8 +8,10 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import com.example.trade.domain.UserDomain;
 import com.example.trade.service.MemberService;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -17,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final MemberService memberService;
+    private final HttpSession session; // 세션 주입
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -40,11 +43,21 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // DB에서 소셜 계정으로 userId 조회
         String userId = memberService.findUserIdBySocial(registrationId, socialId);
 
-        if (userId == null) {
-            // 연동된 계정 없음 → 예외 발생 (FailureHandler에서 잡음)
-            throw new OAuth2AuthenticationException("NO_LINKED_ACCOUNT");
-        }
+        boolean linkMode = Boolean.TRUE.equals(session.getAttribute("LINK_MODE"));
 
-        return oAuth2User;
+        if (userId == null) {
+            if (linkMode) {
+                // 연동 모드일 때는 예외 던지지 않고 SuccessHandler에서 처리하도록 그대로 리턴
+                return oAuth2User;
+            } else {
+                // 일반 로그인 모드에서는 예외 발생 → FailureHandler에서 잡음
+                throw new OAuth2AuthenticationException("NO_LINKED_ACCOUNT");
+            }
+        }
+        
+        // ✅ userId로 UserDetails 가져오기 (실제 로그인 계정 불러옴)
+        UserDomain userDomain= memberService.getSessionByUserId(userId);
+        
+        return oAuth2User;//new CustomUserDetails(userDomain);
     }
 }

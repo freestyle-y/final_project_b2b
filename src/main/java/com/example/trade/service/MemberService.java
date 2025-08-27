@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.trade.domain.UserDomain;
 import com.example.trade.dto.SocialLogin;
 import com.example.trade.dto.User;
 import com.example.trade.mapper.UserMapper;
@@ -34,6 +35,10 @@ public class MemberService {
 	
 	public boolean isIdAvailable(String id){
 		return userMapper.findById(id) == null;
+	}
+	
+	public UserDomain getSessionByUserId(String id) {
+		return userMapper.findById(id);
 	}
 	
 	@Transactional
@@ -215,6 +220,7 @@ public class MemberService {
 	
 	// 소셜 계정 추가 연동
     public void linkSocialAccount(String userId, String socialType, String socialId) {
+    	log.info("memberService에서 소셜연동 호출");
         SocialLogin existing = userMapper.findAllBySocialTypeAndSocialId(socialType, socialId);
         if (existing != null) {
             throw new IllegalStateException("이미 다른 계정에 연동된 소셜입니다.");
@@ -225,7 +231,7 @@ public class MemberService {
         socialLogin.setSocialType(socialType);
         socialLogin.setSocialId(socialId);
 
-        userMapper.insert(socialLogin);
+        userMapper.insertSocial(socialLogin);
     }
 
     // 소셜 계정으로 로그인 시 기존 유저 찾기

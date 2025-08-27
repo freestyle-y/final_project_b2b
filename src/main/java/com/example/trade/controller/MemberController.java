@@ -34,7 +34,9 @@ public class MemberController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String id = auth.getName();
         log.info(id);
-        
+        if(auth.getName() == null) {
+        	return "redirect:/public/login";
+        }
         User user = memberService.getUserById(id);
         model.addAttribute("user", user);
         

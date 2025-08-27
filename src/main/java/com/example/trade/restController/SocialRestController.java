@@ -1,13 +1,19 @@
 package com.example.trade.restController;
 
-import com.example.trade.dto.SocialLogin;
-import com.example.trade.service.MemberService;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.example.trade.dto.SocialLogin;
+import com.example.trade.service.MemberService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,6 +27,8 @@ public class SocialRestController {
     public List<SocialLogin> getLinkedSocials(@AuthenticationPrincipal UserDetails user) {
         return memberService.getLinkedSocials(user.getUsername());
     }
+    
+    
 
     // 소셜 연동 해제
     @DeleteMapping("/unlink/{socialType}")

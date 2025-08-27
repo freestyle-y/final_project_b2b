@@ -175,7 +175,7 @@ $("#searchPostalBtn").click(function(){
 
 // 소셜 연동
 function openSocialModal() { $("#socialModal").show(); }
-function linkSocial(provider) { location.href = "/oauth2/authorization/" + provider + "?linkAccount=true"; }
+function linkSocial(provider) { location.href = "/api/social/link/" + provider; }
 function unlinkSocial(provider) {
     $.ajax({
         url: "/api/social/unlink/" + provider,
