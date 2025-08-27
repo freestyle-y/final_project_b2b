@@ -1,11 +1,13 @@
 package com.example.trade.controller;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.trade.dto.Order;
@@ -57,6 +59,20 @@ public class DeliveryController {
 	public String exchangeReturn(Order order, Model model) {
 		model.addAttribute("orderNo", order.getOrderNo());
 		model.addAttribute("subOrderNo", order.getSubOrderNo());
+		model.addAttribute("orderQuantity", order.getOrderQuantity());
 		return "personal/exchangeReturn";
+	}
+	
+	// 교환/반품 신청 처리
+	@PostMapping("/personal/exchangeReturn")
+	public String submitExchangeReturn(Order order, Principal principal) {
+		// 로그인 사용자
+		order.setUpdateUser(principal.getName());
+
+		// 서비스 호출
+		deliveryService.requestExchangeReturn(order);
+
+		// 신청 후 주문 목록으로 리다이렉트
+		return "redirect:/personal/orderList";
 	}
 }

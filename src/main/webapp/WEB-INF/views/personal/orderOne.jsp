@@ -70,8 +70,16 @@
                 </td>
                 <td>
                     <button onclick="location.href='/personal/deliveryOne?orderNo=${order.orderNo}&subOrderNo=${order.subOrderNo}'">배송조회</button>
-                    <button onclick="location.href='/personal/exchangeReturn?orderNo=${order.orderNo}&subOrderNo=${order.subOrderNo}'">교환/반품</button>
-                    <button onclick="toggleReviewForm(${status.index})">리뷰작성</button>
+						<c:choose>
+							<c:when test="${order.deliveryStatus == 'DS003'}">
+								<!-- 배송완료일 때만 활성 -->
+								<button onclick="location.href='/personal/exchangeReturn?orderNo=${order.orderNo}&subOrderNo=${order.subOrderNo}&orderQuantity=${order.orderQuantity}'">교환/반품</button>
+							</c:when>
+							<c:otherwise>
+								<button disabled>교환/반품</button>
+							</c:otherwise>
+						</c:choose>
+					<button onclick="toggleReviewForm(${status.index})">리뷰작성</button>
                     <button onclick="location.href='/member/QNAWrite'">상품문의</button>
                     <button type="button" class="btn-confirm" onclick="confirmProduct('${order.orderNo}', '${order.subOrderNo}')">구매확정</button>
                     <span style="font-size:12px; color:gray;">(1% 적립 예정)</span>
