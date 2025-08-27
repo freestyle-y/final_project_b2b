@@ -79,6 +79,7 @@ public class ContractService {
 
 	public void updateDownPayment(int contractNo) {
 		contractMapper.updateDownPayment(contractNo);
+		contractMapper.insertContractOrder(contractNo);
 	}
 
 	public void updateFinalPayment(int contractNo) {

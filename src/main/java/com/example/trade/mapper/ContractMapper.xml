@@ -188,4 +188,11 @@
 		WHERE pr.create_user = #{userId} AND contract_no = #{contractNo}
 	</select>
 	
+	<insert id="insertContractOrder" parameterType="com.example.trade.dto.ContractOrder">
+		INSERT INTO contract_order (
+		contract_no, order_time
+		) VALUES (
+		#{contractNo}, NOW()
+		)
+	</insert>
 </mapper>

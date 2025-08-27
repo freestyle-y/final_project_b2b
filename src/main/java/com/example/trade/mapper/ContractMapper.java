@@ -42,4 +42,6 @@ public interface ContractMapper {
 
 	void updateFinalPayment(int contractNo);
 
+	void insertContractOrder(int contractNo);
+
 }
