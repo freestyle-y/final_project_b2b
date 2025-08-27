@@ -308,4 +308,58 @@
 		INNER JOIN container ct ON cd.container_no = ct.container_no
 		INNER JOIN contract_order co ON ct.contract_order_no = co.contract_order_no
 	</select>
+	
+	<!-- 개인 회원 배송 현황 조회 -->
+	<select id="selectPersonalDeliveryList" parameterType="com.example.trade.dto.Page" resultType="map">
+		SELECT 
+			o.order_no AS orderNo,
+			o.sub_order_no AS subOrderNo,
+			o.product_name AS productName,
+			o.option_name_value AS optionNameValue,
+			o.order_quantity AS orderQuantity,
+			o.price,
+			ct1.code_name AS orderStatus,
+			ct2.code_name AS deliveryStatus,
+			u.id AS userId,
+			u.name AS userName,
+			u.phone,
+			a.address,
+			a.detail_address AS detailAddress,
+			a.postal
+		FROM `order` o INNER JOIN `user` u ON o.user_id = u.id
+		INNER JOIN `address` a ON o.address_no = a.address_no
+		LEFT JOIN comm_tbl ct1 ON o.order_status = ct1.code_number
+		LEFT JOIN comm_tbl ct2 ON o.delivery_status = ct2.code_number
+		WHERE u.customer_category = 'CC003'
+		<if test="searchWord != null and searchWord != ''">
+			AND (o.order_no LIKE CONCAT('%', #{searchWord}, '%')
+			OR u.id LIKE CONCAT('%', #{searchWord}, '%'))
+		</if>
+		ORDER BY o.order_no DESC
+		LIMIT #{beginRow}, #{rowPerPage}
+	</select>
+	
+	<!-- 개인 회원 배송 전체 행 수 조회 -->
+	<select id="selectPersonalDeliveryTotalCount" parameterType="com.example.trade.dto.Page" resultType="int">
+		SELECT COUNT(*)
+		FROM `order` o INNER JOIN `user` u ON o.user_id = u.id
+		INNER JOIN `address` a ON o.address_no = a.address_no
+		LEFT JOIN comm_tbl ct1 ON o.order_status = ct1.code_number
+		LEFT JOIN comm_tbl ct2 ON o.delivery_status = ct2.code_number
+		WHERE u.customer_category = 'CC003'
+		<if test="searchWord != null and searchWord != ''">
+			AND (o.order_no LIKE CONCAT('%', #{searchWord}, '%')
+			OR u.id LIKE CONCAT('%', #{searchWord}, '%'))
+		</if>
+	</select>
+	
+	<!-- 개인 회원 배송 상태 변경 -->
+	<update id="updatePersonalDelivery" parameterType="string">
+		UPDATE `order` SET
+			delivery_status = #{deliveryStatus},
+			update_user = #{updateUser},
+			update_date = NOW()
+		WHERE order_no = #{orderNo}
+		AND sub_order_no = #{subOrderNo}
+	</update>
 </mapper>

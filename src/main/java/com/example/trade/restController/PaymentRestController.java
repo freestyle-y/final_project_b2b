@@ -2,6 +2,8 @@ package com.example.trade.restController;
 
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,17 +60,26 @@ public class PaymentRestController {
 
     // ✅ 결제 수단 및 포인트 저장
     @PostMapping("/saveMethodAndPoints")
-    public void saveMethodAndPoints(@RequestBody Map<String, Object> request) {
-        String orderNo = (String) request.get("orderNo");
-        String paymentMethod = (String) request.get("paymentMethod");
-        int usePoint = request.get("usePoint") == null ? 0 : Integer.parseInt(request.get("usePoint").toString());
-        Integer addressNo = request.get("addressNo") != null ? Integer.parseInt(request.get("addressNo").toString()) : null;
-        String methodKor = switch (paymentMethod) {
-            case "kakaopay" -> "카카오페이";
-            case "bank"     -> "계좌이체";
-            case "card"     -> "카드결제";
-            default         -> "기타";
-        };
-        orderService.saveMethodAndPoints(orderNo, methodKor, usePoint, addressNo);
+    public ResponseEntity<?> saveMethodAndPoints(@RequestBody Map<String, Object> request) {
+    	try {
+            String orderNo = (String) request.get("orderNo");
+            String paymentMethod = (String) request.get("paymentMethod");
+            int usePoint = request.get("usePoint") == null ? 0 : Integer.parseInt(request.get("usePoint").toString());
+            Integer addressNo = request.get("addressNo") != null ? Integer.parseInt(request.get("addressNo").toString()) : null;
+            String methodKor = switch (paymentMethod) {
+                case "kakaopay" -> "카카오페이";
+                case "bank"     -> "계좌이체";
+                case "card"     -> "카드결제";
+                default         -> "기타";
+            };
+            orderService.saveMethodAndPoints(orderNo, methodKor, usePoint, addressNo);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            // 재고 부족 등의 예외 메시지를 클라이언트에 전달
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            // 기타 예외는 500 에러로 처리
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "서버 오류가 발생했습니다."));
+        }
     }
 }

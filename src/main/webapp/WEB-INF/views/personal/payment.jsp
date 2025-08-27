@@ -285,7 +285,15 @@ h1, h3 {
             alert("계좌이체가 선택되었습니다. 기업 계좌로 입금 후 주문이 완료됩니다.");
             location.href = "/personal/orderList";
           },
-          error: function () { alert("결제수단/적립금 저장 실패"); }
+          error: function (xhr) {
+       	    const msg = xhr.responseJSON && xhr.responseJSON.message
+       	                ? xhr.responseJSON.message
+       	                : "결제수단/적립금 저장 실패";
+       	    alert(msg);
+       	    if (msg.includes("재고 부족")) {
+       	      location.href = "/personal/mainPage";  // 재고 부족 시 메인페이지로 리다이렉트
+       	    }
+       	  }
         });
       }).fail(function () { alert("배송요청 저장 실패"); });
       return;
@@ -343,7 +351,15 @@ h1, h3 {
             alert("카드결제가 완료되었습니다.");
             location.href = "/personal/orderList";
           },
-          error: function () { alert("결제수단/적립금 저장 실패"); }
+          error: function (xhr) {
+        	  const msg = xhr.responseJSON && xhr.responseJSON.message
+        	              ? xhr.responseJSON.message
+        	              : "결제수단/적립금 저장 실패";
+        	  alert(msg);
+        	  if (msg.includes("재고 부족")) {
+        	    location.href = "/personal/mainPage"; // 재고 부족 시 메인페이지로 리다이렉트
+        	  }
+        	}
         });
         return;
       }
@@ -383,9 +399,15 @@ h1, h3 {
               }
             });
           },
-          error: function () {
-            alert("결제수단/적립금 저장 실패");
-          }
+          error: function (xhr) {
+              const msg = xhr.responseJSON && xhr.responseJSON.message
+                          ? xhr.responseJSON.message
+                          : "결제수단/적립금 저장 실패";
+              alert(msg);
+              if (msg.includes("재고 부족")) {
+                location.href = "/personal/mainPage";
+              }
+            }
         });
         return;
       }

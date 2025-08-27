@@ -121,4 +121,19 @@ public class AdminService {
 	public List<Map<String, Object>> getBizDeliveryList() {
 		return adminMapper.selectBizDeliveryList();
 	}
+
+	// 개인 회원 배송 현황 조회
+	public List<Map<String, Object>> getPersonalDeliveryList(Page page) {
+		return adminMapper.selectPersonalDeliveryList(page);
+	}
+
+	// 개인 회원 배송 전체 행 수 조회
+	public int getPersonalDeliveryTotalCount(Page page) {
+		return adminMapper.selectPersonalDeliveryTotalCount(page);
+	}
+	
+	// 개인 회원 배송 상태 변경
+	public int updatePersonalDelivery(String orderNo, String subOrderNo, String deliveryStatus, String updateUser) {
+		return adminMapper.updatePersonalDelivery(orderNo, subOrderNo, deliveryStatus, updateUser);
+	}
 }
