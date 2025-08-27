@@ -124,6 +124,7 @@
 	        price
 	    FROM `order`
 	    WHERE user_id = #{userId}
+	    AND use_status = 'Y'
 	    ORDER BY order_no
 	</select>
 	
@@ -198,8 +199,9 @@
 	
 	<!-- 구매완료 시 재고 수정 -->
 	<update id="decreaseStock">
-	  UPDATE inventory
-	  SET quantity = quantity - #{quantity}
-	  WHERE product_no = #{productNo} AND option_no = #{optionNo} AND quantity >= #{quantity}
-</update>
+		UPDATE inventory
+		SET quantity = quantity - #{quantity}
+		WHERE product_no = #{productNo} AND option_no = #{optionNo} AND quantity >= #{quantity}
+	</update>
+	
 </mapper>

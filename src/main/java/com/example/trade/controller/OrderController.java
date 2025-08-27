@@ -129,7 +129,7 @@ public class OrderController {
     
     // 주문 상세
     @GetMapping("/personal/orderOne")
-    public String orderOne(@RequestParam("orderNo") int orderNo, Model model) {
+    public String orderOne(@RequestParam("orderNo") String orderNo, Model model) {
         List<Order> orderDetailList = orderService.getOrderDetailByOrderNo(orderNo); // 서비스에서 가져오기
         model.addAttribute("orderDetailList", orderDetailList);
         return "personal/orderOne";

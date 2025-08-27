@@ -7,12 +7,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.trade.dto.Order;
 import com.example.trade.mapper.OrderMapper;
+import com.example.trade.mapper.ProductMapper;
 
 @Service
 public class OrderService {
-	private final OrderMapper orderMapper;	
-	public OrderService(OrderMapper orderMapper) {
+	private final OrderMapper orderMapper;
+	private final ProductMapper productMapper;
+	public OrderService(OrderMapper orderMapper, ProductMapper productMapper) {
 		this.orderMapper = orderMapper;
+		this.productMapper = productMapper;
 	}
 
 
@@ -39,7 +42,7 @@ public class OrderService {
 	}
 
 
-	public List<Order> getOrderDetailByOrderNo(int orderNo) {
+	public List<Order> getOrderDetailByOrderNo(String orderNo) {
 		
 	    return orderMapper.selectOrderDetailByOrderNo(orderNo);
 	}
@@ -63,8 +66,11 @@ public class OrderService {
         List<Order> orderList = orderMapper.getOrderList(orderNo);
         for (Order order : orderList) {
             int updatedRows = orderMapper.decreaseStock(order.getProductNo(), order.getOptionNo(), order.getOrderQuantity());
-
-            if (updatedRows == 0) {
+            int quantity = productMapper.findInventoryQuantity(order.getProductNo(), order.getOptionNo());
+            if (quantity == 0) {
+            	productMapper.updateProductAndOptionStatus("system", order.getProductNo(), order.getOptionNo(), "GS003");
+            }
+            if (updatedRows == 0) { // 재고 부족으로 구매 실패
                 throw new IllegalArgumentException(
                     String.format("상품 [%s %s] 재고 부족 (요청: %d)", 
                     order.getProductName(), order.getOptionNameValue(), order.getOrderQuantity()));
@@ -73,7 +79,6 @@ public class OrderService {
         
         if (usePoint > 0) orderMapper.insertUsedPoint(orderNo, usePoint);
     }
-
 
 	public int updateOrderStatus(String orderNo, String subOrderNo) {
 		return orderMapper.updateOrderStatus(orderNo, subOrderNo);

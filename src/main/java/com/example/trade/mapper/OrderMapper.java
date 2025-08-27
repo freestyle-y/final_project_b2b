@@ -17,7 +17,7 @@ public interface OrderMapper {
 	String getUserIdByOrderNo(String orderNo);
 	String getFirstProductName(String orderNo);
 	List<Order> getOrderListByUserId(String userId);
-	List<Order> selectOrderDetailByOrderNo(int orderNo);
+	List<Order> selectOrderDetailByOrderNo(String orderNo);
 	int getReward(String userId);
 	int updateDeliveryRequest(@Param("orderNo") String orderNo
 							 ,@Param("deliveryRequest") String deliveryRequest);
