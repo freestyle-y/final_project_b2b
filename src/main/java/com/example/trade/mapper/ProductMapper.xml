@@ -298,6 +298,7 @@
 		    p.product_no AS productNo,
 		    p.product_name AS productName,
 		    o.option_no AS optionNo,
+		    o.option_name AS optionName,
 		    o.option_name_value AS optionNameValue,
 		    p.price,
 		    i.quantity,
@@ -537,6 +538,22 @@
 		ORDER BY parameter2
 	</select>
 
+	<!-- 대표 배송지 받아오기 -->
+	<select id="mainAddress" parameterType="String" resultType="int">
+		SELECT address_no AS addressNo
+		FROM address
+		WHERE user_id = #{id}
+			AND main_address = 'Y'
+	</select>
+	
+	<!-- 현재 남은 재고 조회 -->
+	<select id="currentStock" parameterType="int" resultType="int">
+		SELECT quantity
+		FROM inventory
+		WHERE product_no = #{productNo}
+			AND option_no = #{optionNo}
+	</select>
+	
 	<!-- 찜 테이블에 찜 삽입 -->
 	<insert id="insertWish">
 		INSERT INTO wish_list (user_id, product_no, use_status, create_user)
@@ -551,10 +568,10 @@
 	
 	<!-- 주문 데이터 삽입 -->
 	<insert id="insertOrder" parameterType="com.example.trade.dto.Order">
-		INSERT INTO `order` (order_no, sub_order_no, user_id, product_no, option_no, 
+		INSERT INTO `order` (order_no, sub_order_no, user_id, address_no, product_no, option_no, 
 				product_name, option_name, option_name_value, order_quantity, price,
 				order_status, delivery_status, create_user, use_status)
-        VALUES (#{orderNo}, #{subOrderNo}, #{userId}, #{productNo}, #{optionNo}, 
+        VALUES (#{orderNo}, #{subOrderNo}, #{userId}, #{addressNo}, #{productNo}, #{optionNo}, 
         		#{productName}, #{optionName}, #{optionNameValue}, #{orderQuantity}, #{price},
         		#{orderStatus}, #{deliveryStatus}, #{createUser}, 'Y')
 	</insert>

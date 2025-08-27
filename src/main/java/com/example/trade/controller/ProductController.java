@@ -17,7 +17,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import com.example.trade.TradeApplication;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.example.trade.dto.Address;
 import com.example.trade.dto.Category;
 import com.example.trade.dto.CommTbl;
@@ -84,16 +85,32 @@ public class ProductController {
 	
 	// 구매 처리
 	@PostMapping("/personal/purchase")
-	public String purchase(@ModelAttribute PurchaseListWrapper wrapper, Model model) {
+	public String purchase(@ModelAttribute PurchaseListWrapper wrapper,
+			RedirectAttributes redirectAttributes) {
 		List<Order> purchaseList = wrapper.getPurchaseList();
 		//log.info(purchaseList.toString());
-		
 		String orderNo = null;
-		if (purchaseList != null && !purchaseList.isEmpty()) {
-	        orderNo = productService.saveOrders(purchaseList);
+		
+		try {
+	        if (purchaseList != null && !purchaseList.isEmpty()) {
+	            orderNo = productService.saveOrders(purchaseList);
+	        }
+	        return "redirect:/personal/payment?orderNo=" + orderNo;
+
+	    } catch (IllegalArgumentException e) {
+	        // 예외 메시지를 redirect 시에 Flash Attribute로 전달
+	        redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+
+	        String source = purchaseList.get(0).getSource(); // "direct" 또는 "cart"
+	        
+	        if ("direct".equals(source)) {
+	            // 상품 상세 페이지로
+	            return "redirect:/personal/productOne?productNo=" + purchaseList.get(0).getProductNo();
+	        } else {
+	            // 장바구니로
+	            return "redirect:/personal/shoppingCart";
+	        }
 	    }
-	    
-	    return "redirect:/personal/payment?orderNo=" + orderNo;
 	}
 	
 	// 상품 목록
@@ -140,6 +157,7 @@ public class ProductController {
 	        opt.put("price", item.get("price"));
 	        opt.put("quantity", item.get("quantity"));
 	        opt.put("optionNo", item.get("optionNo"));
+	        opt.put("optionName", item.get("optionName"));
 	        optionList.add(opt);
 	    }
 

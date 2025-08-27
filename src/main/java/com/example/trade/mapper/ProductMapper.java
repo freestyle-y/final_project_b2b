@@ -57,6 +57,10 @@ public interface ProductMapper {
     Integer findMaxOrderNo();
     // 주문 데이터 삽입
     void insertOrder(Order order);
+    // 대표 배송지 받아오기
+    int mainAddress(String id);
+    // 현재 남은 재고 조회
+    int currentStock(int productNo, int optionNo);
     
 	// 카테고리(대분류) 목록
 	List<Category> majorCategory();

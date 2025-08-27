@@ -51,6 +51,7 @@ public class Order {
 	private String orderDetails;
 	private String totalOrderQuantity;
 	
+	private String source;
 	
 	// reward 총액
 	private int reward;

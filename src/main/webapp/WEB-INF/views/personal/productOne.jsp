@@ -207,6 +207,10 @@
 
 	<h2>${product.productName}</h2>
 
+	<c:if test="${not empty errorMessage}">
+	    <div style="color: red;">${errorMessage}</div>
+	</c:if>
+	
 	<div class="image-slider">
 	    <button class="prev-btn">&lt;</button>
 	    
@@ -243,6 +247,7 @@
 		        <option value="${opt.optionNo}" 
 		                data-price="${opt.price}" 
 		                data-quantity="${opt.quantity}"
+		                data-option-name="${opt.optionName}"
 		                <c:if test="${opt.quantity == 0}">disabled</c:if>>
 		            ${opt.optionNameValue} 
 		            <c:if test="${opt.quantity == 0}">(품절)</c:if>
@@ -419,7 +424,7 @@
                 quantityInput.val(quantity);
                 updateInfo();
             } else {
-                alert('재고가 부족합니다.');
+            	alert('수량은 최대 ' + stock + '개까지 가능합니다.');
             }
         });
 
@@ -558,6 +563,45 @@
             reviewList.empty().append(reviews);
             initReviewPagination(); // ✅ 정렬 후 페이징 다시 적용
         });
+     	
+        $('#buyNowBtn').on('click', function() {
+            const userId = '${loginUserName}';
+            const productNo = $('#wishHeart').data('product-no');
+            const selectedOption = $('#optionSelect option:selected');
+            const optionNo = selectedOption.val();
+            const productName = '${product.productName}';
+            const optionName = selectedOption.data('option-name') || '';
+            const optionNameValue = selectedOption.text().trim();
+            const price = selectedOption.data('price');
+            const quantity = Number($('#quantity').val());
+
+            function createHiddenInput(name, value) {
+                const input = document.createElement("input");
+                input.type = "hidden";
+                input.name = name;
+                input.value = value;
+                return input;
+            }
+
+            const form = document.createElement("form");
+            form.method = "POST";
+            form.action = "/personal/purchase";
+            form.style.display = "none";
+
+            form.appendChild(createHiddenInput("purchaseList[0].userId", userId));
+            form.appendChild(createHiddenInput("purchaseList[0].productNo", productNo));
+            form.appendChild(createHiddenInput("purchaseList[0].optionNo", optionNo));
+            form.appendChild(createHiddenInput("purchaseList[0].productName", productName));
+            form.appendChild(createHiddenInput("purchaseList[0].optionName", optionName));
+            form.appendChild(createHiddenInput("purchaseList[0].optionNameValue", optionNameValue));
+            form.appendChild(createHiddenInput("purchaseList[0].orderQuantity", quantity));
+            form.appendChild(createHiddenInput("purchaseList[0].price", price));
+            form.appendChild(createHiddenInput("purchaseList[0].source", "direct"));
+
+            document.body.appendChild(form);
+            form.submit();
+        });
+
     });
     </script>
 

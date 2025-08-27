@@ -107,6 +107,25 @@ public class ProductService {
 	        Integer productNo = ((Number) product.get("productNo")).intValue();
 	        String filepath = imageMap.get(productNo);
 	        product.put("imagePath", filepath);
+	        
+	        // ✅ 재고 체크 후 수량 조정
+	        int cartId = ((Number) product.get("cartId")).intValue();
+	        int optionNo = ((Number) product.get("optionNo")).intValue();
+	        int cartQty = ((Number) product.get("quantity")).intValue();
+	        int inventoryQty = productMapper.currentStock(productNo, optionNo);
+	        
+	        product.put("inventoryQuantity", inventoryQty); // JSP에서 쓰이므로 유지
+	        
+	        if (cartQty > inventoryQty) {
+	            // ✅ 수량 조정
+	            product.put("quantity", inventoryQty);
+
+	            // ✅ DB도 업데이트
+	            productMapper.updateCartQuantity("admin", cartId, inventoryQty);
+
+	            // ✅ 메시지용 (필요하면 메시지 리스트 따로 만들어 model에 전달 가능)
+	            product.put("quantityAdjusted", true);
+	        }
 	    }
 
 	    return productList;
@@ -142,14 +161,27 @@ public class ProductService {
 	public String saveOrders(List<Order> orderList) {
         Integer maxOrderNo = productMapper.findMaxOrderNo();
         int newOrderNo = (maxOrderNo != null ? maxOrderNo : 0) + 1;
-
         int subOrderNo = 1;
+        
+        // 대표 배송지 받아오기
+        int addressNo = productMapper.mainAddress(orderList.get(0).getUserId());
+        
         for (Order order : orderList) {
+        	// 최신 재고 조회
+        	int currentStock = productMapper.currentStock(order.getProductNo(), order.getOptionNo());
+        	
+        	if (currentStock < order.getOrderQuantity()) {
+                throw new IllegalArgumentException(
+                    String.format("상품 [%s %s] 재고 부족 (요청: %d, 남은 재고: %d)",
+                        order.getProductName(), order.getOptionNameValue(), order.getOrderQuantity(), currentStock));
+            }
+        	
         	order.setOrderNo(String.valueOf(newOrderNo));
             order.setSubOrderNo(String.valueOf(subOrderNo++));
             order.setOrderStatus("OS001");
             order.setDeliveryStatus("DS001");
             order.setCreateUser(order.getUserId());
+            order.setAddressNo(addressNo);
             productMapper.insertOrder(order);
         }
         

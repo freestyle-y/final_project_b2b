@@ -214,7 +214,7 @@
         const maxQty = parseInt(itemDiv.getAttribute("data-inventory-quantity"));
 
         if (newQty > maxQty) {
-        	alert('재고는 최대 ' + maxQty + '개까지 가능합니다.');
+        	alert('수량은 최대 ' + maxQty + '개까지 가능합니다.');
             return;
         }
 
@@ -301,6 +301,13 @@
 <div class="container">
     <div class="cart-title">장바구니</div>
 
+	<!-- ✅ 에러 메시지 영역 -->
+    <c:if test="${not empty errorMessage}">
+        <div style="background-color: #ffdddd; border: 1px solid #ff4d4f; padding: 10px; margin-bottom: 20px; border-radius: 5px; color: #a94442;">
+            <strong>알림:</strong> ${errorMessage}
+        </div>
+    </c:if>
+    
     <div class="header-checkbox">
         <input type="checkbox" id="selectAll" onclick="toggleAllCheckboxes(this)" />
         <label for="selectAll">전체 선택</label>
@@ -310,6 +317,12 @@
         <c:set var="itemTotal" value="${item.quantity * item.price}" />
         <c:set var="isSoldOut" value="${item.productStatus == '일시품절'}" />
 
+		<c:if test="${item.quantityAdjusted}">
+		    <div style="color: red; font-size: 13px; margin-top: 5px;">
+		        ※ 재고 부족으로 수량이 ${item.inventoryQuantity}개로 조정되었습니다.
+		    </div>
+		</c:if>
+		
         <div class="cart-item ${isSoldOut ? 'sold-out' : ''}"
         	data-cart-id="${item.cartId}"
 	     	data-user-id="${item.userId}"
@@ -420,6 +433,7 @@
             form.appendChild(createHiddenInput("purchaseList[" + index + "].optionNameValue", optionNameValue));
             form.appendChild(createHiddenInput("purchaseList[" + index + "].orderQuantity", quantity));
             form.appendChild(createHiddenInput("purchaseList[" + index + "].price", price));
+            form.appendChild(createHiddenInput("purchaseList[0].source", "cart"));
         });
 
         document.body.appendChild(form);
