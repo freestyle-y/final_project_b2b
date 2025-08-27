@@ -14,10 +14,10 @@ import lombok.NoArgsConstructor;
 public class Contract {
 	private Integer contractNo;
 	private int quotationNo;
-	private int downPayment;
+	private BigDecimal downPayment;
 	private String downPaymentStatus;
 	private LocalDateTime downPaymentDate;
-	private int finalPayment;
+	private BigDecimal finalPayment;
 	private String finalPaymentStatus;
 	private LocalDateTime finalPaymentDate;
 	private String createUser;
@@ -67,4 +67,8 @@ public class Contract {
 	
 	// container_delivery 조인
 	private String contractDeliveryStatus;
+	
+	// 배송상태 확인용
+	private int deliveryExist;
+	private String latestDeliveryStatus;
 }

@@ -49,4 +49,6 @@ public interface QuotationMapper {
 	void deleteQuotationItemsByQuotationNo(int quotationNo);
 
 	void updateQuotationItem(QuotationItem item);
+
+	int getContractExist(int quotationNo);
 }

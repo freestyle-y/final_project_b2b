@@ -2,6 +2,7 @@ package com.example.trade.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.security.Principal;
 import java.time.LocalDate;
@@ -132,8 +133,8 @@ public class ContractController {
 	    String finalPaymentStr = form.getFinalPayment();
 
 	    int quotationNo = Integer.parseInt(quotationNoStr);
-	    int downPayment = Integer.parseInt(downPaymentStr.replaceAll(",", ""));
-	    int finalPayment = Integer.parseInt(finalPaymentStr.replaceAll(",", ""));
+	    BigDecimal downPayment = new BigDecimal(downPaymentStr.replaceAll(",", ""));
+		BigDecimal finalPayment = new BigDecimal(finalPaymentStr.replaceAll(",", ""));
 
 	    String userId = (principal != null) ? principal.getName() : "admin";
 
@@ -187,20 +188,16 @@ public class ContractController {
 	                            ,@RequestParam("quotationNo") int quotationNo
 	                            ,@RequestParam("downPayment") String downPaymentStr
 	                            ,@RequestParam("finalPayment") String finalPaymentStr
-	                            ,@RequestParam("downPaymentDate") LocalDateTime downPaymentDate
-	                            ,@RequestParam("finalPaymentDate") LocalDateTime finalPaymentDate
 	                            ,RedirectAttributes ra) {
 
-	    int downPayment = Integer.parseInt(downPaymentStr.replaceAll(",", ""));
-	    int finalPayment = Integer.parseInt(finalPaymentStr.replaceAll(",", ""));
+		BigDecimal downPayment = new BigDecimal(downPaymentStr.replaceAll(",", ""));
+		BigDecimal finalPayment = new BigDecimal(finalPaymentStr.replaceAll(",", ""));
 
 	    Contract contract = new Contract();
 	    contract.setContractNo(contractNo);
 	    contract.setQuotationNo(quotationNo);
 	    contract.setDownPayment(downPayment);
 	    contract.setFinalPayment(finalPayment);
-	    contract.setDownPaymentDate(downPaymentDate);
-	    contract.setFinalPaymentDate(finalPaymentDate);
 
 	    contractService.updateContract(contract);
 

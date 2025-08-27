@@ -138,16 +138,26 @@ body {
 }
 
 .signature-field {
-	width: 100%;
-	height: 60px;
-	border: 2px dashed #999;
-	border-radius: 6px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background: #fff;
-	color: #999;
-	font-size: 12px;
+  width: 100%;
+  height: 60px;
+  border: 2px dashed #999;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  color: #999;
+  font-size: 12px;
+  padding: 6px;              /* [수정] 추가 */
+  overflow: hidden;          /* [수정] 추가: 혹시 모를 넘침 방지 */
+  box-sizing: border-box;    /* 이미 전체에 있으나 안전하게 인지 */
+}
+
+.signature-field img {
+  display: block;    /* [수정] 인라인 이미지 하단 갭 제거 */
+  width: 100%;       /* [수정] 가로 꽉 채움 */
+  height: 100%;      /* [수정] 세로 꽉 채움 */
+  object-fit: contain;
 }
 
 /* 테이블 스타일 */
@@ -469,7 +479,7 @@ body {
 							<button type="button" class="btn" data-action="clear">지우기</button>
 						</div>
 						<input type="hidden" name="supplierSignature" />
-						<img alt="supplier signature" style="display: none; max-width: 100%; height: 60px;" />
+						<img alt="supplier signature" style="display: none;" />
 					</div>
 					<!-- 을 서명 -->
 					<div class="signature-box" id="sig-buyer">
@@ -481,7 +491,7 @@ body {
 							<button type="button" class="btn" data-action="clear">지우기</button>
 						</div>
 						<input type="hidden" name="buyerSignature" />
-						<img alt="buyer signature" style="display: none; max-width: 100%; height: 60px;" />
+						<img alt="buyer signature" style="display: none;" />
 					</div>
 				</div>
 			</div>
