@@ -20,21 +20,12 @@
 				<td>
 					<input type="text" name="downPayment" value="${contract.downPayment}" />
 				</td>
-				<th>계약금 입금 상태</th>
-				<td>
-					<input type="checkbox" name="DPStatus" id="dPStatus">
-					<input type="hidden" name="downPaymentDate" id="downPaymentDate" />
-				</td>
+
 			</tr>
 			<tr>
 				<th>잔금</th>
 				<td>
 					<input type="text" name="finalPayment" value="${contract.finalPayment}" />
-				</td>
-				<th>잔금 입금 상태</th>
-				<td>
-					<input type="checkbox" name="FPStatus" id="fPStatus">
-					<input type="hidden" name="finalPaymentDate" id="finalPaymentDate" />
 				</td>
 			</tr>
 		</table>
@@ -50,25 +41,6 @@
 		const dd = String(today.getDate()).padStart(2, '0');
 		return `${yyyy}-${mm}-${dd}`;
 	}
-
-	document.addEventListener('DOMContentLoaded', function () {
-		const dpCheckbox = document.getElementById('dPStatus');
-		const fpCheckbox = document.getElementById('fPStatus');
-		const dpDateInput = document.getElementById('downPaymentDate');
-		const fpDateInput = document.getElementById('finalPaymentDate');
-
-		if (dpCheckbox) {
-			dpCheckbox.addEventListener('change', function () {
-				dpDateInput.value = dpCheckbox.checked ? getTodayDate() : '';
-			});
-		}
-		
-		if (fpCheckbox) {
-			fpCheckbox.addEventListener('change', function () {
-				fpDateInput.value = fpCheckbox.checked ? getTodayDate() : '';
-			});
-		}
-	});
 </script>	
 <%@ include file="/WEB-INF/common/footer/footer.jsp"%>
 </body>

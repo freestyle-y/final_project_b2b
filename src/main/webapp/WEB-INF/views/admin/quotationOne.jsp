@@ -55,7 +55,7 @@
             </tr>
         </c:forEach>
     </table>
-    <c:if test="${adminQuotationOne.status eq '승인' }">
+    <c:if test="${adminQuotationOne.status eq '승인' and exist eq 0}">
     	<button type="submit">계약서 작성</button>
     </c:if>
     <c:if test="${adminQuotationOne.status eq '승인거절' }">

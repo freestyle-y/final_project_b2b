@@ -134,18 +134,27 @@
       color: #333;
     }
     
-    .signature-field {
-      width: 100%;
-      height: 60px;
-      border: 2px dashed #999;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #fff;
-      color: #999;
-      font-size: 12px;
-    }
+.signature-field {
+  width: 100%;
+  height: 60px;
+  border: 2px dashed #999;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  color: #999;
+  font-size: 12px;
+  padding: 6px;              /* [수정] 추가 */
+  overflow: hidden;          /* [수정] 추가: 혹시 모를 넘침 방지 */
+  box-sizing: border-box;    /* 이미 전체에 있으나 안전하게 인지 */
+}
+.signature-field img {
+  display: block;    /* [수정] 인라인 이미지 하단 갭 제거 */
+  width: 100%;       /* [수정] 가로 꽉 채움 */
+  height: 100%;      /* [수정] 세로 꽉 채움 */
+  object-fit: contain;
+}
     
     /* 테이블 스타일 */
     .contract-table {
@@ -493,8 +502,7 @@
 						<c:choose>
 							<c:when test="${not empty supplierSign}">
 								<img src="${supplierSign.filepath}/${supplierSign.filename}"
-									alt="supplier signature"
-									style="max-width: 100%; max-height: 60px; object-fit: contain;" />
+									alt="supplier signature" />
 							</c:when>
 							<c:otherwise>서명 없음</c:otherwise>
 						</c:choose>
@@ -509,8 +517,7 @@
 				    <c:when test="${not empty buyerSign}">
 				      <div class="signature-field">
 				        <img src="${buyerSign.filepath}/${buyerSign.filename}"
-				             alt="buyer signature"
-				             style="max-width:100%; max-height:60px; object-fit:contain;" />
+				             alt="buyer signature"/>
 				      </div>
 				    </c:when>
 				

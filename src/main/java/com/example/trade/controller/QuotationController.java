@@ -48,6 +48,8 @@ public class QuotationController {
 	public String adminQuotationOne(Model model,
 	                                @RequestParam("quotationNo") int quotationNo) {
 	    Quotation adminQuotationOne = quotationService.adminQuotationOne(quotationNo);
+	    int exist = quotationService.getContractExist(quotationNo);
+	    model.addAttribute("exist", exist);
 	    model.addAttribute("adminQuotationOne", adminQuotationOne);
 	    return "admin/quotationOne";
 	}

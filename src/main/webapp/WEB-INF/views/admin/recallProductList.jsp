@@ -28,19 +28,24 @@
 	</tr>
 	</thead>
 	<tbody>
-		<c:forEach var="l" items="${list}">
-		<tr>
-			<td>${l.containerNo}</td>
-			<td>${l.containerLocation}</td>
-			<td>${l.name}</td>
-			<td>${l.companyName}</td>
-			<td>${l.address} ${l.detailAddress}</td>
-			<td>${l.productName}</td>
-			<td>${l.productOption}</td>
-			<td>${l.productQuantity}</td>
-		</tr>
-		</c:forEach>
+	<c:forEach var="g" items="${groups}">
+	  <c:forEach var="it" items="${g.items}" varStatus="st">
+	    <tr>
+	      <c:if test="${st.first}">
+	        <td rowspan="${g.rowspan}">${g.containerNo}</td>
+	        <td rowspan="${g.rowspan}">${g.containerLocation}</td>
+	        <td rowspan="${g.rowspan}">${g.name}</td>
+	        <td rowspan="${g.rowspan}">${g.companyName}</td>
+	        <td rowspan="${g.rowspan}">${g.address} ${g.detailAddress}</td>
+	      </c:if>
+	      <td>${it.productName}</td>
+	      <td>${it.productOption}</td>
+	      <td>${it.productQuantity}</td>
+	    </tr>
+	  </c:forEach>
+	</c:forEach>
 	</tbody>
+
 </table>
 
 <!-- 공통 풋터 -->

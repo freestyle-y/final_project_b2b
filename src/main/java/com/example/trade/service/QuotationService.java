@@ -75,5 +75,8 @@ public class QuotationService {
     public void updateQuotationItem(QuotationItem item) {
         quotationMapper.updateQuotationItem(item);
     }
+	public int getContractExist(int quotationNo) {
+		return quotationMapper.getContractExist(quotationNo);
+	}
 
 }
