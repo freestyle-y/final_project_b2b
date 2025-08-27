@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,7 +19,19 @@
 <%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
 
     <h1>비밀번호 변경</h1>
-
+	
+	<c:if test="${not empty error}">
+	<script>
+		alert("${error}");
+	</script>
+	</c:if>
+	<c:if test="${not empty success}">
+	<script>
+		alert("${success}");
+		window.location.href = "/public/logout";  // 확인 누르면 자동 로그아웃
+	</script>
+	</c:if>
+	
     <form id="pwForm" action="/public/changeMemberPw" method="post">
     	<input type="hidden" name="id" value="${id}">
         <div>
@@ -50,30 +63,35 @@
             const nowPw = $("#nowPw").val();
             const newPw = $("#newPw").val();
             const regex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
-			
-            if (newPw === nowPw && newPw !== "") {
-                $("#newPwMsg").text("현재 비밀번호와 동일합니다.").removeClass("success-msg").addClass("error-msg");
-                return false;
-            } else if (!regex.test(newPw)) {
-                $("#newPwMsg").text("8자 이상, 대문자 1개, 특수문자 1개 포함해야 합니다.").removeClass("success-msg").addClass("error-msg");
-                return false;
-            } else {
-                $("#newPwMsg").text("사용 가능한 비밀번호입니다.").removeClass("error-msg").addClass("success-msg");
-                return true;
-            }
-        }
+			if(newPw === "") {
+				$("#newPwMsg").text("").removeClass("error-msg success-msg");
+				return false;
+			}	else if (newPw === nowPw) {
+				$("#newPwMsg").text("현재 비밀번호와 동일합니다.").removeClass("success-msg").addClass("error-msg");
+				return false;
+			}	else if (!regex.test(newPw)) {
+				$("#newPwMsg").text("8자 이상, 대문자 1개, 특수문자 1개 포함해야 합니다.").removeClass("success-msg").addClass("error-msg");
+				return false;
+			} else {
+				$("#newPwMsg").text("사용 가능한 비밀번호입니다.").removeClass("error-msg").addClass("success-msg");
+				return true;
+			}
+		}
 
         function validateConfirmPw() {
             const newPw = $("#newPw").val();
             const confirmPw = $("#password").val();
-
-            if (newPw !== confirmPw) {
-                $("#confirmMsg").text("비밀번호가 일치하지 않습니다.").removeClass("success-msg").addClass("error-msg");
-                return false;
-            } else {
-                $("#confirmMsg").text("비밀번호가 일치합니다.").removeClass("error-msg").addClass("success-msg");
-                return true;
-            }
+			
+            if (newPw === "" || confirmPw === "") {
+				$("#confirmMsg").text("").removeClass("error-msg success-msg");
+				return false;
+            }	else if (newPw !== confirmPw) {
+				$("#confirmMsg").text("비밀번호가 일치하지 않습니다.").removeClass("success-msg").addClass("error-msg");
+				return false;
+			}	else {
+				$("#confirmMsg").text("비밀번호가 일치합니다.").removeClass("error-msg").addClass("success-msg");
+				return true;
+			}
         }
 
         $("#newPw, #nowPw").on("keyup blur", validateNewPw);
@@ -83,6 +101,9 @@
             if (!validateNewPw() || !validateConfirmPw()) {
                 e.preventDefault(); // 유효성 검사 실패 시 제출 막음
                 alert("비밀번호 조건을 확인해주세요.");
+            }	else if ($("#nowPw").val().trim() === "") {
+            	e.preventDefault();
+            	alert("현재 비밀번호를 입력해주세요.")
             }
         });
     });

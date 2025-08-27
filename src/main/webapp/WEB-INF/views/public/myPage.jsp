@@ -35,7 +35,7 @@
     <form id="myPageForm">
         <table>
             <tr><th>아이디</th><td><input type="text" id="userId" readonly value="${user.id}"></td></tr>
-            <tr><th>비밀번호 변경</th><td colspan="2"><button type="button" onclick="location.href='/public/changeMemberPw?id=${user.id}'">변경</button></td></tr>
+            <tr><th>비밀번호 변경</th><td colspan="2"><button type="button" onclick="location.href='/public/changeMemberPw'">변경</button></td></tr>
             <tr><th>회원구분</th><td><input type="text" id="customerCategory" readonly value="${user.customerCategory}"></td></tr>
             <tr><th>이름</th><td><input type="text" id="name" readonly value="${user.name}"></td><td><button type="button" onclick="openChangeModal('name')">변경</button></td></tr>
             <tr><th>휴대폰 번호</th><td><input type="text" id="phone" readonly value="${user.phone}"></td><td><button type="button" onclick="openChangeModal('phone')">변경</button></td></tr>

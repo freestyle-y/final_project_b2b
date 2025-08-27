@@ -5,11 +5,13 @@ import java.util.Map;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.trade.dto.User;
 import com.example.trade.service.MemberService;
@@ -98,19 +100,30 @@ public class MemberController {
 	
 	// 비밀번호 변경
 	@GetMapping("/public/changeMemberPw")
-	public String changeMemberPw(@RequestParam String id, 
-								Model model) {
-		User user = memberService.getUserById(id);
+	public String changeMemberPw(Model model) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String id = auth.getName();
 		model.addAttribute("id", id);
-		model.addAttribute("pw", user.getPassword());
 		return "public/changeMemberPw";
 	}
 	@PostMapping("/public/changeMemberPw")
-	public String changeMemberPw(@RequestParam String password, 
-								@RequestParam String id) {
-		memberService.updatePw(id, password);
-		
-		return "redirect:/public/logout";
+	public String changeMemberPw(@RequestParam String nowPw,
+								@RequestParam String newPw,
+								RedirectAttributes redirectAttributes,
+								Model model) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		User user = memberService.getUserById(auth.getName());
+		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+		model.addAttribute("id", user.getId());
+		if (!passwordEncoder.matches(nowPw, user.getPassword())) {
+	        redirectAttributes.addFlashAttribute("error", "현재 비밀번호가 일치하지 않습니다.");
+	        return "redirect:/public/changeMemberPw"; // 다시 폼으로
+	    }
+
+	    // 비밀번호 변경
+	    memberService.updatePw(user.getId(), passwordEncoder.encode(newPw));
+	    redirectAttributes.addFlashAttribute("success", "비밀번호가 변경되었습니다.");
+		return "redirect:/public/changeMemberPw";
 	}
 	
 	// 적립금 페이지
