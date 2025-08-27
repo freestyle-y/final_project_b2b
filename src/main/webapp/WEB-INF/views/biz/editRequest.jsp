@@ -4,6 +4,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <%@ include file="/WEB-INF/common/head.jsp"%>
     <title>상품 요청 수정</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
@@ -19,10 +20,10 @@
 </head>
 <body>
 
+<main class="main">
+
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
-<!-- 공통 사이드바 -->
-<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
 
 <h1>상품 요청 수정</h1>
 
@@ -107,6 +108,8 @@
     <br/>
     <button type="submit">수정 완료</button>
 </form>
+
+</main>
 
 <!-- 공통 풋터 -->
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>

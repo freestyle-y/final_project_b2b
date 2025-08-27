@@ -8,6 +8,7 @@
 	src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
 <head>
 <meta charset="UTF-8">
+<%@ include file="/WEB-INF/common/head.jsp"%>
 <title>계약서 작성 - 관리자</title>
 <style>
 /* 기본 스타일 */
@@ -426,11 +427,9 @@ body {
 </style>
 </head>
 <body>
+<div class="no-print">
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
-<div class="no-print">
-	<!-- 공통 사이드바 -->
-	<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
 </div>
 
 <div class="toolbar no-print">

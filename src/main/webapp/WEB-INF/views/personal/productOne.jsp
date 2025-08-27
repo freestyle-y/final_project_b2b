@@ -6,6 +6,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<%@ include file="/WEB-INF/common/head.jsp"%>
 <title>상품 상세</title>
 
 <!-- Font Awesome for star icons -->
@@ -202,8 +203,8 @@
 
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
-<!-- 공통 사이드바 -->
-<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
+
+<main class="main">
 
 	<h2>${product.productName}</h2>
 
@@ -343,6 +344,8 @@
 	    <!-- ✅ 페이지네이션 버튼 영역 -->
 		<div id="review-pagination" class="pagination"></div>
 	</div>
+	
+	</main>
 	
 	<!-- 공통 풋터 -->
 	<%@include file="/WEB-INF/common/footer/footer.jsp"%>

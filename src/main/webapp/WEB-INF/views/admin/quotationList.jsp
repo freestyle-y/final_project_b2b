@@ -6,6 +6,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<%@ include file="/WEB-INF/common/head.jsp"%>
 <title>견적서 목록</title>
 <style>
 table {
@@ -33,8 +34,6 @@ button {
 <body>
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
-<!-- 공통 사이드바 -->
-<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
 
 <h1>견적서</h1>
 <table>

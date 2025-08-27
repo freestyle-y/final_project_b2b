@@ -3,6 +3,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<%@ include file="/WEB-INF/common/head.jsp"%>
 <title>1:1 문의 등록</title>
 <style>
     body {
@@ -45,8 +46,8 @@
 
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
-<!-- 공통 사이드바 -->
-<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
+
+<main class="main">
 	
     <h1>1:1 문의 등록</h1>
     
@@ -67,6 +68,8 @@
         <input type="hidden" name="boardCode" value="BC002">
         <button type="submit">등록하기</button>
     </form>
+
+</main>
 
 <!-- 공통 풋터 -->
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>

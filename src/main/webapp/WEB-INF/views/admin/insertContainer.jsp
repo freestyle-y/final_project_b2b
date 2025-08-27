@@ -4,14 +4,13 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<%@ include file="/WEB-INF/common/head.jsp"%>
 <title>insertContainer</title>
 </head>
 <body>
 
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
-<!-- 공통 사이드바 -->
-<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
 
 	<h1>컨테이너 상품 입력</h1>
 	<form action="/admin/insertContainer" method="post">

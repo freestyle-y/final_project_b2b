@@ -4,6 +4,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<%@ include file="/WEB-INF/common/head.jsp"%>
 <title>문의 내역 상세</title>
 <style>
     table {
@@ -35,8 +36,8 @@
 
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
-<!-- 공통 사이드바 -->
-<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
+
+<main class="main">
 	
 	<h1>문의 내역 상세</h1>
 	
@@ -136,6 +137,8 @@
 			</div>
 		</c:forEach>
 	</div>
+
+</main>
 
 <!-- 공통 풋터 -->
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>

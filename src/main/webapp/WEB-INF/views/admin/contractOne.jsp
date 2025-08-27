@@ -5,6 +5,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+<%@ include file="/WEB-INF/common/head.jsp"%>
 <title>계약서 상세 - 관리자</title>
 <style>
 /* 기본 스타일 */
@@ -424,8 +425,6 @@ body {
 <div class="no-print">
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
-<!-- 공통 사이드바 -->
-<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
 </div>
 
 	<div class="toolbar no-print">

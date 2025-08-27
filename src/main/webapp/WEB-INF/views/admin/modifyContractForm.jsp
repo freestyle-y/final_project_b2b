@@ -4,11 +4,11 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<%@ include file="/WEB-INF/common/head.jsp"%>
 <title>계약서 수정</title>
 </head>
 <body>
 <%@ include file="/WEB-INF/common/header/header.jsp"%>
-<%@ include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
 
 <h1>계약서 수정</h1>
 	<form action="${pageContext.request.contextPath}/admin/modifyContract" method="post">

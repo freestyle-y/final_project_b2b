@@ -4,6 +4,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<%@ include file="/WEB-INF/common/head.jsp"%>
 <title>상품 목록</title>
 <style>
 	body {
@@ -272,8 +273,8 @@ $(function () {
 
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
-<!-- 공통 사이드바 -->
-<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
+
+<main class="main">
 
 	<input type="text" id="search-input" placeholder="상품명 검색..." />
 
@@ -356,7 +357,9 @@ $(function () {
 
 
 	<div class="pagination" id="pagination"></div>
-	
+
+</main>
+
 <!-- 공통 풋터 -->
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>
 

@@ -3,6 +3,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<%@ include file="/WEB-INF/common/head.jsp"%>
 <title>자주 묻는 질문 등록</title>
 <style>
     body {
@@ -45,8 +46,6 @@
 
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
-<!-- 공통 사이드바 -->
-<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
 	
     <h1>자주 묻는 질문 등록</h1>
     

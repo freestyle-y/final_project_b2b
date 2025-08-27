@@ -5,6 +5,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<%@ include file="/WEB-INF/common/head.jsp"%>
 <title>결제 페이지</title>
 <style>
 table {
@@ -49,8 +50,8 @@ h1, h3 {
 
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
-<!-- 공통 사이드바 -->
-<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
+
+<main class="main">
 
 	<h1>결제하기</h1>
 	<form id="paymentForm">
@@ -159,6 +160,8 @@ h1, h3 {
 		<input type="button" id="payBtn" class="btn" value="결제하기" onclick="showPasswordPopup()"> 
 		<input type="reset"	class="btn" value="취소">
 	</form>
+
+</main>
 
 <!-- 공통 풋터 -->
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>

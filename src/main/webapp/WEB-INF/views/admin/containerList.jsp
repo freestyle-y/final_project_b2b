@@ -4,6 +4,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<%@ include file="/WEB-INF/common/head.jsp"%>
 <title>컨테이너 목록</title>
 <style>
     table {
@@ -24,9 +25,6 @@
 <body>
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
-<!-- 공통 사이드바 -->
-<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
-
 
 <h1 style="text-align:center;">컨테이너 목록</h1>
 <form id="containerForm">

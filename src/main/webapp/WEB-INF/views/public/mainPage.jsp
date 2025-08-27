@@ -2,8 +2,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<%@ include file="/WEB-INF/common/head.jsp"%>
-	<title>공용 메인 페이지</title>
+<meta charset="UTF-8">
+<%@ include file="/WEB-INF/common/head.jsp"%>
+<title>공용 메인 페이지</title>
 <style>
     .main-container {
         max-width: 1200px;

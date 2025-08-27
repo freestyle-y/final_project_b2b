@@ -5,6 +5,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<%@ include file="/WEB-INF/common/head.jsp"%>
 <title>찜</title>
 
 <style>
@@ -159,8 +160,8 @@
 
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
-<!-- 공통 사이드바 -->
-<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
+
+<main class="main">
 
 <div class="wishlist-container">
 
@@ -224,6 +225,8 @@
         <button type="button" id="deleteBtn" onclick="deleteSelected()">삭제</button>
     </form>
 </div>
+
+</main>
 
 <!-- 공통 풋터 -->
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>

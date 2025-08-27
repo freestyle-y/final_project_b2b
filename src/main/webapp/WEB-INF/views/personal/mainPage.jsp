@@ -3,8 +3,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<%@ include file="/WEB-INF/common/head.jsp"%>
-	<title>개인 메인 페이지</title>
+<meta charset="UTF-8">
+<%@ include file="/WEB-INF/common/head.jsp"%>
+<title>개인 메인 페이지</title>
 <style>
 	body {
 	    font-family: Arial, sans-serif;

@@ -4,6 +4,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<%@ include file="/WEB-INF/common/head.jsp"%>
 <title>회원가입</title>
 <style>
     .hidden { display: none; }
@@ -277,7 +278,8 @@
 </head>
 <body>
 <%@include file="/WEB-INF/common/header/header.jsp"%>
-<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
+
+<main class="main">
 
 <h1>회원가입</h1>
 
@@ -339,6 +341,9 @@
     <button type="submit">가입하기</button>
 </form>
 
+</main>
+
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>
+
 </body>
 </html>

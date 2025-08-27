@@ -3,14 +3,15 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<%@ include file="/WEB-INF/common/head.jsp"%>
 <title>고객센터</title>
 </head>
 <body>
 
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
-<!-- 공통 사이드바 -->
-<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
+
+<main class="main">
 
 	<h1>고객센터</h1>
 	
@@ -20,7 +21,9 @@
 	<a href="/public/noticeList">공지사항</a>
 	
 	<h3>고객센터 페이지입니다.</h3>
-	
+
+</main>
+
 <!-- 공통 풋터 -->
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>
 
