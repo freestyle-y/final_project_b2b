@@ -2,11 +2,14 @@ package com.example.trade.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -159,8 +162,9 @@ public class ProductService {
 
 	// 장바구니에 담긴 상품 구매
 	public String saveOrders(List<Order> orderList) {
-        Integer maxOrderNo = productMapper.findMaxOrderNo();
-        int newOrderNo = (maxOrderNo != null ? maxOrderNo : 0) + 1;
+		String orderNo = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
+                + String.format("%04d", new Random().nextInt(10000));
+
         int subOrderNo = 1;
         
         // 대표 배송지 받아오기
@@ -176,7 +180,7 @@ public class ProductService {
                         order.getProductName(), order.getOptionNameValue(), order.getOrderQuantity(), currentStock));
             }
         	
-        	order.setOrderNo(String.valueOf(newOrderNo));
+        	order.setOrderNo(String.valueOf(orderNo));
             order.setSubOrderNo(String.valueOf(subOrderNo++));
             order.setOrderStatus("OS001");
             order.setDeliveryStatus("DS001");
@@ -185,7 +189,7 @@ public class ProductService {
             productMapper.insertOrder(order);
         }
         
-        return String.valueOf(newOrderNo);
+        return String.valueOf(orderNo);
     }
 	
 	

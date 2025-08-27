@@ -60,6 +60,17 @@ public class OrderService {
     public void saveMethodAndPoints(String orderNo, String methodKor, int usePoint, Integer addressNo) {
         orderMapper.updateDeliveryAddress(orderNo, addressNo);
         orderMapper.savePaymentMethod(orderNo, methodKor);
+        List<Order> orderList = orderMapper.getOrderList(orderNo);
+        for (Order order : orderList) {
+            int updatedRows = orderMapper.decreaseStock(order.getProductNo(), order.getOptionNo(), order.getOrderQuantity());
+
+            if (updatedRows == 0) {
+                throw new IllegalArgumentException(
+                    String.format("상품 [%s %s] 재고 부족 (요청: %d)", 
+                    order.getProductName(), order.getOptionNameValue(), order.getOrderQuantity()));
+            }
+        }
+        
         if (usePoint > 0) orderMapper.insertUsedPoint(orderNo, usePoint);
     }
 

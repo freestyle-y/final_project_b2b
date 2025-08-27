@@ -195,4 +195,11 @@
 			,order_reward = FLOOR(price * 0.01)
 		WHERE order_no = #{orderNo} AND sub_order_no = #{subOrderNo}
 	</update>
+	
+	<!-- 구매완료 시 재고 수정 -->
+	<update id="decreaseStock">
+	  UPDATE inventory
+	  SET quantity = quantity - #{quantity}
+	  WHERE product_no = #{productNo} AND option_no = #{optionNo} AND quantity >= #{quantity}
+</update>
 </mapper>

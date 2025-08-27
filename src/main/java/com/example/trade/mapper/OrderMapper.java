@@ -27,4 +27,5 @@ public interface OrderMapper {
 						 ,@Param("methodKor") String methodKor);
 	int updateOrderStatus(String orderNo, String subOrderNo);
 	void updateDeliveryAddress(String orderNo, Integer addressNo);
+	int decreaseStock(@Param("productNo") int productNo, @Param("optionNo") int optionNo, @Param("quantity") int quantity);
 }
