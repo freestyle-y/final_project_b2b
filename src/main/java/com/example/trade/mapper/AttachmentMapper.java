@@ -12,5 +12,5 @@ public interface AttachmentMapper {
     int insertOne(Attachment a);
     int insertBatch(List<Attachment> list);
 
-    List<Attachment> selectByCodeAndCategory(@Param("code") String code, @Param("category") String category);// ✅ 수정
+    List<Attachment> selectByCodeAndCategory(@Param("code") String code, @Param("category") int category);// ✅ 수정
 }

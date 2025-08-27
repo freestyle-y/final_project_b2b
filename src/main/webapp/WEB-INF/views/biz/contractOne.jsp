@@ -445,6 +445,14 @@
     <button class="btn btn-primary" onclick="window.print()">PDF/인쇄</button>
     <a class="btn" href="${pageContext.request.contextPath}/biz/contractList">목록</a>
   </div>
+
+     <!-- 첨부파일 목록 -->
+   <div class="toolbar no-print">
+     <div class="section-title">첨부파일 목록</div>
+     <div id="attachmentList">
+       <!-- 첨부파일 목록이 여기에 동적으로 로드됩니다 -->
+     </div>
+   </div>
   
   <div class="contract-container">
     <div class="contract-header">
@@ -694,17 +702,97 @@
       본 문서는 거래 조건 및 품목에 관한 계약 내용을 명시합니다.
     </div>
   </div>
-  
-  <script>
-    (function () {
-      const d = new Date();
-      const z = n => String(n).padStart(2, '0');
-      const today = d.getFullYear() + '-' + z(d.getMonth() + 1) + '-' + z(d.getDate());
-      document.getElementById('today').textContent = today;
-      document.getElementById('today2').textContent = today;
-    })();
-  </script>
-  
+ <script>
+   // 컨텍스트 경로
+   const ctx = '${pageContext.request.contextPath}';
+   const base = window.location.origin + ctx;
+   
+   // JSP에서 직접 계약번호 가져오기
+   const CONTRACT_NO = '${contractOne[0].contractNo}';
+   console.log('JSP에서 전달받은 계약번호:', CONTRACT_NO);
+
+  // 오늘 날짜 표시(요소 있을 때만)
+  (function () {
+    const d = new Date();
+    const z = n => String(n).padStart(2,'0');
+    const today = d.getFullYear() + '-' + z(d.getMonth()+1) + '-' + z(d.getDate());
+    const el1 = document.getElementById('today');
+    const el2 = document.getElementById('today2');
+    if (el1) el1.textContent = today;
+    if (el2) el2.textContent = today;
+  })();
+
+     // 첨부파일 목록 로드
+   function loadAttachments() {
+     const contractNo = CONTRACT_NO;
+     if (!contractNo) {
+       console.log('계약번호 없음, 목록 로드 스킵');
+       console.log('CONTRACT_NO 값:', CONTRACT_NO);
+       return;
+     }
+     
+     console.log('첨부파일 목록 로드 시작 - 계약번호:', contractNo);
+     
+     fetch(base + '/api/attachments/' + encodeURIComponent(contractNo) + '?attachmentCode=CONTRACT')
+     .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+     .then(attachments => {
+       const box = document.getElementById('attachmentList');
+       if (!attachments || !attachments.length) { box.innerHTML = '<p>첨부된 파일이 없습니다.</p>'; return; }
+
+       let html = '<table class="contract-table">';
+       html += '<thead><tr><th>파일명</th><th>업로드일</th><th>작성자</th><th>다운로드</th></tr></thead><tbody>';
+       for (var i=0; i<attachments.length; i++) {
+         var att = attachments[i];
+         var uploadDate = att && att.createDate ? new Date(att.createDate).toLocaleDateString('ko-KR') : '날짜 없음';
+         // ✅ 수정: 다운로드 링크도 절대 경로 사용
+         var downUrl = base + '/api/attachments/download/' + att.attachmentNo;
+         html += '<tr>'
+              +    '<td>' + (att.filename || '파일명 없음') + '</td>'
+              +    '<td>' + uploadDate + '</td>'
+              +    '<td>' + (att.createUser || '사용자 없음') + '</td>'
+              +    '<td><a class="btn btn-primary" href="' + downUrl + '">다운로드</a></td>'
+              +  '</tr>';
+       }
+       html += '</tbody></table>';
+       box.innerHTML = html;
+     })
+     .catch(err => {
+       const box = document.getElementById('attachmentList');
+       if (box) box.innerHTML = '<p>첨부파일 목록을 불러올 수 없습니다. 오류: ' + err.message + '</p>';
+     });
+   }
+
+     // 초기 로드 트리거
+   document.addEventListener('DOMContentLoaded', function() { 
+     console.log('DOM 로드 완료, CONTRACT_NO:', CONTRACT_NO);
+     if (CONTRACT_NO) {
+       loadAttachments();
+     } else {
+       console.log('CONTRACT_NO가 아직 준비되지 않음, 100ms 후 재시도');
+       setTimeout(() => {
+         if (CONTRACT_NO) {
+           loadAttachments();
+         }
+       }, 100);
+     }
+   });
+   
+   window.addEventListener('load', function() { 
+     console.log('페이지 완전 로드 완료, CONTRACT_NO:', CONTRACT_NO);
+     if (CONTRACT_NO) {
+       loadAttachments();
+     }
+   });
+   
+   // 추가 안전장치: 500ms 후에도 시도
+   setTimeout(function(){ 
+     console.log('500ms 후 안전장치 실행, CONTRACT_NO:', CONTRACT_NO);
+     if (CONTRACT_NO) {
+       loadAttachments();
+     }
+   }, 500);
+</script>
+
   <div class="no-print">
     <!-- 공통 풋터 -->
 	<%@include file="/WEB-INF/common/footer/footer.jsp"%>

@@ -21,6 +21,12 @@ public class Attachment {
 	private String updateUser;
 	private LocalDateTime updateDate;
 	private String useStatus;
-
+	@Override
+	public String toString() {
+		return "Attachment [attachmentNo=" + attachmentNo + ", attachmentCode=" + attachmentCode + ", categoryCode="
+				+ categoryCode + ", priority=" + priority + ", filepath=" + filepath + ", filename=" + filename
+				+ ", createUser=" + createUser + ", createDate=" + createDate + ", updateUser=" + updateUser
+				+ ", updateDate=" + updateDate + ", useStatus=" + useStatus + "]";
+	}
 
 }

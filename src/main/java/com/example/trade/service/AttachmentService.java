@@ -28,6 +28,6 @@ public class AttachmentService {
 	  }
 
 	  public List<Attachment> findContractSigns(int contractNo) {
-	    return attachmentMapper.selectByCodeAndCategory("CONTRACT_SIGN", String.valueOf(contractNo));
+	    return attachmentMapper.selectByCodeAndCategory("CONTRACT_SIGN", contractNo);
 	  }
 }

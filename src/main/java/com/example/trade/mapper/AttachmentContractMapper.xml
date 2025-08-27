@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.trade.mapper.AttachmentContractMapper">
+
+  <resultMap id="AttachmentMap" type="com.example.trade.dto.Attachment">
+    <id     property="attachmentNo"  column="attachment_no"/>
+    <result property="attachmentCode" column="attachment_code"/>
+    <result property="categoryCode"  column="category_code"/>
+    <result property="priority"      column="priority"/>
+    <result property="filepath"      column="filepath"/>
+    <result property="filename"      column="filename"/>
+    <result property="createUser"    column="create_user"/>
+    <result property="createDate"    column="create_date"/>
+    <result property="updateUser"    column="update_user"/>
+    <result property="updateDate"    column="update_date"/>
+    <result property="useStatus"     column="use_status"/>
+  </resultMap>
+
+  <!-- insertAttachment (이미 있음) -->
+  <insert id="insertAttachment" parameterType="com.example.trade.dto.Attachment" useGeneratedKeys="true" keyProperty="attachmentNo">
+    INSERT INTO attachment
+      (attachment_code, category_code, priority, filepath, filename,
+       create_user, create_date, update_user, update_date, use_status)
+    VALUES
+      (#{attachmentCode}, #{categoryCode}, #{priority}, #{filepath}, #{filename},
+       #{createUser}, NOW(), NULL, NULL, #{useStatus})
+  </insert>
+
+  <!-- selectMaxPriority (이미 있음) -->
+  <select id="selectMaxPriority" resultType="int">
+    SELECT IFNULL(MAX(priority), 0)
+    FROM attachment
+    WHERE attachment_code = #{attachmentCode}
+      AND category_code = #{categoryCode}
+      AND use_status = 'Y'
+  </select>
+
+  <!-- ✅ [추가] 계약번호 기준 첨부목록 -->
+  <!-- mapper 시그니처: selectAttachmentsByContract(@Param("attachmentCode"), @Param("contractNo")) -->
+  <select id="selectAttachmentsByContract" resultMap="AttachmentMap">
+    SELECT
+      attachment_no, attachment_code, category_code, priority,
+      filepath, filename, create_user, create_date,
+      update_user, update_date, use_status
+    FROM attachment
+    WHERE attachment_code = #{attachmentCode}
+      AND category_code = #{contractNo}
+      AND use_status = 'Y'
+    ORDER BY priority ASC, attachment_no ASC
+  </select>
+
+  <!-- ✅ [추가] 첨부 단건 조회 -->
+  <!-- mapper 시그니처: selectAttachmentByNo(@Param("attachmentNo")) -->
+  <select id="selectAttachmentByNo" resultMap="AttachmentMap">
+    SELECT
+      attachment_no, attachment_code, category_code, priority,
+      filepath, filename, create_user, create_date,
+      update_user, update_date, use_status
+    FROM attachment
+    WHERE attachment_no = #{attachmentNo}
+  </select>
+
+  <!-- ✅ [추가] 논리 삭제 -->
+  <!-- mapper 시그니처: deleteAttachment(@Param("attachmentNo"), @Param("updateUser")) -->
+  <update id="deleteAttachment">
+    UPDATE attachment
+       SET use_status = 'N',
+           update_user = #{updateUser},
+           update_date = NOW()
+     WHERE attachment_no = #{attachmentNo}
+  </update>
+
+</mapper>

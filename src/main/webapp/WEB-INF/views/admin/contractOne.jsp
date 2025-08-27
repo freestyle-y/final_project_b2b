@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
@@ -136,18 +135,26 @@ body {
 }
 
 .signature-field {
-	width: 100%;
-	height: 60px;
-	border: 2px dashed #999;
-	border-radius: 6px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background: #fff;
-	color: #999;
-	font-size: 12px;
+  width: 100%;
+  height: 60px;
+  border: 2px dashed #999;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  color: #999;
+  font-size: 12px;
+  padding: 6px;              /* [수정] 추가 */
+  overflow: hidden;          /* [수정] 추가: 혹시 모를 넘침 방지 */
+  box-sizing: border-box;    /* 이미 전체에 있으나 안전하게 인지 */
 }
-
+.signature-field img {
+  display: block;    /* [수정] 인라인 이미지 하단 갭 제거 */
+  width: 100%;       /* [수정] 가로 꽉 채움 */
+  height: 100%;      /* [수정] 세로 꽉 채움 */
+  object-fit: contain;
+}
 /* 테이블 스타일 */
 .contract-table {
 	width: 100%;
@@ -425,6 +432,24 @@ body {
 		<button class="btn btn-primary" onclick="window.print()">PDF/인쇄</button>
 		<a class="btn" href="${pageContext.request.contextPath}/admin/contractList">목록</a>
 	</div>
+	<form action="${pageContext.request.contextPath}/admin/attachmentUpload" method="post" enctype="multipart/form-data" onsubmit="return uploadFiles(this)">
+		<div class="toolbar no-print">
+		<c:if test="${not empty contractOne}">
+			<input type="file" name="files" multiple>
+			<input type="hidden" name="attachmentCode" value="CONTRACT">
+			<input type="hidden" name="contractNo" value="${contractOne[0].contractNo}">
+			<button class="btn btn-primary" type="submit">업로드</button>
+		</c:if>
+		</div>
+	</form>
+
+	<!-- 첨부파일 목록 -->
+	<div class="toolbar no-print">
+		<div class="section-title">첨부파일 목록</div>
+		<div id="attachmentList" data-contract-no="${contractOne[0].contractNo}">
+			<!-- 첨부파일 목록이 여기에 동적으로 로드됩니다 -->
+		</div>
+	</div>
 
 	<div class="contract-container">
 		<div class="contract-header">
@@ -473,8 +498,7 @@ body {
 						<c:choose>
 							<c:when test="${not empty supplierSign}">
 								<img src="${supplierSign.filepath}/${supplierSign.filename}"
-									alt="supplier signature"
-									style="max-width: 100%; max-height: 60px; object-fit: contain;" />
+								     alt="supplier signature" />
 							</c:when>
 							<c:otherwise>서명 없음</c:otherwise>
 						</c:choose>
@@ -682,20 +706,100 @@ body {
 		<div class="contract-footer">본 문서는 거래 조건 및 품목에 관한 계약 내용을 명시합니다.
 		</div>
 	</div>
+<script>
+  const ctx = '${pageContext.request.contextPath}';
+  const CONTRACT_NO = '<c:out value="${contractOne[0].contractNo}" default=""/>';
 
-	<script>
-    (function () {
-      const d = new Date();
-      const z = n => String(n).padStart(2, '0');
-      const today = d.getFullYear() + '-' + z(d.getMonth() + 1) + '-' + z(d.getDate());
-      document.getElementById('today').textContent = today;
-      document.getElementById('today2').textContent = today;
-    })();
-  </script>
+  (function () {
+    const d = new Date(), z = n => String(n).padStart(2,'0');
+    const today = d.getFullYear() + '-' + z(d.getMonth()+1) + '-' + z(d.getDate());
+    const el1 = document.getElementById('today');
+    const el2 = document.getElementById('today2');
+    if (el1) el1.textContent = today;
+    if (el2) el2.textContent = today;
+  })();
 
-	<div class="no-print">
-		<!-- 공통 풋터 -->
-		<%@include file="/WEB-INF/common/footer/footer.jsp"%>
-	</div>
+  function uploadFiles(form) {
+    const formData = new FormData(form);
+    fetch(ctx + '/admin/attachmentUpload', { method: 'POST', body: formData })
+      .then(r => r.text())
+      .then(result => {
+        alert(result);
+        if (result.includes('완료되었습니다')) {
+          setTimeout(loadAttachments, 300);
+          form.reset();
+        }
+      })
+      .catch(err => {
+        console.error('업로드 실패:', err);
+        alert('첨부파일 업로드 중 오류가 발생했습니다.');
+      });
+    return false;
+  }
+
+  function loadAttachments() {
+    const contractNo = CONTRACT_NO;
+    if (!contractNo) return;
+
+    fetch(ctx + '/api/attachments/' + encodeURIComponent(contractNo) + '?attachmentCode=CONTRACT')
+      .then(r => { if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(attachments => {
+        const box = document.getElementById('attachmentList');
+        if (!attachments || attachments.length === 0) {
+          box.innerHTML = '<p>첨부된 파일이 없습니다.</p>';
+          return;
+        }
+        let html = '<table class="contract-table">';
+        html += '<thead><tr><th>파일명</th><th>업로드일</th><th>작성자</th><th>관리</th></tr></thead><tbody>';
+        attachments.forEach(att => {
+          const uploadDate = att.createDate ? new Date(att.createDate).toLocaleDateString('ko-KR') : '날짜 없음';
+          html += '<tr>'
+               +   '<td>' + (att.filename || '파일명 없음') + '</td>'
+               +   '<td>' + uploadDate + '</td>'
+               +   '<td>' + (att.createUser || '사용자 없음') + '</td>'
+               +   '<td><button class="btn btn-primary" onclick="deleteAttachment(' + att.attachmentNo + ')">삭제</button></td>'
+               + '</tr>';
+        });
+        html += '</tbody></table>';
+        box.innerHTML = html;
+      })
+      .catch(err => {
+        const box = document.getElementById('attachmentList');
+        box.innerHTML = '<p>첨부파일 목록을 불러올 수 없습니다. 오류: ' + err.message + '</p>';
+      });
+  }
+
+  function deleteAttachment(attachmentNo) {
+    if (!confirm('정말로 이 첨부파일을 삭제하시겠습니까?')) return;
+    const fd = new FormData();
+    fd.append('attachmentNo', attachmentNo);
+    fetch(ctx + '/api/attachments/delete', { method: 'POST', body: fd })
+      .then(r => r.text())
+      .then(result => {
+        alert(result);
+        if (result.includes('삭제되었습니다')) loadAttachments();
+      })
+      .catch(err => {
+        console.error('삭제 실패:', err);
+        alert('첨부파일 삭제에 실패했습니다.');
+      });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    if (CONTRACT_NO) loadAttachments();
+  });
+  window.addEventListener('load', function() {
+    if (CONTRACT_NO) loadAttachments();
+  });
+  setTimeout(function() {
+    if (CONTRACT_NO) loadAttachments();
+  }, 500);
+</script>
+
+
+<div class="no-print">
+	<!-- 공통 풋터 -->
+	<%@include file="/WEB-INF/common/footer/footer.jsp"%>
+</div>
 </body>
 </html>

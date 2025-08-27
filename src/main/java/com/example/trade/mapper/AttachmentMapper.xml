@@ -29,10 +29,11 @@
     use_status  AS useStatus
   FROM attachment
   WHERE attachment_code = #{code}
-    AND category_code   = #{category}
+    AND category_code   = #{category}   <!-- ✅ int 파라미터 -->
     AND use_status      = 'Y'
   ORDER BY priority ASC, attachment_no ASC
 </select>
+
 
 
 </mapper>
