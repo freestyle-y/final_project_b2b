@@ -72,8 +72,8 @@ public class OrderService {
             }
             if (updatedRows == 0) { // 재고 부족으로 구매 실패
                 throw new IllegalArgumentException(
-                    String.format("상품 [%s %s] 재고 부족 (요청: %d)", 
-                    order.getProductName(), order.getOptionNameValue(), order.getOrderQuantity()));
+                    String.format("상품 [%s %s] 재고 부족 (요청: %d, 남은 수량: %d)", 
+                    order.getProductName(), order.getOptionNameValue(), order.getOrderQuantity(), quantity));
             }
         }
         
