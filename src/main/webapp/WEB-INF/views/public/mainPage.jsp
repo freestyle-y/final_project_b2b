@@ -2,8 +2,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>공용 메인 페이지</title>
+	<%@ include file="/WEB-INF/common/head.jsp"%>
+	<title>공용 메인 페이지</title>
 <style>
     .main-container {
         max-width: 1200px;
@@ -49,14 +49,13 @@
     }
 </style>
 </head>
-<body>
+<body class="index-page">
 
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
-<!-- 공통 사이드바 -->
-<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
 
-    <div class="main-container">
+<main class="main">
+    <div class="container">
         <h1>mainPage</h1>
 
         <div class="card-grid">
@@ -72,6 +71,7 @@
             <% } %>
         </div>
     </div>
+</main>
 
 <!-- 공통 풋터 -->
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>

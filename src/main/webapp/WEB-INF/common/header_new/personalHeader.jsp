@@ -1,43 +1,130 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<header style="border-bottom:1px solid #e5e7eb; background:#ffffff;">
-  <!-- 전체 헤더 컨테이너 -->
-  <div style="max-width:1200px; margin:0 auto; padding:8px 12px; display:flex; align-items:flex-end; justify-content:space-between;">
-<!-- 좌측: 로고 + 텍스트 로고 -->
-<div style="display:flex; align-items:center; gap:5px; flex:1.5;">
-  <a href="/personal/mainPage" style="display:flex; align-items:center;">
-    <img src="${pageContext.request.contextPath}/images/freestyle.jpg"
-         alt="FreeStyle 이미지 로고"
-         style="height:130px; width:auto; object-fit:contain;">
-  </a>
-  <p>(personal header)</p>
-  <a href="/personal/mainPage" style="display:flex; align-items:center; flex:1;">
-    <img src="${pageContext.request.contextPath}/images/freestyle_text.png"
-         alt="FreeStyle 텍스트 로고"
-         style="height:110px; width:100%; object-fit:contain; padding-right:10px;">
-  </a>
-</div>
-    <!-- 우측: 유틸 메뉴 + 메인 메뉴 -->
-    <div style="display:flex; flex-direction:column; justify-content:flex-end; height:130px;">
-      <!-- 유틸 메뉴 -->
-      <div style="display:flex; gap:12px; font-size:14px; justify-content:flex-end;">
-        <a href=""	style="text-decoration:none; color:#111827;">상품 카테고리</a>
-        <a href="/personal/productList"	style="text-decoration:none; color:#111827;">상품 목록</a>
-        <a href="/public/reviewList"  style="text-decoration:none; color:#111827;">상품 후기</a>
-        <a href="/personal/shoppingCart" style="text-decoration:none; color:#374151;">장바구니</a>
-        <a href="/personal/wishList"     style="text-decoration:none; color:#374151;">찜 목록</a>
-        <a href="/personal/orderList" style="text-decoration:none; color:#374151;">주문배송조회</a>
-        <a href="/public/logout"       style="text-decoration:none; color:#374151;">로그아웃</a>
-      </div>
+<header id="header" class="header sticky-top">
+	<!-- Main Header -->
+	<div class="main-header">
+		<div class="container-fluid container-xl">
+			<div class="d-flex py-3 align-items-center justify-content-between">
 
-      <!-- 메인 메뉴 -->
-      <nav aria-label="Main Navigation" style="display:flex; gap:18px; font-size:15px; margin-top:auto;">
-      	<a href="" 	style="text-decoration:none; color:#111827;">공지사항</a>
-      	<a href="" 	style="text-decoration:none; color:#111827;">FAQ</a>
-      	<a href="" 	style="text-decoration:none; color:#111827;">문의사항</a>
-      	<a href="" 	style="text-decoration:none; color:#111827;">고객센터</a>
-        
-      </nav>
-    </div>
+				<!-- Logo -->
+				<a href="/personal/mainPage" class="logo d-flex align-items-center"> <!-- Uncomment the line below if you also wish to use an image logo -->
+					<!-- <img src="assets/img/logo.webp" alt=""> -->
+					<h1 class="sitename">FreeStyle</h1>
+				</a>
 
-  </div>
+
+				<!-- Actions -->
+				<div class="header-actions d-flex align-items-center justify-content-end">
+
+					<!-- Mobile Search Toggle -->
+					<button class="header-action-btn mobile-search-toggle d-xl-none" type="button" data-bs-toggle="collapse" data-bs-target="#mobileSearch" aria-expanded="false" aria-controls="mobileSearch">
+						<i class="bi bi-search"></i>
+					</button>
+					<a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
+						<i class="bi bi-translate me-2"></i>EN
+					</a>
+					<ul class="dropdown-menu">
+						<li><a class="dropdown-item" href="#"><i class="bi bi-check2 me-2 selected-icon"></i>English</a></li>
+						<li><a class="dropdown-item" href="#">Español</a></li>
+						<li><a class="dropdown-item" href="#">Français</a></li>
+						<li><a class="dropdown-item" href="#">Deutsch</a></li>
+					</ul>
+					<!-- Account -->
+					<div class="dropdown account-dropdown">
+						<button class="header-action-btn" data-bs-toggle="dropdown">
+							<i class="bi bi-person"></i>
+						</button>
+						<div class="dropdown-menu">
+							<div class="dropdown-header">
+								<h6>Welcome to <span class="sitename">FashionStore</span></h6>
+								<p class="mb-0">Access account &amp; manage orders</p>
+							</div>
+							<div class="dropdown-body">
+								<a class="dropdown-item d-flex align-items-center" href="/member/myPage">
+									<i class="bi bi-person-circle me-2"></i>
+									<span>My Profile</span>
+								</a>
+								<a class="dropdown-item d-flex align-items-center" href="/personal/deliveryList">
+									<i class="bi bi-bag-check me-2"></i>
+									<span>My Orders</span>
+								</a>
+								<a class="dropdown-item d-flex align-items-center" href="account.html">
+									<i class="bi bi-heart me-2"></i>
+									<span>My Wishlist</span>
+								</a>
+								<a class="dropdown-item d-flex align-items-center" href="account.html">
+									<i class="bi bi-gear me-2"></i>
+									<span>Settings</span>
+								</a>
+							</div>
+						</div>
+					</div>
+
+					<!-- Wishlist -->
+					<a href="/personal/wishList" class="header-action-btn d-none d-md-block">
+						<i class="bi bi-heart"></i>
+						<span class="badge">0</span>
+					</a>
+
+					<!-- Cart -->
+					<a href="/personal/shoppingCart" class="header-action-btn">
+						<i class="bi bi-cart3"></i>
+						<span class="badge">3</span>
+					</a>
+
+					<!-- Mobile Navigation Toggle -->
+					<i class="mobile-nav-toggle d-xl-none bi bi-list me-0"></i>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Navigation -->
+	<div class="header-nav">
+		<div class="container-fluid container-xl position-relative">
+			<nav id="navmenu" class="navmenu">
+				<ul>
+					<li><a href="/public/mainPage" class="active">Home</a></li>
+					<li><a href="#">상품 카테고리</a></li>
+					<li><a href="/personal/productList">상품 목록</a></li>
+					<li><a href="/public/reviewList">상품 후기</a></li>
+					<li><a href="/personal/deliveryList">주문배송조회</a></li>
+					<li><a href="#">sample1</a></li>
+					<li class="dropdown"><a href="#"><span>sample2</span><i class="bi bi-chevron-down toggle-dropdown"></i></a>
+						<ul>
+							<li><a href="#">Dropdown 1</a></li>
+							<li><a href="#">Dropdown 2</a></li>
+							<li><a href="#">Dropdown 3</a></li>
+							<li><a href="#">Dropdown 4</a></li>
+							<li class="dropdown"><a href="#"><span>Deep Dropdown</span><i class="bi bi-chevron-down toggle-dropdown"></i></a>
+								<ul>
+									<li><a href="#">Deep Dropdown 1</a></li>
+									<li><a href="#">Deep Dropdown 2</a></li>
+									<li><a href="#">Deep Dropdown 3</a></li>
+									<li><a href="#">Deep Dropdown 4</a></li>
+									<li><a href="#">Deep Dropdown 5</a></li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+					<li><a href="/public/helpDesk">고객센터</a></li>
+					<li><a href="/public/logout">로그아웃</a></li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+
+	<!-- Mobile Search Form -->
+	<div class="collapse" id="mobileSearch">
+		<div class="container">
+			<form class="search-form">
+				<div class="input-group">
+					<input type="text" class="form-control" placeholder="Search for products">
+					<button class="btn" type="submit">
+						<i class="bi bi-search"></i>
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
 </header>

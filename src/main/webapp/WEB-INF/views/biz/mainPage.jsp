@@ -1,12 +1,10 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>기업 메인 페이지</title>
-
+	<%@ include file="/WEB-INF/common/head.jsp"%>
+	<title>기업 메인 페이지</title>
 <style>
 	body {
 	    font-family: Arial, sans-serif;
@@ -79,12 +77,12 @@
 	}
 </style>
 </head>
-<body>
+<body class="index-page">
 
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
-<!-- 공통 사이드바 -->
-<%@include file="/WEB-INF/common/sidebar/sidebar.jsp"%>
+
+<main class="main">
 	
 	<input type="text" id="search-input" placeholder="상품명 검색..." />
 	
@@ -129,6 +127,8 @@
 	</div>
 	
 	<div class="pagination" id="pagination"></div>
+	
+	</main>
 	
 	<!-- 공통 풋터 -->
 	<%@include file="/WEB-INF/common/footer/footer.jsp"%>

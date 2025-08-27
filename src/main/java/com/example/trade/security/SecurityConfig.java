@@ -10,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,8 +21,6 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
-
-import com.example.trade.config.ApplicationContextProvider;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -69,8 +68,7 @@ public class SecurityConfig {
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity,
 											CustomOAuth2UserService customOAuth2UserService,
-											CustomOAuth2FailureHandler customOAuth2FailureHandler,
-											UserDetailsService userDetailsService) throws Exception {
+											CustomOAuth2FailureHandler customOAuth2FailureHandler) throws Exception {
 
 		// CSRF 설정 (테스트 단계이므로 disable, 추후 보안 요구사항 따라 enable 고려)
 		httpSecurity.csrf((csrfConfigurer) -> csrfConfigurer.disable());
@@ -79,7 +77,7 @@ public class SecurityConfig {
 		httpSecurity.authorizeHttpRequests((requestMatcherRegistry)
 				-> requestMatcherRegistry
 										 // 모두 접근 가능 (공용 페이지, 정적 리소스)
-										 .requestMatchers("/", "/public/**", "/WEB-INF/views/**", "/WEB-INF/common/**","/css/**","/js/**", "/images/**").permitAll()
+										 .requestMatchers("/", "/public/**", "/css/**","/js/**", "/images/**", "/assets/**").permitAll()
 										 // 로그인 한 사용자만 접근 가능
 										 .requestMatchers("/member/**").authenticated()
 										 // 관리자만 접근 가능
@@ -99,22 +97,12 @@ public class SecurityConfig {
 									 .failureHandler(loginFailureHandler())		// 로그인 실패 시 동작
 									 .permitAll());
 		
-		
-		// ✅ 연동-aware 성공 핸들러 구성
-	    AuthenticationSuccessHandler linkAwareSuccessHandler =
-	        new CustomOAuth2SuccessHandler(
-	            /* memberService는 아래와 같이 주입 필요 */ 
-	        	ApplicationContextProvider.getBean(com.example.trade.service.MemberService.class),
-	            userDetailsService,
-	            loginSuccessHandler() // 일반 성공 로직으로 위임
-	        );
-	    
 		// ✅ 소셜 로그인 설정 (네이버/카카오)
 	    httpSecurity.oauth2Login(oauth2 -> oauth2
 	            .loginPage("/public/login")          // 소셜 로그인 실패 시 보여줄 페이지
 	            .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
 	            .failureHandler(customOAuth2FailureHandler)
-	            .successHandler(linkAwareSuccessHandler) // 성공 시 이동할 페이지
+	            .successHandler(loginSuccessHandler()) // 성공 시 이동할 페이지
 	    );
 		
 		// 로그아웃 설정
@@ -124,6 +112,12 @@ public class SecurityConfig {
 								   .logoutSuccessUrl("/public/login"));	// 로그아웃 후 로그인 페이지로 이동
 		
 		return httpSecurity.build();
+	}
+	
+	@Bean
+	public WebSecurityCustomizer webSecurityCustomizer() {
+		// JSP forward 시 Security가 뷰 렌더링을 막지 않도록 예외 처리
+		return (web) -> web.ignoring().requestMatchers("/WEB-INF/views/**", "/WEB-INF/common/**");
 	}
 	
 	// 로그인 성공 시 핸들러
@@ -147,7 +141,7 @@ public class SecurityConfig {
 					targetUrl = savedRequest.getRedirectUrl();
 					
 					// 로그인 페이지(/public/login)에서 로그인한 경우는 제외
-					if(targetUrl.contains("/public/login")) {
+					if(targetUrl.contains("/public/login") || targetUrl.startsWith("http")) {
 						targetUrl = null;
 					}
 				}

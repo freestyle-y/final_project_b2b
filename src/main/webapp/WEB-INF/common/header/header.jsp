@@ -7,13 +7,13 @@
 </sec:authorize>
 
 <sec:authorize access="hasRole('ROLE_BIZ')">
-    <jsp:include page="/WEB-INF/common/header/bizHeader.jsp"/>
+    <jsp:include page="/WEB-INF/common/header_new/bizHeader.jsp"/>
 </sec:authorize>
 
 <sec:authorize access="hasRole('ROLE_PERSONAL')">
-    <jsp:include page="/WEB-INF/common/header/personalHeader.jsp"/>
+    <jsp:include page="/WEB-INF/common/header_new/personalHeader.jsp"/>
 </sec:authorize>
 
 <sec:authorize access="isAnonymous()">
-    <jsp:include page="/WEB-INF/common/header/publicHeader.jsp"/>
+    <jsp:include page="/WEB-INF/common/header_new/publicHeader.jsp"/>
 </sec:authorize>
