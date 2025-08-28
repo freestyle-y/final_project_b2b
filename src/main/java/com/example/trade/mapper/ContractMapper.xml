@@ -94,8 +94,8 @@
 		  final_payment, final_payment_status,
 		  create_user, use_status, create_date
 		) VALUES (
-		  #{quotationNo}, #{downPayment}, '입금전',
-		  #{finalPayment}, '입금전',
+		  #{quotationNo}, #{downPayment}, 'PS001',
+		  #{finalPayment}, 'PS001',
 		  #{createUser}, #{useStatus}, NOW()
 		)
 	</insert>
@@ -113,13 +113,12 @@
 	</select>
 
 	<!-- 관리자 계약서 수정폼 전송 -->
-	<update id="updateContract" parameterType="com.example.trade.dto.Contract">
+	<update id="updateContract"
+		parameterType="com.example.trade.dto.Contract">
 		UPDATE contract
-		SET 
-			 down_payment = #{downPayment}
-			,final_payment = #{finalPayment}
-			,down_payment_date = #{downPaymentDate}
-			,final_payment_date = #{finalPaymentDate}
+		SET
+		down_payment = #{downPayment},
+		final_payment = #{finalPayment}
 		WHERE contract_no = #{contractNo}
 	</update>
 	
@@ -132,22 +131,27 @@
 
 
 	<!-- 관리자 계약금 상태 입력 -->
-	<update id="updateDownPayment" parameterType="com.example.trade.dto.Contract">
-	    UPDATE contract
-	    SET  down_payment_status = 'PS002'
-	    	,down_payment_date = NOW()
-	    	,final_payment_date = DATE_ADD(NOW(), INTERVAL 15 DAY)
-	    WHERE contract_no = #{contractNo}
+	<update id="updateDownPayment">
+		UPDATE contract
+		SET down_payment_status = #{downPaymentStatus},
+		down_payment_date = #{downPaymentDate}
+		WHERE contract_no = #{contractNo}
 	</update>
 
-	<!--  관리자 잔금 상태 입력 -->
-	<update id="updateFinalPayment" parameterType="com.example.trade.dto.Contract">
-	    UPDATE contract
-	    SET  final_payment_status = 'PS002'
-	    	,final_payment_date = NOW()
-	    WHERE contract_no = #{contractNo}
+
+	<update id="updateFinalPaymentDueDate">
+		UPDATE contract
+		SET final_payment_date = #{finalPaymentDate}  <!-- 납기일(평일+15일) -->
+		WHERE contract_no = #{contractNo}
 	</update>
 
+	<update id="updateFinalPaymentStatus">
+		UPDATE contract
+		SET final_payment_status =
+		#{finalPaymentStatus}
+		WHERE contract_no = #{contractNo}
+	</update>
+	
 	<!-- 기업회원 계약서 목록 -->
 	<select id="getContractList" resultType="com.example.trade.dto.Contract">
 		SELECT DISTINCT 

@@ -1,5 +1,6 @@
 package com.example.trade.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -76,14 +77,15 @@ public class ContractService {
     public void updateContract(Contract contract) {
         contractMapper.updateContract(contract);
     }
-
-	public void updateDownPayment(int contractNo) {
-		contractMapper.updateDownPayment(contractNo);
-		contractMapper.insertContractOrder(contractNo);
-	}
-
-	public void updateFinalPayment(int contractNo) {
-		contractMapper.updateFinalPayment(contractNo);
-	
-	}
+    @Transactional
+    public void markFinalPaymentReceived(int contractNo){
+        contractMapper.updateFinalPaymentStatus(contractNo, "PS002"); // 상태만 완료로
+    }
+    @Transactional
+    public void markDownPaymentReceived(int contractNo, LocalDate downPaymentDate, LocalDate finalPaymentDueDate) {
+        // 계약금: 상태 완료 + 오늘 날짜 기록
+        contractMapper.updateDownPayment(contractNo, downPaymentDate, "PS002");
+        // 잔금(납기)일: 평일 기준 +15일로 계산된 날짜 기록
+        contractMapper.updateFinalPaymentDueDate(contractNo, finalPaymentDueDate);
+    }
 }

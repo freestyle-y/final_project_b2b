@@ -1,8 +1,10 @@
 package com.example.trade.mapper;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.example.trade.dto.Contract;
 
@@ -38,10 +40,12 @@ public interface ContractMapper {
 
 	void updateContract(Contract contract);
 
-	void updateDownPayment(int contractNo);
-
-	void updateFinalPayment(int contractNo);
+    void updateDownPayment(@Param("contractNo") int contractNo, @Param("downPaymentDate") LocalDate downPaymentDate, @Param("downPaymentStatus") String status);
 
 	void insertContractOrder(int contractNo);
+
+    void updateFinalPaymentStatus(@Param("contractNo") int contractNo, @Param("finalPaymentStatus") String status);
+
+    void updateFinalPaymentDueDate(@Param("contractNo") int contractNo, @Param("finalPaymentDate") LocalDate finalPaymentDueDate);
 
 }
