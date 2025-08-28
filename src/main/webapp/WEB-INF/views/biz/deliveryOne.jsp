@@ -1,11 +1,23 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <%@ include file="/WEB-INF/common/head.jsp"%>
-<title>Insert title here</title>
+<title>배송 상세 조회</title>
+<style>
+    table {
+        width: 50%;
+        border-collapse: collapse;
+        text-align: center;
+        margin: auto;
+    }
+    th, td {
+        border: 1px solid #ccc;
+        padding: 8px;
+    }
+</style>
 </head>
 <body>
 
@@ -13,8 +25,25 @@
 <%@include file="/WEB-INF/common/header/header.jsp"%>
 
 <main class="main">
-
-	<h1>deliveryOne</h1>
+	
+	<h1>배송 상세 조회</h1>
+	<table border="1" style="border-collapse:collapse; text-align:center; width:100%;">
+		<tr>
+			<th>택배사</th>
+			<th>운송장 번호</th>
+			<th>배송 상태</th>
+			<th>처리 일시</th>
+		</tr>
+		
+		<c:forEach var="personalDeliveryOne" items="${personalDeliveryOne}">
+			<tr>
+				<td>${personalDeliveryOne.deliveryCompany}</td>
+				<td>${personalDeliveryOne.trackingNo}</td>
+				<td>${personalDeliveryOne.deliveryStatus}</td>
+				<td>${personalDeliveryOne.updateDate}</td>
+			</tr>
+		</c:forEach>
+	</table>
 
 </main>
 

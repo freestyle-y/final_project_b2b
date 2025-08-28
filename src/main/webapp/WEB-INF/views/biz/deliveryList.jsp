@@ -30,19 +30,30 @@
 	<table>
 		<tr>
 			<th>계약 번호</th>
+			<th>계약금</th>
+			<th>상태</th>
+			<th>입금일시</th>
+			<th>잔금</th>
+			<th>상태</th>
+			<th>입금일시</th>
 			<th>배송지 주소</th>
-			<th>상세 주소</th>
-			<th>배송 출발 일시</th>
+			<th>배송 일시</th>
 			<th>배송 상태</th>
+			<th>배송 조회</th>
 		</tr>
-		
 		<c:forEach var="bizDeliveryList" items="${bizDeliveryList}">
 			<tr>
-				<td>${bizDeliveryList.contractNo}</td>
+				<td><a href="/biz/contractOne?contractNo=${bizDeliveryList.contractNo}">${bizDeliveryList.contractNo}</a></td>
+				<td>${bizDeliveryList.downPayment}</td>
+				<td>${bizDeliveryList.downPaymentStatus}</td>
+				<td>${bizDeliveryList.downPaymentDate}</td>
+				<td>${bizDeliveryList.finalPayment}</td>
+				<td>${bizDeliveryList.finalPaymentStatus}</td>
+				<td>${bizDeliveryList.finalPaymentDate}</td>
 				<td>${bizDeliveryList.address}</td>
-				<td>${bizDeliveryList.detailAddress}</td>
 				<td>${bizDeliveryList.contractDeliveryTime}</td>
 				<td>${bizDeliveryList.contractDeliveryStatus}</td>
+				<td><button onclick="location.href='/biz/deliveryOne?contractDeliveryNo=${bizDeliveryList.contractDeliveryNo}'">배송조회</button></td>
 			</tr>
 		</c:forEach>
 	</table>

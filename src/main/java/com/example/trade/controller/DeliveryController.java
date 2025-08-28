@@ -28,9 +28,14 @@ public class DeliveryController {
 	
 	// 배송 목록 페이지(기업)
 	@GetMapping("/biz/deliveryList")
-	public String bizDeliveryList(Model model) {
+	public String bizDeliveryList(Model model, Principal principal) {
+		
+		String username = principal.getName();
+		model.addAttribute("username", username);
+
 		List<Map<String, Object>> bizDeliveryList = deliveryService.getBizDeliveryList();
 		model.addAttribute("bizDeliveryList", bizDeliveryList);
+		
 		return "biz/deliveryList";
 	}
 	
