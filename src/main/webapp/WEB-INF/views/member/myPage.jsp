@@ -121,146 +121,169 @@
 <script>
 let currentField = '';
 
-// 페이지 로드 시 비밀번호 확인 모달
 $(document).ready(function() {
-    $("#passwordCheckModal").show();
+	console.log("jQuery ready 실행됨");
+    // -------------------------------
+    // 1️⃣ 쿠키 확인 및 비밀번호 모달
+    // -------------------------------
+    function getCookie(name) {
+	    const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+	    return match ? decodeURIComponent(match[1]) : null;
+	}
+
+    const auth = getCookie("myPageAuth");
+    console.log("auth 값:", auth);
+    if(auth === "true"){
+        $("#passwordCheckModal").hide();
+        $("#userInfo").show();
+    } else {
+        $("#passwordCheckModal").show();
+        $("#userInfo").hide();
+        $("#checkPasswordBtn").click(function() {
+            let password = $("#checkPassword").val();
+            $.post("/public/checkPassword", { password: password }, function(result) {
+				// 쿠키 콘솔 확인
+            	console.log("쿠키 전체:", document.cookie);
+            	console.log("myPageAuth 값:", getCookie("myPageAuth"));
+                if(result){
+                    $("#passwordCheckModal").hide();
+                    $("#userInfo").show();
+
+                    // 쿠키 생성 
+                    document.cookie = "myPageAuth=true; path=/";
+                } else {
+                    alert("비밀번호가 일치하지 않습니다.");
+                }
+            });
+        });
+    }
 
     $("#goBackBtn").click(function() { window.history.back(); });
 
-    $("#checkPasswordBtn").click(function() {
-        let password = $("#checkPassword").val();
-        $.post("/public/checkPassword", { password: password }, function(result) {
-            if(result){
-                $("#passwordCheckModal").hide();
-                $("#userInfo").show();
-            } else {
-                alert("비밀번호가 일치하지 않습니다.");
-            }
-        });
-    });
-});
-
-// 모달 열기 함수
-function openChangeModal(field){
-    currentField = field;
-    $("#changeValue").val('');
-    $("#modalPostal").val('');
-    $("#modalAddress").val('');
-    $("#modalDetailAddress").val('');
-    
-    if(field === "postal"){
-        $("#changeValue").hide();
-        $("#addressChangeFields").show();
-        $("#changeTitle").text("주소 변경");
-
-        $("#modalPostal").val($("#postal").val());
-        $("#modalAddress").val($("#address").val());
-        $("#modalDetailAddress").val($("#detailAddress").val());
-    } else {
-        $("#changeValue").show();
-        $("#addressChangeFields").hide();
-        $("#changeTitle").text(field + " 변경");
-        $("#changeValue").val($("#"+field).val());
+    // -------------------------------
+    // 2️⃣ 소셜 연동 알람
+    // -------------------------------
+    const urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.get('linkResult') === 'success'){
+        alert("연동이 완료되었습니다.");
+        window.history.replaceState({}, document.title, "/member/myPage");
+    } else if(urlParams.get('linkResult') === 'fail'){
+        alert("연동에 실패했습니다.");
+        window.history.replaceState({}, document.title, "/member/myPage");
     }
-    $("#changeModal").show();
-}
 
-// 주소 검색 버튼
-$("#searchPostalBtn").click(function(){
-    new daum.Postcode({
-        oncomplete: function(data){
-            $("#modalPostal").val(data.zonecode);
-            $("#modalAddress").val(data.roadAddress);
-            $("#modalDetailAddress").focus();
+    // -------------------------------
+    // 3️⃣ 정보 수정 모달
+    // -------------------------------
+    window.openChangeModal = function(field){
+        currentField = field;
+        $("#changeValue").val('');
+        $("#modalPostal").val('');
+        $("#modalAddress").val('');
+        $("#modalDetailAddress").val('');
+
+        if(field === "postal"){
+            $("#changeValue").hide();
+            $("#addressChangeFields").show();
+            $("#changeTitle").text("주소 변경");
+
+            $("#modalPostal").val($("#postal").val());
+            $("#modalAddress").val($("#address").val());
+            $("#modalDetailAddress").val($("#detailAddress").val());
+        } else {
+            $("#changeValue").show();
+            $("#addressChangeFields").hide();
+            $("#changeTitle").text(field + " 변경");
+            $("#changeValue").val($("#"+field).val());
         }
-    }).open();
-});
+        $("#changeModal").show();
+    }
 
-// 소셜 연동
-function openSocialModal() { $("#socialModal").show(); }
-function linkSocial(provider) { location.href = "/api/social/link/" + provider; }
-function unlinkSocial(provider) {
-    $.ajax({
-        url: "/api/social/unlink/" + provider,
-        type: "DELETE",
-        success: function(res){ alert(res); location.reload(); },
-        error: function(){ alert("연동 해제 실패"); }
+    $("#searchPostalBtn").click(function(){
+        new daum.Postcode({
+            oncomplete: function(data){
+                $("#modalPostal").val(data.zonecode);
+                $("#modalAddress").val(data.roadAddress);
+                $("#modalDetailAddress").focus();
+            }
+        }).open();
     });
-}
 
-// 이메일 체크
-function validateEmail(email) {
-    const re = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-    return re.test(email);
-}
-// 전화번호 체크
-function validatePhone(phone) {
-    const re = /^01[016789]-\d{3,4}-\d{4}$/;
-    return re.test(phone);
-}
+    $("#saveChangeBtn").off('click').on('click', function(){
+        if(currentField === "postal"){
+            let postal = $("#modalPostal").val().trim();
+            let address = $("#modalAddress").val().trim();
+            let detail = $("#modalDetailAddress").val().trim();
 
-// 저장 버튼
-// 저장 버튼 클릭 이벤트 (한 번만)
-$("#saveChangeBtn").off('click').on('click', function(){
-    if(currentField === "postal"){
-        let postal = $("#modalPostal").val().trim();
-        let address = $("#modalAddress").val().trim();
-        let detail = $("#modalDetailAddress").val().trim();
-
-        if(postal==="" || address==="" || detail===""){
-            alert("모든 주소 항목을 입력해주세요.");
-            return;
-        }
-
-        let data = { postal: postal, address: address, detailAddress: detail };
-        $.ajax({
-            url: '/public/updateUserInfo',
-            type: 'PUT',
-            contentType: 'application/json',
-            data: JSON.stringify(data),
-            success: function(res){
-                alert('주소가 변경되었습니다.');
-                $("#postal").val(postal);
-                $("#address").val(address);
-                $("#detailAddress").val(detail);
-                $("#changeModal").hide();
-            },
-            error: function(xhr){
-                alert('변경 실패: ' + xhr.responseText);
+            if(postal==="" || address==="" || detail===""){
+                alert("모든 주소 항목을 입력해주세요.");
+                return;
             }
-        });
 
-    } else {
-        let value = $("#changeValue").val().trim();
-        if(value === ""){
-            alert("값을 입력해주세요.");
-            return;
-        }
-        if(currentField === "email" && !validateEmail(value)){
-            alert("올바른 이메일 형식을 입력해주세요.");
-            return;
-        }
-        if(currentField === "phone" && !validatePhone(value)){
-            alert("전화번호는 010-1234-5678 형식으로 입력해주세요.");
-            return;
-        }
+            let data = { postal: postal, address: address, detailAddress: detail };
+            $.ajax({
+                url: '/public/updateUserInfo',
+                type: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function(res){
+                    alert('주소가 변경되었습니다.');
+                    $("#postal").val(postal);
+                    $("#address").val(address);
+                    $("#detailAddress").val(detail);
+                    $("#changeModal").hide();
+                },
+                error: function(xhr){
+                    alert('변경 실패: ' + xhr.responseText);
+                }
+            });
 
-        let data = {};
-        data[currentField] = value;
-
-        $.ajax({
-            url: '/public/updateUserInfo',
-            type: 'PUT',
-            contentType: 'application/json',
-            data: JSON.stringify(data),
-            success: function(res){
-                alert('정보가 변경되었습니다.');
-                $("#"+currentField).val(value);
-                $("#changeModal").hide();
-            },
-            error: function(xhr){
-                alert('변경 실패: ' + xhr.responseText);
+        } else {
+            let value = $("#changeValue").val().trim();
+            if(value === ""){
+                alert("값을 입력해주세요.");
+                return;
             }
+            if(currentField === "email" && !/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(value)){
+                alert("올바른 이메일 형식을 입력해주세요.");
+                return;
+            }
+            if(currentField === "phone" && !/^01[016789]-\d{3,4}-\d{4}$/.test(value)){
+                alert("전화번호는 010-1234-5678 형식으로 입력해주세요.");
+                return;
+            }
+
+            let data = {};
+            data[currentField] = value;
+
+            $.ajax({
+                url: '/public/updateUserInfo',
+                type: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function(res){
+                    alert('정보가 변경되었습니다.');
+                    $("#"+currentField).val(value);
+                    $("#changeModal").hide();
+                },
+                error: function(xhr){
+                    alert('변경 실패: ' + xhr.responseText);
+                }
+            });
+        }
+    });
+
+    // -------------------------------
+    // 4️⃣ 소셜 연동
+    // -------------------------------
+    window.openSocialModal = function() { $("#socialModal").show(); }
+    window.linkSocial = function(provider) { location.href = "/api/social/link/" + provider; }
+    window.unlinkSocial = function(provider) {
+        $.ajax({
+            url: "/api/social/unlink/" + provider,
+            type: "DELETE",
+            success: function(res){ alert(res); location.reload(); },
+            error: function(){ alert("연동 해제 실패"); }
         });
     }
 });
