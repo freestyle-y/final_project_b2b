@@ -19,32 +19,13 @@
 	</select>
 	
 	<!-- 배송 상세 조회(개인) -->
-	<select id="selectPersonalDeliveryBySubOrderNo" parameterType="int" resultType="map">
-		SELECT 
-			product_name AS productName,
-			concat(option_name, ' : ', option_name_value) AS `option`,
-			order_quantity AS orderQuantity,
-			price,
-			
-			CASE order_status
-				WHEN 'OS001' THEN '결제대기'
-				WHEN 'OS002' THEN '결제완료'
-				WHEN 'OS003' THEN '구매확정'
-			END AS orderStatus,
-			order_time AS orderTime,
-			
-			CASE delivery_status
-				WHEN 'DS001' THEN '배송대기'
-				WHEN 'DS002' THEN '배송중'
-				WHEN 'DS003' THEN '배송완료'
-				WHEN 'DS004' THEN '반품대기'
-				WHEN 'DS005' THEN '반품완료'
-				WHEN 'DS006' THEN '교환대기'
-				WHEN 'DS007' THEN '교환중'
-				WHEN 'DS008' THEN '교환완료'
-			END AS deliveryStatus
-		
-		FROM `order`
+	<select id="selectPersonalDeliveryBySubOrderNo" parameterType="com.example.trade.dto.DeliveryHistory" resultType="map">
+		SELECT
+			dh.delivery_company AS deliveryCompany,
+			dh.tracking_no AS trackingNo,
+			dh.update_date AS updateDate,
+			ct.code_name AS deliveryStatus
+		FROM delivery_history dh INNER JOIN comm_tbl ct ON dh.delivery_status = ct.code_number
 		WHERE order_no = #{orderNo}
 		AND sub_order_no = #{subOrderNo}
 	</select>

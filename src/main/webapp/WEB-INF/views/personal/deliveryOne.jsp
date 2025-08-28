@@ -29,24 +29,18 @@
 	<h1>배송 상세 조회</h1>
 	<table border="1" style="border-collapse:collapse; text-align:center; width:100%;">
 		<tr>
-			<th>상품</th>
-			<th>옵션</th>
-			<th>수량</th>
-			<th>가격</th>
-			<th>주문 상태</th>
-			<th>주문 시간</th>
+			<th>택배사</th>
+			<th>운송장 번호</th>
 			<th>배송 상태</th>
+			<th>처리 일시</th>
 		</tr>
 		
 		<c:forEach var="personalDeliveryOne" items="${personalDeliveryOne}">
 			<tr>
-				<td>${personalDeliveryOne.productName}</td>
-				<td>${personalDeliveryOne.option}</td>
-				<td>${personalDeliveryOne.orderQuantity}</td>
-				<td>${personalDeliveryOne.price}</td>
-				<td>${personalDeliveryOne.orderStatus}</td>
-				<td>${personalDeliveryOne.orderTime}</td>
+				<td>${personalDeliveryOne.deliveryCompany}</td>
+				<td>${personalDeliveryOne.trackingNo}</td>
 				<td>${personalDeliveryOne.deliveryStatus}</td>
+				<td>${personalDeliveryOne.updateDate}</td>
 			</tr>
 		</c:forEach>
 	</table>

@@ -8,8 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.trade.dto.DeliveryHistory;
 import com.example.trade.dto.Order;
 import com.example.trade.service.DeliveryService;
 
@@ -48,8 +48,8 @@ public class DeliveryController {
 	
 	// 배송 상세 페이지(개인)
 	@GetMapping("/personal/deliveryOne")
-	public String personalDeliveryOne(@RequestParam int orderNo, @RequestParam int subOrderNo, Model model) {
-		List<Map<String, Object>> personalDeliveryOne = deliveryService.getPersonalDeliveryOne(orderNo, subOrderNo);
+	public String personalDeliveryOne(DeliveryHistory deliveryHistory, Model model) {
+		List<Map<String, Object>> personalDeliveryOne = deliveryService.getPersonalDeliveryOne(deliveryHistory);
 		model.addAttribute("personalDeliveryOne", personalDeliveryOne);
 		return "personal/deliveryOne";
 	}
