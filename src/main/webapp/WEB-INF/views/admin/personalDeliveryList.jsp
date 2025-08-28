@@ -58,7 +58,7 @@
 			<th>상세주소</th>
 			<th>우편번호</th>
 			<th>배송상태</th>
-			<th>배송상태변경</th>
+			<th>배송처리</th>
 		</tr>
 		<c:forEach var="pd" items="${personalDeliveryList}">
 			<tr>
@@ -77,11 +77,18 @@
 				<td>${pd.postal}</td>
 				<td>${pd.deliveryStatus}</td>
 				<td>
-					<form action="/admin/personalDeliveryUpdate" method="get">
-						<input type="hidden" name="orderNo" value="${pd.orderNo}">
-						<input type="hidden" name="subOrderNo" value="${pd.subOrderNo}">
-						<button type="submit">변경</button>
-					</form>
+					<c:choose>
+						<c:when test="${pd.deliveryStatusCode eq 'DS001'}">
+							<form action="/admin/personalDeliveryUpdate" method="get">
+								<input type="hidden" name="orderNo" value="${pd.orderNo}">
+								<input type="hidden" name="subOrderNo" value="${pd.subOrderNo}">
+								<button type="submit">배송처리</button>
+							</form>
+						</c:when>
+						<c:otherwise>
+							<button type="button" disabled>배송처리</button>
+						</c:otherwise>
+					</c:choose>
 				</td>
 			</tr>
 		</c:forEach>

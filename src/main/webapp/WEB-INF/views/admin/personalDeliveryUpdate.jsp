@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <%@ include file="/WEB-INF/common/head.jsp"%>
-<title>배송 상태 변경</title>
+<title>배송 처리</title>
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -48,27 +48,19 @@
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
 	
-    <h1>배송 상태 변경</h1>
+    <h1>배송 처리</h1>
 
 	<form action="/admin/personalDeliveryUpdate" method="post">
 		<input type="hidden" name="orderNo" value="${orderNo}">
 		<input type="hidden" name="subOrderNo" value="${subOrderNo}">
+		
+		<label for="deliveryCompany">배송사</label>
+		<input type="text" name="deliveryCompany" id="deliveryCompany" placeholder="택배사 입력" required>
+		
+		<label for="trackingNo">운송장 번호</label>
+		<input type="text" name="trackingNo" id="trackingNo" placeholder="운송장 번호 입력" required>
 
-		<label for="deliveryStatus">변경할 배송 상태</label>
-		<select name="deliveryStatus" id="deliveryStatus" required>
-			<option value="">-- 선택 --</option>
-			<option value="DS001">배송대기</option>
-			<option value="DS002">배송중</option>
-			<option value="DS003">배송완료</option>
-			<option value="DS004">반품대기</option>
-			<option value="DS005">반품완료</option>
-			<option value="DS006">교환대기</option>
-			<option value="DS007">교환중</option>
-			<option value="DS008">교환완료</option>
-			<option value="DS009">상품회수</option>
-		</select>
-
-		<button type="submit">변경</button>
+		<button type="submit">배송 처리</button>
 	</form>
 
 <!-- 공통 풋터 -->

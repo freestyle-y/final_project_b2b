@@ -4,9 +4,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.trade.dto.Board;
 import com.example.trade.dto.Comment;
+import com.example.trade.dto.DeliveryHistory;
+import com.example.trade.dto.Order;
 import com.example.trade.dto.Page;
 import com.example.trade.mapper.AdminMapper;
 
@@ -133,7 +136,9 @@ public class AdminService {
 	}
 	
 	// 개인 회원 배송 상태 변경
-	public int updatePersonalDelivery(String orderNo, String subOrderNo, String deliveryStatus, String updateUser) {
-		return adminMapper.updatePersonalDelivery(orderNo, subOrderNo, deliveryStatus, updateUser);
+	@Transactional
+	public int updatePersonalDelivery(Order order, DeliveryHistory deliveryHistory) {
+		adminMapper.updatePersonalDelivery(order);
+		return adminMapper.insertDeliveryHistory(deliveryHistory);
 	}
 }

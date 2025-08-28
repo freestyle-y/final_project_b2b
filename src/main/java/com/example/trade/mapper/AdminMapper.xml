@@ -319,6 +319,7 @@
 			o.order_quantity AS orderQuantity,
 			o.price,
 			ct1.code_name AS orderStatus,
+			o.delivery_status AS deliveryStatusCode,
 			ct2.code_name AS deliveryStatus,
 			u.id AS userId,
 			u.name AS userName,
@@ -354,7 +355,7 @@
 	</select>
 	
 	<!-- 개인 회원 배송 상태 변경 -->
-	<update id="updatePersonalDelivery" parameterType="string">
+	<update id="updatePersonalDelivery" parameterType="com.example.trade.dto.Order">
 		UPDATE `order` SET
 			delivery_status = #{deliveryStatus},
 			update_user = #{updateUser},
@@ -362,4 +363,14 @@
 		WHERE order_no = #{orderNo}
 		AND sub_order_no = #{subOrderNo}
 	</update>
+	
+	<!-- 배송 이력 저장 -->
+	<insert id="insertDeliveryHistory" parameterType="com.example.trade.dto.DeliveryHistory">
+		INSERT INTO delivery_history (
+			order_no, sub_order_no, delivery_company, tracking_no, delivery_status
+		)
+		VALUES (
+			#{orderNo}, #{subOrderNo}, #{deliveryCompany}, #{trackingNo}, #{deliveryStatus}
+		)
+	</insert>
 </mapper>

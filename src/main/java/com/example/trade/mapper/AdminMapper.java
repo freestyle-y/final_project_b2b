@@ -8,6 +8,8 @@ import org.apache.ibatis.annotations.Param;
 
 import com.example.trade.dto.Board;
 import com.example.trade.dto.Comment;
+import com.example.trade.dto.DeliveryHistory;
+import com.example.trade.dto.Order;
 import com.example.trade.dto.Page;
 
 @Mapper
@@ -82,9 +84,14 @@ public interface AdminMapper {
 	// 개인 회원 배송 전체 행 수 조회
 	int selectPersonalDeliveryTotalCount(Page page);
 
-	// 개인 회원 배송 상태 변경
 	int updatePersonalDelivery(@Param("orderNo") String orderNo,
 					            @Param("subOrderNo") String subOrderNo,
 					            @Param("deliveryStatus") String deliveryStatus,
 					            @Param("updateUser") String updateUser);
+
+	// 개인 회원 배송 상태 변경
+	int updatePersonalDelivery(Order order);
+
+	// 배송 이력 저장
+	int insertDeliveryHistory(DeliveryHistory deliveryHistory);
 }
