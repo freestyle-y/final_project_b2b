@@ -22,6 +22,8 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 
+import com.example.trade.config.ApplicationContextProvider;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -68,7 +70,8 @@ public class SecurityConfig {
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity,
 											CustomOAuth2UserService customOAuth2UserService,
-											CustomOAuth2FailureHandler customOAuth2FailureHandler) throws Exception {
+											CustomOAuth2FailureHandler customOAuth2FailureHandler,
+											UserDetailsService userDetailsService) throws Exception {
 
 		// CSRF 설정 (테스트 단계이므로 disable, 추후 보안 요구사항 따라 enable 고려)
 		httpSecurity.csrf((csrfConfigurer) -> csrfConfigurer.disable());
@@ -97,12 +100,21 @@ public class SecurityConfig {
 									 .failureHandler(loginFailureHandler())		// 로그인 실패 시 동작
 									 .permitAll());
 		
+		// ✅ 연동-aware 성공 핸들러 구성
+	    AuthenticationSuccessHandler linkAwareSuccessHandler =
+	        new CustomOAuth2SuccessHandler(
+	            /* memberService는 아래와 같이 주입 필요 */ 
+	        	ApplicationContextProvider.getBean(com.example.trade.service.MemberService.class),
+	            userDetailsService,
+	            loginSuccessHandler() // 일반 성공 로직으로 위임
+	        );
+		
 		// ✅ 소셜 로그인 설정 (네이버/카카오)
 	    httpSecurity.oauth2Login(oauth2 -> oauth2
 	            .loginPage("/public/login")          // 소셜 로그인 실패 시 보여줄 페이지
 	            .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
 	            .failureHandler(customOAuth2FailureHandler)
-	            .successHandler(loginSuccessHandler()) // 성공 시 이동할 페이지
+	            .successHandler(linkAwareSuccessHandler) // 성공 시 이동할 페이지
 	    );
 		
 		// 로그아웃 설정

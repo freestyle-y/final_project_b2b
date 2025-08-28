@@ -39,10 +39,10 @@
             <tr><th>아이디</th><td><input type="text" id="userId" readonly value="${user.id}"></td></tr>
             <tr><th>비밀번호 변경</th><td colspan="2"><button type="button" onclick="location.href='/member/changeMemberPw'">변경</button></td></tr>
             <tr><th>회원구분</th><td><input type="text" id="customerCategory" readonly value="${user.customerCategory}"></td></tr>
-            <tr><th>이름</th><td><input type="text" id="name" readonly value="${user.name}"></td><td><button type="button" onclick="openChangeModal('name')">변경</button></td></tr>
-            <tr><th>휴대폰 번호</th><td><input type="text" id="phone" readonly value="${user.phone}"></td><td><button type="button" onclick="openChangeModal('phone')">변경</button></td></tr>
-            <tr><th>이메일</th><td><input type="text" id="email" readonly value="${user.email}"></td><td><button type="button" onclick="openChangeModal('email')">변경</button></td></tr>
-            <tr><th>우편번호</th><td><input type="text" id="postal" readonly value="${user.postal}"></td><td><button type="button" onclick="openChangeModal('postal')">변경</button></td></tr>
+            <tr><th>이름</th><td><input type="text" id="name" readonly value="${user.name}"> <button type="button" onclick="openChangeModal('name')">변경</button></td></tr>
+            <tr><th>휴대폰 번호</th><td><input type="text" id="phone" readonly value="${user.phone}"> <button type="button" onclick="openChangeModal('phone')">변경</button></td></tr>
+            <tr><th>이메일</th><td><input type="text" id="email" readonly value="${user.email}"> <button type="button" onclick="openChangeModal('email')">변경</button></td></tr>
+            <tr><th>우편번호</th><td><input type="text" id="postal" readonly value="${user.postal}"> <button type="button" onclick="openChangeModal('postal')">변경</button></td></tr>
             <tr><th>주소</th><td><input type="text" id="address" readonly value="${user.address}"></td></tr>
             <tr><th>상세주소</th><td><input type="text" id="detailAddress" readonly value="${user.detailAddress}"></td></tr>
 
@@ -62,7 +62,7 @@
 				    <th>소셜 계정 연동</th>
 				    <td>
 				        <c:forEach var="s" items="${socialList}">
-							${s.socialType} (${s.socialId})
+							${s.socialType}
 							<button type="button" onclick="unlinkSocial('${s.socialType}')">해제</button><br/>
 						</c:forEach>
 						<button type="button" onclick="openSocialModal()">소셜 계정 추가 연동</button>
@@ -72,7 +72,7 @@
 
             <!-- 기업회원 -->
             <c:if test="${user.customerCategory == 'CC002'}">
-                <tr><th>기업명</th><td><input type="text" id="companyName" readonly value="${user.companyName}"></td><td><button type="button" onclick="openChangeModal('companyName')">변경</button></td></tr>
+                <tr><th>기업명</th><td><input type="text" id="companyName" readonly value="${user.companyName}"> <button type="button" onclick="openChangeModal('companyName')">변경</button></td></tr>
                 <tr><th>사업자등록번호</th><td><input type="text" id="businessNo" readonly value="${user.businessNo}"></td></tr>
             </c:if>
 
