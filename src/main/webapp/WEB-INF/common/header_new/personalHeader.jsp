@@ -43,7 +43,7 @@
 									<i class="bi bi-person-circle me-2"></i>
 									<span>My Profile</span>
 								</a>
-								<a class="dropdown-item d-flex align-items-center" href="/personal/deliveryList">
+								<a class="dropdown-item d-flex align-items-center" href="/personal/orderList">
 									<i class="bi bi-bag-check me-2"></i>
 									<span>My Orders</span>
 								</a>
@@ -88,7 +88,7 @@
 					<li><a href="#">상품 카테고리</a></li>
 					<li><a href="/personal/productList">상품 목록</a></li>
 					<li><a href="/public/reviewList">상품 후기</a></li>
-					<li><a href="/personal/deliveryList">주문배송조회</a></li>
+					<li><a href="/personal/orderList">주문배송조회</a></li>
 					<li><a href="#">sample1</a></li>
 					<li class="dropdown"><a href="#"><span>sample2</span><i class="bi bi-chevron-down toggle-dropdown"></i></a>
 						<ul>

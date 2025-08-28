@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.trade.dto.Board;
 import com.example.trade.dto.Comment;
+import com.example.trade.dto.DeliveryHistory;
+import com.example.trade.dto.Order;
 import com.example.trade.dto.Page;
 import com.example.trade.service.AdminService;
 
@@ -387,7 +389,7 @@ public class AdminController {
 		return "admin/personalDeliveryList";
 	}
 	
-	// 개인 회원 배송 변경 페이지
+	// 개인 회원 배송 처리 페이지
     @GetMapping("/admin/personalDeliveryUpdate")
     public String personalDeliveryUpdate(@RequestParam String orderNo,
 	                                     @RequestParam String subOrderNo,
@@ -397,20 +399,19 @@ public class AdminController {
         return "admin/personalDeliveryUpdate";
     }
 
-    // 개인 회원 배송 상태 변경 처리
+    // 개인 회원 배송 처리
     @PostMapping("/admin/personalDeliveryUpdate")
-    public String personalDeliveryUpdate(@RequestParam String orderNo,
-                                       @RequestParam String subOrderNo,
-                                       @RequestParam String deliveryStatus,
-                                       Model model, Principal principal) {
+    public String personalDeliveryUpdate(Order order, DeliveryHistory deliveryHistory, Principal principal) {
     	
     	String updateUser = principal.getName();
     	
-    	model.addAttribute("orderNo", orderNo);
-        model.addAttribute("subOrderNo", subOrderNo);
-        model.addAttribute("deliveryStatus", deliveryStatus);
-        model.addAttribute("updateUser", updateUser);
-        adminService.updatePersonalDelivery(orderNo, subOrderNo, deliveryStatus, updateUser);
+    	order.setDeliveryStatus("DS002"); // 배송중 처리
+    	order.setUpdateUser(updateUser);
+    	
+    	deliveryHistory.setDeliveryStatus("DS002"); // 배송중 처리
+    	
+    	adminService.updatePersonalDelivery(order, deliveryHistory);
+    	
         return "redirect:/admin/personalDeliveryList";
     }
 }

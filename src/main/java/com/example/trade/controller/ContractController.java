@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.security.Principal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -27,6 +27,7 @@ import com.example.trade.dto.Contract;
 import com.example.trade.dto.ContractSignForm;
 import com.example.trade.dto.Quotation;
 import com.example.trade.service.AttachmentService;
+import com.example.trade.service.BusinessDayService;
 import com.example.trade.service.ContractService;
 import com.example.trade.service.QuotationService;
 
@@ -35,11 +36,13 @@ public class ContractController {
 	private final ContractService contractService;
 	private final AttachmentService attachmentService;
 	private final QuotationService quotationService;
-	public ContractController(ContractService contractService, AttachmentService attachmentService, QuotationService quotationService) {
+	private final BusinessDayService businessDayService;
+	public ContractController(ContractService contractService, AttachmentService attachmentService, QuotationService quotationService, BusinessDayService businessDayService) {
 		super();
 		this.contractService = contractService;
 		this.attachmentService = attachmentService;
 		this.quotationService = quotationService;
+		this.businessDayService = businessDayService;
 	}
 
 	// 클래스 내부 필드에 추가
@@ -218,15 +221,23 @@ public class ContractController {
 	// 관리자 계약금 잔금 입금 상태 입력
 	@PostMapping("/admin/insertFinalPayment")
 	public String finalPayment(@RequestParam("contractNo") int contractNo) {
-		contractService.updateFinalPayment(contractNo);
+		
+		contractService.markFinalPaymentReceived(contractNo);
 		return "redirect:/admin/contractList";
 	}
 	
 	// 관리자 잔금 입금 상태 입력
 	@PostMapping("/admin/insertDownPayment")
-	public String downPayment(@RequestParam("contractNo") int contractNo) {
-		contractService.updateDownPayment(contractNo);
-		return "redirect:/admin/contractList";
+	public String downPayment(@RequestParam("contractNo") int contractNo,
+	                          RedirectAttributes ra) {
+	    LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
+	    LocalDate dueDate = businessDayService.addBusinessDays(today, 15); // 평일 기준 +15일
+
+	    // 오타 수정된 서비스 메서드 호출
+	    contractService.markDownPaymentReceived(contractNo, today, dueDate);
+
+	    ra.addFlashAttribute("msg", "계약금 입금 처리 완료. 잔금 납기일: " + dueDate);
+	    return "redirect:/admin/contractList";
 	}
 	
 	// 기업 회원 계약서 목록 페이지

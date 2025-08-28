@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.example.trade.dto.DeliveryHistory;
 import com.example.trade.dto.Order;
 
 @Mapper
@@ -14,7 +15,7 @@ public interface DeliveryMapper {
 	List<Map<String, Object>> selectBizDeliveryList();
 
 	// 배송 상세 조회(개인)
-	List<Map<String, Object>> selectPersonalDeliveryBySubOrderNo(int orderNo, int subOrderNo);
+	List<Map<String, Object>> selectPersonalDeliveryBySubOrderNo(DeliveryHistory deliveryHistory);
 
 	// 교환/반품 신청 처리
 	int updateExchangeReturn(Order order);

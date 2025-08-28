@@ -11,8 +11,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DeliveryHistory {
 	private int deliveryHistoryNo;
-	private int orderNo;
-	private int subOrderNo;
+	private String orderNo;
+	private String subOrderNo;
+	private String deliveryCompany;
+	private String trackingNo;
 	private LocalDateTime updateDate;
-	private String status;
+	private String deliveryStatus;
 }
