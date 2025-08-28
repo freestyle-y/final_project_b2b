@@ -30,6 +30,9 @@
 		<a href="/admin/alarmList">알림 목록</a> /
 		<a href="/admin/alarmWrite">알림 등록</a> /
 	</div>
+	
+	<!-- Scroll Top -->
+  	<a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 </main>
 
 <!-- 공통 풋터 -->
