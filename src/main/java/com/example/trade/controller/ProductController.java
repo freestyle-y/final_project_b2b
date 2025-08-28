@@ -64,8 +64,10 @@ public class ProductController {
 	public String wishList(Model model) {
 		String loginUserName = SecurityContextHolder.getContext().getAuthentication().getName();
 		//log.info(loginUserName);
+		String name = productService.selectName(loginUserName);
 		List<Map<String, Object>> wishList = productService.selectWishList(loginUserName);
 		//log.info(wishList.toString());
+		model.addAttribute("name", name);
 		model.addAttribute("loginUserName", loginUserName);
 		model.addAttribute("wishList", wishList);
 		return "personal/wishList";
@@ -164,6 +166,12 @@ public class ProductController {
 	    List<Map<String, Object>> productReview = productService.selectProductReview(productNo);
 	    //log.info(productReview.toString());
 	    Double avgProductRate = productService.avgProductRate(productNo);
+	    double rounded = 0.0;
+
+	    if (avgProductRate != null) {
+	        rounded = Math.round(avgProductRate * 10) / 10.0;
+	    }
+
 	    //log.info(avgProductRate + "");
 	    
 	    //log.info(commonInfo.toString());
@@ -171,7 +179,7 @@ public class ProductController {
 	    model.addAttribute("product", commonInfo);
 	    model.addAttribute("optionList", optionList);
 	    model.addAttribute("productReview", productReview);
-	    model.addAttribute("avgProductRate", avgProductRate);
+	    model.addAttribute("avgProductRate", rounded);
 	    model.addAttribute("loginUserName", loginUserName);
 		return "personal/productOne";
 	}

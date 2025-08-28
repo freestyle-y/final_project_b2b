@@ -2,6 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.trade.mapper.ProductMapper">
 
+	<!-- 개인 이름 조회 -->
+	<select id="selectName" parameterType="String">
+		SELECT name
+		FROM user
+		WHERE id = #{id}
+	</select>
 	<!-- 상품 후기 -->
 	<select id="reviewList" resultType="map">
 		SELECT 
@@ -87,6 +93,7 @@
 		    MIN(p.product_name) AS productName, 
 		    MIN(c.category_name) AS categoryName, 
 		    MIN(p.use_status) AS productUseStatus,
+		    MIN(p.price) AS price,
 		    CASE
 		        WHEN SUM(CASE WHEN p.product_status = 'GS002' THEN 1 ELSE 0 END) > 0 THEN 'GS002'
 		        ELSE 'GS003'
