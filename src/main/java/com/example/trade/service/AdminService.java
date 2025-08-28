@@ -1,5 +1,6 @@
 package com.example.trade.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -135,10 +136,103 @@ public class AdminService {
 		return adminMapper.selectPersonalDeliveryTotalCount(page);
 	}
 	
-	// 개인 회원 배송 상태 변경
+	// 개인 회원 배송 처리
 	@Transactional
 	public int updatePersonalDelivery(Order order, DeliveryHistory deliveryHistory) {
+		order.setDeliveryStatus("DS002"); // 배송중 처리
+    	deliveryHistory.setDeliveryStatus("DS002"); // 배송중 처리
 		adminMapper.updatePersonalDelivery(order);
 		return adminMapper.insertDeliveryHistory(deliveryHistory);
+	}
+	
+	// 개인 회원 배송 완료 처리
+	@Transactional
+	public int updateDeliveryComplete(Order order, DeliveryHistory deliveryHistory) {
+		
+		// 기존 배송 이력 조회
+		DeliveryHistory newDeliveryHistory = adminMapper.getDeliveryHistory(deliveryHistory);
+		
+		order.setDeliveryStatus("DS003"); // 배송완료 처리
+		deliveryHistory.setDeliveryCompany(newDeliveryHistory.getDeliveryCompany()); // 택배사
+		deliveryHistory.setTrackingNo(newDeliveryHistory.getTrackingNo()); // 운송장 번호
+    	deliveryHistory.setDeliveryStatus("DS003"); // 배송완료 처리
+		adminMapper.updatePersonalDelivery(order);
+		return adminMapper.insertDeliveryHistory(deliveryHistory);
+	}
+
+	// 교환 승인 처리
+	@Transactional
+	public int updateExchangeApprove(Order order, DeliveryHistory deliveryHistory) {
+		
+		// 기존 주문 건 배송 상태 교환중으로 변경
+		order.setDeliveryStatus("DS007");
+		adminMapper.updatePersonalDelivery(order);
+		
+		// 기존 주문 조회
+		Order newOrder = adminMapper.getOrderDetail(order);
+
+		// parent_sub_order_no 설정
+		newOrder.setParentSubOrderNo(order.getSubOrderNo()); // 기존 subOrderNo를 parent로 설정
+
+		// 새로운 sub_order_no 설정
+		String newSubOrderNo = adminMapper.getNextSubOrderNo(order.getOrderNo());
+		newOrder.setSubOrderNo(newSubOrderNo);
+	    
+		// 배송 이력 데이터 설정
+		newOrder.setOrderStatus("OS002"); // 주문완료
+		newOrder.setDeliveryStatus("DS002"); // 배송중
+		newOrder.setCreateUser(order.getUpdateUser()); // 현재 관리자
+		newOrder.setUseStatus("Y");
+		
+		// 새 교환 행 order 테이블에 insert
+		adminMapper.insertExchangeOrder(newOrder);
+		
+		// 배송 이력에도 새로운 sub_order_no 로 입력
+		deliveryHistory.setSubOrderNo(newSubOrderNo);
+		deliveryHistory.setDeliveryStatus("DS002"); // 배송중
+		
+		// 새 배송 이력 delivery_history 테이블에 insert
+		return adminMapper.insertDeliveryHistory(deliveryHistory);
+	}
+	
+	// 교환 완료 처리
+	@Transactional
+	public int updateExchangeComplete(Order order) {
+		order.setDeliveryStatus("DS008"); // 교환완료
+		return adminMapper.updateExchangeComplete(order);
+	}
+
+	// 교환 거절 처리
+	@Transactional
+	public int updateExchangeReject(Order order) {
+		order.setDeliveryStatus("DS003"); // 배송완료 복귀
+		order.setExchangeQuantity(0); // 수량 0 복귀
+		order.setExchangeReason(null); // 사유 null 복귀
+		order.setExchangeRequestTime(null); // 신청일 null 복귀
+		return adminMapper.updateExchangeReject(order);
+	}
+
+	// 반품 승인 처리
+	@Transactional
+	public int updateReturnApprove(Order order) {
+		order.setDeliveryStatus("DS010"); // 반품중
+		return adminMapper.updatePersonalDelivery(order);
+	}
+
+	// 반품 완료 처리
+	@Transactional
+	public int updateReturnComplete(Order order) {
+		order.setDeliveryStatus("DS005"); // 반품완료
+		return adminMapper.updateReturnComplete(order);
+	}
+
+	// 반품 거절 처리
+	@Transactional
+	public int updateReturnReject(Order order) {
+		order.setDeliveryStatus("DS003"); // 배송완료 복귀
+		order.setReturnQuantity(0); // 수량 0 복귀
+		order.setReturnReason(null); // 사유 null 복귀
+		order.setReturnRequestTime(null); // 신청일 null 복귀
+		return adminMapper.updateReturnReject(order);
 	}
 }

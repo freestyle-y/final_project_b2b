@@ -72,8 +72,8 @@
                 <td>
                     <button onclick="location.href='/personal/deliveryOne?orderNo=${order.orderNo}&subOrderNo=${order.subOrderNo}'">배송조회</button>
 						<c:choose>
-							<c:when test="${order.deliveryStatus == 'DS003'}">
-								<!-- 배송완료일 때만 활성 -->
+							<c:when test="${order.deliveryStatus eq 'DS003' && order.orderStatus ne 'OS003'}">
+								<!-- 배송완료이고 구매확정이 아닐 때만 활성 -->
 								<button onclick="location.href='/personal/exchangeReturn?orderNo=${order.orderNo}&subOrderNo=${order.subOrderNo}&orderQuantity=${order.orderQuantity}'">교환/반품</button>
 							</c:when>
 							<c:otherwise>

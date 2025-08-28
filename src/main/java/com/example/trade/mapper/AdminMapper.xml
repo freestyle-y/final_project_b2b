@@ -354,7 +354,7 @@
 		</if>
 	</select>
 	
-	<!-- 개인 회원 배송 상태 변경 -->
+	<!-- 개인 회원 배송 처리 -->
 	<update id="updatePersonalDelivery" parameterType="com.example.trade.dto.Order">
 		UPDATE `order` SET
 			delivery_status = #{deliveryStatus},
@@ -363,6 +363,16 @@
 		WHERE order_no = #{orderNo}
 		AND sub_order_no = #{subOrderNo}
 	</update>
+	
+	<!-- 기존 배송 이력 조회 -->
+	<select id="getDeliveryHistory" parameterType="com.example.trade.dto.DeliveryHistory" resultType="com.example.trade.dto.DeliveryHistory">
+		SELECT
+			delivery_company AS deliveryCompany,
+			tracking_no AS trackingNo
+		FROM delivery_history
+		WHERE order_no = #{orderNo}
+		AND sub_order_no = #{subOrderNo}
+	</select>
 	
 	<!-- 배송 이력 저장 -->
 	<insert id="insertDeliveryHistory" parameterType="com.example.trade.dto.DeliveryHistory">
@@ -373,4 +383,123 @@
 			#{orderNo}, #{subOrderNo}, #{deliveryCompany}, #{trackingNo}, #{deliveryStatus}
 		)
 	</insert>
+	
+	<!-- 기존 주문 조회 -->
+	<select id="getOrderDetail" parameterType="com.example.trade.dto.Order" resultType="com.example.trade.dto.Order">
+		SELECT
+			order_no               AS orderNo,
+			sub_order_no           AS subOrderNo,
+			parent_sub_order_no    AS parentSubOrderNo,
+			user_id                AS userId,
+			address_no             AS addressNo,
+			product_no             AS productNo,
+			product_name           AS productName,
+			option_no              AS optionNo,
+			option_name            AS optionName,
+			option_name_value      AS optionNameValue,
+			order_quantity         AS orderQuantity,
+			exchange_quantity      AS exchangeQuantity,
+			price                  AS price,
+			order_status           AS orderStatus,
+			delivery_status        AS deliveryStatus,
+			create_user            AS createUser,
+			use_status             AS useStatus
+		FROM `order`
+		WHERE order_no = #{orderNo}
+		AND sub_order_no = #{subOrderNo}
+	</select>
+	
+	<!-- 해당 주문의 다음 sub_order_no 계산 -->
+	<select id="getNextSubOrderNo" parameterType="string" resultType="string">
+		SELECT CAST(IFNULL(MAX(CAST(sub_order_no AS UNSIGNED)), 0) + 1 AS CHAR)
+		FROM `order`
+		WHERE order_no = #{orderNo}
+	</select>
+	
+	<!-- 교환 주문 행 생성 -->
+	<insert id="insertExchangeOrder" parameterType="com.example.trade.dto.Order">
+		INSERT INTO `order` (
+			order_no,
+			sub_order_no,
+			parent_sub_order_no,
+			user_id,
+			address_no,
+			product_no,
+			product_name,
+			option_no,
+			option_name,
+			option_name_value,
+			order_quantity,
+			price,
+			order_status,
+			delivery_status,
+			create_user,
+			use_status
+		) VALUES (
+			#{orderNo},
+			#{subOrderNo},
+			#{parentSubOrderNo},
+			#{userId},
+			#{addressNo},
+			#{productNo},
+			#{productName},
+			#{optionNo},
+			#{optionName},
+			#{optionNameValue},
+			#{exchangeQuantity},
+			#{price},
+			#{orderStatus},
+			#{deliveryStatus},
+			#{createUser},
+			#{useStatus}
+		)
+	</insert>
+	
+	<!-- 교환 완료 처리 -->
+	<update id="updateExchangeComplete" parameterType="com.example.trade.dto.Order">
+		UPDATE `order` SET
+			delivery_status = #{deliveryStatus},
+			exchange_end_time = NOW(),
+			update_user = #{updateUser},
+			update_date = NOW()
+		WHERE order_no = #{orderNo}
+		AND sub_order_no = #{subOrderNo}
+	</update>
+	
+	<!-- 교환 거절 처리 -->
+	<update id="updateExchangeReject" parameterType="com.example.trade.dto.Order">
+		UPDATE `order` SET
+			delivery_status = #{deliveryStatus},
+			exchange_quantity = #{exchangeQuantity},
+			exchange_reason = #{exchangeReason},
+			exchange_request_time = #{exchangeRequestTime},
+			update_user = #{updateUser},
+			update_date = NOW()
+		WHERE order_no = #{orderNo}
+		AND sub_order_no = #{subOrderNo}
+	</update>
+	
+	<!-- 반품 완료 처리 -->
+	<update id="updateReturnComplete" parameterType="com.example.trade.dto.Order">
+		UPDATE `order` SET
+			delivery_status = #{deliveryStatus},
+			return_end_time = NOW(),
+			update_user = #{updateUser},
+			update_date = NOW()
+		WHERE order_no = #{orderNo}
+		AND sub_order_no = #{subOrderNo}
+	</update>
+	
+	<!-- 반품 거절 처리 -->
+	<update id="updateReturnReject" parameterType="com.example.trade.dto.Order">
+		UPDATE `order` SET
+			delivery_status = #{deliveryStatus},
+			return_quantity = #{returnQuantity},
+			return_reason = #{returnReason},
+			return_request_time = #{returnRequestTime},
+			update_user = #{updateUser},
+			update_date = NOW()
+		WHERE order_no = #{orderNo}
+		AND sub_order_no = #{subOrderNo}
+	</update>
 </mapper>

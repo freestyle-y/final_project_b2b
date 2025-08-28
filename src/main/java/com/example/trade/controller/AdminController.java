@@ -404,14 +404,95 @@ public class AdminController {
     public String personalDeliveryUpdate(Order order, DeliveryHistory deliveryHistory, Principal principal) {
     	
     	String updateUser = principal.getName();
-    	
-    	order.setDeliveryStatus("DS002"); // 배송중 처리
     	order.setUpdateUser(updateUser);
-    	
-    	deliveryHistory.setDeliveryStatus("DS002"); // 배송중 처리
     	
     	adminService.updatePersonalDelivery(order, deliveryHistory);
     	
         return "redirect:/admin/personalDeliveryList";
     }
+    
+    // 개인 회원 배송 완료 처리
+	@PostMapping("/admin/personalDeliveryComplete")
+	public String personalDeliveryComplete(Order order, DeliveryHistory deliveryHistory, Principal principal) {
+		
+		String updateUser = principal.getName();
+		order.setUpdateUser(updateUser);
+		
+		adminService.updateDeliveryComplete(order, deliveryHistory);
+		
+		return "redirect:/admin/personalDeliveryList";
+	}
+    
+    // 교환 배송 처리 페이지
+    @GetMapping("/admin/personalExchangeUpdate")
+    public String personalExchangeUpdate(Order order, Model model) {
+    	model.addAttribute("order", order);
+    	return "admin/personalExchangeUpdate";
+    }
+    
+    // 교환 승인 처리
+	@PostMapping("/admin/exchangeApprove")
+	public String exchangeApprove(Order order, DeliveryHistory deliveryHistory, Principal principal) {
+		
+		String updateUser = principal.getName();
+		order.setUpdateUser(updateUser);
+		
+		adminService.updateExchangeApprove(order, deliveryHistory);
+		return "redirect:/admin/personalDeliveryList";
+	}
+	
+	// 교환 완료 처리
+	@PostMapping("/admin/exchangeComplete")
+	public String exchangeComplete(Order order, Principal principal) {
+		
+		String updateUser = principal.getName();
+		order.setUpdateUser(updateUser);
+		
+		adminService.updateExchangeComplete(order);
+		return "redirect:/admin/personalDeliveryList";
+	}
+
+	// 교환 거절 처리
+	@PostMapping("/admin/exchangeReject")
+	public String exchangeReject(Order order, Principal principal) {
+		
+		String updateUser = principal.getName();
+		order.setUpdateUser(updateUser);
+		
+		adminService.updateExchangeReject(order);
+		return "redirect:/admin/personalDeliveryList";
+	}
+
+	// 반품 승인 처리
+	@PostMapping("/admin/returnApprove")
+	public String returnApprove(Order order, Principal principal) {
+		
+		String updateUser = principal.getName();
+		order.setUpdateUser(updateUser);
+		
+		adminService.updateReturnApprove(order);
+		return "redirect:/admin/personalDeliveryList";
+	}
+	
+	// 반품 완료 처리
+	@PostMapping("/admin/returnComplete")
+	public String returnComplete(Order order, Principal principal) {
+		
+		String updateUser = principal.getName();
+		order.setUpdateUser(updateUser);
+		
+		adminService.updateReturnComplete(order);
+		return "redirect:/admin/personalDeliveryList";
+	}
+
+	// 반품 거절 처리
+	@PostMapping("/admin/returnReject")
+	public String returnReject(Order order, Principal principal) {
+		
+		String updateUser = principal.getName();
+		order.setUpdateUser(updateUser);
+		
+		adminService.updateReturnReject(order);
+		return "redirect:/admin/personalDeliveryList";
+	}
 }

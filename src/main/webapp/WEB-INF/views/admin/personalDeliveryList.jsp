@@ -59,6 +59,8 @@
 			<th>우편번호</th>
 			<th>배송상태</th>
 			<th>배송처리</th>
+			<th>교환처리</th>
+			<th>반품처리</th>
 		</tr>
 		<c:forEach var="pd" items="${personalDeliveryList}">
 			<tr>
@@ -78,15 +80,90 @@
 				<td>${pd.deliveryStatus}</td>
 				<td>
 					<c:choose>
+						<%-- 배송 처리 : 배송대기(DS001)일 때만 가능 --%>
 						<c:when test="${pd.deliveryStatusCode eq 'DS001'}">
 							<form action="/admin/personalDeliveryUpdate" method="get">
 								<input type="hidden" name="orderNo" value="${pd.orderNo}">
 								<input type="hidden" name="subOrderNo" value="${pd.subOrderNo}">
-								<button type="submit">배송처리</button>
+								<button type="submit">배송</button>
+							</form>
+						</c:when>
+						<%-- 배송 완료 처리 : 배송중(DS002)일 때만 가능 --%>
+						<c:when test="${pd.deliveryStatusCode eq 'DS002'}">
+							<form action="/admin/personalDeliveryComplete" method="post" onsubmit="return confirm('배송 완료 처리하시겠습니까?');">
+								<input type="hidden" name="orderNo" value="${pd.orderNo}">
+								<input type="hidden" name="subOrderNo" value="${pd.subOrderNo}">
+								<button type="submit">완료</button>
 							</form>
 						</c:when>
 						<c:otherwise>
-							<button type="button" disabled>배송처리</button>
+							<button type="button" disabled>배송</button>
+							<button type="button" disabled>완료</button>
+						</c:otherwise>
+					</c:choose>
+				</td>
+				<!-- 교환 처리 -->
+				<td>
+					<c:choose>
+						<%-- 교환 승인 / 거절 : 교환대기(DS006)일 때만 가능 --%>
+						<c:when test="${pd.deliveryStatusCode eq 'DS006'}">
+							<form action="/admin/personalExchangeUpdate" method="get" style="display: inline;">
+								<input type="hidden" name="orderNo" value="${pd.orderNo}">
+								<input type="hidden" name="subOrderNo" value="${pd.subOrderNo}">
+								<button type="submit">승인</button>
+							</form>
+							<form action="/admin/exchangeReject" method="post" onsubmit="return confirm('교환 거절 처리하시겠습니까?');" style="display: inline;">
+								<input type="hidden" name="orderNo" value="${pd.orderNo}">
+								<input type="hidden" name="subOrderNo" value="${pd.subOrderNo}">
+								<button type="submit">거절</button>
+							</form>
+						</c:when>
+
+						<%-- 교환 완료 : 교환중(DS007)일 때만 가능 --%>
+						<c:when test="${pd.deliveryStatusCode eq 'DS007'}">
+							<form action="/admin/exchangeComplete" method="post" onsubmit="return confirm('교환 완료 처리하시겠습니까?');" style="display: inline;">
+								<input type="hidden" name="orderNo" value="${pd.orderNo}">
+								<input type="hidden" name="subOrderNo" value="${pd.subOrderNo}">
+								<button type="submit">완료</button>
+							</form>
+						</c:when>
+
+						<%-- 그 외 상태면 버튼 비활성화 --%>
+						<c:otherwise>
+							<button type="button" disabled>승인</button>
+							<button type="button" disabled>거절</button>
+						</c:otherwise>
+					</c:choose>
+				</td>
+				<!-- 반품 처리 -->
+				<td>
+					<c:choose>
+						<%-- 반품 승인 / 거절 : 반품대기(DS004)일 때만 --%>
+						<c:when test="${pd.deliveryStatusCode eq 'DS004'}">
+							<form action="/admin/returnApprove" method="post" style="display: inline;">
+								<input type="hidden" name="orderNo" value="${pd.orderNo}">
+								<input type="hidden" name="subOrderNo" value="${pd.subOrderNo}">
+								<button type="submit">승인</button>
+							</form>
+							<form action="/admin/returnReject" method="post" style="display: inline;">
+								<input type="hidden" name="orderNo" value="${pd.orderNo}">
+								<input type="hidden" name="subOrderNo" value="${pd.subOrderNo}">
+								<button type="submit">거절</button>
+							</form>
+						</c:when>
+
+						<%-- 반품 완료 : 반품중(DS010)일 때만 --%>
+						<c:when test="${pd.deliveryStatusCode eq 'DS010'}">
+							<form action="/admin/returnComplete" method="post" style="display: inline;">
+								<input type="hidden" name="orderNo" value="${pd.orderNo}">
+								<input type="hidden" name="subOrderNo" value="${pd.subOrderNo}">
+								<button type="submit">완료</button>
+							</form>
+						</c:when>
+						<%-- 그 외 상태면 비활성화 --%>
+						<c:otherwise>
+							<button type="button" disabled>승인</button>
+							<button type="button" disabled>거절</button>
 						</c:otherwise>
 					</c:choose>
 				</td>

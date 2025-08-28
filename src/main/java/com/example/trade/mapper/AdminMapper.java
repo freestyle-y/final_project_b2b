@@ -84,14 +84,34 @@ public interface AdminMapper {
 	// 개인 회원 배송 전체 행 수 조회
 	int selectPersonalDeliveryTotalCount(Page page);
 
-	int updatePersonalDelivery(@Param("orderNo") String orderNo,
-					            @Param("subOrderNo") String subOrderNo,
-					            @Param("deliveryStatus") String deliveryStatus,
-					            @Param("updateUser") String updateUser);
-
 	// 개인 회원 배송 상태 변경
 	int updatePersonalDelivery(Order order);
-
+	
+	// 기존 배송 이력 조회
+	DeliveryHistory getDeliveryHistory(DeliveryHistory deliveryHistory);
+	
 	// 배송 이력 저장
 	int insertDeliveryHistory(DeliveryHistory deliveryHistory);
+
+	// 기존 주문 데이터 조회
+	Order getOrderDetail(Order order);
+
+	// 해당 주문의 다음 sub_order_no 계산
+	String getNextSubOrderNo(String orderNo);
+	
+	// 교환 주문 행 생성
+	int insertExchangeOrder(Order order);
+
+	// 교환 완료 처리
+	int updateExchangeComplete(Order order);
+
+	// 교환 거절 처리
+	int updateExchangeReject(Order order);
+
+	// 반품 완료 처리
+	int updateReturnComplete(Order order);
+
+	// 반품 거절 처리
+	int updateReturnReject(Order order);
+
 }

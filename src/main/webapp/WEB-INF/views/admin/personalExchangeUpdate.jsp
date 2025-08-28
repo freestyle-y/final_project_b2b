@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <%@ include file="/WEB-INF/common/head.jsp"%>
-<title>배송 처리</title>
+<title>교환 배송 처리</title>
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -48,11 +48,11 @@
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
 	
-    <h1>배송 처리</h1>
+    <h1>교환 배송 처리</h1>
 
-	<form action="/admin/personalDeliveryUpdate" method="post">
-		<input type="hidden" name="orderNo" value="${orderNo}">
-		<input type="hidden" name="subOrderNo" value="${subOrderNo}">
+	<form action="/admin/exchangeApprove" method="post">
+		<input type="hidden" name="orderNo" value="${order.orderNo}">
+		<input type="hidden" name="subOrderNo" value="${order.subOrderNo}">
 		
 		<label for="deliveryCompany">택배사</label>
 		<input type="text" name="deliveryCompany" id="deliveryCompany" placeholder="택배사 입력" required>
@@ -60,7 +60,7 @@
 		<label for="trackingNo">운송장 번호</label>
 		<input type="text" name="trackingNo" id="trackingNo" placeholder="운송장 번호 입력" required>
 
-		<button type="submit">배송 처리</button>
+		<button type="submit">교환 배송 처리</button>
 	</form>
 
 <!-- 공통 풋터 -->
