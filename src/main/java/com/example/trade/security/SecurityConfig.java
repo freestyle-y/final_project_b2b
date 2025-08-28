@@ -25,6 +25,7 @@ import org.springframework.security.web.savedrequest.SavedRequest;
 import com.example.trade.config.ApplicationContextProvider;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -121,6 +122,12 @@ public class SecurityConfig {
 		httpSecurity.logout((logoutConfigurer)
 				-> logoutConfigurer.logoutUrl("/public/logout")			// 로그아웃 처리 URL
 								   .invalidateHttpSession(true)			// 세션 무효화
+								   .addLogoutHandler((request, response, authentication) -> {
+								        Cookie cookie = new Cookie("myPageAuth", null);
+								        cookie.setPath("/");
+								        cookie.setMaxAge(0);
+								        response.addCookie(cookie);
+								    })
 								   .logoutSuccessUrl("/public/login"));	// 로그아웃 후 로그인 페이지로 이동
 		
 		return httpSecurity.build();
@@ -141,6 +148,12 @@ public class SecurityConfig {
 			@Override
 			public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 					Authentication authentication) throws IOException, ServletException {
+				
+				// ✅ 로그인 성공 시 myPageAuth false로 초기화
+			    Cookie cookie = new Cookie("myPageAuth", "false");
+			    cookie.setPath("/");
+			    response.addCookie(cookie);
+			    
 				// 로그인 성공 로그
 				System.out.println("로그인 성공 : " + authentication.getName());
 				

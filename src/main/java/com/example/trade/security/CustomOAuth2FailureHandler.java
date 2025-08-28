@@ -41,7 +41,7 @@ public class CustomOAuth2FailureHandler implements AuthenticationFailureHandler 
             String msg = URLEncoder.encode("등록되지 않은 소셜 계정입니다. 먼저 회원가입을 진행해주세요.", StandardCharsets.UTF_8);
             response.sendRedirect("/public/join?errorMsg=" + msg);
         } else {
-            String msg = URLEncoder.encode("소셜 로그인에 실패했습니다. 다시 시도해주세요.", StandardCharsets.UTF_8);
+            String msg = URLEncoder.encode("소셜 로그인에 실패했습니다. 연동하지 않은 소셜 계정일 경우 회원가입 후 마이페이지에서 연동해주세요.", StandardCharsets.UTF_8);
             response.sendRedirect("/public/login?errorMsg=" + msg);
         }
     }

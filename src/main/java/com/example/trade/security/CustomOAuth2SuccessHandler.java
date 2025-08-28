@@ -3,20 +3,19 @@ package com.example.trade.security;
 import java.io.IOException;
 import java.util.Map;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import com.example.trade.service.MemberService;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -80,6 +79,11 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
             var restoredAuth = new UsernamePasswordAuthenticationToken(
                     userDetails, userDetails.getPassword(), userDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(restoredAuth);
+            
+            // ✅ myPageAuth false로 초기화
+            Cookie cookie = new Cookie("myPageAuth", "false");
+            cookie.setPath("/");
+            response.addCookie(cookie);
 
             // 마이페이지로 리다이렉트 (완료 메시지)
             response.sendRedirect("/member/myPage?linkResult=success");
