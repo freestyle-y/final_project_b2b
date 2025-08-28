@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -50,7 +51,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 return oAuth2User; 
             } else {
                 // 🔹 일반 로그인 모드에서 연결된 계정 없음 → 실패
-                throw new OAuth2AuthenticationException("NO_LINKED_ACCOUNT");
+            	throw new OAuth2AuthenticationException("NO_LINKED_ACCOUNT");
             }
         }
 
