@@ -13,17 +13,9 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
 <style>
-    /* 하트 토글 스타일 */
-    .heart {
-        font-size: 24px;
-        cursor: pointer;
-        user-select: none;
-        color: gray;
-        transition: color 0.3s ease;
-    }
-    .heart.red {
-        color: red;
-    }
+    #wishHeart.red i {
+	  color: red;
+	}
 
     /* 옵션 및 수량 영역 */
     #optionSelect {
@@ -43,66 +35,6 @@
         margin-bottom: 10px;
     }
 
-    /* 버튼 공통 스타일 */
-    .action-btn {
-        padding: 8px 16px;
-        font-size: 14px;
-        cursor: pointer;
-        border: none;
-        border-radius: 5px;
-        background-color: #4CAF50; /* 초록색 */
-        color: white;
-        margin-right: 10px;
-        transition: background-color 0.3s ease;
-    }
-
-    .action-btn:hover {
-        background-color: #45a049;
-    }
-
-    /* 리뷰 스타일 */
-    #review-summary {
-        margin-top: 50px;
-        border-top: 2px solid #ccc;
-        padding-top: 20px;
-    }
-
-    .review-card {
-        background-color: #fff;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        padding: 16px;
-        margin-bottom: 20px;
-        max-width: 800px;
-    }
-
-    .review-card .name {
-        font-weight: bold;
-        margin-bottom: 4px;
-    }
-
-    .review-card .product {
-        color: #333;
-        font-size: 1.1em;
-        margin-bottom: 4px;
-    }
-
-    .review-card .option {
-        font-size: 0.9em;
-        color: #666;
-        margin-bottom: 6px;
-    }
-
-    .review-card .content {
-        margin-bottom: 10px;
-    }
-
-    .review-card .grade i {
-        color: #f39c12;
-        font-size: 18px;
-        margin-right: 2px;
-    }
-    
     /* 정렬 드롭다운 */
     #sort-select {
         margin-bottom: 20px;
@@ -129,7 +61,6 @@
 	    color: white;
 	    border-color: #333;
 	}
-      
 </style>
 </head>
 <body>
@@ -154,6 +85,12 @@
     
     <!-- Product Details Section -->
     <section id="product-details" class="product-details section">
+    
+	<c:if test="${not empty errorMessage}">
+	    <div style="color: red; text-align: center;">
+	        ${errorMessage}
+	    </div>
+	</c:if>
 
       <div class="container" data-aos="fade-up" data-aos-delay="100">
 
@@ -251,7 +188,7 @@
 				<!-- Product Variants -->
 				<div class="variant-section">
 				  <div class="color-selection">
-				    <label class="variant-label" for="optionSelect">Available Options:</label><br/>
+				    <label class="variant-label" for="optionSelect">Options:</label><br/>
 				
 				    <!-- 드롭다운 셀렉트 박스 -->
 				    <select id="optionSelect" name="option" class="form-select" style="max-width: 300px;">
@@ -304,9 +241,14 @@
                     <i class="bi bi-lightning"></i>
                     Buy Now
                   </button>
-                  <button class="btn icon-action" title="Add to Wishlist">
-                    <i class="bi bi-heart"></i>
-                  </button>
+                  
+                  <button id="wishHeart" class="btn icon-action ${product.isWish ? 'red' : ''}" 
+				        data-product-no="${product.productNo}" 
+				        data-is-wish="${product.isWish}"
+				        title="찜하기/취소하기">
+					  <i class="bi ${product.isWish ? 'bi-heart-fill' : 'bi-heart'}"></i>
+				  </button>
+                  
                 </div>
               </div>
 
@@ -339,11 +281,11 @@
             <div class="info-tabs-container">
               <nav class="tabs-navigation nav">
                 <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#ecommerce-product-details-5-overview" type="button">Overview</button>
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#ecommerce-product-details-5-customer-reviews" type="button">Reviews (127)</button>
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#ecommerce-product-details-5-customer-reviews" type="button">Reviews (${fn:length(productReview)})</button>
               </nav>
 
               <div class="tab-content">
-                <!-- Overview Tab -->
+                <!-- Overview Tab (상세정보) -->
                 <div class="tab-pane fade show active" id="ecommerce-product-details-5-overview">
                   <div class="overview-content">
                     <div class="row g-4">
@@ -401,243 +343,108 @@
                     <div class="reviews-header">
                       <div class="rating-overview">
                         <div class="average-score">
-                          <div class="score-display">4.6</div>
+                          <div class="score-display">${avgProductRate}</div>
+                          
                           <div class="score-stars">
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-half"></i>
-                          </div>
-                          <div class="total-reviews">127 customer reviews</div>
+							  <c:set var="fullStars" value="${fn:substringBefore(avgProductRate, '.')}" />
+			                  <c:set var="decimal" value="${avgProductRate - fullStars}" />
+			                  <c:set var="hasHalf" value="${decimal >= 0.5}" />
+			                  <c:set var="emptyStars" value="${5 - fullStars - (hasHalf ? 1 : 0)}" />
+			
+			                  <c:forEach begin="1" end="${fullStars}" var="i">
+			                      <i class="fas fa-star"></i>
+			                  </c:forEach>
+			
+			                  <c:if test="${hasHalf}">
+			                      <i class="fas fa-star-half-alt"></i>
+			                  </c:if>
+			
+			                  <c:forEach begin="1" end="${emptyStars}" var="i">
+			                      <i class="far fa-star"></i>
+			                  </c:forEach>
+						  </div>
+                          <div class="total-reviews">(${fn:length(productReview)}) customer reviews</div>
                         </div>
-
-                        <div class="rating-distribution">
-                          <div class="rating-row">
-                            <span class="stars-label">5★</span>
-                            <div class="progress-container">
-                              <div class="progress-fill" style="width: 68%;"></div>
-                            </div>
-                            <span class="count-label">86</span>
-                          </div>
-                          <div class="rating-row">
-                            <span class="stars-label">4★</span>
-                            <div class="progress-container">
-                              <div class="progress-fill" style="width: 22%;"></div>
-                            </div>
-                            <span class="count-label">28</span>
-                          </div>
-                          <div class="rating-row">
-                            <span class="stars-label">3★</span>
-                            <div class="progress-container">
-                              <div class="progress-fill" style="width: 6%;"></div>
-                            </div>
-                            <span class="count-label">8</span>
-                          </div>
-                          <div class="rating-row">
-                            <span class="stars-label">2★</span>
-                            <div class="progress-container">
-                              <div class="progress-fill" style="width: 3%;"></div>
-                            </div>
-                            <span class="count-label">4</span>
-                          </div>
-                          <div class="rating-row">
-                            <span class="stars-label">1★</span>
-                            <div class="progress-container">
-                              <div class="progress-fill" style="width: 1%;"></div>
-                            </div>
-                            <span class="count-label">1</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="write-review-cta">
-                        <h4>Share Your Experience</h4>
-                        <p>Help others make informed decisions</p>
-                        <button class="btn review-btn">Write Review</button>
                       </div>
                     </div>
 
-                    <div class="customer-reviews-list">
-                      <div class="review-card">
-                        <div class="reviewer-profile">
-                          <img src="assets/img/person/person-f-3.webp" alt="Customer" class="profile-pic">
-                          <div class="profile-details">
-                            <div class="customer-name">Sarah Martinez</div>
-                            <div class="review-meta">
-                              <div class="review-stars">
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                              </div>
-                              <span class="review-date">March 28, 2024</span>
-                            </div>
-                          </div>
-                        </div>
-                        <h5 class="review-headline">Outstanding audio quality and comfort</h5>
-                        <div class="review-text">
-                          <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam. Eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
-                        </div>
-                        <div class="review-actions">
-                          <button class="action-btn"><i class="bi bi-hand-thumbs-up"></i> Helpful (12)</button>
-                          <button class="action-btn"><i class="bi bi-chat-dots"></i> Reply</button>
-                        </div>
-                      </div>
-
-                      <div class="review-card">
-                        <div class="reviewer-profile">
-                          <img src="assets/img/person/person-m-5.webp" alt="Customer" class="profile-pic">
-                          <div class="profile-details">
-                            <div class="customer-name">David Chen</div>
-                            <div class="review-meta">
-                              <div class="review-stars">
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star"></i>
-                              </div>
-                              <span class="review-date">March 15, 2024</span>
-                            </div>
-                          </div>
-                        </div>
-                        <h5 class="review-headline">Great value, minor connectivity issues</h5>
-                        <div class="review-text">
-                          <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Overall satisfied with the purchase.</p>
-                        </div>
-                        <div class="review-actions">
-                          <button class="action-btn"><i class="bi bi-hand-thumbs-up"></i> Helpful (8)</button>
-                          <button class="action-btn"><i class="bi bi-chat-dots"></i> Reply</button>
-                        </div>
-                      </div>
-
-                      <div class="review-card">
-                        <div class="reviewer-profile">
-                          <img src="assets/img/person/person-f-7.webp" alt="Customer" class="profile-pic">
-                          <div class="profile-details">
-                            <div class="customer-name">Emily Rodriguez</div>
-                            <div class="review-meta">
-                              <div class="review-stars">
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                              </div>
-                              <span class="review-date">February 22, 2024</span>
-                            </div>
-                          </div>
-                        </div>
-                        <h5 class="review-headline">Perfect for work-from-home setup</h5>
-                        <div class="review-text">
-                          <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>
-                        </div>
-                        <div class="review-actions">
-                          <button class="action-btn"><i class="bi bi-hand-thumbs-up"></i> Helpful (15)</button>
-                          <button class="action-btn"><i class="bi bi-chat-dots"></i> Reply</button>
-                        </div>
-                      </div>
-
-                      <div class="load-more-section">
-                        <button class="btn load-more-reviews">Show More Reviews</button>
-                      </div>
-                    </div>
+                    <div class="customer-reviews-list">     
+                    
+                    <!-- 정렬 드롭다운 추가 -->
+				    <div class="review-sort">
+				        <label for="sort-select">리뷰 정렬: </label>
+				        <select id="sort-select">
+				            <option value="high">별점 높은순</option>
+				            <option value="low">별점 낮은순</option>
+				        </select>
+				    </div>      
+				    
+                      <div id="review-list">
+					    <c:forEach var="item" items="${productReview}">
+					        <div class="review-card" data-grade="${item.grade}">
+					            <div class="reviewer-profile">
+					                <div class="profile-details">
+					                    <div class="customer-name">
+					                        <!-- 이름 마스킹 -->
+					                        <c:set var="name" value="${item.name}" />
+					                        <c:choose>
+					                            <c:when test="${fn:length(name) == 2}">
+					                                ${fn:substring(name, 0, 1)}*
+					                            </c:when>
+					                            <c:when test="${fn:length(name) >= 3}">
+					                                ${fn:substring(name, 0, 1)}*${fn:substring(name, 2, fn:length(name))}
+					                            </c:when>
+					                            <c:otherwise>
+					                                ${name}
+					                            </c:otherwise>
+					                        </c:choose>
+					                    </div>
+					                    <div class="review-meta">
+					                        <div class="review-stars">
+					                            <c:set var="fullStars" value="${fn:substringBefore(item.grade, '.')}" />
+					                            <c:set var="decimal" value="${item.grade - fullStars}" />
+					                            <c:set var="hasHalf" value="${decimal >= 0.5}" />
+					                            <c:set var="emptyStars" value="${5 - fullStars - (hasHalf ? 1 : 0)}" />
+					
+					                            <c:forEach begin="1" end="${fullStars}" var="i">
+					                                <i class="bi bi-star-fill"></i>
+					                            </c:forEach>
+					
+					                            <c:if test="${hasHalf}">
+					                                <i class="bi bi-star-half"></i>
+					                            </c:if>
+					
+					                            <c:forEach begin="1" end="${emptyStars}" var="i">
+					                                <i class="bi bi-star"></i>
+					                            </c:forEach>
+					                        </div>
+					                    </div>
+					                </div>
+					            </div>
+					            <h5 class="review-headline">${item.productName} - 옵션: ${item.optionNameValue}</h5>
+					            <div class="review-text">
+					                <p>${item.review}</p>
+					            </div>
+					        </div>
+					    </c:forEach>
+					
+					    <c:if test="${empty productReview}">
+					        <p>등록된 리뷰가 없습니다.</p>
+					    </c:if>
+					</div>
                   </div>
                 </div>
+                <!-- ✅ 페이지네이션 버튼 영역 -->
+				<div id="review-pagination" class="pagination"></div>
               </div>
             </div>
           </div>
         </div>
-
       </div>
+
+     </div>
     </section><!-- /Product Details Section -->
 
-	<h2>${product.productName}</h2>
-
-	<c:if test="${not empty errorMessage}">
-	    <div style="color: red;">${errorMessage}</div>
-	</c:if>
-	
-
-
-
-    <!-- 찜 하트 -->
-    <span id="wishHeart" class="heart ${product.isWish ? 'red' : ''}" 
-	      data-product-no="${product.productNo}" 
-	      data-is-wish="${product.isWish}"
-	      title="찜하기/취소하기">
-	    ♥
-	</span>
-
-
-    <!-- 평균 평점 및 리뷰 -->
-	<div id="review-summary">
-	    <h3>상품 리뷰</h3>
-	    <p><strong>평균 평점:</strong> ${avgProductRate} / 5</p>
-	
-		<!-- 정렬 드롭다운 -->
-	    <select id="sort-select">
-	        <option value="high">별점 높은순</option>
-	        <option value="low">별점 낮은순</option>
-	    </select>
-    
-	    <div id="review-list">
-	        <c:forEach var="item" items="${productReview}">
-	            <div class="review-card" data-grade="${item.grade}">
-	                <!-- 이름 마스킹 -->
-	                <div class="name">
-	                    <c:set var="name" value="${item.name}" />
-	                    <c:choose>
-	                        <c:when test="${fn:length(name) == 2}">
-	                            ${fn:substring(name, 0, 1)}*
-	                        </c:when>
-	                        <c:when test="${fn:length(name) >= 3}">
-	                            ${fn:substring(name, 0, 1)}*${fn:substring(name, 2, fn:length(name))}
-	                        </c:when>
-	                        <c:otherwise>
-	                            ${name}
-	                        </c:otherwise>
-	                    </c:choose>
-	                </div>
-	
-	                <div class="product">${item.productName}</div>
-	                <div class="option">옵션: ${item.optionNameValue}</div>
-	                <div class="content">${item.review}</div>
-	
-	                <!-- 별점 -->
-	                <div class="grade">
-	                    <c:set var="grade" value="${item.grade}" />
-	                    <c:set var="fullStars" value="${fn:substringBefore(grade, '.')}" />
-	                    <c:set var="decimal" value="${grade - fullStars}" />
-	                    <c:set var="hasHalf" value="${decimal >= 0.5}" />
-	                    <c:set var="emptyStars" value="${5 - fullStars - (hasHalf ? 1 : 0)}" />
-	
-	                    <c:forEach begin="1" end="${fullStars}" var="i">
-	                        <i class="fas fa-star"></i>
-	                    </c:forEach>
-	
-	                    <c:if test="${hasHalf}">
-	                        <i class="fas fa-star-half-alt"></i>
-	                    </c:if>
-	
-	                    <c:forEach begin="1" end="${emptyStars}" var="i">
-	                        <i class="far fa-star"></i>
-	                    </c:forEach>
-	                </div>
-	            </div>
-	        </c:forEach>
-	
-	        <c:if test="${empty productReview}">
-	            <p>등록된 리뷰가 없습니다.</p>
-	        </c:if>
-	    </div>
-	    
-	    <!-- ✅ 페이지네이션 버튼 영역 -->
-		<div id="review-pagination" class="pagination"></div>
-	</div>
-	
 	<!-- Scroll Top -->
   	<a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 	
@@ -649,7 +456,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
     $(function() {
-    	const itemsPerPage = 5;
+    	const itemsPerPage = 4;
     	let currentPage = 1;
 
         const wishHeart = $('#wishHeart');
@@ -704,6 +511,7 @@
      	// 찜 하트 클릭 토글
         wishHeart.on('click', function () {
             const heart = $(this);
+            const icon = heart.find('i');
             const productNo = heart.data('product-no');
             const isCurrentlyWish = heart.hasClass('red'); // 현재 찜 상태 확인
 
@@ -716,7 +524,8 @@
                 },
                 success: function (res) {
                     if (res.success) {
-                        heart.toggleClass('red'); // UI 반영
+                    	heart.toggleClass('red'); // 빨간색 토글
+                        icon.toggleClass('bi-heart bi-heart-fill'); // 아이콘 토글
                     } else {
                         alert('찜 처리에 실패했습니다.');
                     }
@@ -736,7 +545,41 @@
         	quantityInput.attr('max', stock); // max 속성 업데이트
             updateInfo();
         });
-   
+         
+        
+        // + 버튼 클릭
+        $('.quantity-btn.increase').on('click', function() {
+            const $input = $(this).siblings('.quantity-input');
+            const max = Number($input.attr('max')) || 1000;
+            let currentVal = Number($input.val());
+            if (currentVal <= max) {
+                $input.val(currentVal);
+                updateInfo();
+            }
+        });
+
+        // - 버튼 클릭
+        $('.quantity-btn.decrease').on('click', function() {
+            const $input = $(this).siblings('.quantity-input');
+            let currentVal = Number($input.val());
+            if (currentVal >= 1) {
+                $input.val(currentVal);
+                updateInfo();
+            }
+        });
+
+        // 수량 직접 입력 변경 시
+        $('.quantity-input').on('input', function() {
+            const max = Number($(this).attr('max')) || 1000;
+            let val = Number($(this).val());
+
+            if (isNaN(val) || val < 1) val = 1;
+            if (val > max) val = max;
+
+            $(this).val(val);
+            updateInfo();
+        });
+
         // 장바구니 담기
         addCartBtn.on('click', function() {
             const productNo = wishHeart.data('product-no');

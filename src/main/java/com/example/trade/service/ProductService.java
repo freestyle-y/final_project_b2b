@@ -44,6 +44,11 @@ public class ProductService {
 		this.productMapper = productMapper;
 	}
 	
+	// 개인 이름 조회
+	public String selectName(String id) {
+		return productMapper.selectName(id);
+	}
+	
 	// 상품 후기 목록 보기
 	public List<Map<String, Object>> selectReviewList() {
 		return productMapper.reviewList();
