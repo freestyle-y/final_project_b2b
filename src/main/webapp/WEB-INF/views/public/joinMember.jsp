@@ -1,25 +1,66 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
 <meta charset="UTF-8">
-<%@ include file="/WEB-INF/common/head.jsp"%>
-<title>회원가입</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>회원가입 - NiceShop</title>
+
+<!-- Bootstrap and Custom CSS Files -->
+<link href="/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link href="/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+<link href="/assets/vendor/aos/aos.css" rel="stylesheet">
+<link href="/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+<link href="/assets/css/main.css" rel="stylesheet">
+
+<!-- Custom CSS for form handling -->
 <style>
-    .hidden { display: none; }
+    /* 폼의 유효성 검증 메시지 스타일 */
     .error { color: red; font-size: 12px; }
     .success { color: green; font-size: 12px; }
-    label { display: block; margin-top: 8px; }
-    input[readonly] { background-color: #f0f0f0; }
+
+    /* 메인 폼 컨테이너가 다른 요소에 의해 가려지지 않도록 z-index 설정 */
+    #main-content-container {
+      z-index: 10;
+      position: relative;
+    }
+    
+    /* 우편번호 검색 부분을 위한 새로운 flexbox 스타일 */
+    .address-input-group {
+      display: flex;
+      gap: 5px; /* 입력창과 버튼 사이의 간격을 줍니다 */
+      align-items: center; /* 수직 정렬 */
+      margin-bottom: 1.5rem; /* 아래쪽 여백 추가 */
+    }
+
+    /* 우편번호 입력란과 버튼을 감싸는 div */
+    .address-input-group > div {
+        flex-grow: 1; /* 남은 공간을 차지하도록 함 */
+    }
+
+    /* 버튼 높이와 정렬을 위해 padding-top과 bottom을 줍니다 */
+    .address-input-group input,
+    .address-input-group .btn {
+      height: calc(1.5em + .75rem + 2px); /* Bootstrap의 기본 input 높이 계산식 */
+    }
 </style>
+
+
+<!-- 필수 스크립트: jQuery와 Daum Postcode를 템플릿 스크립트보다 먼저 로드 -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+
 <script>
     // 회원 유형 선택
     function toggleMemberForm(type){
-        $("#personalForm").toggle(type==='personal');
-        $("#companyForm").toggle(type==='company');
+        if(type === 'personal'){
+            $("#personalForm").removeClass('d-none');
+            $("#companyForm").addClass('d-none');
+        } else {
+            $("#personalForm").addClass('d-none');
+            $("#companyForm").removeClass('d-none');
+        }
     }
 
     // 카카오 우편번호 API
@@ -28,13 +69,14 @@
             oncomplete: function(data){
                 $("#" + postalId).val(data.zonecode);
                 $("#" + addressId).val(data.roadAddress);
+                $("#" + addressId).focus();
             }
         }).open();
     }
-
+    
     // 비밀번호 유효성 체크
     function validatePassword(pw){
-        const re = /^(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+        const re = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*[0-9])[A-Za-z\d!@#$%^&*]{8,}$/;
         return re.test(pw);
     }
 
@@ -42,21 +84,21 @@
     function validateEmail(email){
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return re.test(email);
-    }
+	}
 	
- 	// 주민등록번호 체크
+ 	// 주민등록번호 유효성
     function validateSn(front, back){
         return front.length === 6 && back.length === 7;
     }
  	
- 	// 휴대폰 체크
+ 	// 휴대폰 유효성
     function validatePhone(p1,p2,p3){
         return p1.length === 3 && p2.length >= 3 && p3.length === 4;
     }
  	
- 	// 주소 체크
+ 	// 주소 유효성
     function validateAddress(postal, address, detail){
-        return postal.trim()!=="" && address.trim()!=="" && detail.trim()!=="";
+        return postal.trim() !== "" && address.trim() !== "" && detail.trim() !== "";
     }
     
     // 이름 유효성 (한글, 영어만)
@@ -90,17 +132,15 @@
     function checkPassword(passwordId, confirmId, pwMsgId, confirmMsgId){
         const pw = $("#" + passwordId).val();
         const confirm = $("#" + confirmId).val();
-
-        // 비밀번호 유효성
+        
         if(pw === "") {
             $("#" + pwMsgId).text("");
         } else if(validatePassword(pw)){
             $("#" + pwMsgId).text("사용 가능한 비밀번호입니다.").removeClass("error").addClass("success");
         } else {
-            $("#" + pwMsgId).text("8자 이상, 대문자 1개, 특수문자 1개 필요").removeClass("success").addClass("error");
+            $("#" + pwMsgId).text("8자 이상, 대문자/숫자/특수문자 각 1개 필요").removeClass("success").addClass("error");
         }
-
-        // 비밀번호 확인 일치
+        
         if(confirm === "") {
             $("#" + confirmMsgId).text("");
         } else if(pw === confirm){
@@ -158,21 +198,17 @@
 		}
 	}
     
-
-    // 아이디 중복 체크
-    function setupIdCheck(inputId, msgId){
-        $("#" + inputId).on("input blur", function(){
-            const userId = $(this).val().trim();
-            const msgSpan = $("#" + msgId);
-            if(userId === ""){ msgSpan.text(""); return; }
-
-            $.get("/public/checkId", {id:userId}, function(data){
-                if(data === "OK"){
-                    msgSpan.text("사용 가능한 아이디입니다.").removeClass("error").addClass("success");
-                } else {
-                    msgSpan.text("중복된 아이디입니다.").removeClass("success").addClass("error");
-                }
-            });
+    // 아이디 중복 체크 (AJAX)
+    function checkId(inputId, msgId){
+        const userId = $("#" + inputId).val().trim();
+        const msgSpan = $("#" + msgId);
+        if(userId === ""){ msgSpan.text(""); return; }
+        $.get("/public/checkId", {id:userId}, function(data){
+            if(data === "OK"){
+                msgSpan.text("사용 가능한 아이디입니다.").removeClass("error").addClass("success");
+            } else {
+                msgSpan.text("중복된 아이디입니다.").removeClass("success").addClass("error");
+            }
         });
     }
 
@@ -182,7 +218,6 @@
             $("#personalSnFull").val($("#personalSn1").val() + "-" + $("#personalSn2").val());
             $("#personalPhoneFull").val($("#personalPhone1").val() + "-" + $("#personalPhone2").val() + "-" + $("#personalPhone3").val());
         } else {
-            $("#bizSnFull").val($("#bizSn1").val() + "-" + $("#bizSn2").val());
             $("#bizPhoneFull").val($("#bizPhone1").val() + "-" + $("#bizPhone2").val() + "-" + $("#bizPhone3").val());
             $("#companyBussFull").val($("#companyBuss1").val() + "-" + $("#companyBuss2").val() + "-" + $("#companyBuss3").val());
         }
@@ -191,13 +226,15 @@
     // AJAX 제출
     function submitForm(formId, url){
         formatData(formId);
-        if(!validateBeforeSubmit(formId)) return false;
+        if(!validateBeforeSubmit(formId)) {
+            return false;
+        }
         
         const form = $("#" + formId);
         $.post(url, form.serialize())
         .done(function(res){
             if(res==="SUCCESS"){
-                alert("회원가입 완료!");
+                alert("회원가입이 성공적으로 완료되었습니다!");
                 window.location.href="/public/mainPage";
             } else {
                 alert("오류: " + res);
@@ -206,141 +243,379 @@
         .fail(function(xhr){
             alert("회원가입 실패: " + xhr.responseText);
         });
-
         return false;
     }
     
  	// 필수 입력 체크
     function validateBeforeSubmit(formId){
         let valid = true;
-        if(formId === 'personalForm'){
-            valid = $("#personalId").val().trim() !== "" &&
-                    $("#personalPassword").val().trim() !== "" &&
-                    $("#personalConfirm").val().trim() !== "" &&
-                    $("#personalName").val().trim() !== "" &&
-                    validatePhone($("#personalPhone1").val(), $("#personalPhone2").val(), $("#personalPhone3").val()) &&
-                    validateSn($("#personalSn1").val(), $("#personalSn2").val()) &&
-                    validateEmail($("#personalEmail").val()) &&
-                    validateAddress($("#personalPostal").val(), $("#personalAddress").val(), $("input[name='detailAddress']").val());
-        } else { // companyForm
-            valid = $("#bizId").val().trim() !== "" &&
-                    $("#bizPassword").val().trim() !== "" &&
-                    $("#bizConfirm").val().trim() !== "" &&
-                    $("#bizName").val().trim() !== "" &&
-                    validatePhone($("#bizPhone1").val(), $("#bizPhone2").val(), $("#bizPhone3").val()) &&
-                    validateSn($("#bizSn1").val(), $("#bizSn2").val()) &&
-                    validateEmail($("#bizEmail").val()) &&
-                    $("input[name='companyName']").val().trim() !== "" &&
-                    $("#companyBuss1").val().trim() !== "" &&
-                    $("#companyBuss2").val().trim() !== "" &&
-                    $("#companyBuss3").val().trim() !== "" &&
-                    validateAddress($("#bizPostal").val(), $("#bizAddress").val(), $("#companyForm input[name='detailAddress']").val());
-        }
+        let form = $("#" + formId);
+        
+        form.find("input[required]").each(function(){
+            if($(this).val().trim() === ""){
+                valid = false;
+                $(this).focus();
+                return false; // each 루프 종료
+            }
+        });
 
         if(!valid){
-            alert("입력되지 않은 항목이 있습니다");
+            alert("필수 입력 항목을 모두 작성해주세요.");
             return false;
         }
 
+        // 추가적인 유효성 검증
+        if(formId === 'personalForm'){
+            if(!validatePassword($("#personalPassword").val()) || $("#personalPassword").val() !== $("#personalConfirm").val()){
+                alert("비밀번호를 올바르게 입력해주세요.");
+                $("#personalPassword").focus();
+                return false;
+            }
+            if(!validatePhone($("#personalPhone1").val(), $("#personalPhone2").val(), $("#personalPhone3").val())){
+                alert("휴대폰 번호를 올바르게 입력해주세요.");
+                $("#personalPhone1").focus();
+                return false;
+            }
+             if(!validateEmail($("#personalEmail").val())){
+                alert("이메일을 올바르게 입력해주세요.");
+                $("#personalEmail").focus();
+                return false;
+            }
+            if(!validateSn($("#personalSn1").val(), $("#personalSn2").val())){
+                alert("주민등록번호를 올바르게 입력해주세요.");
+                $("#personalSn1").focus();
+                return false;
+            }
+             if(!validateAddress($("#personalPostal").val(), $("#personalAddress").val(), form.find("input[name='detailAddress']").val())){
+                alert("주소를 올바르게 입력해주세요.");
+                $("#personalPostal").focus();
+                return false;
+            }
+        } else { // companyForm
+            if(!validatePassword($("#bizPassword").val()) || $("#bizPassword").val() !== $("#bizConfirm").val()){
+                alert("비밀번호를 올바르게 입력해주세요.");
+                $("#bizPassword").focus();
+                return false;
+            }
+            if(!validatePhone($("#bizPhone1").val(), $("#bizPhone2").val(), $("#bizPhone3").val())){
+                alert("휴대폰 번호를 올바르게 입력해주세요.");
+                $("#bizPhone1").focus();
+                return false;
+            }
+            if(!validateEmail($("#bizEmail").val())){
+                alert("이메일을 올바르게 입력해주세요.");
+                $("#bizEmail").focus();
+                return false;
+            }
+            if($("#companyBuss1").val().length + $("#companyBuss2").val().length + $("#companyBuss3").val().length !== 10){
+                alert("사업자등록번호를 올바르게 입력해주세요.");
+                $("#companyBuss1").focus();
+                return false;
+            }
+            if(!validateAddress($("#bizPostal").val(), $("#bizAddress").val(), form.find("input[name='detailAddress']").val())){
+                alert("주소를 올바르게 입력해주세요.");
+                $("#bizPostal").focus();
+                return false;
+            }
+        }
         return true;
     }
 
+    // 모든 이벤트 리스너를 한곳에서 관리
     $(function(){
-        // 아이디 체크
-        setupIdCheck("personalId","personalIdMsg");
-        setupIdCheck("bizId","bizIdMsg");
-
-        // 실시간 비밀번호 & 확인
-        $("#personalPassword, #personalConfirm").on("input", function(){
-            checkPassword("personalPassword","personalConfirm","personalPwMsg","personalConfirmMsg");
-        });
-        $("#bizPassword, #bizConfirm").on("input", function(){
-            checkPassword("bizPassword","bizConfirm","bizPwMsg","bizConfirmMsg");
+        // 회원 유형 라디오 버튼
+        $("input[name='customerCategory']").on("click", function(){
+            toggleMemberForm($(this).val() === 'CC003' ? 'personal' : 'company');
         });
 
-        // 실시간 이메일
+        // 우편번호 검색 버튼
+        $("#personalPostcodeSearch").on("click", function(){ execDaumPostcode('personalPostal', 'personalAddress'); });
+        $("#bizPostcodeSearch").on("click", function(){ execDaumPostcode('bizPostal', 'bizAddress'); });
+
+        // 실시간 유효성 체크
+        $("#personalId").on("input", function(){ checkId("personalId","personalIdMsg"); });
+        $("#bizId").on("input", function(){ checkId("bizId","bizIdMsg"); });
+
+        $("#personalPassword, #personalConfirm").on("input", function(){ checkPassword("personalPassword","personalConfirm","personalPwMsg","personalConfirmMsg"); });
+        $("#bizPassword, #bizConfirm").on("input", function(){ checkPassword("bizPassword","bizConfirm","bizPwMsg","bizConfirmMsg"); });
+
         $("#personalEmail").on("input", function(){ checkEmail("personalEmail","personalEmailMsg"); });
         $("#bizEmail").on("input", function(){ checkEmail("bizEmail","bizEmailMsg"); });
 
-        // 이름 체크
         $("#personalName").on("input", function(){ checkName("personalName","personalNameMsg"); });
         $("#bizName").on("input", function(){ checkName("bizName","bizNameMsg"); });
         
-    	// 주민등록번호 체크
         $("#personalSn1, #personalSn2").on("input", function(){ checkSn("personalSn1","personalSn2","personalSnMsg"); });
-        $("#bizSn1, #bizSn2").on("input", function(){ checkSn("bizSn1","bizSn2","bizSnMsg"); });
 
-        // 휴대폰 번호 체크
         $("#personalPhone1, #personalPhone2, #personalPhone3").on("input", function(){ checkPhone("personalPhone1","personalPhone2","personalPhone3","personalPhoneMsg"); });
         $("#bizPhone1, #bizPhone2, #bizPhone3").on("input", function(){ checkPhone("bizPhone1","bizPhone2","bizPhone3","bizPhoneMsg"); });
+        
+        // 자동 포커스 이동
+        $("#personalPhone1").on("input", function(){ autoMoveNext(this, 'personalPhone2', 3); });
+        $("#personalPhone2").on("input", function(){ autoMoveNext(this, 'personalPhone3', 4); });
+        $("#bizPhone1").on("input", function(){ autoMoveNext(this, 'bizPhone2', 3); });
+        $("#bizPhone2").on("input", function(){ autoMoveNext(this, 'bizPhone3', 4); });
+        
+        $("#personalSn1").on("input", function(){ autoMoveNext(this, 'personalSn2', 6); });
+        
+        $("#companyBuss1").on("input", function(){ autoMoveNext(this, 'companyBuss2', 3); });
+        $("#companyBuss2").on("input", function(){ autoMoveNext(this, 'companyBuss3', 2); });
+        
+        // 숫자만 입력/영어/한글만 입력 이벤트
+        $("#personalPhone1, #personalPhone2, #personalPhone3, #personalSn1, #personalSn2, #companyBuss1, #companyBuss2, #companyBuss3").on("keypress", allowOnlyNumber);
+        $("#personalName, #bizName").on("keypress", allowOnlyNameChar);
     });
 </script>
+
+<!-- 새로운 템플릿 스크립트들을 마지막에 로드 -->
+<script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/vendor/aos/aos.js"></script>
+<script src="/assets/vendor/glightbox/js/glightbox.min.js"></script>
+<script src="/assets/js/main.js"></script>
+
 </head>
 <body>
 <%@include file="/WEB-INF/common/header/header.jsp"%>
 
-<main class="main">
+<main class="main" id="main-content-container">
+    <div class="page-title light-background">
+      <div class="container d-lg-flex justify-content-between align-items-center">
+        <h1 class="mb-2 mb-lg-0">회원가입</h1>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="/">Home</a></li>
+            <li class="current">회원가입</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
 
-<h1>회원가입</h1>
+    <section id="register" class="register section">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-10">
+            <div class="registration-form-wrapper">
+              <div class="form-header text-center mb-4">
+                <h2>회원가입</h2>
+                <p>회원 유형을 선택하고, 계정을 만드세요</p>
+                <div class="mb-4 text-center">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="customerCategory" id="personalRadio" value="CC003" checked>
+                        <label class="form-check-label" for="personalRadio">개인회원</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="customerCategory" id="companyRadio" value="CC002">
+                        <label class="form-check-label" for="companyRadio">기업회원</label>
+                    </div>
+                </div>
+              </div>
 
-<div>
-    <label><input type="radio" name="customerCategory" value="CC003" onclick="toggleMemberForm('personal')" checked> 개인회원</label>
-    <label><input type="radio" name="customerCategory" value="CC002" onclick="toggleMemberForm('company')"> 기업회원</label>
-</div>
+              <div class="row">
+                <div class="col-lg-8 mx-auto">
+                  <!-- 개인회원 폼 -->
+                  <form id="personalForm" onsubmit="return submitForm('personalForm','/public/joinPersonal');">
+                    <div class="form-floating mb-3">
+                      <input type="text" class="form-control" id="personalId" name="id" placeholder="아이디" required>
+                      <label for="personalId">아이디</label>
+                      <span id="personalIdMsg" class="form-text"></span>
+                    </div>
 
-<!-- 개인회원 폼 -->
-<form id="personalForm" onsubmit="return submitForm('personalForm','/public/joinPersonal');">
-    <label>아이디: <input type="text" id="personalId" name="id" required> <span id="personalIdMsg"></span></label>
-    <label>비밀번호: <input type="password" id="personalPassword" name="password" required> <span id="personalPwMsg"></span></label>
-    <label>비밀번호 확인: <input type="password" id="personalConfirm" name="passwordConfirm" required> <span id="personalConfirmMsg"></span></label>
-    <label>이름: <input type="text" id="personalName" name="name" required onkeypress="allowOnlyNameChar(event)"> <span id="personalNameMsg"></span></label>
-    <label>휴대폰: 
-        <input type="text" id="personalPhone1" maxlength="3" required onkeypress="allowOnlyNumber(event)" oninput="autoMoveNext(this,'personalPhone2',3)"> -
-        <input type="text" id="personalPhone2" maxlength="4" required onkeypress="allowOnlyNumber(event)" oninput="autoMoveNext(this,'personalPhone3',4)"> -
-        <input type="text" id="personalPhone3" maxlength="4" required onkeypress="allowOnlyNumber(event)"> <span id="personalPhoneMsg"></span>
-    </label>
-    <input type="hidden" id="personalPhoneFull" name="phone">
-    <label>이메일: <input type="text" id="personalEmail" name="email" required> <span id="personalEmailMsg"></span></label>
-    <label>주민등록번호: <input type="text" id="personalSn1" maxlength="6" required onkeypress="allowOnlyNumber(event)" oninput="autoMoveNext(this,'personalSn2',6)"> -
-        <input type="password" id="personalSn2" maxlength="7" required onkeypress="allowOnlyNumber(event)"> <span id="personalSnMsg"></span>
-    </label>
-    <input type="hidden" id="personalSnFull" name="sn">
-    <label>우편번호: <input type="text" id="personalPostal" name="postal" readonly> 
-        <button type="button" onclick="execDaumPostcode('personalPostal','personalAddress')">검색</button>
-    </label>
-    <label>주소: <input type="text" id="personalAddress" name="address" readonly></label>
-    <label>상세주소: <input type="text" name="detailAddress"></label>
-    <button type="submit">가입하기</button>
-</form>
+                    <div class="form-floating mb-3">
+                      <input type="password" class="form-control" id="personalPassword" name="password" placeholder="비밀번호" required>
+                      <label for="personalPassword">비밀번호</label>
+                      <span id="personalPwMsg" class="form-text"></span>
+                    </div>
 
-<!-- 기업회원 폼 -->
-<form id="companyForm" class="hidden" onsubmit="return submitForm('companyForm','/public/joinBiz');">
-    <label>아이디: <input type="text" id="bizId" name="id" required> <span id="bizIdMsg"></span></label>
-    <label>비밀번호: <input type="password" id="bizPassword" name="password" required> <span id="bizPwMsg"></span></label>
-    <label>비밀번호 확인: <input type="password" id="bizConfirm" name="passwordConfirm" required> <span id="bizConfirmMsg"></span></label>
-    <label>이름: <input type="text" id="bizName" name="name" required onkeypress="allowOnlyNameChar(event)"> <span id="bizNameMsg"></span></label>
-    <label>휴대폰: 
-        <input type="text" id="bizPhone1" maxlength="3" required onkeypress="allowOnlyNumber(event)" oninput="autoMoveNext(this,'bizPhone2',3)"> -
-        <input type="text" id="bizPhone2" maxlength="4" required onkeypress="allowOnlyNumber(event)" oninput="autoMoveNext(this,'bizPhone3',4)"> -
-        <input type="text" id="bizPhone3" maxlength="4" required onkeypress="allowOnlyNumber(event)"> <span id="bizPhoneMsg"></span>
-    </label>
-    <input type="hidden" id="bizPhoneFull" name="phone">
-    <label>이메일: <input type="text" id="bizEmail" name="email" required> <span id="bizEmailMsg"></span></label>
-    <label>기업명: <input type="text" name="companyName" required></label>
-    <label>사업자등록번호: 
-        <input type="text" id="companyBuss1" maxlength="3" required onkeypress="allowOnlyNumber(event)" oninput="autoMoveNext(this,'companyBuss2',3)"> -
-        <input type="text" id="companyBuss2" maxlength="2" required onkeypress="allowOnlyNumber(event)" oninput="autoMoveNext(this,'companyBuss3',2)"> -
-        <input type="text" id="companyBuss3" maxlength="5" required onkeypress="allowOnlyNumber(event)">
-    </label>
-    <input type="hidden" id="companyBussFull" name="businessNo">
-    <label>우편번호: <input type="text" id="bizPostal" name="postal" readonly> 
-        <button type="button" onclick="execDaumPostcode('bizPostal','bizAddress')">검색</button>
-    </label>
-    <label>주소: <input type="text" id="bizAddress" name="address" readonly></label>
-    <label>상세주소: <input type="text" name="detailAddress"></label>
-    <button type="submit">가입하기</button>
-</form>
+                    <div class="form-floating mb-3">
+                      <input type="password" class="form-control" id="personalConfirm" name="passwordConfirm" placeholder="비밀번호 확인" required>
+                      <label for="personalConfirm">비밀번호 확인</label>
+                      <span id="personalConfirmMsg" class="form-text"></span>
+                    </div>
+                    
+                    <div class="form-floating mb-3">
+                      <input type="text" class="form-control" id="personalName" name="name" placeholder="이름" required>
+                      <label for="personalName">이름</label>
+                      <span id="personalNameMsg" class="form-text"></span>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-4">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="personalPhone1" maxlength="3" placeholder="010" required>
+                                <label for="personalPhone1">휴대폰</label>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="personalPhone2" maxlength="4" placeholder="1234" required>
+                                <label for="personalPhone2"> </label>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="personalPhone3" maxlength="4" placeholder="5678" required>
+                                <label for="personalPhone3"> </label>
+                            </div>
+                        </div>
+                        <span id="personalPhoneMsg" class="form-text"></span>
+                    </div>
+                    <input type="hidden" id="personalPhoneFull" name="phone">
+                    
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="personalEmail" name="email" placeholder="이메일" required>
+                        <label for="personalEmail">이메일</label>
+                        <span id="personalEmailMsg" class="form-text"></span>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="personalSn1" maxlength="6" placeholder="생년월일 6자리" required>
+                                <label for="personalSn1">주민등록번호</label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-floating">
+                                <input type="password" class="form-control" id="personalSn2" maxlength="7" placeholder="주민등록번호 뒤 7자리" required>
+                                <label for="personalSn2"> </label>
+                            </div>
+                        </div>
+                        <span id="personalSnMsg" class="form-text"></span>
+                    </div>
+                    <input type="hidden" id="personalSnFull" name="sn">
+                    
+                    <!-- 우편번호 검색 부분을 input-group으로 재구성 -->
+                    <div class="input-group mb-3 address-input-group">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="personalPostal" name="postal" placeholder="우편번호" readonly required>
+                            <label for="personalPostal">우편번호</label>
+                        </div>
+                        <button class="btn btn-outline-secondary" type="button" id="personalPostcodeSearch">검색</button>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="personalAddress" name="address" placeholder="주소" readonly required>
+                        <label for="personalAddress">주소</label>
+                    </div>
+                    <div class="form-floating mb-4">
+                        <input type="text" class="form-control" name="detailAddress" placeholder="상세주소" required>
+                        <label for="detailAddress">상세주소</label>
+                    </div>
 
+                    <div class="d-grid mb-4">
+                      <button type="submit" class="btn btn-register">가입하기</button>
+                    </div>
+                  </form>
+
+                  <!-- 기업회원 폼 -->
+                  <form id="companyForm" class="d-none" onsubmit="return submitForm('companyForm','/public/joinBiz');">
+                    <div class="form-floating mb-3">
+                      <input type="text" class="form-control" id="bizId" name="id" placeholder="아이디" required>
+                      <label for="bizId">아이디</label>
+                      <span id="bizIdMsg" class="form-text"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                      <input type="password" class="form-control" id="bizPassword" name="password" placeholder="비밀번호" required>
+                      <label for="bizPassword">비밀번호</label>
+                      <span id="bizPwMsg" class="form-text"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                      <input type="password" class="form-control" id="bizConfirm" name="passwordConfirm" placeholder="비밀번호 확인" required>
+                      <label for="bizConfirm">비밀번호 확인</label>
+                      <span id="bizConfirmMsg" class="form-text"></span>
+                    </div>
+                    
+                    <div class="form-floating mb-3">
+                      <input type="text" class="form-control" id="bizName" name="name" placeholder="대표자 이름" required>
+                      <label for="bizName">대표자 이름</label>
+                      <span id="bizNameMsg" class="form-text"></span>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-4">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="bizPhone1" maxlength="3" placeholder="010" required>
+                                <label for="bizPhone1">휴대폰</label>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="bizPhone2" maxlength="4" placeholder="1234" required>
+                                <label for="bizPhone2"> </label>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="bizPhone3" maxlength="4" placeholder="5678" required>
+                                <label for="bizPhone3"> </label>
+                            </div>
+                        </div>
+                        <span id="bizPhoneMsg" class="form-text"></span>
+                    </div>
+                    <input type="hidden" id="bizPhoneFull" name="phone">
+
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="bizEmail" name="email" placeholder="이메일" required>
+                        <label for="bizEmail">이메일</label>
+                        <span id="bizEmailMsg" class="form-text"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" name="companyName" placeholder="기업명" required>
+                        <label for="companyName">기업명</label>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-4">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="companyBuss1" maxlength="3" placeholder="123" required>
+                                <label for="companyBuss1">사업자등록번호</label>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="companyBuss2" maxlength="2" placeholder="45" required>
+                                <label for="companyBuss2"> </label>
+                            </div>
+                        </div>
+                        <div class="col-5">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="companyBuss3" maxlength="5" placeholder="67890" required>
+                                <label for="companyBuss3"> </label>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="companyBussFull" name="businessNo">
+
+                    <!-- 우편번호 검색 부분을 input-group으로 재구성 -->
+                    <div class="input-group mb-3 address-input-group">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="bizPostal" name="postal" placeholder="우편번호" readonly required>
+                            <label for="bizPostal">우편번호</label>
+                        </div>
+                        <button class="btn btn-outline-secondary" type="button" id="bizPostcodeSearch">검색</button>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="bizAddress" name="address" placeholder="주소" readonly required>
+                        <label for="bizAddress">주소</label>
+                    </div>
+                    <div class="form-floating mb-4">
+                        <input type="text" class="form-control" name="detailAddress" placeholder="상세주소" required>
+                        <label for="detailAddress">상세주소</label>
+                    </div>
+
+                    <div class="d-grid mb-4">
+                      <button type="submit" class="btn btn-register">가입하기</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 </main>
 
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>
