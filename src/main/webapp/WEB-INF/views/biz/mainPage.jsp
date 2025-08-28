@@ -20,38 +20,6 @@
 	    border: 1px solid #ccc;
 	}
 	
-	.product-container {
-	    display: grid;
-	    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-	    gap: 20px;
-	}
-	
-	.product-card {
-	    border: 1px solid #ddd;
-	    border-radius: 10px;
-	    padding: 15px;
-	    text-align: center;
-	    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-	    transition: transform 0.2s;
-	    background-color: #fff;
-	}
-	
-	.product-card:hover {
-	    transform: translateY(-5px);
-	    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-	}
-	
-	.product-name {
-	    font-size: 16px;
-	    font-weight: bold;
-	    margin: 10px 0;
-	}
-	
-	.product-name a {
-	    text-decoration: none;
-	    color: black;
-	}
-
 	.wish-count {
 	    color: #e74c3c;
 	    font-weight: bold;
@@ -83,52 +51,90 @@
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
 
-<main class="main">
-	
-	<input type="text" id="search-input" placeholder="상품명 검색..." />
-	
-		<div class="product-container" id="product-container">
-	    <c:forEach var="item" items="${productList}">
-	        <div class="product-card" data-name="${item.productName}">
-	
-	            <div class="product-image" style="width: 100%; height: 150px; display: flex; justify-content: center; align-items: center;">
-				    <c:choose>
-				        <c:when test="${not empty item.imagePath}">
-				            <img src="${pageContext.request.contextPath}${item.imagePath}" 
-				                 alt="${item.productName}" 
-				                 style="max-width: 100%; max-height: 100%; object-fit: contain;" />
-				        </c:when>
-				        <c:otherwise>
-				            <!-- 비어 있는 이미지 박스 유지 -->
-				            <span style="color: #ccc; font-size: 14px;">이미지 없음</span>
-				        </c:otherwise>
-				    </c:choose>
-				</div>
+	<main class="main">
 
-	            <!-- 상품 이름 -->
-	            <div class="product-name">
-	                <c:choose>
-	                    <c:when test="${item.productStatus == 'GS003'}">
-	                        <span style="color:gray; cursor: default;">
-	                            ${item.productName}<br>(일시품절)
-	                        </span>
-	                    </c:when>
-	                    <c:otherwise>
-	                        <a href="/biz/productOne?productNo=${item.productNo}">
-	                            ${item.productName}
-	                        </a>
-	                    </c:otherwise>
-	                </c:choose>
+	<section id="best-sellers" class="best-sellers section">
+	
+	  <!-- Section Title -->
+	  <div class="container section-title" data-aos="fade-up">
+	    <h2>Best Sellers</h2>
+	    <p>찜 많은순</p>
+	  </div><!-- End Section Title -->
+
+	  <!-- 검색 input -->
+	  <div class="container" style="margin-bottom: 10px;">
+	    <input type="text" id="search-input" placeholder="상품 검색">
+	  </div>
+	
+	  <div class="container" data-aos="fade-up" data-aos-delay="100">
+	    <div class="row g-5" id="product-container">
+	
+	      <!-- Product 반복 출력 -->
+	      <c:forEach var="item" items="${productList}">
+	        <div class="col-lg-3 col-md-6 product-card" data-name="${item.productName}">
+	          <div class="product-item">
+	            <div class="product-image">
+	              <c:choose>
+	                <c:when test="${not empty item.imagePath}">
+	                  <img src="${pageContext.request.contextPath}${item.imagePath}"
+	                       alt="${item.productName}"
+	                       class="img-fluid"
+	                       style="max-width: 100%; max-height: 100%; object-fit: contain;"
+	                       loading="lazy" />
+	                </c:when>
+	                <c:otherwise>
+	                  <span style="color: #ccc; font-size: 14px;">이미지 없음</span>
+	                </c:otherwise>
+	              </c:choose>
+	              
+	              <c:choose>
+				    <c:when test="${item.productNo % 3 == 1}">
+				      <div class="product-badge limited-badge">Limited</div>
+				    </c:when>
+				    <c:when test="${item.productNo % 3 == 2}">
+				      <div class="product-badge trending-badge">Trending</div>
+				    </c:when>
+				  </c:choose>
+				  
 	            </div>
 	
-	            <!-- 찜 수 -->
-	            <div class="wish-count">❤️ ${item.wishCount}</div>
+	            <div class="product-info">
+	              <h4 class="product-name">
+	                <c:choose>
+	                  <c:when test="${item.productStatus == 'GS003'}">
+	                  	<a href="/biz/productOne?productNo=${item.productNo}">
+	                      ${item.productName}
+	                    </a>
+	                    <span style="color: gray; cursor: default;">
+	                    <br>(일시품절)
+	                    </span>
+	                  </c:when>
+	                  <c:otherwise>
+	                    <a href="/biz/productOne?productNo=${item.productNo}">
+	                      ${item.productName}
+	                    </a>
+	                  </c:otherwise>
+	                </c:choose>
+	              </h4>
+	
+	              <div class="wish-count">❤️ ${item.wishCount}</div>
+	            </div>
+	          </div>
 	        </div>
-	    </c:forEach>
-	</div>
+	      </c:forEach>
+	      <!-- End Product 반복 출력 -->
 	
-	<div class="pagination" id="pagination"></div>
-	
+	    </div>
+	  </div>
+
+	  <!-- 페이징 버튼 -->
+	  <div id="pagination" class="pagination"></div>
+	</section><!-- /Best Sellers Section -->
+
+    
+    <!-- Scroll Top -->
+  	<a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
 	</main>
 	
 	<!-- 공통 풋터 -->
@@ -139,7 +145,7 @@
 	$(document).ready(function() {
 	    const container = $('#product-container');
 	    const cards = container.children('.product-card').toArray();
-	    const itemsPerPage = 6;
+	    const itemsPerPage = 4;
 	    let currentPage = 1;
 	    let filteredCards = cards;
 	
