@@ -17,7 +17,7 @@
 <style>
   :root { --tbl-border:#E5E7EB; --tbl-head:#F9FAFB; --tbl-hover:#F3F4F6; --tbl-zebra:#FAFAFA; --tbl-empty:#FFF0F0; }
   body { font-family:"SUIT",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",Arial,sans-serif; }
-  .table-wrap{ max-width:1600px; margin:0 auto; }
+  .table-wrap{ max-width:1400px; margin:0 auto; }
 
   #contractTable_wrapper .dataTables_scroll, #contractTable{
     border:1px solid var(--tbl-border); border-radius:10px; overflow:hidden; background:#fff; font-size:.92rem;
@@ -30,15 +30,19 @@
     padding:.55rem .75rem; white-space:nowrap; text-align:center;
   }
 
-  /* 멀티 헤더(1행: 그룹행) */
-  #contractTable_wrapper .dataTables_scrollHead thead tr.dt-group-header th,
-  #contractTable thead tr.dt-group-header th{
+  /* 멀티헤더(1행: 그룹행) — 항상 가운데 정렬 */
+  #contractTable thead tr.dt-group-header th,
+  #contractTable_wrapper .dataTables_scrollHead thead tr.dt-group-header th{
     box-sizing:border-box; min-width:0;
     border-top:none !important; border-bottom:1px solid var(--tbl-border) !important;
-    padding:.45rem .75rem; text-align:center; pointer-events:none;
+    padding:.45rem .75rem;
+    text-align:center !important;
+    vertical-align:middle !important;
+    display:table-cell !important;
+    pointer-events:none; /* 그룹행 클릭/정렬 비활성 */
   }
 
-  /* 바디 */
+  /* 본문 */
   #contractTable tbody td{
     border-top:1px solid var(--tbl-border); color:#111827; vertical-align:middle;
     height:40px; padding:.45rem .75rem; text-align:center;
@@ -47,13 +51,10 @@
   #contractTable tbody tr:nth-child(even){ background:var(--tbl-zebra); }
   #contractTable tbody tr:hover{ background:var(--tbl-hover); }
 
-  /* [수정] 숫자/날짜는 한 줄 고정(줄바꿈 금지) */
+  /* 숫자/날짜는 한 줄 고정 */
   #contractTable td.nowrap-cell{
-    white-space:nowrap !important;
-    word-break:normal !important;
-    overflow-wrap:normal !important;
-    text-overflow:clip;
-    overflow:hidden; /* 내용이 길면 가로 스크롤과 min-width로 해결 */
+    white-space:nowrap !important; word-break:normal !important; overflow-wrap:normal !important;
+    text-overflow:clip; overflow:hidden;
   }
 
   /* 스크롤바 */
@@ -62,49 +63,72 @@
   div.dataTables_scrollBody::-webkit-scrollbar-thumb{ background:#D1D5DB; border-radius:6px; }
   div.dataTables_scrollBody::-webkit-scrollbar-track{ background:#F3F4F6; }
 
-  /* 빈 셀 색상 */
+  /* 빈 셀 강조 */
   td.cell-empty{ background:var(--tbl-empty) !important; }
 
-  /* 가로폭 계산 안정화 */
-  #contractTable, #contractTable_wrapper .dataTables_scrollHead table, #contractTable_wrapper .dataTables_scrollBody table{ table-layout:fixed; }
+  /* 폭 계산 안정화 */
+  #contractTable,
+  #contractTable_wrapper .dataTables_scrollHead table,
+  #contractTable_wrapper .dataTables_scrollBody table{ table-layout:fixed; }
 
   a{ color:#4c59ff; text-decoration:none; }
 
-  /* [추가] 금액/날짜 계열 최소 폭 보장 → 한 줄 유지 + 가로 스크롤로 대응 */
-  /* 열 인덱스: 1선택 2계약번호 3견적번호 4계약금 5입금상태 6입금날짜 7잔금 8잔금상태 9납기일 10작성자 11작성일자 */
-  #contractTable th:nth-child(1),
-#contractTable td:nth-child(1){
-  width:40px !important;      /* 원하는 만큼 더 줄여도 됨: 36~48px 권장 */
-  min-width:40px !important;
-  max-width:40px !important;
-  padding-left:.25rem !important;   /* 좌우 패딩 축소 */
-  padding-right:.25rem !important;
+  /* 열별 최소/고정 폭 */
+  /* 1선택 2계약번호 3견적번호 4계약금 5입금상태 6입금날짜 7잔금 8입금상태 9납기일 10작성자 11작성일자 */
+  #contractTable th:nth-child(1), #contractTable td:nth-child(1){
+    width:40px !important; min-width:40px !important; max-width:40px !important;
+    padding-left:.25rem !important; padding-right:.25rem !important;
+  }
+  #contractTable td:nth-child(1) input[type="checkbox"]{ margin:0; display:inline-block; }
+
+  /* 번호열(ch) 기준 고정 */
+  #contractTable th:nth-child(2), #contractTable td:nth-child(2),
+  #contractTable th:nth-child(3), #contractTable td:nth-child(3){
+    width:10ch !important; min-width:10ch !important; max-width:10ch !important;
+    white-space:nowrap !important; padding-left:.5rem; padding-right:.5rem;
+  }
+
+  /* ── 금액/잔금: 헤더는 가운데, 데이터는 우측 정렬 ── */
+  /* 헤더(2행) */
+  #contractTable thead tr:nth-child(2) th:nth-child(4),
+  #contractTable thead tr:nth-child(2) th:nth-child(7){
+    min-width:220px; text-align:center !important;
+  }
+  /* 데이터 */
+  #contractTable tbody td:nth-child(4),
+  #contractTable tbody td:nth-child(7){
+    min-width:220px; text-align:right !important;
+  }
+
+  /* 날짜 최소 폭 */
+  #contractTable th:nth-child(6), #contractTable td:nth-child(6){ min-width:130px; }
+  #contractTable th:nth-child(9), #contractTable td:nth-child(9){ min-width:130px; }
+  #contractTable th:nth-child(11),#contractTable td:nth-child(11){ min-width:130px; }
+#contractTable thead tr:nth-child(2) th:nth-child(4),
+#contractTable_wrapper .dataTables_scrollHead thead tr:nth-child(2) th:nth-child(4) {
+  text-align: center !important;
+}
+/* [수정] 멀티헤더(1행) '계약금'(4번째)과 '잔금'(5번째) 가운데 정렬 - 원본 thead */
+#contractTable thead tr.dt-group-header th:nth-child(4),
+#contractTable thead tr.dt-group-header th:nth-child(5) {
+  text-align: center !important;
+  vertical-align: middle !important;
 }
 
-/* 체크박스 정중앙 & 여백 제거 */
-#contractTable td:nth-child(1) input[type="checkbox"]{
-  margin:0; display:inline-block;
+
+/* [수정] 멀티헤더(1행) '계약금'(4번째)과 '잔금'(5번째) 가운데 정렬 - 스크롤 헤더 복제 thead */
+#contractTable_wrapper .dataTables_scrollHead thead tr.dt-group-header th:nth-child(4),
+#contractTable_wrapper .dataTables_scrollHead thead tr.dt-group-header th:nth-child(5) {
+  text-align: center !important;
+  vertical-align: middle !important;
 }
-/* [추가] 번호 열(계약번호=2번째, 견적번호=3번째)을 글자 폭(ch) 기준으로 고정 */
-#contractTable th:nth-child(2), #contractTable td:nth-child(2),
-#contractTable th:nth-child(3), #contractTable td:nth-child(3){
-  width: 10ch !important;      /* 숫자 2~3자리 + 패딩 고려 (필요시 6~8ch로 조정) */
-  min-width: 10ch !important;
-  max-width: 10ch !important;
-  white-space: nowrap !important; /* 줄바꿈 방지 */
-  padding-left: .5rem; 
-  padding-right: .5rem;
+#contractTable_wrapper .dataTables_scrollHead thead tr:nth-child(2) th {
+  text-align: center !important;
 }
-  #contractTable th:nth-child(4), #contractTable td:nth-child(4){ min-width:140px; text-align: right;} /* 계약금 */
-  #contractTable th:nth-child(6), #contractTable td:nth-child(6){ min-width:130px; } /* 입금 날짜 */
-  #contractTable th:nth-child(7), #contractTable td:nth-child(7){ min-width:140px; text-align: right;} /* 잔금 */
-  #contractTable th:nth-child(9), #contractTable td:nth-child(9){ min-width:130px; } /* 납기일 */
-  #contractTable th:nth-child(11),#contractTable td:nth-child(11){min-width:130px; } /* 작성일자 */
 </style>
 </head>
 <body>
 
-<!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
 
 <div class="container-xl py-3">
@@ -119,9 +143,9 @@
             <th></th>          <!-- 선택 -->
             <th></th>          <!-- 계약번호 -->
             <th></th>          <!-- 견적번호 -->
-            <th colspan="3" class="text-center">계약금</th>   <!-- 금액/상태/날짜 -->
-            <th colspan="3" class="text-center">잔금</th>     <!-- 금액/상태/납기 -->
-            <th colspan="2" class="text-center">작성 정보</th><!-- 작성자/작성일자 -->
+            <th colspan="3" class="text-center">계약금</th>
+            <th colspan="3" class="text-center">잔금</th>
+            <th colspan="2" class="text-center">작성 정보</th>
           </tr>
           <!-- 실제 헤더 -->
           <tr>
@@ -173,7 +197,6 @@
               <td class="nowrap-cell">${con.formattedFinalPaymentDate}</td>
 
               <td class="nowrap-cell">${con.createUser}</td>
-              <!-- 정렬 정확도: data-order에 원본 유지 + 화면은 날짜만 -->
               <td class="nowrap-cell" data-order="${con.createDate}">
                 <c:choose>
                   <c:when test="${fn:contains(con.createDate,'T')}">${fn:substringBefore(con.createDate,'T')}</c:when>
@@ -204,8 +227,7 @@
   }
 
   function deleteContract() {
-    const checked = getCheckedContract();
-    if (!checked) return;
+    const checked = getCheckedContract(); if (!checked) return;
     if (!confirm("정말 파기하시겠습니까?")) return;
 
     const contractNo = checked.value;
@@ -239,10 +261,8 @@
   }
 </script>
 
-<!-- 공통 풋터 -->
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>
 
-<!-- JS 라이브러리 -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
@@ -265,19 +285,21 @@
     });
   }
 
-  /* 멀티 헤더 폭 동기화 (colspan 합산) */
+  /* 멀티헤더 폭 동기화 (colspan 합산) */
   function syncAnyGroupHeaderWidths(){
     const $head = $('#contractTable_wrapper .dataTables_scrollHead thead');
-    const $row2 = $head.find('tr').eq(1);
-    const $row1 = $head.find('tr.dt-group-header');
+    const $row2 = $head.find('tr').eq(1);           // 실제 헤더
+    const $row1 = $head.find('tr.dt-group-header'); // 그룹행
     if ($row1.length === 0 || $row2.length === 0) return;
 
     const widths = $row2.children('th').map(function(){ return Math.round($(this).outerWidth()); }).get();
     let idx = 0;
     $row1.children('th').each(function(){
-      const $th = $(this); const span = parseInt($th.attr('colspan') || '1', 10);
+      const $th = $(this);
+      const span = parseInt($th.attr('colspan') || '1', 10);
       let sum = 0; for (let i=0;i<span;i++) sum += (widths[idx+i] || 0);
-      idx += span; const px = Math.max(0,sum);
+      idx += span;
+      const px = Math.max(0, sum);
       $th.css({ width:px+'px', minWidth:px+'px', maxWidth:px+'px' });
     });
   }
@@ -295,26 +317,26 @@
       scrollY:'55vh',
       scrollCollapse:true,
       columnDefs:[
-    	  { targets:0, width:'40px',  orderable:false },    // (참고) 선택열도 px로 고정 추천
-    	  { targets:1, width:'70px' },                      // [수정] 계약번호
-    	  { targets:2, width:'70px' },                      // [수정] 견적번호
-    	  { targets:3, width:'16%', className:'nowrap-cell' },
-    	  { targets:4, width:'8%'  },
-    	  { targets:5, width:'12%', className:'nowrap-cell' },
-    	  { targets:6, width:'12%', className:'nowrap-cell' },
-    	  { targets:7, width:'8%'  },
-    	  { targets:8, width:'12%', className:'nowrap-cell' },
-    	  { targets:9, width:'6%',  className:'nowrap-cell' },
-    	  { targets:10,width:'9%',  className:'nowrap-cell' }
-    	],
+    	  { targets:0,  width:'40px', orderable:false },
+    	  { targets:1,  width:'70px', className:'text-center' },   // 계약번호
+    	  { targets:2,  width:'70px', className:'text-center' },   // 견적번호
 
-      order:[[10,'desc']],
+    	  { targets:3,  width:'22%', className:'nowrap-cell' },    // [수정] 계약금 16% -> 22%
+    	  { targets:4,  width:'7%',  className:'text-center' },    // [수정] 입금상태 8% -> 7%
+    	  { targets:5,  width:'11%', className:'nowrap-cell text-center' }, // [수정] 입금날짜 12% -> 11%
+
+    	  { targets:6,  width:'20%', className:'nowrap-cell' },    // [수정] 잔금 12% -> 20%
+    	  { targets:7,  width:'7%',  className:'text-center' },    // [수정] 입금상태 8% -> 7%
+    	  { targets:8,  width:'11%', className:'nowrap-cell text-center' }, // [수정] 납기일 12% -> 11%
+    	  { targets:9,  width:'5%',  className:'nowrap-cell text-center' }, // [수정] 작성자 6% -> 5%
+    	  { targets:10, width:'8%',  className:'nowrap-cell text-center' }  // [수정] 작성일자 9% -> 8%
+    	],
+      order:[[0,'desc']],
       dom:'<"row mb-2"<"col-12 col-md-6"l><"col-12 col-md-6"f>>t<"row mt-2"<"col-12 col-md-5"i><"col-12 col-md-7"p>>',
       language:{
         lengthMenu:'_MENU_ 개씩 보기', search:'검색:',
         info:'총 _TOTAL_건 중 _START_–_END_', infoEmpty:'0건',
-        infoFiltered:'(필터링: _MAX_건 중)',
-        zeroRecords:'일치하는 데이터가 없습니다.',
+        infoFiltered:'(필터링: _MAX_건 중)', zeroRecords:'일치하는 데이터가 없습니다.',
         paginate:{ first:'처음', last:'마지막', next:'다음', previous:'이전' },
         loadingRecords:'불러오는 중...', processing:'처리 중...'
       },
@@ -322,24 +344,16 @@
         const api = this.api();
         highlightEmptyCells(api);
         syncAnyGroupHeaderWidths();
-
-        // 툴팁(말줄임이 아니어도 전체값 확인용)
-        $('#contractTable tbody td.nowrap-cell').each(function(){
-          const txt = $(this).text().trim();
-          if (txt) $(this).attr('title', txt);
-        });
       },
       initComplete:function(){
         const api = this.api();
         highlightEmptyCells(api);
         setTimeout(()=>{ api.columns.adjust().draw(false); syncAnyGroupHeaderWidths(); }, 0);
-
         $(window).on('resize', syncAnyGroupHeaderWidths);
         api.table().on('column-sizing.dt columns-visibility.dt', syncAnyGroupHeaderWidths);
       }
     });
 
-    /* [추가] CSS 변경 후 안전하게 한 번 더 계산 */
     table.columns.adjust().draw(false);
   });
 </script>

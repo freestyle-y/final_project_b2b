@@ -24,34 +24,51 @@ body{
   font-family:"SUIT",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",Arial,sans-serif;
 }
 
-/* [수정] 전체 폭 살짝 축소 */
+/* 전체 폭 */
 .table-wrap{ max-width:1000px; margin:0 auto; }
 
 #productRequestTable_wrapper .dataTables_scroll, #productRequestTable{
   border:1px solid var(--tbl-border); border-radius:10px; overflow:hidden; background:#fff; font-size:.92rem;
 }
 
-/* 헤더 */
+/* 헤더(기본) */
 #productRequestTable thead th{
   background:var(--tbl-head) !important; font-weight:700; color:#111827;
   border-bottom:1px solid var(--tbl-border) !important; vertical-align:middle;
   padding:.55rem .75rem;
 }
 
-/* 멀티 헤더(그룹행) */
+/* 멀티 헤더(1행 그룹행) */
 #productRequestTable_wrapper .dataTables_scrollHead thead tr.dt-group-header th,
 #productRequestTable thead tr.dt-group-header th{
   box-sizing:border-box; min-width:0;
   border-top:none !important; border-bottom:1px solid var(--tbl-border) !important;
   padding:.45rem .75rem;
-  
+  text-align:center !important;
+  vertical-align:middle !important;
 }
 
-/* 본문 */
-#productRequestTable tbody td{
-  border-top:1px solid var(--tbl-border); color:#111827; vertical-align:middle;
-  height:40px; padding:.45rem .75rem;
+/* 실제 컬럼 헤더(2행) 중앙정렬 */
+#productRequestTable thead tr:nth-child(2) th,
+#productRequestTable_wrapper .dataTables_scrollHead thead tr:nth-child(2) th{
+  text-align:center !important;
 }
+#productRequestTable thead tr:nth-child(2) th .dt-column-title,
+#productRequestTable_wrapper .dataTables_scrollHead thead tr:nth-child(2) th .dt-column-title{
+  display:block; width:100%; text-align:center !important;
+}
+
+/* ===== 본문 정렬 규칙 ===== */
+/* [수정] 기본은 왼쪽 정렬( !important 제거 ) */
+#productRequestTable tbody td{ text-align:left; }
+
+/* [수정] 전용 클래스: DataTables/Bootstrap 모두 호환 */
+#productRequestTable tbody td.dt-center,
+#productRequestTable tbody td.text-center{ text-align:center !important; }
+#productRequestTable tbody td.dt-left,
+#productRequestTable tbody td.text-start{ text-align:left !important; }
+
+/* 짝수 줄 배경/호버 */
 #productRequestTable tbody tr:nth-child(even){ background:var(--tbl-zebra); }
 #productRequestTable tbody tr:hover{ background:var(--tbl-hover); }
 
@@ -61,28 +78,26 @@ div.dataTables_scrollBody::-webkit-scrollbar{ height:10px; width:10px; }
 div.dataTables_scrollBody::-webkit-scrollbar-thumb{ background:#D1D5DB; border-radius:6px; }
 div.dataTables_scrollBody::-webkit-scrollbar-track{ background:#F3F4F6; }
 
-/* 빈 셀 표시 */
+/* 빈 셀 */
 td.cell-empty{ background:var(--tbl-empty) !important; }
 
-/* 요청번호 시각 병합(시각적으로만) */
+/* 요청번호 시각 병합 */
 td.group-col.visually-merged{
   border-top-color:transparent !important; color:transparent; text-shadow:none; pointer-events:none;
 }
 
-/* [수정] 글자 길이에 맞춘 너비(콘텐츠 기반) */
-#productRequestTable th:nth-child(1), #productRequestTable td:nth-child(1){ width:8ch;  min-width:8ch;  white-space:nowrap; text-align:center; } /* 요청번호 */
-#productRequestTable th:nth-child(2), #productRequestTable td:nth-child(2){ width:18ch; min-width:12ch; white-space:nowrap; } /* 상품명 */
-#productRequestTable th:nth-child(3), #productRequestTable td:nth-child(3){ width:14ch; min-width:10ch; white-space:nowrap; } /* 옵션 */
-#productRequestTable th:nth-child(4), #productRequestTable td:nth-child(4){ width:6ch;  min-width:6ch;  white-space:nowrap; } /* 수량 */
-#productRequestTable th:nth-child(5), #productRequestTable td:nth-child(5){ width:12ch; min-width:10ch; white-space:nowrap; } /* 작성자 */
-#productRequestTable th:nth-child(6), #productRequestTable td:nth-child(6){ width:10ch; min-width:9ch;  white-space:nowrap; text-align:center; } /* 상태 */
+/* 열별 최소 폭 */
+#productRequestTable th:nth-child(1), #productRequestTable td:nth-child(1){ width:8ch;  min-width:8ch;  white-space:nowrap; }
+#productRequestTable th:nth-child(2), #productRequestTable td:nth-child(2){ width:18ch; min-width:12ch; white-space:nowrap; }
+#productRequestTable th:nth-child(3), #productRequestTable td:nth-child(3){ width:14ch; min-width:10ch; white-space:nowrap; }
+#productRequestTable th:nth-child(4), #productRequestTable td:nth-child(4){ width:6ch;  min-width:6ch;  white-space:nowrap; }
+#productRequestTable th:nth-child(5), #productRequestTable td:nth-child(5){ width:12ch; min-width:10ch; white-space:nowrap; }
+#productRequestTable th:nth-child(6), #productRequestTable td:nth-child(6){ width:10ch; min-width:9ch;  white-space:nowrap; }
 
-/* [수정] 테이블 계산을 콘텐츠 기준으로 */
+/* 테이블 레이아웃 */
 #productRequestTable,
 #productRequestTable_wrapper .dataTables_scrollHead table,
-#productRequestTable_wrapper .dataTables_scrollBody table{
-  table-layout:auto; /* fixed → auto */
-}
+#productRequestTable_wrapper .dataTables_scrollBody table{ table-layout:auto; }
 
 a{ color:#4c59ff; text-decoration:none; }
 </style>
@@ -98,10 +113,10 @@ a{ color:#4c59ff; text-decoration:none; }
     <table id="productRequestTable" class="table table-striped table-hover table-bordered align-middle nowrap w-100">
       <thead class="table-light">
         <tr class="dt-group-header">
-          <th></th>                <!-- 요청번호 -->
-          <th></th>                <!-- 상품명 -->
-          <th colspan="3" class="text-center">상세 정보</th> <!-- 옵션/수량/작성자 -->
-          <th></th>                <!-- 견적서 상태 -->
+          <th></th>
+          <th></th>
+          <th colspan="3" class="text-center">상세 정보</th>
+          <th></th>
         </tr>
         <tr>
           <th>요청번호</th>
@@ -134,7 +149,6 @@ a{ color:#4c59ff; text-decoration:none; }
               <td>${p.productOption}</td>
               <td>${p.productQuantity}</td>
               <td>${p.createUser}</td>
-              <!-- 상태 pill 배지 -->
               <td class="text-center"
                   data-order="${empty p.quotationStatus ? 0 : (p.quotationStatus == '승인거절' ? 1 : (p.quotationStatus == '승인' ? 2 : 0))}">
                 <c:choose>
@@ -199,7 +213,6 @@ a{ color:#4c59ff; text-decoration:none; }
     });
   }
 
-  // 멀티 헤더(그룹행) ↔ 실제 헤더 폭 동기화
   function syncGroupHeaderWidths(api){
     const $head = $('#productRequestTable_wrapper .dataTables_scrollHead thead');
     const $row2 = $head.find('tr').eq(1);
@@ -229,14 +242,20 @@ a{ color:#4c59ff; text-decoration:none; }
       pageLength:10,
       lengthMenu:[10,25,50,100],
       info:true,
-      /* [수정] 콘텐츠 기반 자동 폭 계산 */
       autoWidth:true,
       scrollX:true,
       scrollY:'50vh',
       scrollCollapse:true,
-      /* [수정] 고정 폭 지정 제거 */
-      columnDefs:[],
+
+      /* [수정] 컬럼별 정렬 클래스 부여 */
+      columnDefs:[
+        { targets:[0,5], className:'dt-center' }, // 요청번호, 수량, 상태 -> 가운데
+        { targets:[4], className:'dt-center' },    // 상품명, 옵션, 작성자 -> 왼쪽
+        { targets:[1,2,3], className:'dt-left' }    // 상품명, 옵션, 작성자 -> 왼쪽
+      ],
+
       dom:'<"row mb-2"<"col-12 col-md-6"l><"col-12 col-md-6"f>>t<"row mt-2"<"col-12 col-md-5"i><"col-12 col-md-7"p>>',
+      order:[[0,'desc']],
       language:{
         lengthMenu:'_MENU_ 개씩 보기', search:'검색:',
         info:'총 _TOTAL_건 중 _START_–_END_', infoEmpty:'0건',
