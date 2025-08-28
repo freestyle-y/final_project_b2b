@@ -205,4 +205,5 @@
 		WHERE product_no = #{productNo} AND option_no = #{optionNo} AND quantity >= #{quantity}
 	</update>
 	
+
 </mapper>
