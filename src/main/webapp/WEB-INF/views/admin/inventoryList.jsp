@@ -209,6 +209,7 @@
     <c:forEach var="item" items="${inventoryList}">
         <div class="inventory-item">
             <div><strong>상품명:</strong> <span class="product-name">${item.productName}</span></div>
+            <div><strong>옵션:</strong> <span class="product-option">${item.optionNameValue}</span></div>
             <div><strong>가격:</strong> <fmt:formatNumber value="${item.price}" type="number" groupingUsed="true" />원</div>
             <div><strong>주소:</strong>
 			    <c:choose>
