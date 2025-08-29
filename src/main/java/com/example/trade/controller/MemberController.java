@@ -175,4 +175,32 @@ public class MemberController {
 
 	    return "admin/manageUser";
 	}
+	
+	// 회원 탈퇴
+	@PostMapping("/member/memberWithdraw")
+	public String memberWithdraw(RedirectAttributes rttr) {
+        // 스프링 시큐리티에서 저장된 사용자 정보 가져오기
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userId = auth.getName();
+    	
+        if (userId == null) {
+            // 사용자 ID가 없으면 로그인 페이지로 리다이렉트
+            return "redirect:/public/login";
+        }
+
+        try {
+            // 실제 회원 탈퇴 로직 호출
+        	String customerStatus = "CS002";
+            memberService.updateMemberStatus(userId, customerStatus, userId);
+
+            rttr.addFlashAttribute("res", "회원 탈퇴가 완료되었습니다.");
+            return "redirect:/public/logout"; // 로그아웃 페이지로 리다이렉트
+        } catch (Exception e) {
+            // 탈퇴 처리 중 오류 발생 시
+            rttr.addFlashAttribute("res", "회원 탈퇴 처리 중 오류가 발생했습니다.");
+            // 에러 페이지나 마이페이지로 리다이렉트
+            return "redirect:/member/mypage"; 
+        }
+    }
+	
 }

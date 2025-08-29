@@ -245,5 +245,11 @@ public class MemberService {
     public void unlinkSocialAccount(String userId, String socialType) {
         userMapper.deleteByUserIdAndSocialType(userId, socialType);
     }
+    
+    // 회원상태 업데이트(회원 탈퇴 포함)
+    public void updateMemberStatus(String userId, String customerStatus, String updateUser) {
+    	
+        userMapper.updateMemberStatus(userId, customerStatus, updateUser);
+    }
 
 }

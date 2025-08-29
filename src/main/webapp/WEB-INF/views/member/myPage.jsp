@@ -9,7 +9,6 @@
 
 <!-- Bootstrap and Custom CSS Files -->
 <link href="/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-<link href="/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
 <link href="/assets/vendor/aos/aos.css" rel="stylesheet">
 <link href="/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
 <link href="/assets/css/main.css" rel="stylesheet">
@@ -711,14 +710,14 @@ $(document).ready(function() {
             type: "POST",
             data: { password: password },
             success: function(isPasswordCorrect) {
-                if(isPasswordCorrect) {
-                    // 서버에 탈퇴 요청
+            	if(isPasswordCorrect) {
+                    // 서버에 탈퇴 요청을 POST 방식으로 보냅니다.
                     $.ajax({
-                        url: "/member/withdraw",
+                        url: "/member/memberWithdraw",
                         type: "POST",
                         success: function(res) {
                             alert("회원 탈퇴가 완료되었습니다.");
-                            window.location.href = "/"; // 메인 페이지로 이동
+                            window.location.href = "/public/logout"; // 로그아웃 페이지로 이동
                         },
                         error: function(xhr) {
                             alert("회원 탈퇴에 실패했습니다.");

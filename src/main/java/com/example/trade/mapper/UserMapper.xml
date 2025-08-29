@@ -185,5 +185,12 @@
         WHERE user_id = #{userId}
           AND social_type = #{socialType}
     </delete>
+    
+    <!-- 회원상태 수정 -->
+	<update id="updateMemberStatus" parameterType="map">
+		UPDATE user
+		SET customer_status = #{customerStatus}, update_user = #{updateUser}, update_date = now()
+		WHERE id = #{userId}
+	</update>
 	
 </mapper>

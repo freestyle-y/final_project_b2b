@@ -19,11 +19,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 
 import com.example.trade.config.ApplicationContextProvider;
 import com.example.trade.service.AdminService;
+import com.example.trade.service.MemberService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -34,8 +36,10 @@ import jakarta.servlet.http.HttpServletResponse;
 @EnableWebSecurity
 public class SecurityConfig {
 	private AdminService adminService;
-	public SecurityConfig(AdminService adminService) {
+	private MemberService memberService;
+	public SecurityConfig(AdminService adminService, MemberService memberService) {
 		this.adminService = adminService;
+		this.memberService = memberService;
 	}
 	
 	// 비밀번호 암호화 방식 지정 (BCrypt)
@@ -156,7 +160,31 @@ public class SecurityConfig {
 				
 				// 로그인 사용자 ID
 				String userId = authentication.getName();
-
+				
+				// ✅ 추가: 로그인 직후 customer_status 확인
+				try {
+					String userStatus = memberService.getUserById(userId).getCustomerStatus();
+					if ("CS002".equals(userStatus) || "CS004".equals(userStatus)) {
+						// 탈퇴 또는 가입대기 상태이면 강제로 로그아웃
+						new SecurityContextLogoutHandler().logout(request, response, authentication);
+						
+						// 로그인 페이지로 에러 메시지와 함께 리다이렉트
+						String errorMsg = URLEncoder.encode("탈퇴한 / 가입대기 중인 계정입니다. 관리자에게 문의해주세요.", StandardCharsets.UTF_8);
+						response.sendRedirect("/public/login?errorMsg=" + errorMsg);
+						return;
+					} else if ("CS003".equals(userStatus)) {
+						// 휴면 상태이면 휴면 계정 활성화 페이지로 리다이렉트
+						response.sendRedirect("/public/accountActivate?userId=" + userId);
+						return;
+					}
+				} catch (Exception e) {
+					System.err.println("사용자 상태 확인 중 오류 발생: " + e.getMessage());
+					new SecurityContextLogoutHandler().logout(request, response, authentication);
+					String errorMsg = URLEncoder.encode("사용자 상태 확인 중 오류가 발생했습니다.", StandardCharsets.UTF_8);
+					response.sendRedirect("/public/login?errorMsg=" + errorMsg);
+					return;
+				}
+				
 				// 로그인 이력 저장
 				adminService.saveLoginHistory(userId);
 				
