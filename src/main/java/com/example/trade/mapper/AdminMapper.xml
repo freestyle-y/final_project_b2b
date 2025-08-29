@@ -563,4 +563,11 @@
 			contract_delivery_status = #{contractDeliveryStatus}
 		WHERE contract_delivery_no = #{contractDeliveryNo}
 	</update>
+	
+	<!-- 로그인 이력 저장 -->
+	<insert id="insertLoginHistory">
+		INSERT INTO login_history
+			(id, login_time)
+		VALUES (#{userId}, NOW())
+	</insert>
 </mapper>

@@ -125,5 +125,7 @@ public interface AdminMapper {
 
 	// 기업 회원 배송 상태 변경
 	int updateBizDelivery(ContractDelivery contractDelivery);
-
+	
+	// 로그인 이력 저장
+	int insertLoginHistory(String userId);
 }

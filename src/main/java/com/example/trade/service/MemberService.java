@@ -168,6 +168,7 @@ public class MemberService {
     }
     
     // 비밀번호 변경
+    @Transactional
     public void updatePw(String id, String password) {
     	userMapper.updatePw(id, passwordEncoder.encode(password));
     }

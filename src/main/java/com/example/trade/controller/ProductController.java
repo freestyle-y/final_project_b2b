@@ -172,7 +172,7 @@ public class ProductController {
 	        rounded = Math.round(avgProductRate * 10) / 10.0;
 	    }
 
-	    //log.info(avgProductRate + "");
+	    //log.info(rounded + "");
 	    
 	    //log.info(commonInfo.toString());
 	    
@@ -332,14 +332,33 @@ public class ProductController {
 	    List<String> imagePaths = (List<String>) first.get("imagePaths");
 	    commonInfo.put("imagePaths", imagePaths);
 
+	    // 옵션 리스트 생성
+	    List<Map<String, Object>> optionList = new ArrayList<>();
+	    for (Map<String, Object> item : productOne) {
+	        Map<String, Object> opt = new HashMap<>();
+	        opt.put("optionNameValue", item.get("optionNameValue"));
+	        opt.put("price", item.get("price"));
+	        opt.put("quantity", item.get("quantity"));
+	        opt.put("optionNo", item.get("optionNo"));
+	        opt.put("optionName", item.get("optionName"));
+	        optionList.add(opt);
+	    }
+	    
 	    List<Map<String, Object>> productReview = productService.selectProductReview(productNo);
 	    //log.info(productReview.toString());
 	    Double avgProductRate = productService.avgProductRate(productNo);
-	    //log.info(avgProductRate + "");
+	    double rounded = 0.0;
+
+	    if (avgProductRate != null) {
+	        rounded = Math.round(avgProductRate * 10) / 10.0;
+	    }
+	    
+	    //log.info(rounded + "");
 	    
 	    model.addAttribute("product", commonInfo);
+	    model.addAttribute("optionList", optionList);
 	    model.addAttribute("productReview", productReview);
-	    model.addAttribute("avgProductRate", avgProductRate);
+	    model.addAttribute("avgProductRate", rounded);
 		return "biz/productOne";
 	}
 	
@@ -398,6 +417,7 @@ public class ProductController {
 
 	    commonInfo.put("productNo", first.get("productNo"));
 	    commonInfo.put("productName", first.get("productName"));
+	    commonInfo.put("prodcutUseStatus", first.get("productUseStatus"));
 	    
 	    // 이미지 경로 리스트는 공통 정보로 담기 (옵션마다 중복된 값이므로 첫 번째에서만 추출)
 	    List<String> imagePaths = (List<String>) first.get("imagePaths");

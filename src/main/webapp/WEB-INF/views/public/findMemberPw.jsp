@@ -257,7 +257,7 @@ $(function(){
                         </div>
                         <div class="input-group">
                             <span class="input-icon"><i class="bi bi-credit-card"></i></span>
-                            <input type="text" id="sn" class="form-control" placeholder="주민등록번호">
+                            <input type="text" id="sn" class="form-control" placeholder="주민등록번호(123456-7890123)">
                         </div>
                     </div>
 
@@ -272,7 +272,7 @@ $(function(){
                         </div>
                         <div class="input-group">
                             <span class="input-icon"><i class="bi bi-credit-card-2-front"></i></span>
-                            <input type="text" id="businessNo" class="form-control" placeholder="사업자등록번호">
+                            <input type="text" id="businessNo" class="form-control" placeholder="사업자등록번호(123-45-67890)">
                         </div>
                     </div>
 

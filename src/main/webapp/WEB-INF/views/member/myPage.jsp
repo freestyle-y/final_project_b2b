@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +13,7 @@
 <link href="/assets/vendor/aos/aos.css" rel="stylesheet">
 <link href="/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
 <link href="/assets/css/main.css" rel="stylesheet">
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <!-- Custom CSS for unified form design -->
 <style>
     /* 공통 스타일 */
@@ -90,7 +90,7 @@
     .mypage-form .form-group {
         display: flex;
         align-items: center;
-        margin-bottom: 1.5rem; /* 간격 조정 */
+        margin-bottom: 1.5rem;
         flex-wrap: nowrap;
     }
 
@@ -111,7 +111,7 @@
     .mypage-form .form-group .input-wrapper .form-control {
         flex-grow: 1;
         background-color: #f8f9fa;
-        cursor: not-allowed;
+        cursor: default;
     }
     
     .mypage-form .form-group .input-wrapper .btn-change {
@@ -149,6 +149,30 @@
     .social-links-wrapper .btn {
         white-space: nowrap;
         padding: 0.25rem 0.75rem;
+    }
+    
+    .social-links-wrapper .social-icon-btn {
+        background: none;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 0.5rem;
+        transition: all 0.3s;
+    }
+    
+    .social-links-wrapper .social-icon-btn:hover {
+        background-color: #f0f0f0;
+    }
+    
+    .social-links-wrapper .fa-brands {
+        font-size: 1.5rem;
+    }
+    
+    .fa-brands.fa-kakao {
+        color: #FEE500;
+    }
+    
+    .fa-brands.fa-naver {
+        color: #03C75A;
     }
 
     @media (max-width: 768px) {
@@ -224,14 +248,13 @@
                                     <div class="form-group">
                                         <label>비밀번호</label>
                                         <div class="input-wrapper">
-                                            <input type="password" class="form-control" readonly value="password_placeholder">
-                                            <button type="button" class="btn btn-change" onclick="location.href='/member/changeMemberPw'">변경</button>
+                                            <button type="button" class="btn btn-change w-100" onclick="location.href='/member/changeMemberPw'">비밀번호 변경</button>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label for="customerCategory">회원구분</label>
                                         <div class="input-wrapper">
-                                            <input type="text" class="form-control" id="customerCategory" readonly value="${user.customerCategory}">
+                                            <input type="text" class="form-control" id="customerCategory" readonly value="">
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -274,7 +297,7 @@
                                         <div class="form-group">
                                             <label for="simplePassword">간편 비밀번호</label>
                                             <div class="input-wrapper">
-                                                <input type="text" class="form-control" id="simplePassword" readonly value="<c:out value='${user.simplePassword != null ? "설정됨" : "미설정"}'/>">
+                                                <input type="password" class="form-control" id="simplePassword" readonly value="${user.simplePassword != null ? '****' : '미설정'}">
                                                 <button type="button" class="btn btn-change" id="simplePasswordBtn" onclick="openChangeModal('simplePassword')">
                                                     <c:out value="${user.simplePassword != null ? '변경' : '생성'}"/>
                                                 </button>
@@ -289,13 +312,39 @@
                                         <div class="form-group">
                                             <label>소셜 연동</label>
                                             <div class="social-links-wrapper">
+                                                <!-- 카카오 연동 상태 -->
+                                                <c:set var="isKakaoLinked" value="false" />
                                                 <c:forEach var="s" items="${socialList}">
-                                                    <div class="social-item">
-                                                        <span>${s.socialType}</span>
-                                                        <button type="button" class="btn btn-change" onclick="unlinkSocial('${s.socialType}')">해제</button>
-                                                    </div>
+                                                    <c:if test="${s.socialType == 'kakao'}">
+                                                        <c:set var="isKakaoLinked" value="true" />
+                                                    </c:if>
                                                 </c:forEach>
-                                                <button type="button" class="btn btn-change" onclick="openSocialModal()">계정 추가</button>
+                                                <div class="social-item">
+                                                    <i class="fa-brands fa-kakao"></i>
+                                                    <span>카카오</span>
+                                                    <c:if test="${isKakaoLinked}">
+                                                        <button type="button" class="btn btn-change" onclick="unlinkSocial('kakao')">해제</button>
+                                                    </c:if>
+                                                </div>
+                                                
+                                                <!-- 네이버 연동 상태 -->
+                                                <c:set var="isNaverLinked" value="false" />
+                                                <c:forEach var="s" items="${socialList}">
+                                                    <c:if test="${s.socialType == 'naver'}">
+                                                        <c:set var="isNaverLinked" value="true" />
+                                                    </c:if>
+                                                </c:forEach>
+                                                <div class="social-item">
+                                                    <i class="fa-brands fa-naver"></i>
+                                                    <span>네이버</span>
+                                                    <c:if test="${isNaverLinked}">
+                                                        <button type="button" class="btn btn-change" onclick="unlinkSocial('naver')">해제</button>
+                                                    </c:if>
+                                                </div>
+                                                
+                                                <c:if test="${socialList.size() < 2}">
+                                                    <button type="button" class="btn btn-change" onclick="openSocialModal()">계정 추가</button>
+                                                </c:if>
                                             </div>
                                         </div>
                                     </c:if>
@@ -323,6 +372,10 @@
                                             <input type="text" class="form-control" id="createDate" readonly value="${user.createDate}">
                                         </div>
                                     </div>
+
+                                    <div class="text-center mt-4">
+                                        <button type="button" class="btn btn-danger" onclick="openWithdrawalModal()">회원 탈퇴</button>
+                                    </div>
                                 </form>
                             </div>
                         </div>
@@ -343,6 +396,14 @@
                     <input type="text" class="form-control" id="changeValue">
                     <label for="changeValue">변경할 값 입력</label>
                 </div>
+            </div>
+
+            <!-- 간편 비밀번호용 -->
+            <div id="simplePwChangeFields">
+                 <div class="form-floating mb-3">
+                     <input type="password" class="form-control" id="changeSimplePw" placeholder="4자리 숫자" maxlength="4">
+                     <label for="changeSimplePw">4자리 숫자 입력</label>
+                 </div>
             </div>
     
             <!-- 주소 변경용 -->
@@ -375,10 +436,31 @@
     <div id="socialModal" class="modal">
       <div class="modal-content text-center">
         <h3 class="mb-3">소셜 로그인 연동</h3>
-        <button class="btn btn-custom mb-2 w-100" onclick="linkSocial('kakao')">카카오 연동</button>
-        <button class="btn btn-custom mb-2 w-100" onclick="linkSocial('naver')">네이버 연동</button>
+        <c:if test="${!isKakaoLinked}">
+            <button class="btn btn-custom mb-2 w-100" onclick="linkSocial('kakao')">
+                <i class="fa-brands fa-kakao"></i> 카카오 연동
+            </button>
+        </c:if>
+        <c:if test="${!isNaverLinked}">
+            <button class="btn btn-custom mb-2 w-100" onclick="linkSocial('naver')">
+                <i class="fa-brands fa-naver"></i> 네이버 연동
+            </button>
+        </c:if>
         <button class="btn btn-secondary w-100" onclick="$('#socialModal').hide()">취소</button>
       </div>
+    </div>
+    
+    <!-- 회원 탈퇴 모달 -->
+    <div id="withdrawalModal" class="modal">
+        <div class="modal-content text-center">
+            <h3 class="mb-3">회원 탈퇴</h3>
+            <p class="mb-3">정말로 탈퇴하시겠습니까?</p>
+            <input type="password" class="form-control mb-3" id="withdrawalPassword" placeholder="탈퇴하시려면 비밀번호를 입력해주세요.">
+            <div class="d-flex justify-content-between">
+                <button id="confirmWithdrawalBtn" class="btn btn-danger">탈퇴하기</button>
+                <button onclick="$('#withdrawalModal').hide()" class="btn btn-secondary">돌아가기</button>
+            </div>
+        </div>
     </div>
 
 </main>
@@ -406,7 +488,7 @@ $(document).ready(function() {
         $("#passwordCheckModal").hide();
         $("#userInfo").show();
     } else {
-        $("#passwordCheckModal").show();
+        $("#passwordCheckModal").css("display", "flex");
         $("#userInfo").hide();
         $("#checkPasswordBtn").click(function() {
             let password = $("#checkPassword").val();
@@ -417,9 +499,11 @@ $(document).ready(function() {
                 if(result){
                     $("#passwordCheckModal").hide();
                     $("#userInfo").show();
-
                     // 쿠키 생성 
                     document.cookie = "myPageAuth=true; path=/";
+                    
+                    // 회원구분과 생성일 데이터 변환 및 UI 업데이트
+                    updateCategoryAndDate();
                 } else {
                     alert("비밀번호가 일치하지 않습니다.");
                 }
@@ -428,6 +512,28 @@ $(document).ready(function() {
     }
 
     $("#goBackBtn").click(function() { window.history.back(); });
+    
+    function updateCategoryAndDate() {
+        const categoryCode = "${user.customerCategory}";
+        let categoryText = "";
+        switch(categoryCode) {
+            case 'CC001': categoryText = "관리자"; break;
+            case 'CC002': categoryText = "기업회원"; break;
+            case 'CC003': categoryText = "개인회원"; break;
+            default: categoryText = categoryCode;
+        }
+        $("#customerCategory").val(categoryText);
+
+        const createDate = "${user.createDate}";
+        if(createDate && createDate.includes('T')) {
+            $("#createDate").val(createDate.replace('T', ' '));
+        }
+    }
+
+    // 초기 로드 시 실행 (이미 로그인 되어있을 경우)
+    if(auth === "true"){
+        updateCategoryAndDate();
+    }
 
     // -------------------------------
     // 2️⃣ 소셜 연동 알람
@@ -450,20 +556,25 @@ $(document).ready(function() {
         // 필드 그룹을 먼저 모두 숨기고, 필요한 그룹만 보여줍니다.
         $("#defaultChangeFields").hide();
         $("#addressChangeFields").hide();
+        $("#simplePwChangeFields").hide();
         
         if(field === "postal"){
             $("#changeTitle").text("주소 변경");
             $("#addressChangeFields").show();
             
-            $("#modalPostal").val($("#postal").val());
-            $("#modalAddress").val($("#address").val());
+            $("#modalPostal").val($("#address").val().split(' ')[0] || '');
+            $("#modalAddress").val($("#address").val().substring($("#address").val().indexOf(' ') + 1) || '');
             $("#modalDetailAddress").val($("#detailAddress").val());
+        } else if(field === "simplePassword") {
+            $("#changeTitle").text("간편 비밀번호 변경");
+            $("#simplePwChangeFields").css("display", "flex");
+            $("#changeSimplePw").val('');
         } else {
             $("#changeTitle").text(field + " 변경");
-            $("#defaultChangeFields").show();
+            $("#defaultChangeFields").css("display", "flex");
             $("#changeValue").val($("#"+field).val());
         }
-        $("#changeModal").show();
+        $("#changeModal").css("display", "flex");
     }
 
     $("#searchPostalBtn").click(function(){
@@ -495,7 +606,6 @@ $(document).ready(function() {
                 data: JSON.stringify(data),
                 success: function(res){
                     alert('주소가 변경되었습니다.');
-                    $("#postal").val(postal);
                     $("#address").val(address);
                     $("#detailAddress").val(detail);
                     $("#changeModal").hide();
@@ -504,7 +614,27 @@ $(document).ready(function() {
                     alert('변경 실패: ' + xhr.responseText);
                 }
             });
-
+        } else if(currentField === "simplePassword") {
+            const simplePw = $("#changeSimplePw").val();
+            if (!/^\d{4}$/.test(simplePw)) {
+                alert("간편 비밀번호는 4자리 숫자로 입력해주세요.");
+                return;
+            }
+            $.ajax({
+                url: '/public/updateUserInfo',
+                type: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify({simplePassword: simplePw}),
+                success: function(res){
+                    alert('간편 비밀번호가 변경되었습니다.');
+                    $("#simplePassword").val('****');
+                    $("#simplePasswordBtn").text('변경');
+                    $("#changeModal").hide();
+                },
+                error: function(xhr){
+                    alert('변경 실패: ' + xhr.responseText);
+                }
+            });
         } else {
             let value = $("#changeValue").val().trim();
             if(value === ""){
@@ -543,7 +673,15 @@ $(document).ready(function() {
     // -------------------------------
     // 4️⃣ 소셜 연동
     // -------------------------------
-    window.openSocialModal = function() { $("#socialModal").show(); }
+    window.openSocialModal = function() {
+        const isKakaoLinked = <c:out value="${isKakaoLinked}"/>;
+        const isNaverLinked = <c:out value="${isNaverLinked}"/>;
+        if (isKakaoLinked && isNaverLinked) {
+            alert("이미 2개의 소셜 계정이 연동되어 있습니다.");
+            return;
+        }
+        $("#socialModal").css("display", "flex"); 
+    }
     window.linkSocial = function(provider) { location.href = "/api/social/link/" + provider; }
     window.unlinkSocial = function(provider) {
         $.ajax({
@@ -553,8 +691,49 @@ $(document).ready(function() {
             error: function(){ alert("연동 해제 실패"); }
         });
     }
-});
 
+    // -------------------------------
+    // 5️⃣ 회원 탈퇴
+    // -------------------------------
+    window.openWithdrawalModal = function() {
+        $("#withdrawalModal").css("display", "flex");
+    }
+    
+    $("#confirmWithdrawalBtn").click(function() {
+        const password = $("#withdrawalPassword").val();
+        if(password === "") {
+            alert("비밀번호를 입력해주세요.");
+            return;
+        }
+        
+        $.ajax({
+            url: "/public/checkPassword",
+            type: "POST",
+            data: { password: password },
+            success: function(isPasswordCorrect) {
+                if(isPasswordCorrect) {
+                    // 서버에 탈퇴 요청
+                    $.ajax({
+                        url: "/member/withdraw",
+                        type: "POST",
+                        success: function(res) {
+                            alert("회원 탈퇴가 완료되었습니다.");
+                            window.location.href = "/"; // 메인 페이지로 이동
+                        },
+                        error: function(xhr) {
+                            alert("회원 탈퇴에 실패했습니다.");
+                        }
+                    });
+                } else {
+                    alert("비밀번호가 일치하지 않습니다.");
+                }
+            },
+            error: function() {
+                alert("비밀번호 확인에 실패했습니다.");
+            }
+        });
+    });
+});
 </script>
 
 <!-- 필수 스크립트들을 마지막에 로드 -->
@@ -562,6 +741,5 @@ $(document).ready(function() {
 <script src="/assets/vendor/aos/aos.js"></script>
 <script src="/assets/vendor/glightbox/js/glightbox.min.js"></script>
 <script src="/assets/js/main.js"></script>
-
 </body>
 </html>

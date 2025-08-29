@@ -332,6 +332,7 @@
 		    o.option_name_value AS optionNameValue,
 		    p.price,
 		    p.product_status AS productStatus,
+		    p.use_status AS productUseStatus,
 		    i.quantity
 		FROM product p
 		INNER JOIN `option` o 

@@ -60,13 +60,13 @@
 					</div>
 
 					<!-- Wishlist -->
-					<a href="/personal/wishList" class="header-action-btn d-none d-md-block">
+					<a href="#" class="header-action-btn d-none d-md-block">
 						<i class="bi bi-heart"></i>
 						<span class="badge">0</span>
 					</a>
 
 					<!-- Cart -->
-					<a href="/personal/shoppingCart" class="header-action-btn">
+					<a href="#" class="header-action-btn">
 						<i class="bi bi-cart3"></i>
 						<span class="badge">3</span>
 					</a>
@@ -85,7 +85,7 @@
 			<nav id="navmenu" class="navmenu">
 				<ul>
 					<li><a href="/biz/mainPage" class="active">Home</a></li>
-					<li><a href="#">상품 카테고리</a></li>
+					<li><a href="/biz/productList">상품 카테고리</a></li>
 					<li><a href="/biz/productRequest">상품 요청</a></li>
 					<li><a href="/biz/productRequestList">상품 요청 목록</a></li>
 					<li><a href="/biz/quotationList?userId=biz001">견적서</a></li>
