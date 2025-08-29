@@ -23,6 +23,7 @@ import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 
 import com.example.trade.config.ApplicationContextProvider;
+import com.example.trade.service.AdminService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -32,6 +33,10 @@ import jakarta.servlet.http.HttpServletResponse;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+	private AdminService adminService;
+	public SecurityConfig(AdminService adminService) {
+		this.adminService = adminService;
+	}
 	
 	// 비밀번호 암호화 방식 지정 (BCrypt)
 	@Bean
@@ -148,6 +153,12 @@ public class SecurityConfig {
 			@Override
 			public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 					Authentication authentication) throws IOException, ServletException {
+				
+				// 로그인 사용자 ID
+				String userId = authentication.getName();
+
+				// 로그인 이력 저장
+				adminService.saveLoginHistory(userId);
 				
 				// ✅ 로그인 성공 시 myPageAuth false로 초기화
 			    Cookie cookie = new Cookie("myPageAuth", "false");

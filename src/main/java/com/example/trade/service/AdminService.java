@@ -263,4 +263,9 @@ public class AdminService {
     	adminMapper.updateBizDelivery(contractDelivery);
     	return adminMapper.insertBizDeliveryHistory(deliveryHistory);
 	}
+
+	// 로그인 이력 저장
+	public int saveLoginHistory(String userId) {
+		return adminMapper.insertLoginHistory(userId);
+	}
 }
