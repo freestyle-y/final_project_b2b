@@ -17,4 +17,5 @@ public class DeliveryHistory {
 	private String trackingNo;
 	private LocalDateTime updateDate;
 	private String deliveryStatus;
+	private int contractDeliveryNo;
 }

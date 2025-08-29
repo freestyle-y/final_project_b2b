@@ -31,16 +31,15 @@
 		<tr>
 			<th>택배사</th>
 			<th>운송장 번호</th>
-			<th>배송 상태</th>
 			<th>처리 일시</th>
+			<th>배송 상태</th>
 		</tr>
-		
-		<c:forEach var="personalDeliveryOne" items="${personalDeliveryOne}">
+		<c:forEach var="deliveryOne" items="${deliveryOne}">
 			<tr>
-				<td>${personalDeliveryOne.deliveryCompany}</td>
-				<td>${personalDeliveryOne.trackingNo}</td>
-				<td>${personalDeliveryOne.deliveryStatus}</td>
-				<td>${personalDeliveryOne.updateDate}</td>
+				<td>${deliveryOne.deliveryCompany}</td>
+				<td>${deliveryOne.trackingNo}</td>
+				<td>${deliveryOne.updateDate}</td>
+				<td>${deliveryOne.deliveryStatus}</td>
 			</tr>
 		</c:forEach>
 	</table>

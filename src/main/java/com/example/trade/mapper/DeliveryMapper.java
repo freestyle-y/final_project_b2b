@@ -12,11 +12,14 @@ import com.example.trade.dto.Order;
 public interface DeliveryMapper {
 
 	// 배송 목록 조회(기업)
-	List<Map<String, Object>> selectBizDeliveryList();
+	List<Map<String, Object>> selectBizDeliveryList(String username);
+	
+	// 배송 상세 조회(기업)
+	List<DeliveryHistory> selectBizDeliveryOne(DeliveryHistory deliveryHistory);
 
 	// 배송 상세 조회(개인)
 	List<Map<String, Object>> selectPersonalDeliveryBySubOrderNo(DeliveryHistory deliveryHistory);
-
+	
 	// 교환/반품 신청 처리
 	int updateExchangeReturn(Order order);
 }

@@ -31,9 +31,8 @@ public class DeliveryController {
 	public String bizDeliveryList(Model model, Principal principal) {
 		
 		String username = principal.getName();
-		model.addAttribute("username", username);
 
-		List<Map<String, Object>> bizDeliveryList = deliveryService.getBizDeliveryList();
+		List<Map<String, Object>> bizDeliveryList = deliveryService.getBizDeliveryList(username);
 		model.addAttribute("bizDeliveryList", bizDeliveryList);
 		
 		return "biz/deliveryList";
@@ -41,7 +40,9 @@ public class DeliveryController {
 	
 	// 배송 상세 페이지(기업)
 	@GetMapping("/biz/deliveryOne")
-	public String bizDeliveryOne() {
+	public String bizDeliveryOne(DeliveryHistory deliveryHistory, Model model) {
+		List<DeliveryHistory> deliveryOne = deliveryService.getBizDeliveryOne(deliveryHistory);
+		model.addAttribute("deliveryOne", deliveryOne);
 		return "biz/deliveryOne";
 	}
 	

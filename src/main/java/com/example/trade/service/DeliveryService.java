@@ -17,8 +17,13 @@ public class DeliveryService {
 	}
 
 	// 배송 목록 조회(기업)
-	public List<Map<String, Object>> getBizDeliveryList() {
-		return deliveryMapper.selectBizDeliveryList();
+	public List<Map<String, Object>> getBizDeliveryList(String username) {
+		return deliveryMapper.selectBizDeliveryList(username);
+	}
+	
+	// 배송 상세 조회(기업)
+	public List<DeliveryHistory> getBizDeliveryOne(DeliveryHistory deliveryHistory) {
+		return deliveryMapper.selectBizDeliveryOne(deliveryHistory);
 	}
 
 	// 배송 상세 조회(개인)
