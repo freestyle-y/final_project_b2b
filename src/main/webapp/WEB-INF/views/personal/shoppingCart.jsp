@@ -7,158 +7,6 @@
 <meta charset="UTF-8" />
 <%@ include file="/WEB-INF/common/head.jsp"%>
 <title>장바구니</title>
-<style>
-    body {
-        font-family: 'Arial', sans-serif;
-        background-color: #f9f9f9;
-        margin: 0; padding: 0;
-    }
-
-    .container {
-        max-width: 1000px;
-        margin: 30px auto;
-        padding: 0 20px;
-    }
-
-    .cart-title {
-        font-size: 26px;
-        font-weight: bold;
-        margin-bottom: 30px;
-        border-bottom: 2px solid #333;
-        padding-bottom: 10px;
-    }
-
-    .header-checkbox {
-        display: flex;
-        align-items: center;
-        margin-bottom: 20px;
-    }
-
-    .header-checkbox input[type="checkbox"] {
-        margin-right: 8px;
-        width: 18px;
-        height: 18px;
-        cursor: pointer;
-    }
-
-    .cart-item {
-        background-color: #fff;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        padding: 20px;
-        margin-bottom: 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .cart-item.sold-out {
-        background-color: #e0e0e0;
-        color: #888;
-    }
-
-    .item-info {
-        flex: 1;
-        margin-left: 10px;
-    }
-
-    .item-name {
-        font-size: 18px;
-        font-weight: bold;
-        margin-bottom: 8px;
-    }
-
-    .item-option {
-        font-size: 14px;
-        color: #555;
-    }
-
-    .item-price {
-        text-align: right;
-        width: 140px;
-        position: relative;
-        white-space: nowrap;
-        display: inline-block;
-        vertical-align: middle;
-    }
-
-    .item-quantity {
-        display: flex;
-        align-items: center;
-    }
-
-    .qty-btn {
-        padding: 2px 8px;
-        margin: 0 4px;
-        font-size: 16px;
-        cursor: pointer;
-        user-select: none;
-    }
-
-    .item-quantity input[type="text"] {
-        width: 40px;
-        text-align: center;
-        border: none;
-        background: transparent;
-        font-size: 16px;
-        pointer-events: none;
-    }
-
-    .item-quantity button.delete-btn {
-        margin-left: 10px;
-        background-color: #ff4d4f;
-        border: none;
-        color: white;
-        padding: 5px 10px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-    }
-
-    .sold-out-text {
-        color: #b00000;
-        font-weight: bold;
-        margin-top: 5px;
-        font-size: 14px;
-    }
-
-    .reward-point {
-        color: #28a745;
-        font-size: 14px;
-        margin-top: 4px;
-        white-space: nowrap;
-    }
-
-    .summary-box {
-        text-align: right;
-        margin-top: 40px;
-        font-size: 18px;
-    }
-
-    .total-price {
-        font-weight: bold;
-        font-size: 20px;
-        margin-top: 10px;
-    }
-
-    .total-reward-point {
-        color: #28a745;
-        font-weight: bold;
-        margin-top: 6px;
-        font-size: 18px;
-    }
-
-    .buy-btn {
-        margin-top: 20px;
-        padding: 12px 30px;
-        background-color: #007bff;
-        border: none;
-        color: white;
-        font-size: 16px;
-        cursor: pointer;
-        border-radius: 4px;
-    }
-</style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     function updateTotal() {
@@ -190,6 +38,110 @@
             rewardElement.innerText = rewardPoint.toLocaleString('ko-KR') + "원";
         }
     }
+    
+    $(function() {
+    	$('.item-checkbox:not(:disabled)').on('change', updateTotal);
+    	
+        // 수량 감소 (-) 버튼
+        $('.quantity-btn.decrease').on('click', function() {
+            const $item = $(this).closest('.cart-item');
+            const $input = $item.find('input[type="text"]');
+            const currentQty = parseInt($input.val());
+            const newQty = currentQty;
+
+            if (newQty < 1) {
+                alert("수량은 1개 이상이어야 합니다.");
+                return;
+            }
+
+            const maxQty = parseInt($item.data('inventory-quantity'));
+            if (newQty > maxQty) {
+                alert("수량은 최대 " + maxQty + "개까지 가능합니다.");
+                return;
+            }
+
+            // UI 즉시 업데이트
+            $input.val(newQty);
+            const pricePerUnit = parseInt($item.find('.item-total').data('price-per-unit'));
+            const newTotalPrice = pricePerUnit * newQty;
+            $item.find('.item-total > span').text(newTotalPrice.toLocaleString('ko-KR') + "원");
+            $item.find('.reward-point').text("적립금: " + Math.floor(newTotalPrice * 0.01).toLocaleString('ko-KR') + "원");
+            $item.find('.item-checkbox').attr('data-total-price', newTotalPrice);
+
+            // 총합 재계산
+            updateTotal();
+
+            // 서버로 수량 변경 전송
+            $.ajax({
+                url: '/shoppingCart/updateQuantity',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    cartId: $item.data('cart-id'),
+                    quantity: newQty
+                }),
+                success(data) {
+                    if (!data.success) {
+                        alert('수량 변경에 실패했습니다. 다시 시도해주세요.');
+                        restoreOldQty($item, currentQty, pricePerUnit);
+                    }
+                },
+                error() {
+                    alert('서버와 통신 중 오류가 발생했습니다.');
+                    restoreOldQty($item, currentQty, pricePerUnit);
+                }
+            });
+        });
+
+        // 수량 증가 (+) 버튼
+        $('.quantity-btn.increase').on('click', function() {
+            const $item = $(this).closest('.cart-item');
+            const $input = $item.find('input[type="text"]');
+            const currentQty = parseInt($input.val());
+            const newQty = currentQty;
+
+            const maxQty = parseInt($item.data('inventory-quantity'));
+            if (newQty > maxQty) {
+                alert("수량은 최대 " + maxQty + "개까지 가능합니다.");
+                return;
+            }
+
+            // UI 즉시 업데이트
+            $input.val(newQty);
+            const pricePerUnit = parseInt($item.find('.item-total').data('price-per-unit'));
+            const newTotalPrice = pricePerUnit * newQty;
+            $item.find('.item-total > span').text(newTotalPrice.toLocaleString('ko-KR') + "원");
+            $item.find('.reward-point').text("적립금: " + Math.floor(newTotalPrice * 0.01).toLocaleString('ko-KR') + "원");
+            $item.find('.item-checkbox').attr('data-total-price', newTotalPrice);
+
+            // 총합 재계산
+            updateTotal();
+
+            // 서버로 수량 변경 전송
+            $.ajax({
+                url: '/shoppingCart/updateQuantity',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    cartId: $item.data('cart-id'),
+                    quantity: newQty
+                }),
+                success(data) {
+                    if (!data.success) {
+                        alert('수량 변경에 실패했습니다. 다시 시도해주세요.');
+                        restoreOldQty($item, currentQty, pricePerUnit);
+                    }
+                },
+                error() {
+                    alert('서버와 통신 중 오류가 발생했습니다.');
+                    restoreOldQty($item, currentQty, pricePerUnit);
+                }
+            });
+        });
+
+        // 총합 초기 계산
+        updateTotal();
+    });
 
     function toggleAllCheckboxes(source) {
         const checkboxes = document.querySelectorAll(".item-checkbox:not(:disabled)");
@@ -197,71 +149,6 @@
             cb.checked = source.checked;
         });
         updateTotal();
-    }
-
-    // 변경: 버튼에서 this(버튼 자신)도 같이 넘겨받음
-    function changeQuantity(delta, button) {
-	    const itemDiv = button.closest('.cart-item');
-	    const cartId = itemDiv.getAttribute('data-cart-id');
-	    const qtyInput = itemDiv.querySelector('input[type="text"]');
-        let currentQty = parseInt(qtyInput.value);
-        let newQty = currentQty + delta;
-
-        if (newQty < 1) {
-            alert("수량은 1개 이상이어야 합니다.");
-            return;
-        }
-
-        const maxQty = parseInt(itemDiv.getAttribute("data-inventory-quantity"));
-
-        if (newQty > maxQty) {
-        	alert('수량은 최대 ' + maxQty + '개까지 가능합니다.');
-            return;
-        }
-
-     	// 수량 변경 반영
-        qtyInput.value = newQty;
-
-        // ✅ [추가] 가격도 실시간 반영
-        const pricePerUnit = parseInt(itemDiv.querySelector('.item-price').getAttribute('data-price-per-unit'));
-        const newTotalPrice = pricePerUnit * newQty;
-        itemDiv.querySelector('.price-value').innerText = newTotalPrice.toLocaleString('ko-KR') + "원";
-
-        // ✅ [추가] 적립금도 업데이트
-        itemDiv.querySelector('.reward-point').innerText = "적립금: " + Math.floor(newTotalPrice * 0.01).toLocaleString('ko-KR') + "원";
-
-        // 기존 총액 업데이트
-        updateTotal();
-
-
-        console.log('cartId:', cartId);
-        console.log('newQty:' , newQty);
-        $.ajax({
-            url: '/shoppingCart/updateQuantity',
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                cartId: cartId,
-                quantity: newQty
-            }),
-            success: function(data) {
-                if (!data.success) {
-                    alert('수량 변경에 실패했습니다. 다시 시도해주세요.');
-                    // 실패 시 원래 수량으로 복원
-                    qtyInput.value = currentQty;
-                    updateTotal();
-                }
-                // 성공 시 추가 처리 가능
-            },
-            error: function(xhr, status, error) {
-                console.error('AJAX 오류:', error);
-                alert('서버와 통신 중 오류가 발생했습니다.');
-                // 오류 시 원래 수량으로 복원
-                qtyInput.value = currentQty;
-                updateTotal();
-            }
-        });
-
     }
 
     function deleteItem(cartId, button) {
@@ -288,117 +175,8 @@
                 alert('서버와 통신 중 오류가 발생했습니다.');
             }
         });
-        
     }
-</script>
-</head>
-<body>
 
-<!-- 공통 헤더 -->
-<%@include file="/WEB-INF/common/header/header.jsp"%>
-
-<main class="main">
-
-<div class="container">
-    <div class="cart-title">장바구니</div>
-
-	<!-- ✅ 에러 메시지 영역 -->
-    <c:if test="${not empty errorMessage}">
-        <div style="background-color: #ffdddd; border: 1px solid #ff4d4f; padding: 10px; margin-bottom: 20px; border-radius: 5px; color: #a94442;">
-            <strong>알림:</strong> ${errorMessage}
-        </div>
-    </c:if>
-    
-    <div class="header-checkbox">
-        <input type="checkbox" id="selectAll" onclick="toggleAllCheckboxes(this)" />
-        <label for="selectAll">전체 선택</label>
-    </div>
-
-    <c:forEach var="item" items="${shoppingCartList}">
-        <c:set var="itemTotal" value="${item.quantity * item.price}" />
-        <c:set var="isSoldOut" value="${item.productStatus == '일시품절'}" />
-
-		<c:if test="${item.quantityAdjusted}">
-		    <div style="color: red; font-size: 13px; margin-top: 5px;">
-		        ※ 재고 부족으로 수량이 ${item.inventoryQuantity}개로 조정되었습니다.
-		    </div>
-		</c:if>
-		
-        <div class="cart-item ${isSoldOut ? 'sold-out' : ''}"
-        	data-cart-id="${item.cartId}"
-	     	data-user-id="${item.userId}"
-		    data-product-no="${item.productNo}"
-		    data-option-no="${item.optionNo}"
-		    data-product-name="${item.productName}"
-		    data-option-name="${item.optionName}"
-		    data-option-name-value="${item.optionNameValue}"
-		    data-quantity="${item.quantity}"
-		    data-price="${item.price}"
-		    data-inventory-quantity="${item.inventoryQuantity}">
-            <input type="checkbox" class="item-checkbox"
-                   data-total-price="${itemTotal}"
-                   onchange="updateTotal()"
-                   <c:if test="${isSoldOut}">disabled</c:if> />
-
-			<!-- ✅ 썸네일 이미지 영역 추가 -->
-	        <div class="item-thumbnail" style="margin-right: 10px;">
-	            <div class="product-image" style="width: 50px; height: 50px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
-	                <c:choose>
-	                    <c:when test="${not empty item.imagePath}">
-	                        <img src="${pageContext.request.contextPath}${item.imagePath}"
-	                             alt="${item.productName}"
-	                             style="width: 100%; height: 100%; object-fit: cover; border-radius: 5px;" />
-	                    </c:when>
-	                    <c:otherwise>
-	                        <span style="color: #ccc; font-size: 10px;">이미지 없음</span>
-	                    </c:otherwise>
-	                </c:choose>
-	            </div>
-	        </div>
-        
-            <div class="item-info">
-                <div class="item-name">${item.productName}</div>
-                <div class="item-option">옵션: ${item.optionNameValue}</div>
-            </div>
-
-            <div class="item-quantity">
-                수량:
-                <button type="button" class="qty-btn" onclick="changeQuantity(-1, this)" <c:if test="${isSoldOut}">disabled</c:if> >-</button>
-				<input type="text" value="${item.quantity}" readonly />
-				<button type="button" class="qty-btn" onclick="changeQuantity(1, this)" <c:if test="${isSoldOut}">disabled</c:if> >+</button>
-
-                <button type="button" class="delete-btn" onclick="deleteItem('${item.cartId}', this)">삭제</button>
-            </div>
-
-            <div class="item-price" data-price-per-unit="${item.price}">
-                <span class="price-value"><fmt:formatNumber value="${itemTotal}" type="number" />원</span>
-                <c:if test="${isSoldOut}">
-                    <div class="sold-out-text">품절</div>
-                </c:if>
-                <div class="reward-point">
-                    적립금: <fmt:formatNumber value="${itemTotal * 0.01}" type="number" />원
-                </div>
-            </div>
-        </div>
-    </c:forEach>
-
-    <div class="summary-box">
-        <div class="total-price">
-            총 결제 금액: <span id="totalPrice">0원</span>
-        </div>
-        <div class="total-reward-point">
-            적립금: <span id="totalRewardPoint">0원</span>
-        </div>
-        <button class="buy-btn" onclick="handleBuyClick()">구매하기</button>
-    </div>
-</div>
-
-</main>
-
-<!-- 공통 풋터 -->
-<%@include file="/WEB-INF/common/footer/footer.jsp"%>
-
-<script>
     window.onload = function() {
         updateTotal();
     };
@@ -451,6 +229,221 @@
         return input;
     }
 </script>
+</head>
+<body>
+
+<!-- 공통 헤더 -->
+<%@include file="/WEB-INF/common/header/header.jsp"%>
+
+<main class="main">
+
+	<!-- Page Title -->
+    <div class="page-title light-background">
+      <div class="container d-lg-flex justify-content-between align-items-center">
+        <h1 class="mb-2 mb-lg-0">Cart</h1>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="index.html">Home</a></li>
+            <li class="current">Cart</li>
+          </ol>
+        </nav>
+      </div>
+    </div><!-- End Page Title -->
+
+	<!-- Cart Section -->
+    <section id="cart" class="cart section">
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row">
+          <div class="col-lg-8" data-aos="fade-up" data-aos-delay="200">
+          
+            <div class="cart-items">
+            
+            <!-- ✅ 에러 메시지 영역 -->
+		    <c:if test="${not empty errorMessage}">
+		        <div style="background-color: #ffdddd; border: 1px solid #ff4d4f; padding: 10px; margin-bottom: 20px; border-radius: 5px; color: #a94442;">
+		            <strong>알림:</strong> ${errorMessage}
+		        </div>
+		    </c:if>
+		    
+              <div class="cart-header d-none d-lg-block">
+                <div class="row align-items-center">
+                  <div class="col-lg-1 d-flex justify-content-center">
+			        <input type="checkbox" id="selectAll" onclick="toggleAllCheckboxes(this)" />
+			      </div>
+                  <div class="col-lg-5">
+                    <h5>Product</h5>
+                  </div>
+                  <div class="col-lg-2 text-center">
+                    <h5>Price</h5>
+                  </div>
+                  <div class="col-lg-2 text-center">
+                    <h5>Quantity</h5>
+                  </div>
+                  <div class="col-lg-2 text-center">
+                    <h5>Total</h5>
+                  </div>
+                </div>
+              </div>
+
+                <!-- Cart Item -->
+				<c:forEach var="item" items="${shoppingCartList}">
+				    <c:set var="itemTotal" value="${item.quantity * item.price}" />
+				    <c:set var="isSoldOut" value="${item.productStatus == '일시품절'}" />
+				
+				    <div class="cart-item ${isSoldOut ? 'sold-out' : ''}" 
+				         data-cart-id="${item.cartId}"
+				         data-user-id="${item.userId}"
+				         data-product-no="${item.productNo}"
+				         data-option-no="${item.optionNo}"
+				         data-product-name="${item.productName}"
+				         data-option-name-value="${item.optionNameValue}"
+				         data-quantity="${item.quantity}"
+				         data-price="${item.price}"
+				         data-inventory-quantity="${item.inventoryQuantity}">
+				         
+				        <div class="row align-items-center">
+				            
+				            <!-- 🧾 Product Info -->
+				            <div class="col-lg-6 col-12 mt-3 mt-lg-0 mb-lg-0 mb-3">
+				                <div class="product-info d-flex align-items-center">
+				                    <div class="product-checkbox me-3">
+								      <input type="checkbox" class="item-checkbox" data-total-price="${item.quantity * item.price}" 
+								      	<c:if test="${isSoldOut}"> disabled </c:if>/>
+								    </div>
+				                    <!-- ✅ 이미지 -->
+				                    <div class="product-image">
+				                        <c:choose>
+				                            <c:when test="${not empty item.imagePath}">
+				                                <img src="${pageContext.request.contextPath}${item.imagePath}" alt="${item.productName}" class="img-fluid" loading="lazy">
+				                            </c:when>
+				                            <c:otherwise>
+				                                <span style="color: #ccc; font-size: 12px;">이미지 없음</span>
+				                            </c:otherwise>
+				                        </c:choose>
+				                    </div>
+				
+				                    <!-- ✅ 상품명, 옵션, 삭제 버튼 -->
+				                    <div class="product-details">
+				                        <h6 class="product-title">${item.productName}</h6>
+				                        <div class="product-meta">
+				                            <span>옵션: ${item.optionNameValue}</span>
+				                        </div>
+				
+				                        <button class="remove-item" type="button" onclick="deleteItem('${item.cartId}', this)">
+				                            <i class="bi bi-trash"></i> 삭제
+				                        </button>
+				
+				                        <!-- 🔔 수량 조정 안내 -->
+				                        <c:if test="${item.quantityAdjusted}">
+				                            <div style="color: red; font-size: 13px; margin-top: 5px;">
+				                                ※ 재고 부족으로 수량이 ${item.inventoryQuantity}개로 조정되었습니다.
+				                            </div>
+				                        </c:if>
+				                        <c:if test="${isSoldOut}">
+						                	<div class="text-danger small mt-1">※ 품절 상품입니다.</div>
+						                </c:if>
+				                    </div>
+				                </div>
+				            </div>
+				
+				            <!-- 💰 Price -->
+				            <div class="col-lg-2 col-12 mt-3 mt-lg-0 text-center">
+				                <div class="price-tag">
+				                    <span class="current-price">
+				                        <fmt:formatNumber value="${item.price}" type="number" />원
+				                    </span>
+				                </div>
+				            </div>
+				
+				            <!-- 🔢 Quantity -->
+				            <div class="col-lg-2 col-12 mt-3 mt-lg-0 text-center">
+				                <div class="quantity-selector">
+				                    <button class="quantity-btn decrease" <c:if test="${isSoldOut}">disabled</c:if> > 
+				                        <i class="bi bi-dash"></i>
+				                    </button>
+				                    <input type="text" class="quantity-input" value="${item.quantity}" min="1" max="${item.inventoryQuantity}" readonly>
+				                    <button class="quantity-btn increase" <c:if test="${isSoldOut}">disabled</c:if> >
+				                        <i class="bi bi-plus"></i>
+				                    </button>
+				                </div>
+				            </div>
+				
+				            <!-- 🧮 Total Price + 적립금 -->
+				            <div class="col-lg-2 col-12 mt-3 mt-lg-0 text-center">
+				                <div class="item-total" data-price-per-unit="${item.price}">
+				                	<span style="font-size: 16px; font-weight: 600;">
+				                    	<fmt:formatNumber value="${itemTotal}" type="number" />원
+				                    </span>
+				
+				                    <c:if test="${isSoldOut}">
+				                        <div class="sold-out-text" style="font-size: 13px; color: red; margin-top: 4px;">품절</div>
+				                    </c:if>
+				
+				                    <div class="reward-point" style="font-size: 13px; color: #666; margin-top: 4px;">
+				                        적립금: <fmt:formatNumber value="${itemTotal * 0.01}" type="number" />원
+				                    </div>
+				                </div>
+				            </div>
+				
+				        </div>
+				    </div>
+				</c:forEach>
+			
+            </div>
+          </div>
+
+          <div class="col-lg-4 mt-4 mt-lg-0" data-aos="fade-up" data-aos-delay="300">
+            <div class="cart-summary">
+              <h4 class="summary-title">Order Summary</h4>
+			  
+			  <div class="summary-item reward">
+                <span class="summary-label">적립금</span>
+                <span class="summary-value" id="totalRewardPoint">0원</span>
+              </div>
+              
+              <div class="summary-total">
+                <span class="summary-label">Total</span>
+                <span class="summary-value" id="totalPrice">0원</span>
+              </div>
+
+			  <div class="checkout-button">
+			    <a href="javascript:void(0);" class="btn btn-accent w-100" onclick="handleBuyClick()">
+			      Proceed to Checkout <i class="bi bi-arrow-right"></i>
+			    </a>
+			  </div>
+
+              <div class="continue-shopping">
+                <a href="/personal/productList" class="btn btn-link w-100">
+                  <i class="bi bi-arrow-left"></i> Continue Shopping
+                </a>
+              </div>
+
+              <div class="payment-methods">
+                <p class="payment-title">We Accept</p>
+                <div class="payment-icons">
+                  <i class="bi bi-credit-card"></i>
+                  <i class="bi bi-paypal"></i>
+                  <i class="bi bi-wallet2"></i>
+                  <i class="bi bi-bank"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section><!-- /Cart Section -->
+
+	<!-- Scroll Top -->
+  	<a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+	
+</main>
+
+<!-- 공통 풋터 -->
+<%@include file="/WEB-INF/common/footer/footer.jsp"%>
 
 </body>
 </html>
