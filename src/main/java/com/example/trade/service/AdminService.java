@@ -1,6 +1,5 @@
 package com.example.trade.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.trade.dto.Board;
 import com.example.trade.dto.Comment;
+import com.example.trade.dto.ContractDelivery;
 import com.example.trade.dto.DeliveryHistory;
 import com.example.trade.dto.Order;
 import com.example.trade.dto.Page;
@@ -234,5 +234,33 @@ public class AdminService {
 		order.setReturnReason(null); // 사유 null 복귀
 		order.setReturnRequestTime(null); // 신청일 null 복귀
 		return adminMapper.updateReturnReject(order);
+	}
+
+	// 기업 회원 배송 처리
+	@Transactional
+	public int insertBizDelivery(ContractDelivery contractDelivery, DeliveryHistory deliveryHistory) {
+		contractDelivery.setContractDeliveryStatus("DS002"); // 배송중 처리
+		adminMapper.insertContractDelivery(contractDelivery);
+		
+		 // 생성된 contract_delivery_no를 deliveryHistory에 세팅
+	    deliveryHistory.setContractDeliveryNo(contractDelivery.getContractDeliveryNo());
+		deliveryHistory.setDeliveryStatus("DS002"); // 배송중 처리
+		return adminMapper.insertBizDeliveryHistory(deliveryHistory);
+	}
+	
+	// 기업 회원 배송 완료 처리
+	@Transactional
+	public int bizDeliveryComplete(ContractDelivery contractDelivery, DeliveryHistory deliveryHistory) {
+		
+		// 기존 배송 이력 조회
+		DeliveryHistory newDeliveryHistory = adminMapper.getBizDeliveryHistory(deliveryHistory);
+		
+		contractDelivery.setContractDeliveryStatus("DS003"); // 배송완료 처리
+		deliveryHistory.setDeliveryCompany(newDeliveryHistory.getDeliveryCompany()); // 택배사
+		deliveryHistory.setTrackingNo(newDeliveryHistory.getTrackingNo()); // 운송장 번호
+    	deliveryHistory.setDeliveryStatus("DS003"); // 배송완료 처리
+    	
+    	adminMapper.updateBizDelivery(contractDelivery);
+    	return adminMapper.insertBizDeliveryHistory(deliveryHistory);
 	}
 }

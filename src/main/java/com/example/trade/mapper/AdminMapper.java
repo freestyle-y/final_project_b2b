@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 import com.example.trade.dto.Board;
 import com.example.trade.dto.Comment;
+import com.example.trade.dto.ContractDelivery;
 import com.example.trade.dto.DeliveryHistory;
 import com.example.trade.dto.Order;
 import com.example.trade.dto.Page;
@@ -113,5 +113,17 @@ public interface AdminMapper {
 
 	// 반품 거절 처리
 	int updateReturnReject(Order order);
+
+	// 기업 회원 배송 처리
+	int insertContractDelivery(ContractDelivery contractDelivery);
+
+	// 기업 회원 배송 이력 등록
+	int insertBizDeliveryHistory(DeliveryHistory deliveryHistory);
+
+	// 기존 배송 이력 조회(기업)
+	DeliveryHistory getBizDeliveryHistory(DeliveryHistory deliveryHistory);
+
+	// 기업 회원 배송 상태 변경
+	int updateBizDelivery(ContractDelivery contractDelivery);
 
 }

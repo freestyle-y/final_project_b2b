@@ -28,27 +28,52 @@
 	<table>
 		<tr>
 			<th>계약 번호</th>
-			<th>발주 일시</th>
-			<th>컨테이너 번호</th>
-			<th>컨테이너 위치</th>
-			<th>입고 일시</th>
+			<th>계약금</th>
+			<th>상태</th>
+			<th>입금일시</th>
+			<th>잔금</th>
+			<th>상태</th>
+			<th>입금일시</th>
 			<th>배송지 주소</th>
-			<th>상세 주소</th>
-			<th>배송 출발 일시</th>
+			<th>배송 일시</th>
 			<th>배송 상태</th>
+			<th>배송 처리</th>
 		</tr>
 		
 		<c:forEach var="bizDeliveryList" items="${bizDeliveryList}">
 			<tr>
-				<td>${bizDeliveryList.contractNo}</td>
-				<td>${bizDeliveryList.orderTime}</td>
-				<td>${bizDeliveryList.containerNo}</td>
-				<td>${bizDeliveryList.containerLocation}</td>
-				<td>${bizDeliveryList.arrivalTime}</td>
+				<td><a href="/admin/contractOne?contractNo=${bizDeliveryList.contractNo}">${bizDeliveryList.contractNo}</a></td>
+				<td>${bizDeliveryList.downPayment}</td>
+				<td>${bizDeliveryList.downPaymentStatus}</td>
+				<td>${bizDeliveryList.downPaymentDate}</td>
+				<td>${bizDeliveryList.finalPayment}</td>
+				<td>${bizDeliveryList.finalPaymentStatus}</td>
+				<td>${bizDeliveryList.finalPaymentDate}</td>
 				<td>${bizDeliveryList.address}</td>
-				<td>${bizDeliveryList.detailAddress}</td>
 				<td>${bizDeliveryList.contractDeliveryTime}</td>
 				<td>${bizDeliveryList.contractDeliveryStatus}</td>
+				<td>
+					<c:choose>
+						<%-- 배송 처리 : null일 때만 가능 --%>
+						<c:when test="${bizDeliveryList.contractDeliveryStatus eq null}">
+							<form action="/admin/bizDeliveryUpdate" method="get">
+								<input type="hidden" name="containerNo" value="${bizDeliveryList.containerNo}">
+								<button type="submit">배송</button>
+							</form>
+						</c:when>
+						<%-- 배송 완료 처리 : 배송중일 때만 가능 --%>
+						<c:when test="${bizDeliveryList.contractDeliveryStatus eq '배송중'}">
+							<form action="/admin/bizDeliveryComplete" method="post" onsubmit="return confirm('배송 완료 처리하시겠습니까?');">
+								<input type="hidden" name="contractDeliveryNo" value="${bizDeliveryList.contractDeliveryNo}">
+								<button type="submit">완료</button>
+							</form>
+						</c:when>
+						<c:otherwise>
+							<button type="button" disabled>배송</button>
+							<button type="button" disabled>완료</button>
+						</c:otherwise>
+					</c:choose>
+				</td>
 			</tr>
 		</c:forEach>
 	</table>

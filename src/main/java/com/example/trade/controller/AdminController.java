@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.trade.dto.Board;
 import com.example.trade.dto.Comment;
+import com.example.trade.dto.ContractDelivery;
 import com.example.trade.dto.DeliveryHistory;
 import com.example.trade.dto.Order;
 import com.example.trade.dto.Page;
@@ -494,5 +495,30 @@ public class AdminController {
 		
 		adminService.updateReturnReject(order);
 		return "redirect:/admin/personalDeliveryList";
+	}
+	
+	// 기업 회원 배송 처리 페이지
+    @GetMapping("/admin/bizDeliveryUpdate")
+    public String bizDeliveryUpdate(@RequestParam int containerNo, Model model) {
+        model.addAttribute("containerNo", containerNo);
+        return "admin/bizDeliveryUpdate";
+    }
+
+    // 기업 회원 배송 처리
+    @PostMapping("/admin/bizDeliveryUpdate")
+    public String bizDeliveryUpdate(ContractDelivery contractDelivery, DeliveryHistory deliveryHistory) {
+    	
+    	adminService.insertBizDelivery(contractDelivery, deliveryHistory);
+    	
+        return "redirect:/admin/bizDeliveryList";
+    }
+    
+    // 기업 회원 배송 완료 처리
+	@PostMapping("/admin/bizDeliveryComplete")
+	public String bizDeliveryComplete(ContractDelivery contractDelivery, DeliveryHistory deliveryHistory) {
+		
+		adminService.bizDeliveryComplete(contractDelivery, deliveryHistory);
+		
+		return "redirect:/admin/bizDeliveryList";
 	}
 }

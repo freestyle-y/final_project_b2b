@@ -53,7 +53,16 @@
 				<td>${bizDeliveryList.address}</td>
 				<td>${bizDeliveryList.contractDeliveryTime}</td>
 				<td>${bizDeliveryList.contractDeliveryStatus}</td>
-				<td><button onclick="location.href='/biz/deliveryOne?contractDeliveryNo=${bizDeliveryList.contractDeliveryNo}'">배송조회</button></td>
+				<td>
+					<c:choose>
+						<c:when test="${empty bizDeliveryList.contractDeliveryNo}">
+							<button disabled>배송조회</button>
+						</c:when>
+						<c:otherwise>
+							<button onclick="location.href='/biz/deliveryOne?contractDeliveryNo=${bizDeliveryList.contractDeliveryNo}'">배송조회</button>
+						</c:otherwise>
+					</c:choose>
+				</td>
 			</tr>
 		</c:forEach>
 	</table>
