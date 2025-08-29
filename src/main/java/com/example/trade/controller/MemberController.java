@@ -23,9 +23,11 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberController {
 	
 	private final MemberService memberService;
+	private final BCryptPasswordEncoder passwordEncoder;
 
-    public MemberController(MemberService memberService) {
+    public MemberController(MemberService memberService, BCryptPasswordEncoder passwordEncoder) {
         this.memberService = memberService;
+        this.passwordEncoder = passwordEncoder;
     }
     
 	// 마이페이지
@@ -115,15 +117,24 @@ public class MemberController {
 								Model model) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		User user = memberService.getUserById(auth.getName());
-		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 		model.addAttribute("id", user.getId());
+		
+		System.out.println("--- 비밀번호 변경 디버깅 시작 ---");
+	    System.out.println("현재 로그인된 사용자 ID: " + user.getId());
+	    System.out.println("사용자가 입력한 현재 비밀번호 (nowPw): " + nowPw);
+	    System.out.println("사용자가 입력한 새 비밀번호 (newPw): " + newPw);
+	    
 		if (!passwordEncoder.matches(nowPw, user.getPassword())) {
 	        redirectAttributes.addFlashAttribute("error", "현재 비밀번호가 일치하지 않습니다.");
 	        return "redirect:/member/changeMemberPw"; // 다시 폼으로
 	    }
 
 	    // 비밀번호 변경
-	    memberService.updatePw(user.getId(), passwordEncoder.encode(newPw));
+	    memberService.updatePw(user.getId(), newPw);
+	    User updatedUser = memberService.getUserById(user.getId());
+	    System.out.println("저장된 암호: " + updatedUser.getPassword());
+	    Boolean pwMatch = passwordEncoder.matches(newPw, updatedUser.getPassword());
+	    System.out.println("암호 newPw , updateUser.getPassword() : " + pwMatch);
 	    redirectAttributes.addFlashAttribute("success", "비밀번호가 변경되었습니다.");
 		return "redirect:/member/changeMemberPw";
 	}
