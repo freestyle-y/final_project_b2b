@@ -35,7 +35,7 @@
 <script>
 $(function () {
     let allProducts = [];
-    const itemsPerPage = 5;
+    const itemsPerPage = 6;
     let currentPage = 1;
     let filteredProducts = [];
 

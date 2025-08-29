@@ -6,17 +6,7 @@
 <meta charset="UTF-8">
 <%@ include file="/WEB-INF/common/head.jsp"%>
 <title>자주 묻는 질문</title>
-<style>
-    table {
-        width: 50%;
-        border-collapse: collapse;
-        text-align: left;
-        margin: auto;
-    }
-    th, td {
-        border: 1px solid #ccc;
-        padding: 8px;
-    }
+<!-- <style>
     .pagination {
         margin: 20px auto;
         text-align: center;
@@ -34,67 +24,128 @@
         color: #fff;
         font-weight: bold;
     }
-</style>
+</style> -->
 </head>
-<body>
+<body class="faq-page">
 
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
 
-<main class="main">
-	
-	<h1>자주 묻는 질문</h1>
-	
-	<a href="/public/FAQList">자주 묻는 질문</a> /
-	<a href="/member/QNAList">문의 내역</a> /
-	<a href="/member/QNAWrite">1:1 문의</a> /
-	<a href="/public/noticeList">공지사항</a>
-	
-	<table>
-		<c:forEach var="faq" items="${FAQList}">
-			<tr	class="faq-question" style="cursor:pointer;">
-				<th>Q. ${faq.boardTitle}</th>
-			</tr>
-			<tr	class="faq-answer" style="display:none;">
-				<td>A. ${faq.boardContent}</td>
-			</tr>
-		</c:forEach>
-	</table>
+	<main class="main">
+
+		<!-- Page Title -->
+		<div class="page-title light-background">
+			<div class="container d-lg-flex justify-content-between align-items-center">
+				<h1 class="mb-2 mb-lg-0">Faq</h1>
+				<nav class="breadcrumbs">
+					<ol>
+						<li><%@include file="/WEB-INF/common/home.jsp"%></li>
+						<li class="current">Faq</li>
+					</ol>
+				</nav>
+			</div>
+		</div>
+		<!-- End Page Title -->
+
+		<!-- Faq Section -->
+		<section id="faq" class="faq section">
+
+			<div class="container" data-aos="fade-up" data-aos-delay="100">
+
+				<div class="row gy-4 justify-content-between">
+					<div class="col-lg-8">
+						<div class="faq-list">
+						<c:forEach var="faq" items="${FAQList}">
+							<div class="faq-item" data-aos="fade-up" data-aos-delay="100">
+								<h3>Q. ${faq.boardTitle}</h3>
+								<div class="faq-content">
+									<p>A. ${faq.boardContent}</p>
+								</div>
+								<i class="bi bi-plus faq-toggle"></i>
+							</div>
+							<!-- End FAQ Item-->
+
+						</c:forEach>
+						</div>
+
+					</div>
+
+					<div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+						<div class="faq-card">
+							<i class="bi bi-chat-dots-fill"></i>
+							<h3>Can't find answer to your question?</h3>
+							<p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula. Vestibulum ac diam
+								sit amet quam vehicula elementum sed sit amet dui. Curabitur aliquet quam id dui posuere blandit. Nulla quis lorem ut libero malesuada feugiat.</p>
+							<a href="#" class="btn btn-primary">Contact Us</a>
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+		</section>
+		<!-- /Faq Section -->
+
+	</main>
 
 	<!-- 페이징 영역 -->
-	<div class="pagination">
-		<c:if test="${page.hasPrevBlock()}">
-			<a href="?currentPage=${page.startPage - 1}&searchWord=${page.searchWord}">이전</a>
-		</c:if>
+	<div class="category-pagination">
+		<nav>
+			<ul class="justify-content-center">
+				<!-- 이전 버튼 -->
+				<c:if test="${page.hasPrevBlock()}">
+					<li>
+						<a href="?currentPage=${page.startPage - 1}&searchWord=${page.searchWord}">
+							<i class="bi bi-arrow-left"></i>
+							<span class="d-none d-sm-inline">이전</span>
+						</a>
+					</li>
+				</c:if>
 
-		<c:forEach begin="${page.startPage}" end="${page.endPage}" var="i">
-			<a href="?currentPage=${i}&searchWord=${page.searchWord}" class="${i == page.currentPage ? 'active' : ''}">${i}</a>
-		</c:forEach>
+				<!-- 페이지 번호 -->
+				<c:forEach begin="${page.startPage}" end="${page.endPage}" var="i">
+					<li class="${i == page.currentPage ? 'active' : ''}">
+						<a href="?currentPage=${i}&searchWord=${page.searchWord}">${i}</a>
+					</li>
+				</c:forEach>
 
-		<c:if test="${page.hasNextBlock()}">
-			<a href="?currentPage=${page.endPage + 1}&searchWord=${page.searchWord}">다음</a>
-		</c:if>
+				<!-- 다음 버튼 -->
+				<c:if test="${page.hasNextBlock()}">
+					<li>
+						<a href="?currentPage=${page.endPage + 1}&searchWord=${page.searchWord}">
+							<span class="d-none d-sm-inline">다음</span>
+							<i class="bi bi-arrow-right"></i>
+						</a>
+					</li>
+				</c:if>
+			</ul>
+		</nav>
 	</div>
 
 	<!-- 검색 영역 -->
-	<div style="text-align: center;">
-		<input type="text" id="searchWord" value="${page.searchWord}" placeholder="제목 검색">
-		<button type="button" id="searchBtn">검색</button>
-	</div>
-	
-</main>
+	<section id="category-header" class="category-header section pt-0">
+		<div class="filter-container mb-4" data-aos="fade-up" data-aos-delay="100">
+			<div class="filter-item search-form">
+				<div class="row justify-content-center">
+					<div class="col-md-5 col-lg-4">
+						<div class="input-group w-50 mx-auto">
+							<input type="text" class="form-control" id="searchWord" value="${page.searchWord}" placeholder="제목 검색" aria-label="검색">
+							<button type="button" class="btn search-btn" id="searchBtn">
+								<i class="bi bi-search"></i>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
 
-<!-- 공통 풋터 -->
+	<!-- 공통 풋터 -->
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 	$(document).ready(function() {
-		// Q(title) 클릭 시 해당 A(content) 토글
-		$(".faq-question").click(function() {
-			$(this).next(".faq-answer").toggle();
-		});
-
 		// 검색 기능
 		function targetSearch() {
 			const searchWord = $('#searchWord').val();

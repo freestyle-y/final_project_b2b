@@ -8,99 +8,14 @@
 <%@ include file="/WEB-INF/common/head.jsp"%>
 <title>상품 목록 관리</title>
 <style>
-	body {
-		font-family: Arial, sans-serif;
-		padding: 20px;
-		background-color: #f9f9f9;
-	}
-
-	a {
-		text-decoration: none;
-		color: inherit;
-	}
-
-	.category-list {
-		display: flex;
-		gap: 15px;
-		margin-bottom: 30px;
-		flex-wrap: wrap;
-	}
-
-	.category-list > div {
-		background: none;
-		border: none;
-		padding: 0;
-		cursor: pointer;
-		font-weight: 600;
-		user-select: none;
-		transition: color 0.3s;
-		display: inline-block;
-		margin-right: 15px;
-		font-size: 1em;
-		border-radius: 0;
-		box-shadow: none;
-	}
-	
-	.category-list > div:hover {
-		color: #0056b3;
-		text-decoration: underline;
-	}
-
-	.product-list {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-		gap: 20px;
-	}
-
-	.product-card {
-		background-color: white;
-		border-radius: 8px;
-		padding: 15px;
-		box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-		transition: box-shadow 0.3s;
-	}
-	
-	.product-card:hover {
-		box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-	}
-
-	.product-name {
-		font-weight: bold;
-		margin-bottom: 10px;
-		font-size: 1.1em;
-		color: #000;
-	}
-	
-	.product-price {
-		color: #28a745;
-		margin-bottom: 5px;
-	}
-
-	.product-status {
-		font-size: 0.9em;
-		color: #555;
-		margin-bottom: 3px;
-	}
-
-	.product-useStatus {
-		font-size: 0.9em;
-		color: #555;
-		margin-top: 5px;
-	}
-
-	#search-input {
-	    padding: 10px;
-	    width: 300px;
-	    margin-bottom: 20px;
-	    border-radius: 6px;
-	    border: 1px solid #ccc;
-	}
-
 	.pagination {
 	    margin-top: 20px;
 	    text-align: center;
+	    display: block;
+	    width: 100%;
+	    margin-left: 10%;
 	}
-
+	
 	.pagination button {
 	    margin: 0 3px;
 	    padding: 6px 12px;
@@ -115,231 +30,193 @@
 	    color: #fff;
 	    border-color: #333;
 	}
-
-	/* 토글 스위치 스타일 */
-	.switch {
-	  position: relative;
-	  display: inline-block;
-	  width: 40px;
-	  height: 20px;
-	}
-
-	.switch input {
-	  opacity: 0;
-	  width: 0;
-	  height: 0;
-	}
-
-	.slider {
-	  position: absolute;
-	  cursor: pointer;
-	  background-color: #ccc;
-	  border-radius: 34px;
-	  top: 0; left: 0; right: 0; bottom: 0;
-	  transition: .4s;
-	}
-
-	.slider:before {
-	  position: absolute;
-	  content: "";
-	  height: 14px;
-	  width: 14px;
-	  left: 3px;
-	  bottom: 3px;
-	  background-color: white;
-	  border-radius: 50%;
-	  transition: .4s;
-	}
-
-	input:checked + .slider {
-	  background-color: #28a745;
-	}
-
-	input:checked + .slider:before {
-	  transform: translateX(20px);
-	}
-
-	/* 둥근 슬라이더 */
-	.slider.round {
-	  border-radius: 34px;
-	}
-	.slider.round:before {
-	  border-radius: 50%;
-	}
 </style>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(function () {
-	let allProducts = [];
-	const itemsPerPage = 5;
-	let currentPage = 1;
-	let filteredProducts = [];
+    let allProducts = [];
+    const itemsPerPage = 6;
+    let currentPage = 1;
+    let filteredProducts = [];
 
-	// 초기 상품 데이터 수집
-	$('#product-container .product-card').each(function() {
-	    allProducts.push({
-	        productName: $(this).data('name'),
-	        price: $(this).data('price'),
-	        productStatus: $(this).data('status'),
-	        useStatus: $(this).data('usestatus'),
-	        productNo: $(this).data('product-no'),
-	        imagePath: $(this).find('img').attr('src') || null
-	    });
-	});
+    // 초기 상품 데이터 수집 (기존에 #product-container .product-card가 있으면)
+    $('#product-container > div.col-6.col-xl-4').each(function() {
+        allProducts.push({
+            productName: $(this).data('name'),
+            price: parseInt($(this).data('price')),
+            productStatus: $(this).data('status'),
+            productNo: $(this).data('product-no'),
+            imagePath: $(this).find('img').attr('src') || null
+        });
+    });
 
-	filteredProducts = allProducts.slice();
+    filteredProducts = allProducts.slice();
 
-	function renderPage(page) {
+    // 상품 리스트 렌더링 함수
+    function renderPage(page) {
 	    const container = $('#product-container');
 	    container.empty();
+	
 	    const start = (page - 1) * itemsPerPage;
 	    const end = start + itemsPerPage;
 	    const pageItems = filteredProducts.slice(start, end);
-
+	
 	    pageItems.forEach(function(item) {
-
-	    	const imageHtml = item.imagePath
-            ? '<img src="' + item.imagePath + '" alt="' + item.productName + '" style="width: 100%; height: 100%; object-fit: cover;" />'
-            : '<span style="color: #ccc; font-size: 12px;">이미지 없음</span>';
-
+	        const soldOutClass = item.productStatus === "일시품절" ? "sold-out" : "";
+	        const formattedPrice = item.price.toLocaleString('ko-KR');
+	
+	        const imageHtml = item.imagePath
+	            ? '<img src="' + item.imagePath + '" alt="' + item.productName + '" class="main-image img-fluid" style="width: 100%; height: 150px; object-fit: cover;" />'
+	            : '<span style="color: #ccc; font-size: 12px; display:flex; align-items:center; justify-content:center; height:150px;">이미지 없음</span>';
+	
 	        const productCardHtml =
-	            '<div class="product-card" ' +
-					'data-name="' + item.productName + '" ' +
-					'data-price="' + item.price + '" ' +
-					'data-status="' + item.productStatus + '" ' +
-					'data-usestatus="' + item.useStatus + '" ' +
-					'data-product-no="' + item.productNo + '">' +
-					
-	                '<div class="product-image" style="width: 100%; height: 150px; display: flex; align-items: center; justify-content: center;">' +
-	                    imageHtml +
-	                '</div>' +
-   
-	                '<div class="product-name">' + item.productName + '</div>' +
-	                '<div class="product-price">' + item.price.toLocaleString('ko-KR') + ' 원</div>' +
-	                '<div class="product-status">상태: ' + item.productStatus + '</div>' +
-	                '<div class="product-useStatus">사용여부: ' +
-						'<label class="switch">' +
-							'<input type="checkbox" class="useStatus-toggle" data-product-no="' + item.productNo + '"' + (item.useStatus === 'Y' ? ' checked' : '') + '>' +
-							'<span class="slider round"></span>' +
-						'</label>' +
-					'</div>' +
+	            '<div class="col-6 col-xl-4">' +
+	                '<a href="/admin/productOne?productNo=' + item.productNo + '" style="text-decoration: none; color: inherit;">' +
+	                    '<div class="product-card ' + soldOutClass + '" data-aos="zoom-in" ' +
+	                        'data-name="' + item.productName + '" ' +
+	                        'data-price="' + item.price + '" ' +
+	                        'data-status="' + item.productStatus + '" ' +
+	                        'data-product-no="' + item.productNo + '">' +
+	
+	                        '<div class="product-image" style="position:relative; width: 100%; height: 150px; display: flex; align-items: center; justify-content: center;">' +
+	                            imageHtml +
+	                            '<div class="product-overlay">' +
+	                                '<div class="product-actions">' +
+	                                    '<button type="button" class="action-btn" data-bs-toggle="tooltip" title="Quick View">' +
+	                                        '<i class="bi bi-eye"></i>' +
+	                                    '</button>' +
+	                                    '<button type="button" class="action-btn" data-bs-toggle="tooltip" title="Add to Cart">' +
+	                                        '<i class="bi bi-cart-plus"></i>' +
+	                                    '</button>' +
+	                                '</div>' +
+	                            '</div>' +
+	                        '</div>' +
+	
+	                        '<div class="product-details">' +
+	                            '<div class="product-category"></div>' +
+	                            '<h4 class="product-title">' + item.productName + '</h4>' +
+	                            '<div class="product-meta">' +
+	                                '<div class="product-price">' + formattedPrice + ' 원</div>' +
+	                            '</div>' +
+	                            '<div class="product-status">' + item.productStatus + '</div>' +
+	                        '</div>' +
+	
+	                    '</div>' +
+	                '</a>' +
 	            '</div>';
-
-	        const productHtml = '<a href="/admin/productOne?productNo=' + item.productNo + '">' + productCardHtml + '</a>';
-
-	        container.append(productHtml);
+	
+	        container.append(productCardHtml);
 	    });
-
+	
 	    renderPagination();
 	}
 
-	function renderPagination() {
-	    const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-	    const pagination = $('#pagination');
-	    pagination.empty();
+    // 페이징 버튼 렌더링
+    function renderPagination() {
+        const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+        const pagination = $('#pagination');
+        pagination.empty();
 
-	    for(let i = 1; i <= totalPages; i++) {
-	        const btn = $('<button>').text(i);
-	        if(i === currentPage) btn.addClass('active');
-	        btn.on('click', function() {
-	            currentPage = i;
-	            renderPage(currentPage);
-	        });
-	        pagination.append(btn);
-	    }
-	}
+        for(let i = 1; i <= totalPages; i++) {
+            const btn = $('<button>').text(i);
+            if(i === currentPage) btn.addClass('active');
+            btn.on('click', function() {
+                currentPage = i;
+                renderPage(currentPage);
+            });
+            pagination.append(btn);
+        }
+    }
 
-	// 검색 필터링
-	$('#search-input').on('input', function() {
-	    const keyword = $(this).val().toLowerCase();
-	    filteredProducts = allProducts.filter(item => item.productName.toLowerCase().includes(keyword));
-	    currentPage = 1;
-	    renderPage(currentPage);
-	});
+    // 검색 필터
+    $('#productSearch').on('input', function() {
+        const keyword = $(this).val().toLowerCase();
+        filteredProducts = allProducts.filter(item => item.productName.toLowerCase().includes(keyword));
+        currentPage = 1;
+        renderPage(currentPage);
+    });
 
-	// 대분류 클릭
-	$('.major-category-list > div').click(function () {
-		const categoryId = $(this).data('id');
-		
-		$.ajax({
-			url: '/admin/product/byCategory?parentId=' + categoryId,
-			type: 'get',
-			success: function (data) {
-				let categoryHtml = '';
-				data.middleCategoryList.forEach(function (cat) {
-					categoryHtml += '<div data-id="' + cat.categoryId + '">' + cat.categoryName + '</div>';
-				});
-				$('.middle-category-list').html(categoryHtml);
-				
-				allProducts = data.productList.map(function(item){
-					return {
-						productName: item.productName,
-						price: item.price,
-						productStatus: item.productStatus,
-						useStatus: item.useStatus,
-						productNo: item.productNo,
-						imagePath: item.imagePath || null
-					};
-				});
-				filteredProducts = allProducts.slice();
-				currentPage = 1;
-				renderPage(currentPage);
-				
-				$('.middle-category-list > div').off('click').on('click', function() {
-					const middleCategoryId = $(this).data('id');
-					$.ajax({
-						url: '/admin/product/byCategory?middleId=' + middleCategoryId,
-						type: 'get',
-						success: function(data) {
-							allProducts = data.productList.map(function(item){
-								return {
-									productName: item.productName,
-									price: item.price,
-									productStatus: item.productStatus,
-									useStatus: item.useStatus,
-									productNo: item.productNo,
-									imagePath: item.imagePath || null
-								};
-							});
-							filteredProducts = allProducts.slice();
-							currentPage = 1;
-							renderPage(currentPage);
-						},
-						error: function () {
-							alert('상품을 불러오는 데 실패했습니다.');
-						}
-					});
-				});
-			},
-			error: function () {
-				alert('상품을 불러오는 데 실패했습니다.');
-			}
-		});
-	});
+    $('.category-tree').on('show.bs.collapse', '.subcategory-list', function () {
+        const collapseId = $(this).attr('id'); 
+        const match = collapseId.match(/categories-(\d+)-subcategories/);
+        if (!match) return;
 
-	// 사용여부 토글 AJAX
-	$(document).on('change', '.useStatus-toggle', function() {
-	    const productNo = $(this).data('product-no');
-	    const newStatus = $(this).is(':checked') ? 'Y' : 'N';
+        const categoryId = match[1];
+        const $subCategoryList = $(this);
 
-	    $.ajax({
-	        url: '/changeStatus',
-	        method: 'POST',
-	        contentType: 'application/json',
-	        data: JSON.stringify({ productNo: productNo, useStatus: newStatus }),
-	        success: function(response) {
-	            alert('사용여부가 성공적으로 변경되었습니다.');
-	        },
-	        error: function() {
-	            alert('사용여부 변경에 실패했습니다.');
-	            // 실패시 체크박스 상태 되돌리기
-	            $(this).prop('checked', !$(this).is(':checked'));
-	        }.bind(this)
-	    });
-	});
+        // 중분류 리스트가 비어있으면 AJAX 호출해서 채우기
+        if ($subCategoryList.children().length === 0) {
+            $.ajax({
+                url: '/admin/product/byCategory?parentId=' + categoryId,
+                type: 'GET',
+                success: function(data) {
+                    let subCategoryHtml = '';
+                    data.middleCategoryList.forEach(function(cat) {
+                        subCategoryHtml += '<li><a href="javascript:void(0)" class="subcategory-link" data-id="' + cat.categoryId + '">' + cat.categoryName + '</a></li>';
+                    });
+                    $subCategoryList.html(subCategoryHtml);
+                },
+                error: function() {
+                    alert('중분류를 불러오는 데 실패했습니다.');
+                }
+            });
+        }
 
-	renderPage(currentPage);
+        // 상품 리스트는 항상 갱신 (중복 호출 X)
+        $.ajax({
+            url: '/admin/product/byCategory?parentId=' + categoryId,
+            type: 'GET',
+            success: function(data) {
+                allProducts = data.productList.map(function(item){
+                    return {
+                        productName: item.productName,
+                        price: parseInt(item.price),
+                        productStatus: item.productStatus,
+                        productNo: item.productNo,
+                        imagePath: item.imagePath || null
+                    };
+                });
+                filteredProducts = allProducts.slice();
+                currentPage = 1;
+                renderPage(currentPage);
+            },
+            error: function() {
+                alert('상품을 불러오는 데 실패했습니다.');
+            }
+        });
+    });
+
+
+    // 중분류 클릭 시 상품 리스트 AJAX 호출
+    $('.category-tree').on('click', '.subcategory-link', function() {
+        const middleCategoryId = $(this).data('id');
+
+        $.ajax({
+            url: '/admin/product/byCategory?middleId=' + middleCategoryId,
+            type: 'GET',
+            success: function(data) {
+                allProducts = data.productList.map(function(item){
+                    return {
+                        productName: item.productName,
+                        price: parseInt(item.price),
+                        productStatus: item.productStatus,
+                        productNo: item.productNo,
+                        imagePath: item.imagePath || null
+                    };
+                });
+                filteredProducts = allProducts.slice();
+                currentPage = 1;
+                renderPage(currentPage);
+            },
+            error: function() {
+                alert('상품을 불러오는 데 실패했습니다.');
+            }
+        });
+    });
+
+    // 초기 상품 렌더링
+    renderPage(currentPage);
 });
 </script>
 </head>
@@ -348,58 +225,168 @@ $(function () {
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
 
-	<input type="text" id="search-input" placeholder="상품명 검색..." />
+<main class="main">
 
-	<!-- 대분류 -->
-	<div class="category-list major-category-list">
-		<c:forEach var="item" items="${majorCategoryList}">
-			<div data-id="${item.categoryId}">${item.categoryName}</div>
-		</c:forEach>
-	</div>
+    <!-- Page Title -->
+    <div class="page-title light-background">
+      <div class="container d-lg-flex justify-content-between align-items-center">
+        <h1 class="mb-2 mb-lg-0">Category</h1>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="/biz/mainPage">Home</a></li>
+            <li class="current">Category</li>
+          </ol>
+        </nav>
+      </div>
+    </div><!-- End Page Title -->
 
-	<!-- 중분류 -->
-	<div class="category-list middle-category-list"></div>
+    <div class="container">
+      <div class="row">
 
-	<!-- 상품 리스트 -->
-	<div id="product-container" class="product-list">
-		<c:forEach var="item" items="${productList}">
-			<a href="/admin/productOne?productNo=${item.productNo}">
-				<div class="product-card"
-				     data-name="${item.productName}"
-				     data-price="${item.price}"
-				     data-status="${item.productStatus}"
-				     data-usestatus="${item.useStatus}"
-				     data-product-no="${item.productNo}">
-				     
-				     <!-- ✅ 썸네일 이미지 영역 -->
-					<div class="product-image" style="width: 100%; height: 150px; display: flex; align-items: center; justify-content: center;">
-						<c:choose>
-							<c:when test="${not empty item.imagePath}">
-								<img src="${pageContext.request.contextPath}${item.imagePath}"
-								     alt="${item.productName}"
-								     style="width: 100%; height: 100%; object-fit: cover;" />
-							</c:when>
-							<c:otherwise>
-								<span style="color: #ccc; font-size: 12px;">이미지 없음</span>
-							</c:otherwise>
-						</c:choose>
-					</div>
-					<div class="product-name">${item.productName}</div>
-					'<div class="product-price">' + item.price.toLocaleString('ko-KR') + ' 원</div>'
-					<div class="product-status">상태: ${item.productStatus}</div>
-					<div class="product-useStatus">
-						사용여부: 
-						<label class="switch">
-							<input type="checkbox" class="useStatus-toggle" data-product-no="${item.productNo}" <c:if test="${item.useStatus == 'Y'}">checked</c:if> >
-							<span class="slider round"></span>
-						</label>
-					</div>
-				</div>
-			</a>
-		</c:forEach>
-	</div>
+        <div class="col-lg-4 sidebar">
 
+          <div class="widgets-container">
+
+            <!-- Product Categories Widget -->
+            <div class="product-categories-widget widget-item">
+
+              <h3 class="widget-title">Categories</h3>
+
+              <ul class="category-tree list-unstyled mb-0">
+
+                <c:forEach var="major" items="${majorCategoryList}">
+				    <li class="category-item">
+				      <div class="d-flex justify-content-between align-items-center category-header collapsed"
+				           data-bs-toggle="collapse"
+				           data-bs-target="#categories-${major.categoryId}-subcategories"
+				           aria-expanded="false"
+				           aria-controls="categories-${major.categoryId}-subcategories"
+				           data-id="${major.categoryId}">
+				        <a href="javascript:void(0)" class="category-link">${major.categoryName}</a>
+				        <span class="category-toggle">
+				          <i class="bi bi-chevron-down"></i>
+				          <i class="bi bi-chevron-up"></i>
+				        </span>
+				      </div>
+				      <ul id="categories-${major.categoryId}-subcategories" class="subcategory-list list-unstyled collapse ps-3 mt-2">
+				        <!-- 중분류 AJAX로 채워질 곳 -->
+				      </ul>
+				    </li>
+				  </c:forEach>
+              </ul>
+
+            </div><!--/Product Categories Widget -->
+          </div>
+        </div>
+
+        <div class="col-lg-8">
+
+          <!-- Category Header Section -->
+          <section id="category-header" class="category-header section">
+
+            <div class="container" data-aos="fade-up">
+
+              <!-- Filter and Sort Options -->
+              <div class="filter-container mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="row g-3">
+                  <div class="col-12 col-md-6 col-lg-4">
+                    <div class="filter-item search-form">
+                      <label for="productSearch" class="form-label mb-2">Search Products</label>
+                       <input type="text" class="form-control" id="productSearch" placeholder="Search for products..." aria-label="Search for products">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row mt-3">
+                  <div class="col-12" data-aos="fade-up" data-aos-delay="200">
+                    <div class="active-filters">
+                      <span class="active-filter-label">Active Filters:</span>
+                      <div class="filter-tags">
+                        <button class="clear-all-btn">Clear All</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+          </section><!-- /Category Header Section -->
+
+          <!-- Category Product List Section -->
+          <section id="category-product-list" class="category-product-list section">
+
+            <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+              <div class="row g-4">
+                <!-- Product -->
+                <div id="product-container" class="row g-4">
+				    <c:forEach var="item" items="${productList}">
+					    <div class="col-6 col-xl-4"
+					         data-name="${item.productName}"
+					         data-price="${item.price}"
+					         data-status="${item.productStatus}"
+					         data-product-no="${item.productNo}"
+					         data-image="${pageContext.request.contextPath}${item.imagePath}">
+					         
+					        <a href="/biz/productOne?productNo=${item.productNo}" style="text-decoration: none; color: inherit;">
+					            <div class="product-card ${item.productStatus == '일시품절' ? 'sold-out' : ''}" data-aos="zoom-in">
+					
+					                <div class="product-image" style="position: relative; width: 100%; height: 150px; display: flex; align-items: center; justify-content: center;">
+					                    <c:choose>
+					                        <c:when test="${not empty item.imagePath}">
+					                            <img src="${pageContext.request.contextPath}${item.imagePath}" class="main-image img-fluid" alt="${item.productName}" style="width: 100%; height: 100%; object-fit: cover;" />
+					                        </c:when>
+					                        <c:otherwise>
+					                            <span style="color: #ccc; font-size: 12px;">이미지 없음</span>
+					                        </c:otherwise>
+					                    </c:choose>
+					
+					                    <div class="product-overlay">
+					                        <div class="product-actions">
+					                            <button type="button" class="action-btn" data-bs-toggle="tooltip" title="Quick View">
+					                                <i class="bi bi-eye"></i>
+					                            </button>
+					                            <button type="button" class="action-btn" data-bs-toggle="tooltip" title="Add to Cart">
+					                                <i class="bi bi-cart-plus"></i>
+					                            </button>
+					                        </div>
+					                    </div>
+					                </div>
+					                
+					                <div class="product-details">
+					                    <div class="product-category">${item.categoryName != null ? item.categoryName : ''}</div>
+					                    <h4 class="product-title">
+					                        <a href="/biz/productOne?productNo=${item.productNo}" style="color: inherit; text-decoration: none;">
+					                            ${item.productName}
+					                        </a>
+					                    </h4>
+					                    <div class="product-meta">
+					                        <div class="product-price">${item.price} 원</div>
+					                    </div>
+					                    <div class="product-status">${item.productStatus}</div>
+					                </div>
+					
+					            </div>
+					        </a>
+					    </div>
+					</c:forEach>
+				</div>               
+              </div>
+            </div>
+
+          </section><!-- /Category Product List Section -->
+        </div>
+      </div>
+    </div>
+
+
+	<!-- Scroll Top -->
+  	<a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+	
 	<div class="pagination" id="pagination"></div>
+</main>
 
 <!-- 공통 풋터 -->
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>
