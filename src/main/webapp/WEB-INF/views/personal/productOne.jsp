@@ -17,24 +17,6 @@
 	  color: red;
 	}
 
-    /* 옵션 및 수량 영역 */
-    #optionSelect {
-        padding: 8px;
-        font-size: 16px;
-        margin-bottom: 10px;
-    }
-
-    #quantity {
-        width: 50px;
-        text-align: center;
-        font-size: 16px;
-    }
-
-    #price, #stock {
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
-
     /* 정렬 드롭다운 */
     #sort-select {
         margin-bottom: 20px;

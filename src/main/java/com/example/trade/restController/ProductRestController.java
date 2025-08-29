@@ -133,7 +133,7 @@ public class ProductRestController {
 		if (parentId != null) {
 	        // 대분류 ID가 있으면, 중분류 리스트 조회
 	        List<Category> middleCategoryList = productService.selectMiddleCategory(parentId);
-	        //log.info(middleCategoryList.toString());
+	        log.info(middleCategoryList.toString());
 	        
 	        // 대분류에 속한 상품 리스트 조회
 	        List<Map<String, Object>> productList = productService.selectProductListByCategory(parentId, null);

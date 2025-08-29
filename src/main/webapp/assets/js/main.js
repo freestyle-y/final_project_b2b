@@ -203,12 +203,6 @@
       });
     });
 
-    // Remove item buttons
-    removeButtons.forEach(btn => {
-      btn.addEventListener('click', function() {
-        btn.closest('.cart-item').remove();
-      });
-    });
   }
 
   ecommerceCartTools();
