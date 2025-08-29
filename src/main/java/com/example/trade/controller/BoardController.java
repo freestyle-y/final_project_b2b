@@ -35,7 +35,7 @@ public class BoardController {
 	// 자주 묻는 질문(FAQ)
 	@GetMapping("/public/FAQList")
 	public String FAQList(Model model
-						,@RequestParam(defaultValue = "10") int rowPerPage
+						,@RequestParam(defaultValue = "5") int rowPerPage
 						,@RequestParam(defaultValue = "1") int currentPage
 						,@RequestParam(defaultValue = "") String searchWord
 						,@RequestParam(defaultValue = "all") String searchType) {

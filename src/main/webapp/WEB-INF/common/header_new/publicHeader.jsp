@@ -112,7 +112,14 @@
 					</li>
 					<li><a href="/personal/deliveryList">회원가입</a></li>
 					<li><a href="/personal/deliveryList">주문배송조회</a></li>
-					<li><a href="/public/helpDesk">고객센터</a></li>
+					<li class="dropdown"><a href="#"><span>고객센터</span><i class="bi bi-chevron-down toggle-dropdown"></i></a>
+						<ul>
+							<li><a href="/public/FAQList">자주 묻는 질문</a></li>
+							<li><a href="/member/QNAList">문의 내역</a></li>
+							<li><a href="/member/QNAWrite">1:1 문의</a></li>
+							<li><a href="/public/noticeList">공지사항</a></li>
+						</ul>
+					</li>
 					<li><a href="/public/login">로그인</a></li>
 				</ul>
 			</nav>
