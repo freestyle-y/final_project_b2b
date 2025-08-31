@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.trade.dto.Address;
+import com.example.trade.dto.Attachment;
 import com.example.trade.dto.KakaoPayApprovalResponse;
 import com.example.trade.dto.KakaoPayReadyResponse;
 import com.example.trade.dto.Order;

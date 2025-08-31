@@ -8,7 +8,7 @@
   <%@ include file="/WEB-INF/common/head.jsp"%>
   <title>결제 페이지</title>
 
-  <!-- ▼ 템플릿 CSS (중복 로드 시 제거) -->
+  <!-- ▼ 템플릿 CSS -->
   <link href="${pageContext.request.contextPath}/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="${pageContext.request.contextPath}/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
   <link href="${pageContext.request.contextPath}/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
@@ -281,27 +281,26 @@
                 <c:forEach var="order" items="${orderList}">
                   <div class="order-item d-flex gap-3">
                     <div class="order-item-image" style="width:64px;height:64px;flex:0 0 64px;">
-                      <!-- 제품 이미지: 절대/상대 모두 안전 처리 -->
-                      <c:set var="imgPath" value="${order.imagePath}" />
-                      <c:choose>
-                        <c:when test="${not empty imgPath and (fn:startsWith(imgPath,'http://') or fn:startsWith(imgPath,'https://'))}">
-                          <img src="${imgPath}" alt="${order.productName}" class="img-fluid rounded"
-                               style="width:64px;height:64px;object-fit:cover;" />
-                        </c:when>
-                        <c:when test="${not empty imgPath}">
-                          <c:if test="${not fn:startsWith(imgPath,'/')}">
-                            <c:set var="imgPath" value="/${imgPath}" />
-                          </c:if>
-                          <img src="${pageContext.request.contextPath}${imgPath}" alt="${order.productName}" class="img-fluid rounded"
-                               style="width:64px;height:64px;object-fit:cover;" />
-                        </c:when>
-                        <c:otherwise>
-                          <img src="${pageContext.request.contextPath}/assets/img/product/product-1.webp"
-                               alt="No image" class="img-fluid rounded"
-                               style="width:64px;height:64px;object-fit:cover;" />
-                        </c:otherwise>
-                      </c:choose>
-                    </div>
+					  <c:set var="imgPath" value="${order.imagePath}" />
+					  <c:if test="${not empty imgPath}">
+					    <c:set var="imgPath" value="${fn:replace(imgPath, ' ', '%20')}" />
+					  </c:if>
+					  <c:choose>
+					    <c:when test="${not empty imgPath and (fn:startsWith(imgPath,'http://') or fn:startsWith(imgPath,'https://'))}">
+					      <img src="${imgPath}" alt="${order.productName}" class="img-fluid rounded"
+					           style="width:64px;height:64px;object-fit:cover;" />
+					    </c:when>
+					    <c:when test="${not empty imgPath}">
+					      <img src="${pageContext.request.contextPath}${imgPath}" alt="${order.productName}" class="img-fluid rounded"
+					           style="width:64px;height:64px;object-fit:cover;" />
+					    </c:when>
+					    <c:otherwise>
+					      <img src="${pageContext.request.contextPath}/assets/img/product/product-1.webp"
+					           alt="No image" class="img-fluid rounded"
+					           style="width:64px;height:64px;object-fit:cover;" />
+					    </c:otherwise>
+					  </c:choose>
+					</div>
                     <div class="order-item-details flex-grow-1">
                       <h4 class="h6 mb-1">${order.productName}</h4>
                       <p class="order-item-variant text-muted small mb-1">
@@ -355,10 +354,10 @@
 <!-- jQuery (기존 코드 의존) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<!-- ▼ 템플릿 JS (중복 로드 시 제거) -->
+<!-- ▼ 템플릿 JS -->
 <script src="${pageContext.request.contextPath}/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="${pageContext.request.contextPath}/assets/vendor/php-email-form/validate.js"></script>
-script src="${pageContext.request.contextPath}/assets/vendor/swiper/swiper-bundle.min.js"></script>
+<script src="${pageContext.request.contextPath}/assets/vendor/swiper/swiper-bundle.min.js"></script>
 <script src="${pageContext.request.contextPath}/assets/vendor/aos/aos.js"></script>
 <script src="${pageContext.request.contextPath}/assets/vendor/glightbox/js/glightbox.min.js"></script>
 <script src="${pageContext.request.contextPath}/assets/vendor/drift-zoom/Drift.min.js"></script>

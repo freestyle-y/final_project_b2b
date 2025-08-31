@@ -1,10 +1,14 @@
 package com.example.trade.service;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.trade.dto.Attachment;
 import com.example.trade.dto.Order;
 import com.example.trade.mapper.OrderMapper;
 import com.example.trade.mapper.ProductMapper;
@@ -83,5 +87,7 @@ public class OrderService {
 	public int updateOrderStatus(String orderNo, String subOrderNo) {
 		return orderMapper.updateOrderStatus(orderNo, subOrderNo);
 	}
+
+
 
 }
