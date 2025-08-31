@@ -23,14 +23,12 @@
     border:1px solid var(--tbl-border); border-radius:10px; overflow:hidden; background:#fff; font-size:.92rem;
   }
 
-  /* 실제 헤더 */
   #quotationTable thead tr:nth-child(2) th{
     background:var(--tbl-head) !important; font-weight:700; color:#111827;
     border-bottom:1px solid var(--tbl-border) !important; vertical-align:middle;
     padding:.55rem .75rem; white-space:nowrap; text-align:center;
   }
 
-  /* 멀티헤더(1행: 그룹행) — 항상 가운데 정렬 */
   #quotationTable thead tr.dt-group-header th,
   #quotationTable_wrapper .dataTables_scrollHead thead tr.dt-group-header th{
     box-sizing:border-box; min-width:0;
@@ -39,10 +37,9 @@
     text-align:center !important;
     vertical-align:middle !important;
     display:table-cell !important;
-    pointer-events:none; /* 그룹행 클릭/정렬 비활성 */
+    pointer-events:none;
   }
 
-  /* 본문 */
   #quotationTable tbody td{
     border-top:1px solid var(--tbl-border); color:#111827; vertical-align:middle;
     height:40px; padding:.45rem .75rem; text-align:center;
@@ -51,30 +48,24 @@
   #quotationTable tbody tr:nth-child(even){ background:var(--tbl-zebra); }
   #quotationTable tbody tr:hover{ background:var(--tbl-hover); }
 
-  /* 숫자/날짜는 한 줄 고정 */
   #quotationTable td.nowrap-cell{
     white-space:nowrap !important; word-break:normal !important; overflow-wrap:normal !important;
     text-overflow:clip; overflow:hidden;
   }
 
-  /* 스크롤바 */
   div.dataTables_scrollBody{ scrollbar-width:thin; }
   div.dataTables_scrollBody::-webkit-scrollbar{ height:10px; width:10px; }
   div.dataTables_scrollBody::-webkit-scrollbar-thumb{ background:#D1D5DB; border-radius:6px; }
   div.dataTables_scrollBody::-webkit-scrollbar-track{ background:#F3F4F6; }
 
-  /* 빈 셀 강조 */
   td.cell-empty{ background:var(--tbl-empty) !important; }
 
-  /* 폭 계산 안정화 */
   #quotationTable,
   #quotationTable_wrapper .dataTables_scrollHead table,
   #quotationTable_wrapper .dataTables_scrollBody table{ table-layout:fixed; }
 
   a{ color:#4c59ff; text-decoration:none; }
 
-  /* 열별 최소/고정 폭 */
-  /* 1상품요청번호 2견적번호 3price 4요청한 회원 5status 6createUser 7createDate */
   #quotationTable th:nth-child(1), #quotationTable td:nth-child(1){
     width:10ch !important; min-width:10ch !important; max-width:10ch !important;
     white-space:nowrap !important; padding-left:.5rem; padding-right:.5rem;
@@ -84,15 +75,12 @@
     white-space:nowrap !important; padding-left:.5rem; padding-right:.5rem;
   }
 
-  /* price 열은 넓게 */
   #quotationTable th:nth-child(3), #quotationTable td:nth-child(3){
     min-width:300px; text-align:left !important;
   }
 
-  /* 날짜 최소 폭 */
   #quotationTable th:nth-child(7), #quotationTable td:nth-child(7){ min-width:130px; }
 
-  /* 버튼 스타일 */
   .btn-quotation-write {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border: none;
@@ -109,7 +97,6 @@
     color: white;
   }
 
-  /* 상태 배지 스타일 */
   .status-badge {
     padding: 6px 12px;
     border-radius: 20px;
@@ -134,16 +121,14 @@
 
     <table id="quotationTable" class="table table-striped table-hover table-bordered align-middle w-100">
       <thead class="table-light">
-        <!-- 멀티 헤더(그룹행) -->
         <tr class="dt-group-header">
-          <th></th>          <!-- 상품요청번호 -->
-          <th></th>          <!-- 견적번호 -->
+          <th></th>
+          <th></th>
           <th colspan="2" class="text-center">상품 정보</th>
-          <th></th>          <!-- status -->
-          <th></th>          <!-- createUser -->
-          <th></th>          <!-- createDate -->
+          <th></th>
+          <th></th>
+          <th></th>
         </tr>
-        <!-- 실제 헤더 -->
         <tr>
           <th>번호</th>
           <th>견적</th>
@@ -208,26 +193,9 @@
     </table>
 
     <div class="d-flex justify-content-center mt-4">
-      <c:choose>
-        <c:when test="${empty quotationList}">
-          <button type="button" class="btn btn-quotation-write" onclick="openWriteQuotationPopup()">
-            <i class="fas fa-plus me-2"></i>견적서 작성
-          </button>
-        </c:when>
-        <c:when test="${not empty param.productRequestNo}">
-          <c:set var="hasReject" value="false" />
-          <c:forEach var="q" items="${quotationList}">
-            <c:if test="${q.status eq '승인거절'}">
-              <c:set var="hasReject" value="true" />
-            </c:if>
-          </c:forEach>
-          <c:if test="${hasReject}">
-            <button type="button" class="btn btn-quotation-write" onclick="openWriteQuotationPopup()">
-              <i class="fas fa-plus me-2"></i>견적서 작성
-            </button>
-          </c:if>
-        </c:when>
-      </c:choose>
+      <button type="button" class="btn btn-quotation-write" onclick="openWriteQuotationPage()">
+        <i class="fas fa-plus me-2"></i>견적서 작성
+      </button>
     </div>
   </div>
 </div>
@@ -237,12 +205,12 @@
   const quotationNo = "${param.quotationNo != null ? param.quotationNo : 0}";
   const subProductRequestNo = "${param.subProductRequestNo != null ? param.subProductRequestNo : 0}";
 
-  function openWriteQuotationPopup() {
+  function openWriteQuotationPage() {
     const url = "${pageContext.request.contextPath}/admin/writeQuotationForm"
               + "?productRequestNo=" + productRequestNo
               + "&quotationNo=" + quotationNo
               + "&subProductRequestNo=" + subProductRequestNo;
-    window.open(url, "writeQuotationPopup", "width=800,height=600,scrollbars=yes");
+    location.href = url;
   }
 </script>
 
@@ -254,7 +222,6 @@
 <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
-  /* 빈 셀 강조 */
   function highlightEmptyCells(dtApi){
     const rows = dtApi.rows({ page:'current' }).nodes();
     $(rows).each(function(){
@@ -270,11 +237,10 @@
     });
   }
 
-  /* 멀티헤더 폭 동기화 (colspan 합산) */
   function syncAnyGroupHeaderWidths(){
     const $head = $('#quotationTable_wrapper .dataTables_scrollHead thead');
-    const $row2 = $head.find('tr').eq(1);           // 실제 헤더
-    const $row1 = $head.find('tr.dt-group-header'); // 그룹행
+    const $row2 = $head.find('tr').eq(1);
+    const $row1 = $head.find('tr.dt-group-header');
     if ($row1.length === 0 || $row2.length === 0) return;
 
     const widths = $row2.children('th').map(function(){ return Math.round($(this).outerWidth()); }).get();
@@ -291,6 +257,7 @@
 
   $(function(){
     const table = $('#quotationTable').DataTable({
+      stateSave: true,   // ✅ 검색조건, 페이징, 정렬 상태 저장
       ordering: true,
       searching: true,
       paging: true,
@@ -302,13 +269,13 @@
       scrollY: '55vh',
       scrollCollapse: true,
       columnDefs: [
-        { targets: 0, width: '120px', className: 'text-center' },    // 상품요청번호
-        { targets: 1, width: '100px', className: 'text-center' },    // 견적번호
-        { targets: 2, width: '35%', className: 'text-left' },        // 상품 및 가격
-        { targets: 3, width: '20%', className: 'text-center' },      // 요청한 회원
-        { targets: 4, width: '100px', className: 'text-center' },    // 상태
-        { targets: 5, width: '100px', className: 'text-center' },    // 작성자
-        { targets: 6, width: '130px', className: 'text-center' }     // 작성일자
+        { targets: 0, width: '120px', className: 'text-center' },
+        { targets: 1, width: '100px', className: 'text-center' },
+        { targets: 2, width: '35%', className: 'text-left' },
+        { targets: 3, width: '20%', className: 'text-center' },
+        { targets: 4, width: '100px', className: 'text-center' },
+        { targets: 5, width: '100px', className: 'text-center' },
+        { targets: 6, width: '130px', className: 'text-center' }
       ],
       order: [[0, 'desc']],
       dom: '<"row mb-2"<"col-12 col-md-6"l><"col-12 col-md-6"f>>t<"row mt-2"<"col-12 col-md-5"i><"col-12 col-md-7"p>>',

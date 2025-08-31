@@ -65,4 +65,7 @@ public class Order {
 	private String name;
 	private String phone;
 	private String postal;
+	
+	// 사진 띄우기 용
+	private String imagePath;
 }
