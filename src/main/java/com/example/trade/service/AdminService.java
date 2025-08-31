@@ -1,5 +1,6 @@
 package com.example.trade.service;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -22,8 +23,8 @@ public class AdminService {
 	}
 	
 	// 자주 묻는 질문(FAQ) 목록
-	public List<Map<String, Object>> getFAQList(Page page) {
-		return adminMapper.selectFAQList(page);
+	public List<Map<String, Object>> getFAQList() {
+		return adminMapper.selectFAQList();
 	}
 	
 	// 자주 묻는 질문(FAQ) 전체 행 수 조회
@@ -38,6 +39,7 @@ public class AdminService {
 	
 	// 자주 묻는 질문(FAQ) 등록
 	public int insertBoard(Board board) {
+		board.setBoardCode("BC001"); // 공통 코드 FAQ로 세팅
 		return adminMapper.insertBoard(board);
 	}
 	
@@ -52,8 +54,8 @@ public class AdminService {
 	}
 	
 	// QNA 목록 조회
-	public List<Map<String, Object>> getQNAList(Page page) {
-		return adminMapper.selectQNAListById(page);
+	public List<Map<String, Object>> getQNAList() {
+		return adminMapper.selectQNAListById();
 	}
 	
 	// QNA 목록 전체 행 수 조회
@@ -87,8 +89,8 @@ public class AdminService {
 	}
 
 	// 공지사항 목록 조회
-	public List<Map<String, Object>> getNoticeList(Page page) {
-		return adminMapper.selectNoticeList(page);
+	public List<Map<String, Object>> getNoticeList() {
+		return adminMapper.selectNoticeList();
 	}
 	
 	// 공지사항 전체 행 수 조회
@@ -99,6 +101,14 @@ public class AdminService {
 	// 공지사항 상세 조회
 	public Board getNoticeOne(Board board) {
 		return adminMapper.selectNoticeOne(board);
+	}
+	
+	// 공지사항 등록
+	public int insertNotice(Board board, Principal principal) {
+		String username = principal.getName(); // 로그인한 관리자
+		board.setCreateUser(username);
+		board.setBoardCode("BC003"); // 공통 코드 공지사항으로 세팅
+		return adminMapper.insertNotice(board);
 	}
 	
 	// 공지사항 수정

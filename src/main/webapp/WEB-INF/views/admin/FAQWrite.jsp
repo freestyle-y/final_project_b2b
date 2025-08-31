@@ -5,69 +5,94 @@
 <meta charset="UTF-8">
 <%@ include file="/WEB-INF/common/head.jsp"%>
 <title>자주 묻는 질문 등록</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        text-align: left;
-    }
-    form {
-        width: 400px;
-        margin: 30px auto;
-        text-align: left;
-        padding: 20px;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        background-color: #f9f9f9;
-    }
-    label {
-        font-weight: bold;
-    }
-    input[type="text"], textarea {
-        width: 100%;
-        padding: 6px;
-        margin: 8px 0 15px 0;
-        box-sizing: border-box;
-    }
-    button {
-        width: 100%;
-        padding: 10px;
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-    button:hover {
-        background-color: #45a049;
-    }
-</style>
+<!-- Froala CSS -->
+<link href="https://cdn.jsdelivr.net/npm/froala-editor@4.0.15/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
 
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
-	
-    <h1>자주 묻는 질문 등록</h1>
-    
-   	<a href="/admin/FAQList">자주 묻는 질문</a> /
-	<a href="/admin/QNAList">문의 내역</a> /
-	<a href="/admin/noticeList">공지사항</a>
 
-    <!-- FAQ 등록 폼 -->
-    <form action="/admin/FAQWrite" method="post">
-        <label for="boardTitle">제목</label>
-        <input type="text" id="boardTitle" name="boardTitle" required>
+	<!-- Page Title -->
+	<div class="page-title light-background">
+		<div class="container d-lg-flex justify-content-between align-items-center">
+			<h1 class="mb-2 mb-lg-0">FAQ</h1>
+			<nav class="breadcrumbs">
+				<ol>
+					<li><%@include file="/WEB-INF/common/home.jsp"%></li>
+					<li class="current">FAQ</li>
+				</ol>
+			</nav>
+		</div>
+	</div>
+	<!-- End Page Title -->
 
-        <label for="boardContent">내용</label>
-        <textarea id="boardContent" name="boardContent" rows="6" required></textarea>
+	<!-- Contact 2 Section -->
+	<section id="contact-2" class="contact-2 section">
 
-        <!-- hidden 값 : 구분 코드(BC001) -->
-        <input type="hidden" name="boardCode" value="BC001">
-        <button type="submit">등록하기</button>
-    </form>
+		<!-- Contact Form Section -->
+		<div class="container">
+			<div class="row justify-content-center" data-aos="fade-up" data-aos-delay="300">
+				<div class="col-lg-10">
+					<div class="contact-form-wrapper">
+						<h2 class="text-center mb-4">FAQ 등록</h2>
+						
+						<!-- 공지사항 등록 폼 -->
+						<form action="/admin/FAQWrite" method="post">
+							<div class="row g-3">
+								<!-- 제목 -->
+								<div class="col-md-12">
+									<div class="form-group">
+										<div class="input-with-icon">
+											<i class="bi bi-text-left"></i>
+											<input type="text" class="form-control" name="boardTitle" placeholder="제목" required>
+										</div>
+									</div>
+								</div>
+								<!-- 내용 -->
+								<div class="col-12">
+									<div class="form-group">
+										<div class="input-with-icon">
+											<textarea id="boardContent" name="boardContent"></textarea>
+										</div>
+									</div>
+								</div>
+								<!-- 버튼 -->
+								<div class="col-12 text-center">
+									<button type="submit" class="btn btn-primary btn-submit">등록</button>
+								</div>
+							</div>
+						</form>
+						
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</section>
+	<!-- /Contact 2 Section -->
 
 <!-- 공통 풋터 -->
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>
+
+<!-- Froala JS -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/froala-editor@4.0.15/js/froala_editor.pkgd.min.js"></script>
+<!-- Froala Language Pack (Korean) -->
+<script src="https://cdn.jsdelivr.net/npm/froala-editor@4.0.15/js/languages/ko.js"></script>
+<script>
+	new FroalaEditor('#boardContent', {
+		height : 500,
+		language : 'ko',
+		placeholderText : 'FAQ 내용을 입력하세요.',
+		toolbarSticky : true, // 툴바 고정
+		quickInsertEnabled : true, // 빠른 삽입 기능
+		imageUpload : false,
+
+		// Enter → <br> / Shift + Enter → <p>
+		enter: FroalaEditor.ENTER_BR,
+		shiftEnter: FroalaEditor.ENTER_P
+	});
+</script>
    
 </body>
 </html>

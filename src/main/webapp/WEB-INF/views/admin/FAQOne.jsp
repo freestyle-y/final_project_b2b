@@ -5,107 +5,53 @@
 <meta charset="UTF-8">
 <%@ include file="/WEB-INF/common/head.jsp"%>
 <title>자주 묻는 질문 상세</title>
-<style>
-    table {
-        width: 30%;
-        border-collapse: collapse;
-        text-align: left;
-        margin: auto;
-    }
-    th, td {
-        border: 1px solid #ccc;
-        padding: 8px;
-    }
-    .pagination {
-        margin: 20px auto;
-        text-align: center;
-    }
-    .pagination a {
-        display: inline-block;
-        margin: 0 5px;
-        padding: 5px 10px;
-        border: 1px solid #ccc;
-        text-decoration: none;
-        color: #333;
-    }
-    .pagination a.active {
-        background: #333;
-        color: #fff;
-        font-weight: bold;
-    }
-    .delete-btn {
-        border: none;
-        background: none;
-        padding: 0;
-        margin: 0;
-        color: blue;
-        text-decoration: underline;
-        cursor: pointer;
-        font-size: 1em;
-    }
-    .delete-btn:hover {
-        color: darkred;
-    }
-</style>
 </head>
 <body>
 
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
+
+<!-- Page Title -->
+<div class="page-title light-background">
+	<div class="container d-lg-flex justify-content-between align-items-center">
+		<h1 class="mb-2 mb-lg-0">자주 묻는 질문 상세</h1>
+		<nav class="breadcrumbs">
+			<ol>
+				<li><%@include file="/WEB-INF/common/home.jsp"%></li>
+				<li class="current">FAQ</li>
+			</ol>
+		</nav>
+	</div>
+</div>
+<!-- End Page Title -->	
+
+
+<div class="container my-4">
+	<div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+		<!-- 제목 -->
+		<h3 class="mb-0">${FAQOne.boardTitle}</h3>
+		<ul class="list-inline mb-0 text-muted small">
+			<!-- 작성일시 -->
+			<li class="list-inline-item">${FAQOne.createDate}</li>
+		</ul>
+	</div>
 	
-	<h1>자주 묻는 질문 상세</h1>
+	<!-- 본문 -->
+	<div class="border-bottom pb-2 mb-3">
+		<p>${FAQOne.boardContent}</p>
+	</div>
 	
-   	<a href="/admin/FAQList">자주 묻는 질문</a> /
-	<a href="/admin/QNAList">문의 내역</a> /
-	<a href="/admin/noticeList">공지사항</a>
+	<div class="text-start">
+		<a href="/admin/FAQList" class="btn btn-primary">목록</a>
+		<a href="/admin/FAQUpdate?boardNo=${FAQOne.boardNo}" class="btn btn-success">수정</a>
+		<form action="/admin/FAQDelete" method="post" style="display: inline;">
+			<input type="hidden" name="boardNo" value="${FAQOne.boardNo}">
+			<button type="submit" class="btn btn-danger" onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
+		</form>
+	</div>
+</div>
 	
-	<table>
-		<tr>
-			<th>번호</th>
-			<td>${FAQOne.boardNo}</td>
-		</tr>
-		<tr>
-			<th>제목</th>
-			<td>${FAQOne.boardTitle}</td>
-		</tr>
-		<tr>
-			<th>내용</th>
-			<td>${FAQOne.boardContent}</td>
-		</tr>
-		<tr>
-			<th>작성자</th>
-			<td>${FAQOne.createUser}</td>
-		</tr>
-		<tr>
-			<th>작성일시</th>
-			<td>${FAQOne.createDate}</td>
-		</tr>
-		<tr>
-			<th>수정자</th>
-			<td>${FAQOne.updateUser}</td>
-		</tr>
-		<tr>
-			<th>수정일시</th>
-			<td>${FAQOne.updateDate}</td>
-		</tr>
-		<tr>
-			<th>사용 여부</th>
-			<td>${FAQOne.useStatus}</td>
-		</tr>
-		<tr>
-			<th>조회수</th>
-			<td>${FAQOne.viewCount}</td>
-		</tr>
-	</table>
-	
-	<a href="/admin/FAQList">목록</a> /
-	<a href="/admin/FAQUpdate?boardNo=${FAQOne.boardNo}">수정</a> /
-	<form action="/admin/FAQDelete" method="post" style="display: inline;">
-		<input type="hidden" name="boardNo" value="${FAQOne.boardNo}">
-		<button type="submit" class="delete-btn" onclick="return confirm('정말 댓글을 삭제하시겠습니까?');">삭제</button>
-	</form>
-	
-	<!-- 공통 풋터 -->
+<!-- 공통 풋터 -->
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>
 
 </body>

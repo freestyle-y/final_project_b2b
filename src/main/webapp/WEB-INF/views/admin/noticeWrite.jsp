@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <%@ include file="/WEB-INF/common/head.jsp"%>
-<title>자주 묻는 질문 수정</title>
+<title>공지사항 등록</title>
 <!-- Froala CSS -->
 <link href="https://cdn.jsdelivr.net/npm/froala-editor@4.0.15/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
 </head>
@@ -12,21 +12,21 @@
 
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
-	
+
 	<!-- Page Title -->
 	<div class="page-title light-background">
 		<div class="container d-lg-flex justify-content-between align-items-center">
-			<h1 class="mb-2 mb-lg-0">FAQ</h1>
+			<h1 class="mb-2 mb-lg-0">Notice</h1>
 			<nav class="breadcrumbs">
 				<ol>
 					<li><%@include file="/WEB-INF/common/home.jsp"%></li>
-					<li class="current">FAQ</li>
+					<li class="current">Notice</li>
 				</ol>
 			</nav>
 		</div>
 	</div>
 	<!-- End Page Title -->
-	
+
 	<!-- Contact 2 Section -->
 	<section id="contact-2" class="contact-2 section">
 
@@ -35,18 +35,17 @@
 			<div class="row justify-content-center" data-aos="fade-up" data-aos-delay="300">
 				<div class="col-lg-10">
 					<div class="contact-form-wrapper">
-						<h2 class="text-center mb-4">자주 묻는 질문 수정</h2>
-							<!-- 공지사항 수정 폼 -->
-							<form action="/admin/FAQUpdate" method="post">
-							<!-- boardNo hidden -->
-    						<input type="hidden" name="boardNo" value="${FAQOne.boardNo}">
+						<h2 class="text-center mb-4">공지사항 등록</h2>
+						
+						<!-- 공지사항 등록 폼 -->
+						<form action="/admin/noticeWrite" method="post">
 							<div class="row g-3">
 								<!-- 제목 -->
 								<div class="col-md-12">
 									<div class="form-group">
 										<div class="input-with-icon">
 											<i class="bi bi-text-left"></i>
-											<input type="text" class="form-control" name="boardTitle" value="${FAQOne.boardTitle}" placeholder="제목" required>
+											<input type="text" class="form-control" name="boardTitle" placeholder="제목" required>
 										</div>
 									</div>
 								</div>
@@ -54,22 +53,13 @@
 								<div class="col-12">
 									<div class="form-group">
 										<div class="input-with-icon">
-											<textarea id="boardContent" name="boardContent">${FAQOne.boardContent}</textarea>
+											<textarea id="boardContent" name="boardContent"></textarea>
 										</div>
-									</div>
-								</div>
-								<!-- 사용 여부 -->
-								<div class="col-md-12">
-									<div class="form-group">
-										<select id="useStatus" name="useStatus" class="form-select" required>
-											<option value="Y" ${FAQOne.useStatus == 'Y' ? 'selected' : ''}>사용여부 : 사용</option>
-											<option value="N" ${FAQOne.useStatus == 'N' ? 'selected' : ''}>사용여부 : 미사용</option>
-										</select>
 									</div>
 								</div>
 								<!-- 버튼 -->
 								<div class="col-12 text-center">
-									<button type="submit" class="btn btn-primary btn-submit">수정</button>
+									<button type="submit" class="btn btn-primary btn-submit">등록</button>
 								</div>
 							</div>
 						</form>
@@ -93,7 +83,7 @@
 	new FroalaEditor('#boardContent', {
 		height : 500,
 		language : 'ko',
-		placeholderText : 'FAQ 내용을 입력하세요.',
+		placeholderText : '공지사항 내용을 입력하세요.',
 		toolbarSticky : true, // 툴바 고정
 		quickInsertEnabled : true, // 빠른 삽입 기능
 		imageUpload : false,

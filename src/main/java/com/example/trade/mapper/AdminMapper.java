@@ -16,7 +16,7 @@ import com.example.trade.dto.Page;
 public interface AdminMapper {
 	
 	// 자주 묻는 질문(FAQ) 목록
-	List<Map<String, Object>> selectFAQList(Page page);
+	List<Map<String, Object>> selectFAQList();
 	
 	// 자주 묻는 질문(FAQ) 전체 행 수 조회
 	int selectFAQTotalCount(Page page);
@@ -34,7 +34,7 @@ public interface AdminMapper {
 	int deleteBoard(Board board);
 
 	// QNA 목록 조회
-	List<Map<String, Object>> selectQNAListById(Page page);
+	List<Map<String, Object>> selectQNAListById();
 
 	// QNA 목록 전체 행 수 조회
 	int selectQNATotalCount(Page page);
@@ -55,13 +55,16 @@ public interface AdminMapper {
 	int deleteComment(Comment comment);
 	
 	// 공지사항 목록 조회
-	List<Map<String, Object>> selectNoticeList(Page page);
+	List<Map<String, Object>> selectNoticeList();
 
 	// 공지사항 전체 행 수 조회
 	int selectNoticeTotalCount(Page page);
 	
 	// 공지사항 상세 조회
 	Board selectNoticeOne(Board board);
+	
+	// 공지사항 등록
+	int insertNotice(Board board);
 	
 	// 공지사항 수정
 	int updateNotice(Board board);

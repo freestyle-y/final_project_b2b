@@ -92,9 +92,9 @@
 					<li><a href="/public/reviewList">상품 후기</a></li>
 					<li class="dropdown"><a href="#"><span>고객센터 관리</span><i class="bi bi-chevron-down toggle-dropdown"></i></a>
 						<ul>
-							<li><a href="/admin/FAQList">자주 묻는 질문</a></li>
-							<li><a href="/admin/QNAList">문의 내역</a></li>
-							<li><a href="/admin/noticeList">공지사항</a></li>
+							<li><a href="/admin/noticeList">공지사항 관리</a></li>
+							<li><a href="/admin/FAQList">자주 묻는 질문 관리</a></li>
+							<li><a href="/admin/QNAList">문의 내역 관리</a></li>
 						</ul>
 					</li>
 					<li><a href="#">sample1</a></li>

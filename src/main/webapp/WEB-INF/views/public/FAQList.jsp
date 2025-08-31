@@ -73,9 +73,14 @@
 					<div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
 						<div class="faq-card">
 							<i class="bi bi-chat-dots-fill"></i>
-							<h3>Can't find answer to your question?</h3>
-							<p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula. Vestibulum ac diam
-								sit amet quam vehicula elementum sed sit amet dui. Curabitur aliquet quam id dui posuere blandit. Nulla quis lorem ut libero malesuada feugiat.</p>
+							<h3>찾으시는 답변이 없으신가요?</h3>
+							<p style="text-align:left;">
+								고객님의 소중한 문의는 언제든 환영합니다.<br><br>
+								궁금하신 점이 있다면 고객센터를 통해 문의해 주세요.
+								전문 상담원이 신속하고 정확하게 도와드리겠습니다.<br><br>
+								1:1 문의를 남겨주시면 확인 후 빠른 시간 내에 답변을 드리며,
+								더 나은 서비스를 제공할 수 있도록 항상 노력하겠습니다.
+							</p>
 							<a href="#" class="btn btn-primary">Contact Us</a>
 						</div>
 					</div>

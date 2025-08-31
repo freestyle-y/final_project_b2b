@@ -40,25 +40,13 @@ public class AdminController {
 	
 	// 자주 묻는 질문(FAQ) 관리 페이지
 	@GetMapping("/admin/FAQList")
-	public String FAQList(Model model
-						,@RequestParam(defaultValue = "10") int rowPerPage
-						,@RequestParam(defaultValue = "1") int currentPage
-						,@RequestParam(defaultValue = "") String searchWord
-						,@RequestParam(defaultValue = "all") String searchType) {
-		
-	    // Page 객체 생성 (DB 조회 전 totalCount = 0으로 초기화)
-	    Page page = new Page(rowPerPage, currentPage, 0, searchWord, searchType);
+	public String FAQList(Model model) {
 	    
-	    // 전체 행 수 조회
-	    int totalCount = adminService.getFAQTotalCount(page);
-	    page.setTotalCount(totalCount);
-		
 	    // FAQ 리스트 조회
-		List<Map<String, Object>> FAQList = adminService.getFAQList(page);
+		List<Map<String, Object>> FAQList = adminService.getFAQList();
 		
 		// 모델에 값 전달
 		model.addAttribute("FAQList", FAQList);
-		model.addAttribute("page", page);
 		
 		return "admin/FAQList";
 	}
@@ -147,25 +135,13 @@ public class AdminController {
 	
 	// QNA 목록 조회
 	@GetMapping("/admin/QNAList")
-	public String QNAList(Model model
-						,@RequestParam(defaultValue = "10") int rowPerPage
-						,@RequestParam(defaultValue = "1") int currentPage
-						,@RequestParam(defaultValue = "") String searchWord
-						,@RequestParam(defaultValue = "all") String searchType) {
-		
-	    // Page 객체 생성 (DB 조회 전 totalCount = 0으로 초기화)
-	    Page page = new Page(rowPerPage, currentPage, 0, searchWord, searchType);
-	    
-		// 전체 행 수 조회
-		int totalCount = adminService.getQNATotalCount(page);
-		page.setTotalCount(totalCount);
+	public String QNAList(Model model) {
 		
 		// 문의 내역 조회
-		List<Map<String, Object>> QNAList = adminService.getQNAList(page);
+		List<Map<String, Object>> QNAList = adminService.getQNAList();
 		
 		// 모델에 값 전달
 		model.addAttribute("QNAList", QNAList);
-		model.addAttribute("page", page);
 		
 		return "admin/QNAList";
 	}
@@ -278,25 +254,13 @@ public class AdminController {
 	
 	// 공지사항 목록 조회
 	@GetMapping("/admin/noticeList")
-	public String noticeList(Model model
-							,@RequestParam(defaultValue = "10") int rowPerPage
-							,@RequestParam(defaultValue = "1") int currentPage
-							,@RequestParam(defaultValue = "") String searchWord
-							,@RequestParam(defaultValue = "all") String searchType) {
-		
-	    // Page 객체 생성 (DB 조회 전 totalCount = 0으로 초기화)
-	    Page page = new Page(rowPerPage, currentPage, 0, searchWord, searchType);
-	    
-		// 전체 행 수 조회
-		int totalCount = adminService.getNoticeTotalCount(page);
-		page.setTotalCount(totalCount);
+	public String noticeList(Model model) {
 		
 		// 공지사항 조회
-		List<Map<String, Object>> noticeList = adminService.getNoticeList(page);
+		List<Map<String, Object>> noticeList = adminService.getNoticeList();
 		
 		// 모델에 값 전달
 		model.addAttribute("noticeList", noticeList);
-		model.addAttribute("page", page);
 		
 		return "admin/noticeList";
 	}
@@ -307,6 +271,19 @@ public class AdminController {
 		Board noticeOne = adminService.getNoticeOne(board);
 		model.addAttribute("noticeOne", noticeOne);
 		return "admin/noticeOne";
+	}
+	
+	// 공지사항 등록 페이지
+	@GetMapping("/admin/noticeWrite")
+	public String noticeWrite() {
+		return "admin/noticeWrite";
+	}
+	
+	// 공지사항 등록 처리
+	@PostMapping("/admin/noticeWrite")
+	public String noticeWrite(Board board, Principal principal) {
+		adminService.insertNotice(board, principal);
+		return "redirect:/admin/noticeOne?boardNo=" + board.getBoardNo();
 	}
 	
 	// 공지사항 수정 페이지

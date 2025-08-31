@@ -5,89 +5,53 @@
 <meta charset="UTF-8">
 <%@ include file="/WEB-INF/common/head.jsp"%>
 <title>공지사항 상세</title>
-<style>
-    table {
-        width: 50%;
-        border-collapse: collapse;
-        text-align: center;
-        margin: auto;
-    }
-    th, td {
-        border: 1px solid #ccc;
-        padding: 8px;
-    }
-    .delete-btn {
-        border: none;
-        background: none;
-        padding: 0;
-        margin: 0;
-        color: blue;
-        text-decoration: underline;
-        cursor: pointer;
-        font-size: 1em;
-    }
-    .delete-btn:hover {
-        color: darkred;
-    }
-</style>
 </head>
 <body>
 
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
+
+	<!-- Page Title -->
+	<div class="page-title light-background">
+		<div class="container d-lg-flex justify-content-between align-items-center">
+			<h1 class="mb-2 mb-lg-0">공지사항 상세</h1>
+			<nav class="breadcrumbs">
+				<ol>
+					<li><%@include file="/WEB-INF/common/home.jsp"%></li>
+					<li class="current">Notice</li>
+				</ol>
+			</nav>
+		</div>
+	</div>
+	<!-- End Page Title -->
 	
-	<h1>공지사항 상세</h1>
-	
-   	<a href="/admin/FAQList">자주 묻는 질문</a> /
-	<a href="/admin/QNAList">문의 내역</a> /
-	<a href="/admin/noticeList">공지사항</a>
-	
-	<table>
-		<tr>
-			<th>번호</th>
-			<td>${noticeOne.boardNo}</td>
-		</tr>
-		<tr>
-			<th>제목</th>
-			<td>${noticeOne.boardTitle}</td>
-		</tr>
-		<tr>
-			<th>내용</th>
-			<td>${noticeOne.boardContent}</td>
-		</tr>
-		<tr>
-			<th>작성자</th>
-			<td>${noticeOne.createUser}</td>
-		</tr>
-		<tr>
-			<th>작성일시</th>
-			<td>${noticeOne.createDate}</td>
-		</tr>
-		<tr>
-			<th>수정자</th>
-			<td>${noticeOne.updateUser}</td>
-		</tr>
-		<tr>
-			<th>수정일시</th>
-			<td>${noticeOne.updateDate}</td>
-		</tr>
-		<tr>
-			<th>사용 여부</th>
-			<td>${noticeOne.useStatus}</td>
-		</tr>
-		<tr>
-			<th>조회수</th>
-			<td>${noticeOne.viewCount}</td>
-		</tr>
-	</table>
-	
-	<a href="/admin/noticeList">목록</a> /
-	<a href="/admin/noticeUpdate?boardNo=${noticeOne.boardNo}">수정</a> /
-	<form action="/admin/noticeDelete" method="post" style="display: inline;">
-		<input type="hidden" name="boardNo" value="${noticeOne.boardNo}">
-		<button type="submit" class="delete-btn" onclick="return confirm('정말 댓글을 삭제하시겠습니까?');">삭제</button>
-	</form>
-	
+	<div class="container my-4">
+		<div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+			<!-- 제목 -->
+			<h3 class="mb-0">${noticeOne.boardTitle}</h3>
+			<ul class="list-inline mb-0 text-muted small">
+				<!-- 작성일시 -->
+				<li class="list-inline-item">${noticeOne.createDate}</li>
+				<!-- 조회수 -->
+				<li class="list-inline-item">조회 ${noticeOne.viewCount}</li>
+			</ul>
+		</div>
+		
+		<!-- 본문 -->
+		<div class="border-bottom pb-2 mb-3">
+			<p>${noticeOne.boardContent}</p>
+		</div>
+		
+		<div class="text-start">
+			<a href="/admin/noticeList" class="btn btn-primary">목록</a>
+			<a href="/admin/noticeUpdate?boardNo=${noticeOne.boardNo}" class="btn btn-success">수정</a>
+			<form action="/admin/noticeDelete" method="post" style="display: inline;">
+				<input type="hidden" name="boardNo" value="${noticeOne.boardNo}">
+				<button type="submit" class="btn btn-danger" onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
+			</form>
+		</div>
+	</div>
+
 <!-- 공통 풋터 -->
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>
 

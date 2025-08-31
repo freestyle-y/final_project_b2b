@@ -15,11 +15,7 @@
 			view_count AS viewCount
 		FROM board
 		WHERE board_code = 'BC001'
-		<if test="searchWord != null and searchWord != ''">
-			AND board_title LIKE CONCAT('%', #{searchWord}, '%')
-		</if>
 		ORDER BY board_no DESC
-		LIMIT #{beginRow}, #{rowPerPage}
 	</select>
 	
 	<!-- 자주 묻는 질문(FAQ) 전체 행 수 조회 -->
@@ -90,11 +86,7 @@
 			view_count AS viewCount
 		FROM board
 		WHERE board_code = 'BC002'
-		<if test="searchWord != null and searchWord != ''">
-			AND board_title LIKE CONCAT('%', #{searchWord}, '%')
-		</if>
 		ORDER BY board_no DESC
-		LIMIT #{beginRow}, #{rowPerPage}
 	</select>
 	
 	<!-- QNA 목록 전체 행 수 조회 -->
@@ -176,7 +168,7 @@
 	</update>
 	
 	<!-- 공지사항 목록 조회 -->
-	<select id="selectNoticeList" parameterType="com.example.trade.dto.Page" resultType="map">
+	<select id="selectNoticeList" resultType="map">
 		SELECT
 			board_no AS boardNo,
 			board_title AS boardTitle,
@@ -189,11 +181,6 @@
 			view_count AS viewCount
 		FROM board
 		WHERE board_code = 'BC003'
-		<if test="searchWord != null and searchWord != ''">
-			AND board_title LIKE CONCAT('%', #{searchWord}, '%')
-		</if>
-		ORDER BY board_no DESC
-		LIMIT #{beginRow}, #{rowPerPage}
 	</select>
 	
 	<!-- 공지사항 전체 행 수 조회 -->
@@ -222,6 +209,15 @@
 		FROM board
 		WHERE board_no = #{boardNo}
 	</select>
+	
+	<!-- 공지사항 등록 -->
+	<update id="insertNotice" parameterType="com.example.trade.dto.Board" useGeneratedKeys="true" keyProperty="boardNo">
+		INSERT INTO board (
+			board_title, board_content, board_code, create_user
+		) VALUES (
+			#{boardTitle}, #{boardContent}, #{boardCode}, #{createUser}
+		)
+	</update>
 	
 	<!-- 공지사항 수정 -->
 	<update id="updateNotice" parameterType="com.example.trade.dto.Board">
