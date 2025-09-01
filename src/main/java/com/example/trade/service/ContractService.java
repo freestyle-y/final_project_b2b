@@ -88,4 +88,8 @@ public class ContractService {
         // 잔금(납기)일: 평일 기준 +15일로 계산된 날짜 기록
         contractMapper.updateFinalPaymentDueDate(contractNo, finalPaymentDueDate);
     }
+
+    public boolean getSignExist(int contractNo, int priority) {
+        return contractMapper.getSignExist(contractNo, priority);
+    }
 }

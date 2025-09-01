@@ -82,6 +82,10 @@
   /* 8: 작성일자 */   #contractTable th:nth-child(8), #contractTable td:nth-child(8){ width:140px !important; min-width:140px !important; max-width:140px !important; }
   /* 9: 서명 */       #contractTable th:nth-child(9), #contractTable td:nth-child(9){ width:60px  !important; min-width:60px  !important; max-width:60px  !important; padding-left:4px !important; padding-right:4px !important; }
   #contractTable tbody td:nth-child(9) a{ display:inline-block; width:100%; text-align:center; font-size:12px; line-height:1.2; }
+  
+  .link-disabled{ color:#9ca3af !important; pointer-events:none; text-decoration:none; cursor:default; }
+  .badge-done{ background:#10b981; }
+  .badge-wait{ background:#9ca3af; }
 </style>
 </head>
 <body>
@@ -161,7 +165,18 @@
                 <c:otherwise>${fn:substringBefore(con.createDate,' ')}</c:otherwise>
               </c:choose>
             </td>
-            <td><a href="${pageContext.request.contextPath}/biz/writeContract?contractNo=${con.contractNo}">작성</a></td>
+            <td>
+			  <c:choose>
+			    <c:when test="${con.buyerSigned}">
+			      <span class="link-disabled">작성완료</span>
+			    </c:when>
+			    <c:otherwise>
+			      <a href="${pageContext.request.contextPath}/biz/writeContract?contractNo=${con.contractNo}">
+			        작성
+			      </a>
+			    </c:otherwise>
+			  </c:choose>
+			</td>
           </tr>
         </c:forEach>
       </tbody>

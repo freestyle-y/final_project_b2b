@@ -245,6 +245,16 @@ public class ContractController {
 	public String contractList(Principal principal, Model model) {
 		String userId = principal.getName();
 		List<Contract> contractList = contractService.getContractList(userId);
+	    
+		for (Contract con : contractList) {
+	        int contractNo = con.getContractNo();
+	        boolean buyerSigned = contractService.getSignExist(contractNo, 2);    // priority=2 (기업회원)
+	        boolean supplierSigned = contractService.getSignExist(contractNo, 1); // priority=1 (관리자)
+
+	        con.setBuyerSigned(buyerSigned);
+	        con.setSupplierSigned(supplierSigned);
+	    }
+		// int exist = contractService.getSignExist(contractNo);
 		model.addAttribute("contractList", contractList);
 		return "biz/contractList";
 	}

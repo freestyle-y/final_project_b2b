@@ -199,4 +199,16 @@
 		#{contractNo}, NOW()
 		)
 	</insert>
+	
+	  <select id="getSignExist" resultType="boolean">
+	    SELECT
+	      EXISTS (
+	        SELECT 1
+	        FROM attachment a
+	        WHERE a.attachment_code = 'CONTRACT_SIGN'
+	          AND a.category_code   = #{contractNo}
+	          AND a.priority        = #{priority}
+	          AND a.use_status      = 'Y'
+	      )
+	  </select>
 </mapper>
