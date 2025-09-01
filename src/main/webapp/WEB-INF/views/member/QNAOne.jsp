@@ -1,36 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <%@ include file="/WEB-INF/common/head.jsp"%>
 <title>문의 내역 상세</title>
-<style>
-    table {
-        width: 50%;
-        border-collapse: collapse;
-        text-align: center;
-        margin: auto;
-    }
-    th, td {
-        border: 1px solid #ccc;
-        padding: 8px;
-    }
-    .delete-btn {
-        border: none;
-        background: none;
-        padding: 0;
-        margin: 0;
-        color: blue;
-        text-decoration: underline;
-        cursor: pointer;
-        font-size: 1em;
-    }
-    .delete-btn:hover {
-        color: darkred;
-    }
-</style>
 </head>
 <body>
 
@@ -39,100 +15,114 @@
 
 <main class="main">
 	
-	<h1>문의 내역 상세</h1>
+	<!-- Page Title -->
+	<div class="page-title light-background">
+		<div class="container d-lg-flex justify-content-between align-items-center">
+			<h1 class="mb-2 mb-lg-0">문의 내역 상세</h1>
+			<nav class="breadcrumbs">
+				<ol>
+					<li><%@include file="/WEB-INF/common/home.jsp"%></li>
+					<li class="current">QNA</li>
+				</ol>
+			</nav>
+		</div>
+	</div>
+	<!-- End Page Title -->
 	
-	<a href="/public/FAQList">자주 묻는 질문</a> /
-	<a href="/member/QNAList">문의 내역</a> /
-	<a href="/member/QNAWrite">1:1 문의</a> /
-	<a href="/public/noticeList">공지사항</a>
-	
-	<table>
+	<div class="container my-4">
 		<c:forEach var="qna" items="${QNAOne}">
-		<tr>
-			<th>제목</th>
-			<td>${qna.boardTitle}</td>
-		</tr>
-		<tr>
-			<th>내용</th>
-			<td>${qna.boardContent}</td>
-		</tr>
-		<tr>
-			<th>작성자</th>
-			<td>${qna.createUser}</td>
-		</tr>
-		<tr>
-			<th>작성일시</th>
-			<td>${qna.createDate}</td>
-		</tr>
+		<div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+			<!-- 제목 -->
+			<h3 class="mb-0">${qna.boardTitle}</h3>
+			<ul class="list-inline mb-0 text-muted small">
+				<!-- 작성일시 -->
+				<li class="list-inline-item">${qna.createDate}</li>
+			</ul>
+		</div>
+		
+		<!-- 본문 -->
+		<div class="border-bottom pb-2 mb-3">
+			<p>${qna.boardContent}</p>
+		</div>
 		</c:forEach>
-	</table>
+		
+		<div class="text-start">
+			<a href="/member/QNAList" class="btn btn-primary">목록</a>
+			<!-- 로그인 사용자와 작성자가 같을 때만 수정 노출 -->
+			<c:forEach var="qna" items="${QNAOne}">
+				<c:if test="${qna.createUser eq username}">
+					<!-- 수정 -->
+		            <a href="/member/QNAUpdate?boardNo=${qna.boardNo}" class="btn btn-success">수정</a>
+					<!-- 삭제 -->
+					<form action="/member/QNADelete" method="post" style="display: inline;">
+						<input type="hidden" name="boardNo" value="${qna.boardNo}">
+						<button type="submit" class="btn btn-danger" onclick="return confirm('정말 문의글을 삭제하시겠습니까?');">삭제</button>
+					</form>
+				</c:if>
+			</c:forEach>
+		</div>
+	</div>
+	
+	<!-- 댓글 영역 -->
+	<div class="container my-5">
+		<h4 class="mb-3">답변</h4>
 
-	<a href="/member/QNAList">목록</a>
-	<!-- 로그인 사용자와 작성자가 같을 때만 수정 노출 -->
-	<c:forEach var="qna" items="${QNAOne}">
-		<c:if test="${qna.createUser eq username}">
-			<!-- 수정 -->
-            / <a href="/member/QNAUpdate?boardNo=${qna.boardNo}">수정</a>
-			<!-- 삭제 -->
-			/ <form action="/member/QNADelete" method="post" style="display: inline;">
-				<input type="hidden" name="boardNo" value="${qna.boardNo}">
-				<button type="submit" class="delete-btn" onclick="return confirm('정말 문의글을 삭제하시겠습니까?');">삭제</button>
-			</form>
+		<c:if test="${empty commentList}">
+			<p class="text-muted">등록된 답변이 없습니다.</p>
 		</c:if>
-	</c:forEach>
 
-	<h2>댓글</h2>
-
-	<!-- 댓글 리스트 -->
-	<div class="comments">
 		<c:forEach var="comment" items="${commentList}">
-			<div style="margin-left:${comment.depth * 20}px; border:1px solid #ddd; margin-bottom:5px; padding:5px;">
-				<strong>
-					<c:choose>
-						<c:when test="${comment.createUser eq 'admin001'}">[관리자]</c:when>
-						<c:otherwise>[작성자]</c:otherwise>
-					</c:choose>
-				</strong>
-				${comment.commentContent}
-				<div style="font-size: 0.8em; color: #555;">
-					작성자: ${comment.createUser} / 작성일시: ${comment.createDate}
-					<!-- 본인 댓글이 아닐 때만 '댓글쓰기' 노출 -->
-					<c:if test="${comment.createUser ne username}">
-        				/ <a href="#" onclick="showReplyForm(${comment.commentNo})">댓글쓰기</a>
-					</c:if>
-					<!-- 본인 댓글일 경우 '수정', '삭제' 노출 -->
-					<c:if test="${comment.createUser eq username}">
-						<!-- 수정 -->
-						/ <a href="#" onclick="showEditForm(${comment.commentNo})">수정</a>
-						<!-- 삭제 -->
-						/ <form action="/member/deleteComment" method="post" style="display: inline;">
+			<div class="card mb-3" style="margin-left:${comment.depth * 20}px;">
+				<div class="card-body p-3">
+					<div class="d-flex justify-content-between align-items-center">
+						<div>
+							<strong>
+								<c:choose>
+									<c:when test="${fn:startsWith(comment.createUser, 'admin')}">[관리자]</c:when>
+									<c:otherwise>[작성자]</c:otherwise>
+								</c:choose>
+							</strong>
+							<small class="text-muted ms-2">${comment.createDate}</small>
+						</div>
+						<div>
+							<!-- 본인 댓글이 아닐 때만 '댓글쓰기' 노출 -->
+							<c:if test="${comment.createUser ne username}">
+								<a href="#" onclick="showReplyForm(${comment.commentNo}); return false;" class="btn btn-sm btn-outline-primary">댓글쓰기</a>
+							</c:if>
+							<!-- 본인 댓글일 경우 '수정', '삭제' 노출 -->
+							<c:if test="${comment.createUser eq username}">
+								<a href="#" onclick="showEditForm(${comment.commentNo}); return false;" class="btn btn-sm btn-outline-success">수정</a>
+								<form action="/admin/deleteComment" method="post" class="d-inline">
+									<input type="hidden" name="boardNo" value="${comment.boardNo}">
+									<input type="hidden" name="commentNo" value="${comment.commentNo}">
+									<button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('정말 댓글을 삭제하시겠습니까?');">삭제</button>
+								</form>
+							</c:if>
+						</div>
+					</div>
+					<p class="mt-2 mb-0">${comment.commentContent}</p>
+
+					<!-- 대댓글 작성 폼 (숨김) -->
+					<div id="replyForm-${comment.commentNo}" class="mt-3" style="display: none;">
+						<form action="/admin/commentWrite" method="post">
+							<!-- 원글 번호 -->
+							<input type="hidden" name="boardNo" value="${comment.boardNo}">
+							<!-- 부모 댓글 번호 -->
+							<input type="hidden" name="parentCommentNo" value="${comment.commentNo}">
+							<textarea name="commentContent" rows="3" class="form-control mb-2" placeholder="댓글을 입력하세요"></textarea>
+							<button type="submit" class="btn btn-sm btn-primary">등록</button>
+						</form>
+					</div>
+
+					<!-- 수정 폼 (숨김) -->
+					<div id="editForm-${comment.commentNo}" class="mt-3" style="display: none;">
+						<form action="/admin/commentUpdate" method="post">
 							<input type="hidden" name="boardNo" value="${comment.boardNo}">
 							<input type="hidden" name="commentNo" value="${comment.commentNo}">
-							<button type="submit" class="delete-btn" onclick="return confirm('정말 댓글을 삭제하시겠습니까?');">삭제</button>
+							<textarea name="commentContent" rows="3" class="form-control mb-2">${comment.commentContent}</textarea>
+							<button type="submit" class="btn btn-sm btn-success">수정</button>
 						</form>
-					</c:if>
-				</div>
-
-				<!-- 대댓글 작성 폼 (숨김) -->
-				<div id="replyForm-${comment.commentNo}" style="display: none; margin-top: 5px;">
-					<form action="/member/commentWrite" method="post">
-						<!-- 원글 번호 -->
-						<input type="hidden" name="boardNo" value="${comment.boardNo}">
-						<!-- 부모 댓글 번호 -->
-						<input type="hidden" name="parentCommentNo" value="${comment.commentNo}">
-						<textarea name="commentContent" rows="5" cols="40" placeholder="댓글을 입력하세요"></textarea>
-						<button type="submit">등록</button>
-					</form>
-				</div>
-
-				<!-- 수정 폼 (숨김) -->
-				<div id="editForm-${comment.commentNo}" style="display: none;">
-					<form action="/member/commentUpdate" method="post">
-						<input type="hidden" name="boardNo" value="${comment.boardNo}">
-						<input type="hidden" name="commentNo" value="${comment.commentNo}">
-						<textarea name="commentContent" rows="5" cols="40">${comment.commentContent}</textarea>
-						<button type="submit">수정</button>
-					</form>
+					</div>
 				</div>
 			</div>
 		</c:forEach>
