@@ -33,6 +33,7 @@ public class DormantAccountFilter extends OncePerRequestFilter {
         //    (무한 리다이렉트 루프를 방지하기 위함)
         if (requestURI.startsWith("/public/login") || 
             requestURI.startsWith("/public/logout") || 
+            requestURI.startsWith("/member/activateAccount") || 
             requestURI.startsWith("/member/accountActivate")) {
             filterChain.doFilter(request, response);
             return;

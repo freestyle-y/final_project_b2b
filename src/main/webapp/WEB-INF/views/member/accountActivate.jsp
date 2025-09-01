@@ -202,10 +202,10 @@ body {
 <%@include file="/WEB-INF/common/header/header.jsp"%>
 
 <main class="main">
-    <section id="active" class="active section">
+    <section id="login" class="login section">
         <div class="main-content" data-aos="fade-up" data-aos-delay="100">
             <div class="auth-container" data-aos="fade-in" data-aos-delay="200">
-                <div class="auth-form">
+                <div class="auth-form login-form active">
                     <div class="form-header">
                         <h3>휴면 계정 해제</h3>
                         <p>계정 활성화를 위해 본인 인증 정보를 입력해주세요.</p>
