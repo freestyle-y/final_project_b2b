@@ -19,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
@@ -82,7 +83,9 @@ public class SecurityConfig {
 											CustomOAuth2UserService customOAuth2UserService,
 											CustomOAuth2FailureHandler customOAuth2FailureHandler,
 											UserDetailsService userDetailsService) throws Exception {
-
+		
+		MemberService memberService = ApplicationContextProvider.getBean(MemberService.class);
+		
 		// CSRF 설정 (테스트 단계이므로 disable, 추후 보안 요구사항 따라 enable 고려)
 		httpSecurity.csrf((csrfConfigurer) -> csrfConfigurer.disable());
 		
@@ -126,7 +129,9 @@ public class SecurityConfig {
 	            .failureHandler(customOAuth2FailureHandler)
 	            .successHandler(linkAwareSuccessHandler) // 성공 시 이동할 페이지
 	    );
-		
+		// 휴면계정 필터
+	    httpSecurity.addFilterAfter(new DormantAccountFilter(memberService), UsernamePasswordAuthenticationFilter.class);
+	    
 		// 로그아웃 설정
 		httpSecurity.logout((logoutConfigurer)
 				-> logoutConfigurer.logoutUrl("/public/logout")			// 로그아웃 처리 URL
@@ -145,7 +150,9 @@ public class SecurityConfig {
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
 		// JSP forward 시 Security가 뷰 렌더링을 막지 않도록 예외 처리
-		return (web) -> web.ignoring().requestMatchers("/WEB-INF/views/**", "/WEB-INF/common/**");
+		return (web) -> web.ignoring().requestMatchers("/WEB-INF/views/**", 
+														"/WEB-INF/common/**", 
+														"/assets/**");
 	}
 	
 	// 로그인 성공 시 핸들러

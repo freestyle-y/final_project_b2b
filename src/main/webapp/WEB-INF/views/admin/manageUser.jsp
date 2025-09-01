@@ -15,6 +15,59 @@
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
 
   <style>
+  /* 조회 폼 (필터 박스) 스타일 */
+.filter-box {
+  background: var(--tbl-head);
+  border: 1px solid var(--tbl-border);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+.filter-box label,
+.filter-box select,
+.filter-box input[type="text"] {
+  font-size: 0.92rem;
+  font-family: "SUIT", sans-serif;
+  color: #111827;
+}
+
+.filter-box select,
+.filter-box input[type="text"] {
+  border: 1px solid var(--tbl-border);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  background: #fff;
+  transition: border-color 0.2s;
+}
+
+.filter-box select:focus,
+.filter-box input[type="text"]:focus {
+  outline: none;
+  border-color: #F3F4F6;
+  box-shadow: 0 0 0 3px rgba(76, 89, 255, 0.1);
+}
+
+.filter-box button {
+  padding: 0.5rem 1rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #111827; /* 글자색을 검정으로 변경 */
+  background-color: var(--tbl-hover); /* 마우스 호버 색상으로 변경 */
+  border: 1px solid var(--tbl-hover); /* 테두리 색상을 동일하게 변경 */
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.filter-box button:hover {
+  background-color: #e9ecef; /* 약간 더 어두운 회색으로 변경 */
+  border-color: #e9ecef;
+}
     :root{
       --tbl-border:#E5E7EB; --tbl-head:#F9FAFB; --tbl-hover:#F3F4F6; --tbl-zebra:#FAFAFA; --tbl-empty:#FFF0F0;
     }
@@ -137,7 +190,7 @@ table.dataTable thead .sorting_desc:after {
     <input type="text" name="keyword" placeholder="아이디/이름/이메일 검색" value="${keyword}">
     <button type="submit">조회</button>
   </form>
-
+</div>
   <div class="table-wrap">
     <table id="userTable" class="table table-striped table-hover table-bordered align-middle w-100">
       <thead class="table-light">
@@ -215,8 +268,39 @@ table.dataTable thead .sorting_desc:after {
       </tbody>
     </table>
   </div>
+	
+	<!-- 페이징 영역 -->
+	<div class="category-pagination">
+		<nav>
+			<ul class="justify-content-center">
+				<!-- 이전 버튼 -->
+				<c:if test="${page > 1}">
+					<li>
+						<a href="?page=${page - 1}&type=${type}&status=${status}&keyword=${keyword}">
+							<span class="d-none d-sm-inline">이전</span>
+						</a>
+					</li>
+				</c:if>
 
-  <!-- 서버 페이징(원래대로) -->
+				<!-- 페이지 번호 -->
+				<c:forEach begin="${startPage}" end="${endPage}" var="i">
+					<li class="${i == page ? 'active' : ''}">
+						<a href="?page=${i}&type=${type}&status=${status}&keyword=${keyword}">${i}</a>
+					</li>
+				</c:forEach>
+
+				<!-- 다음 버튼 -->
+				<c:if test="${endPage < totalPage}">
+					<li>
+						<a href="?page=${endPage + 1}&type=${type}&status=${status}&keyword=${keyword}">
+							<span class="d-none d-sm-inline">다음</span>
+						</a>
+					</li>
+				</c:if>
+			</ul>
+		</nav>
+	</div>
+ <!--
   <div class="text-center mt-3">
     <c:if test="${page > 1}">
       <a href="?page=1&type=${type}&status=${status}&keyword=${keyword}">&lt;&lt;</a>
@@ -236,7 +320,7 @@ table.dataTable thead .sorting_desc:after {
     </c:if>
   </div>
 </div>
-
+ -->
 <!-- 공통 풋터 -->
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>
 
