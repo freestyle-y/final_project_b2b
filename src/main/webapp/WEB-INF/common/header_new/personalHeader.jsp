@@ -59,6 +59,26 @@
 						</div>
 					</div>
 
+					<!-- Alarm -->
+					<div class="dropdown account-dropdown">
+						<button class="header-action-btn" data-bs-toggle="dropdown">
+							<i class="bi bi-bell"></i>
+							<span class="badge bg-danger" id="notifCount">0</span>
+						</button>
+
+						<div class="dropdown-menu dropdown-menu-end p-0" style="width: 360px;">
+							<!-- Header -->
+							<div class="dropdown-header border-bottom px-3 py-2">
+								<h6 class="mb-0">알림 목록</h6>
+							</div>
+
+							<!-- 알림 리스트 -->
+							<div class="dropdown-body" id="notifList" style="max-height: 400px; overflow-y: auto;">
+								<p class="text-center text-muted my-3">새로운 알림이 없습니다.</p>
+							</div>
+						</div>
+					</div>
+					
 					<!-- Wishlist -->
 					<a href="/personal/wishList" class="header-action-btn d-none d-md-block">
 						<i class="bi bi-heart"></i>
@@ -128,3 +148,39 @@
 		</div>
 	</div>
 </header>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+function loadNotifications() {
+	  $.ajax({
+	    url: "/member/notificationList",
+	    type: "GET",
+	    success: function(data) {
+	      $("#notifList").empty();
+	      if (data.length === 0) {
+	        $("#notifList").append('<p class="text-center text-muted my-3">새로운 알림이 없습니다.</p>');
+	        $("#notifCount").text(0);
+	      } else {
+	        $("#notifCount").text(data.length);
+	        data.forEach(function(n) {
+	          $("#notifList").append(
+	            '<a href="'+ (n.targetUrl || '#') +'" class="notification-entry d-flex align-items-start px-3 py-2 border-bottom text-decoration-none">' +
+	              '<i class="bi bi-info-circle text-primary me-2 fs-5"></i>' +   // imageUrl 없으므로 기본 아이콘
+	              '<div class="flex-grow-1">' +
+	                '<div class="fw-semibold small">'+ (n.notificationTitle || "알림") +'</div>' +
+	                '<div class="text-muted small">'+ n.notificationContent +'</div>' +
+	                '<div class="text-muted small">'+ n.createDate +'</div>' +
+	              '</div>' +
+	            '</a>'
+	          );
+	        });
+	      }
+	    }
+	  });
+	}
+
+	$(document).ready(function() {
+	  loadNotifications();
+	  setInterval(loadNotifications, 60000);
+	});
+</script>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.trade.mapper.NotificationMapper">
+    <!-- 사용자 알림 조회 (최신순 10개) -->
+    <select id="getNotifications" parameterType="string" resultType="map">
+        SELECT 
+            notification_no AS notificationNo,
+            notification_title AS notificationTitle,
+            notification_content AS notificationContent,
+            target_url AS targetUrl,
+            image_url AS imageUrl,
+            read_status AS readStatus,
+            DATE_FORMAT(create_date, '%Y-%m-%d %H:%i') AS createDate
+        FROM notification
+        WHERE target_value = #{userId}
+        ORDER BY create_date DESC
+    </select>
+
+    <!-- 안 읽은 알림 개수 -->
+    <select id="getUnreadCount" parameterType="string" resultType="int">
+        SELECT COUNT(*)
+        FROM notification
+        WHERE target_value = #{userId}
+        AND read_status = 'N'
+    </select>
+
+    <!-- 읽음 처리 -->
+    <update id="markAsRead" parameterType="int">
+        UPDATE notification SET
+        	read_status = 'Y'
+        WHERE notification_no = #{notificationNo}
+    </update>
+</mapper>
