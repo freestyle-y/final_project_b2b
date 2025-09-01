@@ -203,4 +203,52 @@ public class MemberController {
         }
     }
 	
+	// 휴면 해제 페이지 보여주기
+    @GetMapping("/member/accountActivate")
+    public String showAccountActivatePage(@RequestParam(name = "userId", required = false) String userId, Model model) {
+        // 현재 인증된 사용자의 정보를 가져옵니다.
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            // 사용자 ID와 역할을 Model에 추가
+            model.addAttribute("userId", authentication.getName());
+            
+            // 🟢 현재 사용자의 첫 번째 역할을 가져와서 Model에 추가
+            String userRole = authentication.getAuthorities().iterator().next().getAuthority();
+            model.addAttribute("userRole", userRole);
+        } else if (userId != null) {
+            // 인증되지 않은 경우 URL 파라미터로 받은 userId를 사용 (단, 이 로직은 권장하지 않음)
+            model.addAttribute("userId", userId);
+        }
+
+        return "member/accountActivate";
+    }
+
+    // 휴면 해제 처리
+    @PostMapping("/member/activateAccount")
+    public String activateAccount(@RequestParam("userId") String userId,
+                                  @RequestParam(name = "personalNumber", required = false) String personalNumber,
+                                  @RequestParam(name = "bizNumber", required = false) String bizNumber,
+                                  Model model) { // RedirectAttributes 대신 Model 사용
+        try {
+            boolean success = memberService.activateDormantAccount(userId, personalNumber, bizNumber);
+            if (success) {
+                // 성공 시, successMsg를 Model에 추가
+                model.addAttribute("successMsg", "휴면 계정이 해제되었습니다. 다시 로그인해주세요.");
+                // 휴면 해제 페이지로 돌아가되, 메시지 표시
+                return "member/accountActivate";
+            } else {
+                // 실패 시, errorMsg를 Model에 추가
+                model.addAttribute("errorMsg", "입력하신 정보가 올바르지 않습니다.");
+                // userId도 다시 Model에 추가
+                model.addAttribute("userId", userId);
+                return "member/accountActivate";
+            }
+        } catch (Exception e) {
+            System.err.println("계정 활성화 중 오류 발생: " + e.getMessage());
+            model.addAttribute("errorMsg", "계정 활성화 중 오류가 발생했습니다. 관리자에게 문의해주세요.");
+            model.addAttribute("userId", userId);
+            return "member/accountActivate";
+        }
+    }
 }

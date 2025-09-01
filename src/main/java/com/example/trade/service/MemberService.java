@@ -251,5 +251,37 @@ public class MemberService {
     	
         userMapper.updateMemberStatus(userId, customerStatus, updateUser);
     }
+    
+    //휴면해제
+    public boolean activateDormantAccount(String userId, String personalNumber, String bizNumber) {
+        // 1. userId로 회원 정보 조회
+        User user = userMapper.getInfoById(userId);
+        if (user == null || !"CS003".equals(user.getCustomerStatus())) {
+            return false; // 회원이 없거나 휴면 상태가 아니면 실패
+        }
+
+        // 2. 회원 유형에 따라 번호 확인
+        // 개인 회원일 경우 주민등록번호 뒷자리, 기업 회원일 경우 사업자 등록 번호
+        boolean isValid = false;
+        if ("CC003".equals(user.getCustomerCategory()) && personalNumber != null) {
+            // 실제로는 주민등록번호를 암호화하여 저장하고 복호화 후 비교해야 합니다.
+            // 여기서는 예시로 단순 비교를 가정합니다.
+            if (personalNumber.equals(user.getSn())) { 
+                isValid = true;
+            }
+        } else if ("CC002".equals(user.getCustomerCategory()) && bizNumber != null) {
+            if (bizNumber.equals(user.getBusinessNo())) {
+                isValid = true;
+            }
+        }
+
+        if (isValid) {
+            // 3. 번호가 일치하면 customer_status를 'CS001'(정상)으로 업데이트
+            userMapper.updateMemberStatus(userId, "CS001", userId);
+            return true;
+        }
+
+        return false; // 번호가 일치하지 않으면 실패
+    }
 
 }
