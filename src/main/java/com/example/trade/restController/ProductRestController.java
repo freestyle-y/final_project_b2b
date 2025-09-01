@@ -224,6 +224,19 @@ public class ProductRestController {
 	    return option; // JSON으로 반환 (optionNo 포함)
 	}
 	
+	// 상품명, 옵션까지 같으면 등록 안되게 하기
+	@PostMapping("/checkProductOptionDuplication")
+	public ResponseEntity<Map<String, Boolean>> checkProductOptionDuplication(@RequestParam String productName,
+			@RequestParam int optionNo) {
+        
+        boolean exists = productService.isProductOptionDuplicated(productName, optionNo);
+        
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("exists", exists);
+        
+        return ResponseEntity.ok(response);
+    }
+	
 	// 재고 수량 수정
 	@PostMapping("/updateInventoryQuantity")
     public String updateInventoryQuantity(@RequestBody Inventory inventory) {

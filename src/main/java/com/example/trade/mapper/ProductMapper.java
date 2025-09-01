@@ -121,6 +121,9 @@ public interface ProductMapper {
 	Integer findProductNoByName(String productName);
 	// 상품 최대 번호 찾기
 	Integer findMaxProductNo();
+	// 같은 상품명, 옵션 있는지 확인
+	boolean existsByProductNameAndOptionNo(@Param("productName") String productName,
+            @Param("optionNo") Integer optionNo);
 	// 상품 등록
 	int insertProduct(Product product);
 	// 초기 재고 등록(개수 : 0)

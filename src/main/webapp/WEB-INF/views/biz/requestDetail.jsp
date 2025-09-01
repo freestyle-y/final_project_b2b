@@ -7,38 +7,105 @@
 	<%@ include file="/WEB-INF/common/head.jsp"%>
     <title>요청 상세</title>
     <style>
-        .detail-container {
-            max-width: 800px;
-            margin: 30px auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        body {
+            font-family: 'SUIT', sans-serif;
+            background-color: #f6f8fa;
         }
+
+        .detail-container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .detail-container h2 {
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+        }
+
         .detail-table {
             width: 100%;
             border-collapse: collapse;
         }
+
         .detail-table th, .detail-table td {
-            border-bottom: 1px solid #ddd;
-            padding: 10px;
+            padding: 14px 12px;
+            border-bottom: 1px solid #e0e0e0;
+            text-align: left;
         }
+
         .detail-table th {
-            background-color: #f0f0f0;
+            background-color: #f5f6f8;
+            font-weight: 600;
+            color: #333;
         }
+
+        .detail-table tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .file-list {
+            list-style: none;
+            padding-left: 0;
+            margin: 8px 0 0 0;
+        }
+
+        .file-list li {
+            margin-bottom: 5px;
+        }
+
+        .file-list a {
+            color: #3366cc;
+            text-decoration: none;
+        }
+
+        .file-list a:hover {
+            text-decoration: underline;
+        }
+
         .button-area {
             text-align: right;
-            margin-top: 20px;
+            margin-top: 30px;
         }
+
         .btn {
-            padding: 8px 16px;
+            padding: 10px 18px;
             margin-left: 10px;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
+            font-size: 0.95rem;
             cursor: pointer;
+            transition: background-color 0.2s ease;
         }
-        .btn-edit { background: #4CAF50; color: white; }
-        .btn-delete { background: #f44336; color: white; }
+
+        .btn-edit {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background-color: #2563eb;
+        }
+
+        .btn-delete {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background-color: #dc2626;
+        }
+
+        .file-section {
+            margin-top: 25px;
+            font-size: 0.95rem;
+            color: #333;
+        }
     </style>
 </head>
 <body>
@@ -52,49 +119,48 @@
     <h2>요청 상세 정보</h2>
 
     <table class="detail-table">
-        <tr>
-            <th>상품명</th>
-            <th>옵션</th>
-            <th>수량</th>
-            <th>주소</th>
-        </tr>
-        <c:forEach var="item" items="${productRequestOne}">
+        <thead>
             <tr>
-                <td>${item.productName}</td>
-                <td>${item.productOption}</td>
-                <td>${item.productQuantity}</td>
-                <td>
-                    ${item.address} ${item.detail_address} (${item.postal})
-                </td>
+                <th>상품명</th>
+                <th>옵션</th>
+                <th>수량</th>
+                <th>주소</th>
             </tr>
-        </c:forEach>
+        </thead>
+        <tbody>
+            <c:forEach var="item" items="${productRequestOne}">
+                <tr>
+                    <td>${item.productName}</td>
+                    <td>${item.productOption}</td>
+                    <td>${item.productQuantity}</td>
+                    <td>${item.address} ${item.detail_address} (${item.postal})</td>
+                </tr>
+            </c:forEach>
+        </tbody>
     </table>
 
-    <!-- 첨부파일 목록 (수정/삭제 버튼 위에 위치) -->
+    <!-- 첨부파일 목록 -->
     <c:set var="firstItem" value="${productRequestOne[0]}" />
-    <div style="margin-top: 20px; margin-bottom: 15px;">
-	    <strong>첨부파일:</strong>
-	    <c:choose>
-	        <c:when test="${not empty firstItem.attachments}">
-	            <ul style="list-style: none; padding-left: 0; margin-top: 5px;">
-	                <c:forEach var="file" items="${firstItem.attachments}">
-	                    <li style="margin-bottom: 5px;">
-	                        <a href="${file.filepath}" download>
-	                            ${file.filename}
-	                        </a>
-	                    </li>
-	                </c:forEach>
-	            </ul>
-	        </c:when>
-	        <c:otherwise>
-	            <span>첨부파일 없음</span>
-	        </c:otherwise>
-	    </c:choose>
-	</div>
+    <div class="file-section">
+        <strong>첨부파일:</strong>
+        <c:choose>
+            <c:when test="${not empty firstItem.attachments}">
+                <ul class="file-list">
+                    <c:forEach var="file" items="${firstItem.attachments}">
+                        <li>
+                            <a href="${file.filepath}" download>${file.filename}</a>
+                        </li>
+                    </c:forEach>
+                </ul>
+            </c:when>
+            <c:otherwise>
+                <span>첨부파일 없음</span>
+            </c:otherwise>
+        </c:choose>
+    </div>
 
-
+    <!-- 수정 / 삭제 버튼 -->
     <c:set var="status" value="${productRequestOne[0].status}" />
-    
     <div class="button-area">
         <c:if test="${status eq '확인전'}">
             <button class="btn btn-edit" onclick="location.href='/biz/editRequest?requestNo=${param.requestNo}'">수정</button>

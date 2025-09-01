@@ -69,6 +69,45 @@
 	        const selectedOption = $(this).val();
 	        $newOptionName.val(selectedOption); // 입력창에 자동 채움
 	    });
+	 	
+	    $('#productForm').on('submit', function(e) {
+	        e.preventDefault();
+
+	        if (!setCategoryIdBeforeSubmit()) {
+	            return;
+	        }
+
+	        const productName = $('input[name="productName"]').val().trim();
+	        const optionNo = $('#optionValueSelect').val();
+
+	        if (!productName) {
+	            alert('상품명을 입력하세요.');
+	            return;
+	        }
+	        if (!optionNo) {
+	            alert('옵션 값을 선택하세요.');
+	            return;
+	        }
+
+	        $.ajax({
+	            url: '/checkProductOptionDuplication',
+	            type: 'POST',
+	            data: {
+	                productName: productName,
+	                optionNo: Number(optionNo)
+	            },
+	            success: function(res) {
+	                if (res.exists) {
+	                    alert('같은 상품명과 옵션 조합이 이미 존재합니다.');
+	                } else {
+	                    e.currentTarget.submit(); // 중복 없으면 제출
+	                }
+	            },
+	            error: function() {
+	                alert('중복 체크 중 오류가 발생했습니다.');
+	            }
+	        });
+	    });
 	});
 
 	// 옵션 값 채우기
@@ -286,6 +325,8 @@
         $("#categoryId").val(selectedCategoryId);
         return true;
     }
+    
+    
 </script>
 </head>
 <body>
@@ -295,7 +336,7 @@
 
 <h1>상품 등록</h1>
 
-<form method="post" action="/admin/insertProduct" enctype="multipart/form-data" onsubmit="return setCategoryIdBeforeSubmit();">
+<form id="productForm" method="post" action="/admin/insertProduct" enctype="multipart/form-data">
 
 	<input type="hidden" id="creatUser" name="createUser" value="${loginUserName}">
     <div class="form-group">

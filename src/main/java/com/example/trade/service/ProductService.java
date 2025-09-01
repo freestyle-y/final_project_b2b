@@ -562,6 +562,12 @@ public class ProductService {
 		productMapper.insertOption(option);
 	}
 	
+	// 같은 상품명, 옵션 있는지 확인
+	public boolean isProductOptionDuplicated(String productName, Integer optionNo) {
+        // DB에서 productName + optionNo 가 존재하는지 체크
+        return productMapper.existsByProductNameAndOptionNo(productName, optionNo);
+    }
+	
 	// 상품 등록
 	public void insertProduct(Product product, List<MultipartFile> productImages) {
         // 1. product_no 설정
