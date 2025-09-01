@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class Container {
 	private int containerNo;
 	private String containerLocation;
-	private int contractOrderNo;
+	private int contractNo;
 	
 	// 상품 회수 조인용
 	private String address;
