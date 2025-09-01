@@ -13,8 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.trade.domain.UserDomain;
+import com.example.trade.dto.Address;
 import com.example.trade.dto.SocialLogin;
 import com.example.trade.dto.User;
+import com.example.trade.mapper.AddressMapper;
 import com.example.trade.mapper.UserMapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -24,13 +26,15 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberService {
 	
 	private final UserMapper userMapper;
+	private final AddressMapper addressMapper;
 	private final BCryptPasswordEncoder passwordEncoder;
 	private final MailService mailService;
 
-	public MemberService(UserMapper userMapper, BCryptPasswordEncoder passwordEncoder, MailService mailService){
+	public MemberService(UserMapper userMapper, BCryptPasswordEncoder passwordEncoder, MailService mailService, AddressMapper addressMapper){
 		this.userMapper = userMapper;
 		this.passwordEncoder = passwordEncoder;
 		this.mailService = mailService;
+		this.addressMapper = addressMapper;
 	}
 	
 	public boolean isIdAvailable(String id){
@@ -86,6 +90,37 @@ public class MemberService {
 
 	    // DB 삽입
 	    userMapper.insertUser(user);
+	    
+	    // address테이블 입력
+	    // 개인, 기업 따로
+	    if ("CC003".equals(user.getCustomerCategory())) {
+	    	Address address = new Address();
+	    	address.setOwnerType("AC001");
+	    	address.setUserId(user.getCreateUser());
+	    	address.setPostal(user.getPostal());
+	    	address.setAddress(user.getAddress());
+	    	address.setDetailAddress(user.getDetailAddress());
+	    	address.setNickname(null);
+	    	address.setCreateUser(user.getCreateUser());
+	    	address.setMainAddress("Y");
+	    	
+	    	addressMapper.addAddress(address);
+	    }
+	    
+	    if ("CC002".equals(user.getCustomerCategory())) {
+	    	Address address = new Address();
+	    	address.setOwnerType("AC002");
+	    	address.setUserId(user.getCreateUser());
+	    	address.setPostal(user.getPostal());
+	    	address.setAddress(user.getAddress());
+	    	address.setDetailAddress(user.getDetailAddress());
+	    	address.setNickname(null);
+	    	address.setCreateUser(user.getCreateUser());
+	    	address.setMainAddress("Y");
+	    	
+	    	addressMapper.addAddress(address);
+	    }
+
 	}
 	
 	// 회원 목록 조회 (검색 + 페이징)

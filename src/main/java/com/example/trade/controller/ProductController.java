@@ -223,12 +223,6 @@ public class ProductController {
 		List<ProductRequest> productRequestList = productService.selectProductRequestList();
 		//log.info(productRequestList.toString());
 		
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-	    for (ProductRequest req : productRequestList) {
-	        if (req.getCreateDate() != null) {
-	            req.setFormattedCreateDate(req.getCreateDate().format(formatter));
-	        }
-	    }
 	    
 		Map<Integer, List<ProductRequest>> groupedRequests = 
 			    productRequestList.stream()

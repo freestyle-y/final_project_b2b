@@ -1,216 +1,236 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <%@ include file="/WEB-INF/common/head.jsp"%>
+    <%@ include file="/WEB-INF/common/head.jsp" %>
     <title>상품 요청 목록</title>
+
+    <!-- SUIT Font -->
+    <link href="https://cdn.jsdelivr.net/gh/sunn-us/SUIT/fonts/static/woff2/SUIT.css" rel="stylesheet">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
+
     <style>
+        :root {
+            --tbl-border:#E5E7EB; --tbl-head:#F9FAFB; --tbl-hover:#F3F4F6; --tbl-zebra:#FAFAFA; --tbl-empty:#FFF0F0;
+        }
+
         body {
-            background-color: #f5f5f5;
-            font-family: 'Noto Sans KR', sans-serif;
+            font-family: "SUIT", sans-serif;
         }
-        
-        .request-card {
-            background: white;
+
+        .table-wrap {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        #productRequestTable_wrapper .dataTables_scroll,
+        #productRequestTable {
+            border: 1px solid var(--tbl-border);
             border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            padding: 20px;
-            margin: 20px auto;
-            width: 90%;
-            max-width: 800px;
-        }
-        
-        .request-header {
-            font-weight: bold;
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
-        
-        .request-table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-        }
-        
-        .request-table th,
-        .request-table td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-            word-wrap: break-word;
-        }
-        
-        .request-table th {
-            background-color: #f0f0f0;
-        }
-        
-        .request-table tr:last-child td {
-            border-bottom: none;
-        }
-        
-        .request-table th:nth-child(1),
-        .request-table td:nth-child(1) {
-            width: 40%;
-        }
-        
-        .request-table th:nth-child(2),
-        .request-table td:nth-child(2) {
-            width: 30%;
-        }
-        
-        .request-table th:nth-child(3),
-        .request-table td:nth-child(3) {
-            width: 30%;
-        }
-
-        /* 검색창 스타일 */
-        #search-input {
-            display: block;
-            margin: 20px auto;
-            padding: 10px;
-            width: 300px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            font-size: 1em;
-        }
-
-        /* 페이징 버튼 스타일 */
-        .pagination {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .pagination button {
-            margin: 0 4px;
-            padding: 6px 12px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
+            overflow: hidden;
             background: #fff;
-            cursor: pointer;
-            font-size: 1em;
+            font-size: 0.92rem;
+
+            /* 테이블 넓이 100% 유지 */
+            width: 100% !important;
         }
-        .pagination button.active {
-            background-color: #333;
-            color: white;
-            border-color: #333;
+
+        #productRequestTable thead th {
+            background: var(--tbl-head) !important;
+            font-weight: 700;
+            color: #111827;
+            border-bottom: 1px solid var(--tbl-border) !important;
+            vertical-align: middle;
+            padding: 0.55rem 0.75rem;
+        }
+
+        #productRequestTable tbody td {
+            text-align: left;
+        }
+
+        #productRequestTable tbody td.dt-center,
+        #productRequestTable tbody td.text-center {
+            text-align: center !important;
+        }
+
+        #productRequestTable tbody td.dt-left,
+        #productRequestTable tbody td.text-start {
+            text-align: left !important;
+        }
+
+        #productRequestTable tbody tr:nth-child(even) {
+            background: var(--tbl-zebra);
+        }
+
+        #productRequestTable tbody tr:hover {
+            background: var(--tbl-hover);
+        }
+
+        td.cell-empty {
+            background: var(--tbl-empty) !important;
+        }
+
+        /* 텍스트만 투명하게 하여 묶인 셀 시각화 (숨기지 않음) */
+        td.group-col.visually-merged {
+            color: transparent !important;
+            text-shadow: none !important;
+            pointer-events: none !important;
+            user-select: none !important;
+            background-color: transparent !important;
+            border-top-color: transparent !important;
+        }
+
+        a {
+            color: #4c59ff;
+            text-decoration: none;
         }
     </style>
-
-    <!-- jQuery CDN -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
 </head>
 <body>
 
 <!-- 공통 헤더 -->
-<%@include file="/WEB-INF/common/header/header.jsp"%>
+<%@ include file="/WEB-INF/common/header/header.jsp" %>
 
-<main class="main">
+<div class="container-xl py-4">
+    <div class="table-wrap">
+        <h2 class="mb-4 text-center">상품 요청 목록</h2>
 
-    <h2 style="text-align:center; margin-top: 30px;">상품 요청 목록</h2>
-
-    <!-- 검색 입력창 -->
-    <input type="text" id="search-input" placeholder="상품명 검색...">
-
-    <div id="request-container">
-        <c:forEach var="entry" items="${groupedRequests}">
-            <c:set var="requestNo" value="${entry.key}" />
-            <c:set var="items" value="${entry.value}" />
-            <c:set var="firstItem" value="${items[0]}" />
-
-            <div class="request-card" data-request-no="${requestNo}" style="cursor: pointer;">
-                <div class="request-header">
-                    요청번호: <span class="product">${requestNo}</span> / 요청시간: ${firstItem.formattedCreateDate}
-                </div>
-
-                <table class="request-table">
-                    <tr>
-                        <th>상품명</th>
-                        <th>옵션</th>
-                        <th>수량</th>
-                    </tr>
-                    <c:forEach var="item" items="${items}">
-                        <tr>
-                            <td class="product">${item.productName}</td>
-                            <td>${item.productOption}</td>
-                            <td>${item.productQuantity}</td>
-                        </tr>
-                    </c:forEach>
-                </table>
-            </div>
-        </c:forEach>
+        <table id="productRequestTable" class="table table-striped table-hover table-bordered align-middle nowrap w-100">
+            <thead class="table-light">
+                <tr>
+                    <th>요청번호</th>
+                    <th>상품명</th>
+                    <th>옵션</th>
+                    <th>수량</th>
+                </tr>
+            </thead>
+            <tbody>
+              <c:forEach var="productList" items="${groupedRequests.values()}">
+                <c:forEach var="p" items="${productList}" varStatus="status">
+                  <tr>
+                    <td class="group-col">
+                      <c:choose>
+                        <c:when test="${status.first}">
+                          <a href="${pageContext.request.contextPath}/biz/requestDetail?requestNo=${p.productRequestNo}">
+                            ${p.productRequestNo}
+                          </a>
+                        </c:when>
+                        <c:otherwise>
+                          ${p.productRequestNo}
+                        </c:otherwise>
+                      </c:choose>
+                    </td>
+                    <td>${p.productName}</td>
+                    <td>${p.productOption}</td>
+                    <td>${p.productQuantity}</td>
+                  </tr>
+                </c:forEach>
+              </c:forEach>
+            </tbody>
+        </table>
     </div>
-	
-	</main>
-	
-	<!-- 공통 풋터 -->
-	<%@include file="/WEB-INF/common/footer/footer.jsp"%>
-	
-    <script>
-        $(document).ready(function () {
-            const itemsPerPage = 4;
-            let currentPage = 1;
+</div>
 
-            const container = $('#request-container');
-            const cards = container.find('.request-card').toArray();
-            let filteredCards = cards;
+<!-- 공통 풋터 -->
+<%@ include file="/WEB-INF/common/footer/footer.jsp" %>
 
-            function renderPage(page) {
-                container.find('.request-card').hide();
-                const start = (page - 1) * itemsPerPage;
-                const end = start + itemsPerPage;
+<!-- JS Scripts -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
 
-                $(filteredCards).slice(start, end).show();
-                renderPagination();
+<script>
+    // 첫번째 요청번호를 제외한 동일 값들은 텍스트만 투명하게 처리 (숨기지 않음)
+    function visuallyGroupFirstColumn(dtApi) {
+        let lastVal = null;
+        dtApi.column(0, { page: 'current' }).nodes().each(function (cell) {
+            const $cell = $(cell);
+            const raw = $cell.text().trim();
+            $cell.removeClass('visually-merged').removeAttr('aria-hidden');
+
+            if (lastVal !== null && raw === lastVal) {
+                $cell.addClass('visually-merged').attr('aria-hidden', 'true');
+            } else {
+                lastVal = raw;
             }
-
-            function renderPagination() {
-                $('#pagination').remove();
-                const totalPages = Math.ceil(filteredCards.length / itemsPerPage);
-                if(totalPages <= 0) return; // 페이지 0개면 페이징 숨김
-
-                const $pagination = $('<div id="pagination" class="pagination"></div>');
-                for (let i = 1; i <= totalPages; i++) {
-                    const $btn = $('<button>').text(i);
-                    if (i === currentPage) $btn.addClass('active');
-                    $btn.on('click', function () {
-                        currentPage = i;
-                        renderPage(currentPage);
-                    });
-                    $pagination.append($btn);
-                }
-                container.after($pagination);
-            }
-
-            function filterCards(keyword) {
-                filteredCards = cards.filter(card => {
-                    // 카드 내 모든 .product 텍스트를 합쳐서 검색
-                    let text = "";
-                    $(card).find('.product').each(function(){
-                        text += $(this).text().toLowerCase() + " ";
-                    });
-                    return text.includes(keyword.toLowerCase());
-                });
-                currentPage = 1;
-                renderPage(currentPage);
-            }
-
-            $('#search-input').on('input', function () {
-                filterCards($(this).val());
-            });
-            
-            $('.request-card').on('click', function () {
-                const requestNo = $(this).data('request-no');
-                window.location.href = '/biz/requestDetail?requestNo=' + requestNo;
-            });
-
-            // 초기 페이지 렌더링
-            renderPage(currentPage);
         });
-    </script>
+    }
+
+    function highlightEmptyCells(dtApi) {
+        const rows = dtApi.rows({ page: 'current' }).nodes();
+        $(rows).find('td').each(function () {
+            const $td = $(this);
+            if ($td.hasClass('group-col') && $td.hasClass('visually-merged')) {
+                $td.removeClass('cell-empty').removeAttr('title');
+                return;
+            }
+            const text = ($td.text() || '').trim().toLowerCase();
+            if (text === '' || text === 'null' || text === 'undefined') {
+                $td.addClass('cell-empty').attr('title', '데이터 없음');
+            } else {
+                $td.removeClass('cell-empty').removeAttr('title');
+            }
+        });
+    }
+
+    $(function () {
+        $('#productRequestTable').DataTable({
+            ordering: true,
+            searching: true,
+            paging: true,
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            info: true,
+            autoWidth: false,
+            scrollX: true,
+            scrollY: '50vh',
+            scrollCollapse: true,
+            columnDefs: [
+                { targets: 0, width: "80px", className: 'dt-center' },
+                { targets: 1, width: "250px", className: 'dt-left' },
+                { targets: 2, width: "150px", className: 'dt-left' },
+                { targets: 3, width: "100px", className: 'dt-center' }
+            ],
+            dom: '<"row mb-2"<"col-md-6"l><"col-md-6 text-end"f>>' +
+                 'rt' +
+                 '<"row mt-2"<"col-md-5"i><"col-md-7"p>>',
+            order: [[0, 'desc']],
+            language: {
+                lengthMenu: '_MENU_ 개씩 보기',
+                search: '검색:',
+                info: '총 _TOTAL_건 중 _START_–_END_',
+                infoEmpty: '0건',
+                infoFiltered: '(전체 _MAX_건 중 필터링됨)',
+                zeroRecords: '일치하는 데이터가 없습니다.',
+                paginate: {
+                    first: '처음',
+                    last: '마지막',
+                    next: '다음',
+                    previous: '이전'
+                },
+                loadingRecords: '불러오는 중...',
+                processing: '처리 중...'
+            },
+            drawCallback: function () {
+                const api = this.api();
+                visuallyGroupFirstColumn(api);
+                highlightEmptyCells(api);
+            },
+            initComplete: function () {
+                const api = this.api();
+                visuallyGroupFirstColumn(api);
+                highlightEmptyCells(api);
+            }
+        });
+    });
+</script>
 
 </body>
 </html>
