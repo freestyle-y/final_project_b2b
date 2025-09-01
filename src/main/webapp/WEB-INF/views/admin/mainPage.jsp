@@ -15,7 +15,7 @@
 	<div class="container">
         <h1>admin mainPage</h1>
 		<a href="/admin/productRequestList">상품 요청 목록</a> /
-		<a href="/admin/quotationListAll">견적서 목록</a> / 
+		<a href="/admin/quotationList">견적서 목록</a> / 
 		<a href="/admin/contractList">계약서 목록</a> / 
 		<a href="/admin/manageUser">회원관리</a> /
 		<a href="/admin/finalPaymentHistory">잔금 확인 페이지</a> /

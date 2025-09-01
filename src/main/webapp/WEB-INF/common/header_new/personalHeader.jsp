@@ -47,7 +47,7 @@
 									<i class="bi bi-bag-check me-2"></i>
 									<span>My Orders</span>
 								</a>
-								<a class="dropdown-item d-flex align-items-center" href="account.html">
+								<a class="dropdown-item d-flex align-items-center" href="/personal/wishList">
 									<i class="bi bi-heart me-2"></i>
 									<span>My Wishlist</span>
 								</a>

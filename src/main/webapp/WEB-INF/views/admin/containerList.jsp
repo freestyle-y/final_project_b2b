@@ -140,7 +140,11 @@
                   <c:otherwise>${con.containerLocation}</c:otherwise>
                 </c:choose>
               </td>
-              <td>${con.contractOrderNo}</td>
+              <td>
+              	<a href="/admin/contractOne?contractNo=${con.contractOrderNo}">
+	              	${con.contractOrderNo}
+              	</a>	
+              </td>
             </tr>
           </c:forEach>
         </tbody>

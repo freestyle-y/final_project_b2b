@@ -27,7 +27,7 @@
 		AND qi.sub_product_request_no = pr.sub_product_request_no
 		LEFT JOIN user u ON pr.create_user = u.id -- ✅ user 테이블과 조인
 		WHERE q.use_status = 'Y'
-		ORDER BY q.product_request_no, q.quotation_no ASC
+		ORDER BY q.product_request_no ASC, q.quotation_no DESC
 	</select>
 
 
@@ -132,7 +132,7 @@
 		LEFT JOIN product_request pr
 		ON qi.product_request_no = pr.product_request_no
 		AND qi.sub_product_request_no = pr.sub_product_request_no
-		WHERE q.quotation_no = #{quotationNo}
+		WHERE q.product_request_no = #{productRequestNo}
 	</select>
 
 	<!-- 견적 작성용: product_request 불러오기 -->
@@ -236,5 +236,10 @@
 		</collection>
 	</resultMap>
 
+	<update id="updateProductRequest" parameterType="int">
+		UPDATE product_request
+		SET status = '확인완료'
+		WHERE product_request_no = #{productRequestNo}
+	</update>
 
 </mapper>

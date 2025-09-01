@@ -183,14 +183,27 @@
     }
     
     /* 섹션 제목 */
-    .section-title {
-      font-size: 18px;
-      font-weight: bold;
-      margin: 30px 0 15px 0;
-      color: #333;
-      border-left: 4px solid #333;
-      padding-left: 15px;
-    }
+.section-title{
+  display:flex;            /* 선과 텍스트를 같은 라인에 */
+  align-items:center;      /* 세로 중앙정렬 */
+  gap:12px;                /* 선과 글자 간격 */
+  margin:30px 0 15px;
+  font-size:18px;
+  
+  font-weight:700;
+  color:#333;
+  line-height:1.2;
+  /* border-left: 4px solid #333;  <-- 삭제 */
+  /* padding-left: 15px;           <-- 삭제 */
+}
+.section-title::before{
+  content:"";
+  display:inline-block;
+  width:6px;               /* 굵기 */
+  height:1.2em;            /* ← 세로 길이 (짧게: 1.0em, 길게: 1.4em 등) */
+  background:#333;
+  border-radius:3px;
+}
     
     /* 하단 문구 */
     .contract-footer {
@@ -372,10 +385,6 @@
         background: #fff !important;
       }
       
-      .section-title {
-        border-left: 4px solid #333 !important;
-      }
-      
       .contract-footer {
         border-top: 1px solid #ddd !important;
       }
@@ -441,6 +450,33 @@
          margin-bottom: 0 !important;
        }
      }
+     
+     /* === [추가] 첨부파일 UI === */
+.toolbar-upload { position: relative; } /* 업로드 줄을 절대배치 기준으로 */
+
+.attachment-trigger{
+  position:absolute; right:0; top:50%; transform:translateY(-50%);
+  border:none; background:none; cursor:pointer;
+  color:#374151; font-weight:600; margin-left:6px;
+}
+.attachment-trigger:hover{ text-decoration:underline; color:#111827; }
+
+#attachmentDropdown{
+  display:none; max-width:1000px; margin:10px auto 0;
+  background:#fff; border:1px solid #e5e7eb; border-radius:8px;
+  box-shadow:0 6px 20px rgba(0,0,0,.08); padding:12px;
+}
+#attachmentDropdown.open{ display:block; }
+#attachmentDropdown table{ width:100%; border-collapse:collapse; font-size:13px; }
+#attachmentDropdown th,#attachmentDropdown td{ border:1px solid #e5e7eb; padding:8px; text-align:center; }
+#attachmentDropdown th{ background:#f9fafb; font-weight:700; }
+
+/* 인쇄 시 숨김 */
+@media print{
+  #attachmentDropdown, .attachment-trigger{ display:none !important; }
+}
+     
+     
   </style>
 </head>
 <body>
@@ -454,13 +490,16 @@
     <a class="btn" href="${pageContext.request.contextPath}/biz/contractList">목록</a>
   </div>
 
-     <!-- 첨부파일 목록 -->
-   <div class="toolbar no-print">
-     <div class="section-title">첨부파일 목록</div>
-     <div id="attachmentList">
-       <!-- 첨부파일 목록이 여기에 동적으로 로드됩니다 -->
-     </div>
-   </div>
+<!-- [수정] 오른쪽 토글 버튼 줄 -->
+<div class="toolbar no-print toolbar-upload">
+  <button type="button" id="attachmentTrigger" class="attachment-trigger"
+          aria-expanded="false" title="첨부파일 보기/숨기기">첨부파일</button>
+</div>
+
+<!-- [추가] 접히는 드롭다운 컨테이너 -->
+<div id="attachmentDropdown" class="no-print" aria-hidden="true">
+  <div id="attachmentList"><!-- loadAttachments()가 채움 --></div>
+</div>
   
   <div class="contract-container">
     <div class="contract-header">
@@ -797,6 +836,25 @@
        loadAttachments();
      }
    }, 500);
+   
+   /* [추가] 드롭다운 토글 */
+   function toggleAttachmentDropdown(force){
+     const dropdown = document.getElementById('attachmentDropdown');
+     const trigger  = document.getElementById('attachmentTrigger');
+     if(!dropdown) return;
+     const willOpen = (typeof force === 'boolean') ? force : !dropdown.classList.contains('open');
+     dropdown.classList.toggle('open', willOpen);
+     dropdown.setAttribute('aria-hidden', !willOpen);
+     if (trigger) trigger.setAttribute('aria-expanded', willOpen);
+     if (willOpen) { loadAttachments(); } // 열릴 때마다 최신화
+   }
+
+   /* [추가] 버튼 클릭 바인딩 */
+   document.addEventListener('DOMContentLoaded', function(){
+     document.getElementById('attachmentTrigger')
+       ?.addEventListener('click', () => toggleAttachmentDropdown());
+   });
+
 </script>
 
   <div class="no-print">

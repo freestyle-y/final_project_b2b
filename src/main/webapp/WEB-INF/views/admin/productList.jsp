@@ -47,6 +47,7 @@ $(function () {
             price: parseInt($(this).data('price')),
             productStatus: $(this).data('status'),
             productNo: $(this).data('product-no'),
+            useStatus: $(this).data('use-status'),
             imagePath: $(this).find('img').attr('src') || null
         });
     });
@@ -77,6 +78,7 @@ $(function () {
 	                        'data-name="' + item.productName + '" ' +
 	                        'data-price="' + item.price + '" ' +
 	                        'data-status="' + item.productStatus + '" ' +
+	                        'data-useStatus="' + item.useStatus + '" ' +
 	                        'data-product-no="' + item.productNo + '">' +
 	
 	                        '<div class="product-image" style="position:relative; width: 100%; height: 150px; display: flex; align-items: center; justify-content: center;">' +
@@ -100,6 +102,7 @@ $(function () {
 	                                '<div class="product-price">' + formattedPrice + ' 원</div>' +
 	                            '</div>' +
 	                            '<div class="product-status">' + item.productStatus + '</div>' +
+	                            '<div class="use-status">사용 여부: ' + item.useStatus + '</div>' +
 	                        '</div>' +
 	
 	                    '</div>' +
@@ -174,6 +177,7 @@ $(function () {
                         price: parseInt(item.price),
                         productStatus: item.productStatus,
                         productNo: item.productNo,
+                        useStatus: item.useStatus,
                         imagePath: item.imagePath || null
                     };
                 });
@@ -202,6 +206,7 @@ $(function () {
                         price: parseInt(item.price),
                         productStatus: item.productStatus,
                         productNo: item.productNo,
+                        useStatus: item.useStatus,
                         imagePath: item.imagePath || null
                     };
                 });
@@ -328,7 +333,8 @@ $(function () {
 					         data-price="${item.price}"
 					         data-status="${item.productStatus}"
 					         data-product-no="${item.productNo}"
-					         data-image="${pageContext.request.contextPath}${item.imagePath}">
+					         data-image="${pageContext.request.contextPath}${item.imagePath}"
+					         data-use-status="${item.useStatus}">
 					         
 					        <a href="/biz/productOne?productNo=${item.productNo}" style="text-decoration: none; color: inherit;">
 					            <div class="product-card ${item.productStatus == '일시품절' ? 'sold-out' : ''}" data-aos="zoom-in">
@@ -366,6 +372,7 @@ $(function () {
 					                        <div class="product-price">${item.price} 원</div>
 					                    </div>
 					                    <div class="product-status">${item.productStatus}</div>
+					                    <div class="use-status">사용여부: ${item.useStatus}</div>
 					                </div>
 					
 					            </div>

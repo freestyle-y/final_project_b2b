@@ -15,5 +15,6 @@
 			,q.`status` AS quotationStatus
 		FROM product_request p LEFT OUTER JOIN quotation q 
 		ON p.product_request_no = q.product_request_no
+		WHERE p.use_status = 'Y'
 	</select>
 </mapper>

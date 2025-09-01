@@ -186,15 +186,27 @@ body {
 }
 
 /* 섹션 제목 */
-.section-title {
-	font-size: 18px;
-	font-weight: bold;
-	margin: 30px 0 15px 0;
-	color: #333;
-	border-left: 4px solid #333;
-	padding-left: 15px;
+.section-title{
+  display:flex;            /* 선과 텍스트를 같은 라인에 */
+  align-items:center;      /* 세로 중앙정렬 */
+  gap:12px;                /* 선과 글자 간격 */
+  margin:30px 0 15px;
+  font-size:18px;
+  
+  font-weight:700;
+  color:#333;
+  line-height:1.2;
+  /* border-left: 4px solid #333;  <-- 삭제 */
+  /* padding-left: 15px;           <-- 삭제 */
 }
-
+.section-title::before{
+  content:"";
+  display:inline-block;
+  width:6px;               /* 굵기 */
+  height:1.2em;            /* ← 세로 길이 (짧게: 1.0em, 길게: 1.4em 등) */
+  background:#333;
+  border-radius:3px;
+}
 /* 하단 문구 */
 .contract-footer {
 	text-align: center;
@@ -364,9 +376,6 @@ body {
 	.contract-table td {
 		background: #fff !important;
 	}
-	.section-title {
-		border-left: 4px solid #333 !important;
-	}
 	.contract-footer {
 		border-top: 1px solid #ddd !important;
 	}
@@ -484,7 +493,8 @@ body {
 					<div class="signature-box" id="sig-buyer">
 						<div class="signature-label">을 (수요자) 서명</div>
 						<div class="signature-field" style="padding: 0">
-							<canvas style="width: 100%; height: 60px;"></canvas>
+							관리자는 갑(공급자)에<br>
+							서명해 주시기 바랍니다.
 						</div>
 						<div class="no-print" style="margin-top: 8px">
 							<button type="button" class="btn" data-action="clear">지우기</button>

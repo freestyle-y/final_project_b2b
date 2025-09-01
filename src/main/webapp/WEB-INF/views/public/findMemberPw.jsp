@@ -256,7 +256,7 @@ $(function(){
                         </div>
                         <div class="input-group">
                             <span class="input-icon"><i class="bi bi-credit-card"></i></span>
-                            <input type="text" id="sn" class="form-control" placeholder="주민등록번호(123456-7890123)">
+                            <input type="password" id="sn" class="form-control" placeholder="주민등록번호(123456-7890123)">
                         </div>
                     </div>
 

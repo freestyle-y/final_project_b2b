@@ -26,7 +26,7 @@ public interface QuotationMapper {
 
 
     /** 관리자 견적서 상세 */
-    Quotation adminQuotationOne(int quotationNo);
+    List<Quotation> adminQuotationOne(int productRequestNo);
 
     /** 견적 작성용 상품 조회 */
     List<QuotationItem> getProductRequestForQuotation(int productRequestNo);
@@ -51,4 +51,6 @@ public interface QuotationMapper {
 	void updateQuotationItem(QuotationItem item);
 
 	int getContractExist(int quotationNo);
+	
+	int updateProductRequest(int productRequestNo);
 }

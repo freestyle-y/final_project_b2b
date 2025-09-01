@@ -143,7 +143,7 @@
         <c:forEach var="q" items="${quotationList}">
           <tr>
             <td>
-              <a href="/admin/quotationOne?quotationNo=${q.quotationNo}">
+              <a href="/admin/quotationOne?quotationNo=${q.quotationNo }&productRequestNo=${q.productRequestNo}">
                 ${q.productRequestNo}
               </a>
             </td>
@@ -172,12 +172,9 @@
                 <c:when test="${q.status eq '승인거절'}">
                   <span class="status-badge status-rejected">거절</span>
                 </c:when>
-                <c:when test="${q.status eq '대기'}">
-                  <span class="status-badge status-pending">대기</span>
+                <c:when test="${q.status eq '승인전'}">
+                  <span class="status-badge status-pending">승인전</span>
                 </c:when>
-                <c:otherwise>
-                  <span class="status-badge status-draft">${q.status}</span>
-                </c:otherwise>
               </c:choose>
             </td>
             <td class="nowrap-cell">${q.createUser}</td>
@@ -191,12 +188,19 @@
         </c:forEach>
       </tbody>
     </table>
-
-    <div class="d-flex justify-content-center mt-4">
-      <button type="button" class="btn btn-quotation-write" onclick="openWriteQuotationPage()">
-        <i class="fas fa-plus me-2"></i>견적서 작성
-      </button>
-    </div>
+    <c:set var="hasPreApproved" value="false" />
+	<c:forEach var="qq" items="${quotationList}">
+	  <c:if test="${qq.status eq '승인전'}">
+	    <c:set var="hasPreApproved" value="true" />
+	  </c:if>
+	</c:forEach>
+	<c:if test="${not empty productRequestNo and not hasPreApproved}">
+	  <div class="d-flex justify-content-center mt-4">
+	    <button type="button" class="btn btn-quotation-write" onclick="openWriteQuotationPage()">
+	      <i class="fas fa-plus me-2"></i>견적서 작성
+	    </button>
+	  </div>
+	</c:if>
   </div>
 </div>
 
@@ -277,7 +281,7 @@
         { targets: 5, width: '100px', className: 'text-center' },
         { targets: 6, width: '130px', className: 'text-center' }
       ],
-      order: [[0, 'desc']],
+      order: [[1, 'desc']],
       dom: '<"row mb-2"<"col-12 col-md-6"l><"col-12 col-md-6"f>>t<"row mt-2"<"col-12 col-md-5"i><"col-12 col-md-7"p>>',
       language: {
         lengthMenu: '_MENU_ 개씩 보기',

@@ -331,7 +331,7 @@
     	  { targets:9,  width:'5%',  className:'nowrap-cell text-center' }, // [수정] 작성자 6% -> 5%
     	  { targets:10, width:'8%',  className:'nowrap-cell text-center' }  // [수정] 작성일자 9% -> 8%
     	],
-      order:[[0,'desc']],
+      order:[[1,'desc']],
       dom:'<"row mb-2"<"col-12 col-md-6"l><"col-12 col-md-6"f>>t<"row mt-2"<"col-12 col-md-5"i><"col-12 col-md-7"p>>',
       language:{
         lengthMenu:'_MENU_ 개씩 보기', search:'검색:',

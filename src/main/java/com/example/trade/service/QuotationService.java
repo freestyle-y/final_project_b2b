@@ -37,8 +37,8 @@ public class QuotationService {
     }
 
     /** 관리자 견적 상세 */
-    public Quotation adminQuotationOne(int quotationNo) {
-        return quotationMapper.adminQuotationOne(quotationNo);
+    public List<Quotation> adminQuotationOne(int productRequestNo) {
+        return quotationMapper.adminQuotationOne(productRequestNo);
     }
 
     /** 상품 불러오기 (견적 작성용) */
@@ -79,4 +79,8 @@ public class QuotationService {
 		return quotationMapper.getContractExist(quotationNo);
 	}
 
+	// 관리자 확인 시 status 확인 완료 추가
+	public int updateProductRequest(int productRequestNo) {
+		return quotationMapper.updateProductRequest(productRequestNo);
+	}
 }
