@@ -51,4 +51,6 @@ public interface QuotationMapper {
 	void updateQuotationItem(QuotationItem item);
 
 	int getContractExist(int quotationNo);
+	
+	int updateProductRequest(int productRequestNo);
 }

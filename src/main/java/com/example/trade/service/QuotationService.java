@@ -79,4 +79,8 @@ public class QuotationService {
 		return quotationMapper.getContractExist(quotationNo);
 	}
 
+	// 관리자 확인 시 status 확인 완료 추가
+	public int updateProductRequest(int productRequestNo) {
+		return quotationMapper.updateProductRequest(productRequestNo);
+	}
 }

@@ -115,7 +115,9 @@
         }
         
         function confirmAssign(inventoryId) {
-            const selectedAddressNo = $('#warehouseSelect').val();
+        	const $select = $('#warehouseSelect');
+            const selectedAddressNo = $select.val();
+            const selectedText = $select.find('option:selected').text();
             
             $.ajax({
                 url: '/admin/updateInventoryAddress',
@@ -127,7 +129,12 @@
                 }),
                 success: function() {
                     alert('창고가 지정되었습니다.');
-                    location.reload(); // 새로고침
+                    
+                 	// 주소와 '변경' 버튼 함께 출력
+                    const updatedHtml = selectedText + ' <button type="button" onclick="assignWarehouse(' + inventoryId + ')">변경</button>';
+                    $('#warehouse-btn-' + inventoryId).html(updatedHtml);
+
+                    $('#warehouseModal').hide();
                 },
                 error: function() {
                     alert('창고 지정 실패');
@@ -212,14 +219,17 @@
             <div><strong>옵션:</strong> <span class="product-option">${item.optionNameValue}</span></div>
             <div><strong>가격:</strong> <fmt:formatNumber value="${item.price}" type="number" groupingUsed="true" />원</div>
             <div><strong>주소:</strong>
-			    <c:choose>
-			        <c:when test="${empty item.address}">
-			            <button type="button" onclick="assignWarehouse(${item.inventoryId})">창고 지정</button>
-			        </c:when>
-			        <c:otherwise>
-			            [${item.postal}] ${item.address} ${item.detailAddress}
-			        </c:otherwise>
-			    </c:choose>
+			    <span id="warehouse-btn-${item.inventoryId}">
+			        <c:choose>
+			            <c:when test="${empty item.address}">
+			                <button type="button" onclick="assignWarehouse(${item.inventoryId})">창고 지정</button>
+			            </c:when>
+			            <c:otherwise>
+			                [${item.postal}] ${item.address} ${item.detailAddress}
+			                <button type="button" onclick="assignWarehouse(${item.inventoryId})">변경</button>
+			            </c:otherwise>
+			        </c:choose>
+			    </span>
 			</div>
             <div>
                 <label>수량:</label>

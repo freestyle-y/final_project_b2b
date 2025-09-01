@@ -236,5 +236,10 @@
 		</collection>
 	</resultMap>
 
+	<update id="updateProductRequest" parameterType="int">
+		UPDATE product_request
+		SET status = '확인완료'
+		WHERE product_request_no = #{productRequestNo}
+	</update>
 
 </mapper>

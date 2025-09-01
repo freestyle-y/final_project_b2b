@@ -39,6 +39,9 @@ public class QuotationController {
 	public String adminQuotationList(@RequestParam("productRequestNo") int productRequestNo, Model model) {
 	    List<Quotation> quotationList = quotationService.getAdminQuotationList(productRequestNo);
 	    model.addAttribute("quotationList", quotationList);
+	    
+	    // status 확인 완료 추가
+	    quotationService.updateProductRequest(productRequestNo);
 	    return "admin/quotationList";
 	}
 
