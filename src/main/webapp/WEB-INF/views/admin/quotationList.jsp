@@ -193,8 +193,11 @@
 	  <c:if test="${qq.status eq '승인전'}">
 	    <c:set var="hasPreApproved" value="true" />
 	  </c:if>
+	  <c:if test="${qq.status eq '승인'}">
+	  	<c:set var="approved" value="true" />
+	  </c:if>
 	</c:forEach>
-	<c:if test="${not empty productRequestNo and not hasPreApproved}">
+	<c:if test="${not empty productRequestNo and not hasPreApproved and not approved}">
 	  <div class="d-flex justify-content-center mt-4">
 	    <button type="button" class="btn btn-quotation-write" onclick="openWriteQuotationPage()">
 	      <i class="fas fa-plus me-2"></i>견적서 작성

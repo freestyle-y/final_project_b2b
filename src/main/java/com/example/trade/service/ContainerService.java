@@ -32,4 +32,8 @@ public class ContainerService {
 	public void updateContainer(Container container) {
 		containerMapper.updateContainer(container);
 	}
+
+	public void insertContractOrder(int contractNo) {
+		containerMapper.insertContractOrder(contractNo);
+	}
 }

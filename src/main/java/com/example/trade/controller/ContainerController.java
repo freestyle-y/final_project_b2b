@@ -41,6 +41,7 @@ public class ContainerController {
 	public String insertContainer(@RequestParam("contractNo") int contractNo
 								 ,@RequestParam("containerLocation") String containerLocation) {
 		int row = containerService.insertContainer(contractNo, containerLocation);
+		containerService.insertContractOrder(contractNo);
 		return "redirect:/admin/containerList";
 	}
 	
