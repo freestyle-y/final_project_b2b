@@ -496,9 +496,6 @@ body {
 							관리자는 갑(공급자)에<br>
 							서명해 주시기 바랍니다.
 						</div>
-						<div class="no-print" style="margin-top: 8px">
-							<button type="button" class="btn" data-action="clear">지우기</button>
-						</div>
 						<input type="hidden" name="buyerSignature" />
 						<img alt="buyer signature" style="display: none;" />
 					</div>
@@ -749,14 +746,13 @@ body {
 		}
 
 		const supplier = makePad('sig-supplier');
-		const buyer = makePad('sig-buyer');
+		
 
 		// 폼 제출 시 두 서명 확정 저장
 		const form = document.getElementById('contractForm');
 		form.addEventListener('submit', function () {
 			supplier.persist();
-			buyer.persist();
-
+		
 		});
 	})();
 </script>

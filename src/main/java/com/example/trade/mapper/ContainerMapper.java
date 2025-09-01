@@ -19,4 +19,6 @@ public interface ContainerMapper {
 
 	void updateContainer(Container container);
 
+	void insertContractOrder(int contractNo);
+
 }

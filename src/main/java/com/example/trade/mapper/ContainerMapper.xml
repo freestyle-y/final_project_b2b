@@ -38,4 +38,11 @@
 	WHERE container_no = #{containerNo}
 </update>
 	
+	<insert id="insertContractOrder">
+		INSERT INTO contract_order(
+		contract_no, order_time
+		) VALUES (
+			#{contractNo}, NOW()
+		)
+	</insert>
 </mapper>

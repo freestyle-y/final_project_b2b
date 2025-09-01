@@ -71,4 +71,8 @@ public class Contract {
 	// 배송상태 확인용
 	private int deliveryExist;
 	private String latestDeliveryStatus;
+	
+	// 관리자 기업회원 사인 유무 확인용
+    private boolean supplierSigned;
+    private boolean buyerSigned;
 }

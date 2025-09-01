@@ -48,4 +48,6 @@ public interface ContractMapper {
 
     void updateFinalPaymentDueDate(@Param("contractNo") int contractNo, @Param("finalPaymentDate") LocalDate finalPaymentDueDate);
 
+    boolean getSignExist(@Param("contractNo") int contractNo, @Param("priority") int priority);
+
 }
