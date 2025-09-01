@@ -197,6 +197,13 @@
 		</if>
 	</select>
 	
+	<!-- 조회수 증가 -->
+	<update id="updateBoardViewCount" parameterType="int">
+		UPDATE board SET
+			view_count = view_count + 1
+		WHERE board_no = #{boardNo}
+	</update>
+	
 	<!-- 공지사항 상세 조회 -->
 	<select id="selectNoticeOne" parameterType="int" resultType="map">
 		SELECT

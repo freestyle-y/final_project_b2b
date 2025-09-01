@@ -89,6 +89,9 @@ public class BoardService {
 
 	// 공지사항 상세 조회
 	public List<Map<String, Object>> getNoticeOne(int boardNo) {
+		// 조회수 증가
+		boardMapper.updateBoardViewCount(boardNo);
+		// 상세 조회
 		return boardMapper.selectNoticeOne(boardNo);
 	}
 }

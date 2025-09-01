@@ -55,6 +55,10 @@ public interface BoardMapper {
 	// 공지사항 전체 행 수 조회
 	int selectNoticeTotalCount(Page page);
 	
+	// 조회수 증가
+	int updateBoardViewCount(int boardNo);
+	
 	// 공지사항 상세 조회
 	List<Map<String, Object>> selectNoticeOne(int boardNo);
+	
 }

@@ -5,6 +5,9 @@
 <meta charset="UTF-8">
 <%@ include file="/WEB-INF/common/head.jsp"%>
 <title>고객센터</title>
+<style>
+	body { font-family: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", Arial, sans-serif; }
+</style>
 </head>
 <body>
 

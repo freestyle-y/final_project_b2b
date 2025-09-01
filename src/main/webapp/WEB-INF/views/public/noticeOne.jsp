@@ -7,16 +7,16 @@
 <%@ include file="/WEB-INF/common/head.jsp"%>
 <title>공지사항 상세</title>
 <style>
-    table {
-        width: 50%;
-        border-collapse: collapse;
-        text-align: center;
-        margin: auto;
-    }
-    th, td {
-        border: 1px solid #ccc;
-        padding: 8px;
-    }
+	body { font-family: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", Arial, sans-serif; }
+	.list-inline-item + .list-inline-item::before {
+		content: "";
+		display: inline-block;
+		width: 1px;
+		height: 0.9em;
+		background: #ccc;
+		margin: 0 8px 0 0; /* 오른쪽만 여백 */
+		vertical-align: middle;
+	}
 </style>
 </head>
 <body>
@@ -26,38 +26,44 @@
 
 <main class="main">
 	
-	<h1>공지사항 상세</h1>
-	
-	<a href="/public/FAQList">자주 묻는 질문</a> /
-	<a href="/member/QNAList">문의 내역</a> /
-	<a href="/member/QNAWrite">1:1 문의</a> /
-	<a href="/public/noticeList">공지사항</a>
-	
-	<table>
-		<c:forEach var="notice" items="${noticeOne}">
-		<tr>
-			<th>제목</th>
-			<td>${notice.boardTitle}</td>
-		</tr>
-		<tr>
-			<th>내용</th>
-			<td>${notice.boardContent}</td>
-		</tr>
-		<tr>
-			<th>작성자</th>
-			<td>${notice.createUser}</td>
-		</tr>
-		<tr>
-			<th>작성일시</th>
-			<td>${notice.createDate}</td>
-		</tr>
-		<tr>
-			<th>조회수</th>
-			<td>${notice.viewCount}</td>
-		</tr>
-		</c:forEach>
-	</table>
+	<!-- Page Title -->
+	<div class="page-title light-background">
+		<div class="container d-lg-flex justify-content-between align-items-center">
+			<h1 class="mb-2 mb-lg-0">공지사항</h1>
+			<nav class="breadcrumbs">
+				<ol>
+					<li><%@include file="/WEB-INF/common/home.jsp"%></li>
+					<li class="current">Notice</li>
+				</ol>
+			</nav>
+		</div>
+	</div>
+	<!-- End Page Title -->
 
+	<div class="container my-4">
+		<c:forEach var="notice" items="${noticeOne}">
+		<div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+			<!-- 제목 -->
+			<h3 class="mb-0">${notice.boardTitle}</h3>
+			<ul class="list-inline mb-0 text-muted small">
+				<!-- 작성일시 -->
+				<li class="list-inline-item">${notice.createDate}</li>
+				<!-- 조회수 -->
+				<li class="list-inline-item">조회 <span>${notice.viewCount}</span></li>
+			</ul>
+		</div>
+		
+		<!-- 본문 -->
+		<div class="border-bottom pb-2 mb-3">
+			<p>${notice.boardContent}</p>
+		</div>
+		</c:forEach>
+		
+		<div class="text-start">
+			<a href="/public/noticeList" class="btn btn-primary">목록</a>
+		</div>
+	</div>
+	
 </main>
 
 <!-- 공통 풋터 -->

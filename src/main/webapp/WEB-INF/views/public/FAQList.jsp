@@ -6,25 +6,9 @@
 <meta charset="UTF-8">
 <%@ include file="/WEB-INF/common/head.jsp"%>
 <title>자주 묻는 질문</title>
-<!-- <style>
-    .pagination {
-        margin: 20px auto;
-        text-align: center;
-    }
-    .pagination a {
-        display: inline-block;
-        margin: 0 5px;
-        padding: 5px 10px;
-        border: 1px solid #ccc;
-        text-decoration: none;
-        color: #333;
-    }
-    .pagination a.active {
-        background: #333;
-        color: #fff;
-        font-weight: bold;
-    }
-</style> -->
+<style>
+	body { font-family: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", Arial, sans-serif; }
+</style>
 </head>
 <body class="faq-page">
 
@@ -36,11 +20,11 @@
 		<!-- Page Title -->
 		<div class="page-title light-background">
 			<div class="container d-lg-flex justify-content-between align-items-center">
-				<h1 class="mb-2 mb-lg-0">Faq</h1>
+				<h1 class="mb-2 mb-lg-0">자주 묻는 질문</h1>
 				<nav class="breadcrumbs">
 					<ol>
 						<li><%@include file="/WEB-INF/common/home.jsp"%></li>
-						<li class="current">Faq</li>
+						<li class="current">FAQ</li>
 					</ol>
 				</nav>
 			</div>
@@ -73,7 +57,7 @@
 					<div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
 						<div class="faq-card">
 							<i class="bi bi-chat-dots-fill"></i>
-							<h3>찾으시는 답변이 없으신가요?</h3>
+							<h3 class="my-4">찾으시는 답변이 없으신가요?</h3>
 							<p style="text-align:left;">
 								고객님의 소중한 문의는 언제든 환영합니다.<br><br>
 								궁금하신 점이 있다면 고객센터를 통해 문의해 주세요.
@@ -81,7 +65,7 @@
 								1:1 문의를 남겨주시면 확인 후 빠른 시간 내에 답변을 드리며,
 								더 나은 서비스를 제공할 수 있도록 항상 노력하겠습니다.
 							</p>
-							<a href="/member/QNAList" class="btn btn-primary">1:1 문의</a>
+							<a href="/member/QNAList" class="btn btn-primary mt-4">1:1 문의</a>
 						</div>
 					</div>
 				</div>
@@ -101,16 +85,15 @@
 				<c:if test="${page.hasPrevBlock()}">
 					<li>
 						<a href="?currentPage=${page.startPage - 1}&searchWord=${page.searchWord}">
-							<i class="bi bi-arrow-left"></i>
-							<span class="d-none d-sm-inline">이전</span>
+							<i class="bi bi-chevron-left"></i>
 						</a>
 					</li>
 				</c:if>
 
 				<!-- 페이지 번호 -->
 				<c:forEach begin="${page.startPage}" end="${page.endPage}" var="i">
-					<li class="${i == page.currentPage ? 'active' : ''}">
-						<a href="?currentPage=${i}&searchWord=${page.searchWord}">${i}</a>
+					<li>
+						<a href="?currentPage=${i}&searchWord=${page.searchWord}" class="${i == page.currentPage ? 'active' : ''}">${i}</a>
 					</li>
 				</c:forEach>
 
@@ -118,8 +101,7 @@
 				<c:if test="${page.hasNextBlock()}">
 					<li>
 						<a href="?currentPage=${page.endPage + 1}&searchWord=${page.searchWord}">
-							<span class="d-none d-sm-inline">다음</span>
-							<i class="bi bi-arrow-right"></i>
+							<i class="bi bi-chevron-right"></i>
 						</a>
 					</li>
 				</c:if>

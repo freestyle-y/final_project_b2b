@@ -7,6 +7,9 @@
 <meta charset="UTF-8">
 <%@ include file="/WEB-INF/common/head.jsp"%>
 <title>문의 내역 상세</title>
+<style>
+	body { font-family: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", Arial, sans-serif; }
+</style>
 </head>
 <body>
 
@@ -92,7 +95,7 @@
 							<!-- 본인 댓글일 경우 '수정', '삭제' 노출 -->
 							<c:if test="${comment.createUser eq username}">
 								<a href="#" onclick="showEditForm(${comment.commentNo}); return false;" class="btn btn-sm btn-outline-success">수정</a>
-								<form action="/admin/deleteComment" method="post" class="d-inline">
+								<form action="/member/deleteComment" method="post" class="d-inline">
 									<input type="hidden" name="boardNo" value="${comment.boardNo}">
 									<input type="hidden" name="commentNo" value="${comment.commentNo}">
 									<button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('정말 댓글을 삭제하시겠습니까?');">삭제</button>
@@ -104,7 +107,7 @@
 
 					<!-- 대댓글 작성 폼 (숨김) -->
 					<div id="replyForm-${comment.commentNo}" class="mt-3" style="display: none;">
-						<form action="/admin/commentWrite" method="post">
+						<form action="/member/commentWrite" method="post">
 							<!-- 원글 번호 -->
 							<input type="hidden" name="boardNo" value="${comment.boardNo}">
 							<!-- 부모 댓글 번호 -->
@@ -116,7 +119,7 @@
 
 					<!-- 수정 폼 (숨김) -->
 					<div id="editForm-${comment.commentNo}" class="mt-3" style="display: none;">
-						<form action="/admin/commentUpdate" method="post">
+						<form action="/member/commentUpdate" method="post">
 							<input type="hidden" name="boardNo" value="${comment.boardNo}">
 							<input type="hidden" name="commentNo" value="${comment.commentNo}">
 							<textarea name="commentContent" rows="3" class="form-control mb-2">${comment.commentContent}</textarea>

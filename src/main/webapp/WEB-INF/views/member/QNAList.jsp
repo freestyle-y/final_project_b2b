@@ -6,14 +6,9 @@
 <meta charset="UTF-8">
 <%@ include file="/WEB-INF/common/head.jsp"%>
 <title>문의 내역</title>
-<!-- font -->
-<link href="https://cdn.jsdelivr.net/gh/sunn-us/SUIT/fonts/static/woff2/SUIT.css" rel="stylesheet">
-<!-- Bootstrap5 -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
-	body { font-family: "SUIT", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", Arial, sans-serif;
-		background: #fff; }
-	a { text-decoration: none; }
+	body { font-family: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", Arial, sans-serif; }
+	a { text-decoration: none; color: inherit; }
 	.board-wrap { max-width: 1040px; margin: 0 auto; padding: 24px 12px; }
 	.board-tools { display:flex; gap:8px; align-items:center; justify-content:flex-end; margin-bottom:12px; }
 	.board-total { color:#6c757d; font-size:.9rem; margin-right:auto; }
@@ -121,16 +116,15 @@
 					<c:if test="${page.hasPrevBlock()}">
 						<li>
 							<a href="?currentPage=${page.startPage - 1}&searchWord=${page.searchWord}">
-								<i class="bi bi-arrow-left"></i>
-								<span class="d-none d-sm-inline">이전</span>
+								<i class="bi bi-chevron-left"></i>
 							</a>
 						</li>
 					</c:if>
 	
 					<!-- 페이지 번호 -->
 					<c:forEach begin="${page.startPage}" end="${page.endPage}" var="i">
-						<li class="${i == page.currentPage ? 'active' : ''}">
-							<a href="?currentPage=${i}&searchWord=${page.searchWord}">${i}</a>
+						<li>
+							<a href="?currentPage=${i}&searchWord=${page.searchWord}" class="${i == page.currentPage ? 'active' : ''}">${i}</a>
 						</li>
 					</c:forEach>
 	
@@ -138,8 +132,7 @@
 					<c:if test="${page.hasNextBlock()}">
 						<li>
 							<a href="?currentPage=${page.endPage + 1}&searchWord=${page.searchWord}">
-								<span class="d-none d-sm-inline">다음</span>
-								<i class="bi bi-arrow-right"></i>
+								<i class="bi bi-chevron-right"></i>
 							</a>
 						</li>
 					</c:if>

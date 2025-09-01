@@ -7,33 +7,21 @@
 <%@ include file="/WEB-INF/common/head.jsp"%>
 <title>공지사항</title>
 <style>
-    table {
-        width: 60%;
-        border-collapse: collapse;
-        text-align: center;
-        margin: auto;
-    }
-    th, td {
-        border: 1px solid #ccc;
-        padding: 8px;
-    }
-    .pagination {
-        margin: 20px auto;
-        text-align: center;
-    }
-    .pagination a {
-        display: inline-block;
-        margin: 0 5px;
-        padding: 5px 10px;
-        border: 1px solid #ccc;
-        text-decoration: none;
-        color: #333;
-    }
-    .pagination a.active {
-        background: #333;
-        color: #fff;
-        font-weight: bold;
-    }
+	body { font-family: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", Arial, sans-serif; }
+	a { text-decoration: none; color: inherit; }
+	.board-wrap { max-width: 1040px; margin: 0 auto; padding: 24px 12px; }
+	.board-tools { display:flex; gap:8px; align-items:center; justify-content:flex-end; margin-bottom:12px; }
+	.board-total { color:#6c757d; font-size:.9rem; margin-right:auto; }
+	.board-search { display:flex; gap:6px; }
+	.board-table { width:100%; border-top:2px solid #111; }
+	.board-table th, .board-table td { padding:14px 12px; border-bottom:1px solid #e9ecef; }
+	.col-no { width:80px; text-align:center; color:#666; }
+	.col-date { width:250px; text-align:center; color:#666; }
+	.col-title { text-align:left; }
+	.col-view { width:80px; text-align:center; color:#666; }
+	.title-ellipsis { display:inline-block; max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom; }
+	.badge-status { margin-left:6px; vertical-align:middle; }
+	.lock { margin-left:6px; color:#adb5bd; }
 </style>
 </head>
 <body>
@@ -43,52 +31,97 @@
 
 <main class="main">
 	
-	<h1>공지사항</h1>
+	<!-- Page Title -->
+	<div class="page-title light-background">
+		<div class="container d-lg-flex justify-content-between align-items-center">
+			<h1 class="mb-2 mb-lg-0">공지사항</h1>
+			<nav class="breadcrumbs">
+				<ol>
+					<li><%@include file="/WEB-INF/common/home.jsp"%></li>
+					<li class="current">Notice</li>
+				</ol>
+			</nav>
+		</div>
+	</div>
+	<!-- End Page Title -->
 	
-	<a href="/public/FAQList">자주 묻는 질문</a> /
-	<a href="/member/QNAList">문의 내역</a> /
-	<a href="/member/QNAWrite">1:1 문의</a> /
-	<a href="/public/noticeList">공지사항</a>
+	<div class="board-wrap">
 	
-	<table border="1">
-		<tr>
-			<th>번호</th>
-			<th>제목</th>
-			<th>작성일시</th>
-			<th>조회수</th>
-		</tr>
+		<!-- 총 건수 / 문의 등록 페이지 / 검색 -->
+		<div class="board-tools">
+			<div class="board-total">총 ${page.totalCount}건</div>
+			<div class="board-search">
+				<select class="form-select form-select-sm" style="width: 110px;">
+					<option selected>제목</option>
+					<!-- ※ 현재는 제목 검색만 사용. 서버에서 필드 분기 안 하면 고정 유지 -->
+				</select>
+				<input type="text" id="searchWord" value="${page.searchWord}" class="form-control form-control-sm" placeholder="검색어 입력">
+				<button type="button" id="searchBtn" class="btn btn-dark btn-sm">
+					<i class="bi bi-search"></i>
+				</button>
+			</div>
+		</div>
 		
-		<c:forEach var="notice" items="${noticeList}">
-			<tr>
-				<td>${notice.boardNo}</td>
-				<td><a href="/public/noticeOne?boardNo=${notice.boardNo}">${notice.boardTitle}</a></td>
-				<td>${notice.createDate}</td>
-				<td>${notice.viewCount}</td>
-			</tr>
-		</c:forEach>
-	</table>
+		<!-- 목록 테이블 -->
+		<table class="board-table">
+			<thead>
+				<tr>
+					<th class="col-no">번호</th>
+					<th class="col-title">제목</th>
+					<th class="col-date">등록일</th>
+					<th class="col-view">조회수</th>
+				</tr>
+			</thead>
+			<tbody>
+				<c:forEach var="notice" items="${noticeList}">
+					<tr>
+						<td class="col-no">${notice.boardNo}</td>
+						<td class="col-title">
+							<a href="/public/noticeOne?boardNo=${notice.boardNo}" class="text-decoration-none text-dark">
+								<span class="title-ellipsis">${notice.boardTitle}</span>
+							</a>
+						</td>
+						<td class="col-date">${notice.createDate}</td>
+						<td class="col-view">${notice.viewCount}</td>
+					</tr>
+				</c:forEach>
+			</tbody>
+		</table>
 	
-	<!-- 페이징 영역 -->
-	<div class="pagination">
-		<c:if test="${page.hasPrevBlock()}">
-			<a href="?currentPage=${page.startPage - 1}&searchWord=${page.searchWord}">이전</a>
-		</c:if>
-
-		<c:forEach begin="${page.startPage}" end="${page.endPage}" var="i">
-			<a href="?currentPage=${i}&searchWord=${page.searchWord}" class="${i == page.currentPage ? 'active' : ''}">${i}</a>
-		</c:forEach>
-
-		<c:if test="${page.hasNextBlock()}">
-			<a href="?currentPage=${page.endPage + 1}&searchWord=${page.searchWord}">다음</a>
-		</c:if>
+		<!-- 페이징 영역 -->
+		<div class="category-pagination mt-4">
+			<nav>
+				<ul class="justify-content-center">
+					<!-- 이전 버튼 -->
+					<c:if test="${page.hasPrevBlock()}">
+						<li>
+							<a href="?currentPage=${page.startPage - 1}&searchWord=${page.searchWord}">
+								<i class="bi bi-chevron-left"></i>
+							</a>
+						</li>
+					</c:if>
+	
+					<!-- 페이지 번호 -->
+					<c:forEach begin="${page.startPage}" end="${page.endPage}" var="i">
+						<li>
+							<a href="?currentPage=${i}&searchWord=${page.searchWord}" class="${i == page.currentPage ? 'active' : ''}">${i}</a>
+						</li>
+					</c:forEach>
+	
+					<!-- 다음 버튼 -->
+					<c:if test="${page.hasNextBlock()}">
+						<li>
+							<a href="?currentPage=${page.endPage + 1}&searchWord=${page.searchWord}">
+								<i class="bi bi-chevron-right"></i>
+							</a>
+						</li>
+					</c:if>
+				</ul>
+			</nav>
+		</div>
+		
 	</div>
-
-	<!-- 검색 영역 -->
-	<div style="text-align: center;">
-		<input type="text" id="searchWord" value="${page.searchWord}" placeholder="제목 검색">
-		<button type="button" id="searchBtn">검색</button>
-	</div>
-
+	
 </main>
 
 <!-- 공통 풋터 -->

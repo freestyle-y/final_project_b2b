@@ -8,6 +8,9 @@
 <title>1:1 문의 수정</title>
 <!-- Froala CSS -->
 <link href="https://cdn.jsdelivr.net/npm/froala-editor@4.0.15/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
+<style>
+	body { font-family: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", Arial, sans-serif; }
+</style>
 </head>
 <body>
 
