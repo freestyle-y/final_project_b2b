@@ -141,8 +141,8 @@
                 </c:choose>
               </td>
               <td>
-              	<a href="/admin/contractOne?contractNo=${con.contractOrderNo}">
-	              	${con.contractOrderNo}
+              	<a href="/admin/contractOne?contractNo=${con.contractNo}">
+	              	${con.contractNo}
               	</a>	
               </td>
             </tr>

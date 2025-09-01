@@ -4,7 +4,7 @@
 	<insert id="insertContainer" parameterType="com.example.trade.dto.Container">
 		INSERT INTO container (
 			container_location,
-			contract_order_no
+			contract_no
 		) VALUES (
 			#{containerLocation},
 			#{contractNo}
@@ -14,7 +14,7 @@
 	<select id="getContainerList" resultType="com.example.trade.dto.Container">
 		SELECT container_no AS containerNo
 			  ,container_location AS containerLocation
-			  ,contract_order_no AS contractOrderNo
+			  ,contract_no AS contractNo
 		FROM container
 	</select>
 	
@@ -26,7 +26,7 @@
 	<select id="getContainerOne" parameterType="int" resultType="com.example.trade.dto.Container">
 	SELECT container_no AS containerNo,
 	       container_location AS containerLocation,
-	       contract_order_no AS contractOrderNo
+	       contract_no AS contractNo
 	FROM container
 	WHERE container_no = #{containerNo}
 </select>
@@ -34,7 +34,7 @@
 <update id="updateContainer" parameterType="com.example.trade.dto.Container">
 	UPDATE container
 	SET container_location = #{containerLocation},
-	    contract_order_no = #{contractOrderNo}
+	    contract_no = #{contractrNo}
 	WHERE container_no = #{containerNo}
 </update>
 	

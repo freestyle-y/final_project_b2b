@@ -3,31 +3,38 @@
 <mapper
 	namespace="com.example.trade.mapper.FinalPaymentHistoryMapper">
 	<!-- /com/example/trade/mapper/FinalPaymentHistoryMapper.xml -->
-	<select id="getFinalList"
-		resultType="com.example.trade.dto.Contract">
-		SELECT
-		c.down_payment AS downPayment
-		, c.down_payment_date AS downPaymentDate
-		, c.down_payment_status AS downPaymentStatus
-		, c.final_payment AS finalPayment
-		, c.final_payment_date AS finalPaymentDate
-		, c.final_payment_status AS finalPaymentStatus
-		, c.contract_no AS contractNo
-		, ct.container_no AS containerNo
-		, /* 최근 배송상태(없으면 NULL) */                          <!-- [수정] 추가 -->
-		(SELECT cd3.contract_delivery_status
-		FROM contract_delivery cd3
-		WHERE cd3.container_no = ct.container_no
-		ORDER BY cd3.contract_delivery_time DESC
-		LIMIT 1) AS latestDeliveryStatus
-		, /* 배송 입력 여부: 있으면 1, 없으면 0 */                 <!-- [수정] 추가 -->
-		EXISTS (SELECT 1
-		FROM contract_delivery cd2
-		WHERE cd2.container_no = ct.container_no)
-		AS deliveryExist
-		FROM contract c
-		LEFT JOIN container ct
-		ON c.contract_no = ct.contract_order_no;
-	</select>
+<select id="getFinalList" resultType="com.example.trade.dto.Contract">
+SELECT
+     c.contract_no          AS contractNo
+   , c.down_payment         AS downPayment
+   , c.down_payment_status  AS downPaymentStatus
+   , c.down_payment_date    AS downPaymentDate
+   , c.final_payment        AS finalPayment
+   , c.final_payment_status AS finalPaymentStatus
+   , c.final_payment_date   AS finalPaymentDate
+   , ct.container_no        AS containerNo
+   , EXISTS (
+       SELECT 1
+       FROM contract_delivery cd
+       WHERE cd.container_no = ct.container_no
+     ) AS deliveryExist
+   , CASE
+       WHEN ct.container_no IS NOT NULL
+            AND DATE(c.final_payment_date) &lt; CURDATE()
+            AND COALESCE((
+                  SELECT cd3.contract_delivery_status
+                  FROM contract_delivery cd3
+                  WHERE cd3.container_no = ct.container_no
+                  ORDER BY cd3.contract_delivery_time DESC, cd3.contract_delivery_no DESC
+                  LIMIT 1
+                ), '') &lt;&gt; 'DS009'
+       THEN 1 ELSE 0
+     END AS latestDeliveryStatus
+FROM contract c
+LEFT JOIN container ct ON ct.contract_no = c.contract_no
+ORDER BY c.contract_no DESC;
+
+</select>
+
 
 </mapper>

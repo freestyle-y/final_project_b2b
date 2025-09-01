@@ -129,38 +129,42 @@
                 ${row.formattedFinalPaymentDate}
               </td>
 
-              <td>
-                <c:choose>
-                  <c:when test="${empty row.containerNo}">
-                    -
-                  </c:when>
-                  <c:when test="${row.deliveryExist == 1}">
-                    <span class="badge rounded-pill text-bg-success">완료</span>
-                  </c:when>
-                  <c:otherwise>
-                    <span class="badge rounded-pill text-bg-warning text-dark">미입력</span>
-                  </c:otherwise>
-                </c:choose>
-              </td>
-
-              <td>
-                <c:choose>
-                  <c:when test="${row.deliveryExist == 1}">
-                    <button type="button"
-                            class="btn btn-outline-secondary btn-sm"
-                            data-container-no="${row.containerNo}"
-                            onclick="recallProductCancel(this)">회수취소</button>
-                  </c:when>
-                  <c:otherwise>
-                    <!-- 기본은 숨김: draw마다 조건 맞으면 보이게 -->
-                    <button type="button"
-                            class="btn btn-warning btn-sm retrieval-btn"
-                            style="display:none;"
-                            data-container-no="${row.containerNo}"
-                            onclick="recallProduct(this)">상품회수</button>
-                  </c:otherwise>
-                </c:choose>
-              </td>
+			<td>
+			  <c:choose>
+			    <c:when test="${empty row.containerNo}">
+			      -
+			    </c:when>
+			    <c:when test="${row.deliveryExist == 0}">
+			      <span class="badge rounded-pill text-bg-secondary text-dark">미입력</span>
+			    </c:when>			
+			    <c:otherwise>
+			      <span class="badge rounded-pill text-bg-warning text-dark">입력완료</span>
+			    </c:otherwise>
+			  </c:choose>
+			</td>
+						
+			<td>
+			  <c:choose>
+			    <c:when test="${empty row.containerNo}">
+			      <!-- 컨테이너 없음: 버튼 없음 -->
+			    </c:when>
+			    <c:when test="${row.deliveryExist == 0}">
+			      <!-- 배송 미입력: 버튼 없음 -->
+			    </c:when>
+			    <c:when test="${row.latestDeliveryStatus == 1}">
+			      <button type="button"
+			              class="btn btn-warning btn-sm"
+			              data-container-no="${row.containerNo}"
+			              onclick="recallProduct(this)">상품회수</button>
+			    </c:when>
+			    <c:otherwise>
+			      <button type="button"
+			              class="btn btn-outline-secondary btn-sm"
+			              data-container-no="${row.containerNo}"
+			              onclick="recallProductCancel(this)">회수취소</button>
+			    </c:otherwise>
+			  </c:choose>
+			</td>
             </tr>
           </c:forEach>
         </tbody>

@@ -1,32 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.trade.mapper.RecallProductMapper">
+  <select id="getRecallProductList" resultType="com.example.trade.dto.Container">
+    SELECT
+       ct.container_no AS containerNo
+      ,ct.contract_no AS contractNo
+	  ,ct.container_location AS containerLocation
+	  ,u.`name` AS `name`
+	  ,u.company_name AS companyName
+	  ,pr.product_name AS productName
+	  ,pr.product_option AS productOption
+	  ,pr.product_quantity AS productQuantity
+	  ,u.address AS address
+	  ,u.detail_address AS detailAddress
+
+    FROM container ct INNER JOIN contract c ON ct.contract_no = c.contract_no
+    						INNER JOIN quotation q ON c.quotation_no = q.quotation_no
+    						INNER JOIN product_request pr ON q.product_request_no = pr.product_request_no
+    						INNER JOIN `user` u ON pr.create_user = u.id
+    						INNER JOIN contract_delivery cd ON ct.container_no = cd.container_no
+    WHERE contract_delivery_status = 'DS009'
+    ORDER BY ct.container_no DESC
+  </select>
+
 	<update id="updateContractDeliveryStatus">
 		UPDATE contract_delivery
 		SET contract_delivery_status = 'DS009'
 		WHERE container_no = #{containerNo}
 	</update>
-	
-	<select id="getRecallProductList" resultType="com.example.trade.dto.Container">
-	SELECT 
-		 c.container_no AS containerNo
-		,c.container_location AS containerLocation
-		,a.address AS address
-		,a.detail_address AS detailAddress
-		,u.`name` AS `name`
-		,u.company_name AS companyName
-		,pr.product_name AS productName
-		,pr.product_option AS productOption
-		,pr.product_quantity AS productQuantity
-	
-	FROM container c INNER JOIN contract_delivery cd ON c.container_no = cd.container_no
-				     INNER JOIN contract ct ON c.contract_order_no = ct.contract_no
-				     INNER JOIN quotation q ON ct.quotation_no = q.quotation_no
-				     INNER JOIN product_request pr ON q.product_request_no = pr.product_request_no
-				     INNER JOIN address a ON cd.address_no = a.address_no
-				     INNER JOIN user u ON a.user_id = u.id
-	WHERE cd.contract_delivery_status = 'DS009'
-	</select>
 	
 	<update id="updateContractDeliveryRollback">
 		UPDATE contract_delivery
