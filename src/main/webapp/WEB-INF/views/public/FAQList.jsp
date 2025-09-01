@@ -81,7 +81,7 @@
 								1:1 문의를 남겨주시면 확인 후 빠른 시간 내에 답변을 드리며,
 								더 나은 서비스를 제공할 수 있도록 항상 노력하겠습니다.
 							</p>
-							<a href="#" class="btn btn-primary">Contact Us</a>
+							<a href="/member/QNAList" class="btn btn-primary">1:1 문의</a>
 						</div>
 					</div>
 				</div>
@@ -145,7 +145,7 @@
 		</div>
 	</section>
 
-	<!-- 공통 풋터 -->
+<!-- 공통 풋터 -->
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

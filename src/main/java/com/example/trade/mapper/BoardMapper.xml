@@ -31,16 +31,27 @@
 	<!-- 접속한 사용자의 문의 내역 -->
 	<select id="selectQNAListById" parameterType="com.example.trade.dto.Page" resultType="map">
 		SELECT
-			board_no AS boardNo,
-			board_title AS boardTitle
-		FROM board
-		WHERE board_code = 'BC002'
-		AND create_user = #{username}
-		AND use_status = 'Y'
+			b.board_no AS boardNo,
+			b.board_title AS boardTitle,
+			b.board_content AS boardContent,
+			b.create_user AS createUser,
+			b.create_date AS createDate,
+			b.update_user AS updateUser,
+			b.update_date AS updateDate,
+			b.use_status AS useStatus,
+			b.view_count AS viewCount,
+			IFNULL(t.commentCount, 0) AS commentCount
+		FROM board b LEFT JOIN (SELECT board_no, COUNT(*) AS commentCount
+								FROM comment
+								WHERE use_status = 'Y'
+								GROUP BY board_no) t ON b.board_no = t.board_no
+		WHERE b.board_code = 'BC002'
+		AND b.create_user = #{username}
+		AND b.use_status = 'Y'
 		<if test="searchWord != null and searchWord != ''">
-			AND board_title LIKE CONCAT('%', #{searchWord}, '%')
+			AND b.board_title LIKE CONCAT('%', #{searchWord}, '%')
 		</if>
-		ORDER BY board_no DESC
+		ORDER BY b.board_no DESC
 		LIMIT #{beginRow}, #{rowPerPage}
 	</select>
 	
