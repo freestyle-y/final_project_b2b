@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.trade.mapper.AdminMapper">
 	<!-- 자주 묻는 질문(FAQ) 목록 -->
-	<select id="selectFAQList" parameterType="com.example.trade.dto.Page" resultType="map">
+	<select id="selectFAQList" resultType="map">
 		SELECT
 			board_no AS boardNo,
 			board_title AS boardTitle,
@@ -73,7 +73,7 @@
 	</update>
 
 	<!-- QNA 목록 조회 -->
-	<select id="selectQNAListById" parameterType="com.example.trade.dto.Page" resultType="map">
+	<select id="selectQNAListById" resultType="map">
 		SELECT
 			board_no AS boardNo,
 			board_title AS boardTitle,
@@ -323,14 +323,13 @@
 					FROM product_request
 					GROUP BY product_request_no) t ON q.product_request_no = t.product_request_no
 		INNER JOIN address a ON t.address_no = a.address_no
-		INNER JOIN contract_order co ON c.contract_no = co.contract_no
-		INNER JOIN container ct ON co.contract_order_no = ct.contract_order_no
+		INNER JOIN container ct ON c.contract_no = ct.contract_no
 		LEFT JOIN contract_delivery cd ON ct.container_no = cd.container_no
 		ORDER BY c.contract_no DESC
 	</select>
 	
 	<!-- 개인 회원 배송 현황 조회 -->
-	<select id="selectPersonalDeliveryList" parameterType="com.example.trade.dto.Page" resultType="map">
+	<select id="selectPersonalDeliveryList" resultType="map">
 		SELECT 
 			o.order_no AS orderNo,
 			o.sub_order_no AS subOrderNo,
@@ -352,12 +351,7 @@
 		LEFT JOIN comm_tbl ct1 ON o.order_status = ct1.code_number
 		LEFT JOIN comm_tbl ct2 ON o.delivery_status = ct2.code_number
 		WHERE u.customer_category = 'CC003'
-		<if test="searchWord != null and searchWord != ''">
-			AND (o.order_no LIKE CONCAT('%', #{searchWord}, '%')
-			OR u.id LIKE CONCAT('%', #{searchWord}, '%'))
-		</if>
 		ORDER BY o.order_no DESC
-		LIMIT #{beginRow}, #{rowPerPage}
 	</select>
 	
 	<!-- 개인 회원 배송 전체 행 수 조회 -->
