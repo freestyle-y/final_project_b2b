@@ -137,8 +137,8 @@ public class AdminService {
 	}
 
 	// 개인 회원 배송 현황 조회
-	public List<Map<String, Object>> getPersonalDeliveryList(Page page) {
-		return adminMapper.selectPersonalDeliveryList(page);
+	public List<Map<String, Object>> getPersonalDeliveryList() {
+		return adminMapper.selectPersonalDeliveryList();
 	}
 
 	// 개인 회원 배송 전체 행 수 조회

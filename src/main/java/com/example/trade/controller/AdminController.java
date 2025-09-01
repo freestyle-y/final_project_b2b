@@ -16,7 +16,6 @@ import com.example.trade.dto.Comment;
 import com.example.trade.dto.ContractDelivery;
 import com.example.trade.dto.DeliveryHistory;
 import com.example.trade.dto.Order;
-import com.example.trade.dto.Page;
 import com.example.trade.service.AdminService;
 
 @Controller
@@ -344,25 +343,13 @@ public class AdminController {
 	
 	// 개인 회원 배송 현황 페이지
 	@GetMapping("/admin/personalDeliveryList")
-	public String personalDeliveryList(Model model
-									,@RequestParam(defaultValue = "10") int rowPerPage
-									,@RequestParam(defaultValue = "1") int currentPage
-									,@RequestParam(defaultValue = "") String searchWord
-									,@RequestParam(defaultValue = "all") String searchType) {
-		
-	    // Page 객체 생성 (DB 조회 전 totalCount = 0으로 초기화)
-	    Page page = new Page(rowPerPage, currentPage, 0, searchWord, searchType);
-	    
-		// 전체 행 수 조회
-		int totalCount = adminService.getPersonalDeliveryTotalCount(page);
-		page.setTotalCount(totalCount);
+	public String personalDeliveryList(Model model) {
 		
 		// 개인 회원 배송 현황 조회
-		List<Map<String, Object>> personalDeliveryList = adminService.getPersonalDeliveryList(page);
+		List<Map<String, Object>> personalDeliveryList = adminService.getPersonalDeliveryList();
 		
 		// 모델에 값 전달
 		model.addAttribute("personalDeliveryList", personalDeliveryList);
-		model.addAttribute("page", page);
 		
 		return "admin/personalDeliveryList";
 	}

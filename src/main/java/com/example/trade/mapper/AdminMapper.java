@@ -82,7 +82,7 @@ public interface AdminMapper {
 	List<Map<String, Object>> selectBizDeliveryList();
 
 	// 개인 회원 배송 현황 조회
-	List<Map<String, Object>> selectPersonalDeliveryList(Page page);
+	List<Map<String, Object>> selectPersonalDeliveryList();
 
 	// 개인 회원 배송 전체 행 수 조회
 	int selectPersonalDeliveryTotalCount(Page page);
