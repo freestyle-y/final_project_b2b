@@ -9,12 +9,11 @@ import com.example.trade.dto.Container;
 @Mapper
 public interface RecallProductMapper {
 
-    /** RC_REQ append */
-    void updateContractDeliveryStatus(int containerNo);
+	List<Container> getRecallProductList();
 
-    /** 리스트(최신 배송상태/존재여부 포함해서 뽑아도 Container에 매핑되는 것만 바인딩됨) */
-    List<Container> getRecallProductList();
+	void updateContractDeliveryStatus(int containerNo);
+    
+	void updateContractDeliveryRollback(int containerNo);
 
-    /** RC_CANCEL append */
-    void updateContractDeliveryRollback(int containerNo);
+
 }

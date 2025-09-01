@@ -136,5 +136,10 @@ public class OrderController {
         return "personal/orderOne";
     }
     
+    @GetMapping("/personal/orderResult")
+    public String orderResult() {
+    	
+    	return "personal/orderResult";
+    }
 
 }
