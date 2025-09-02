@@ -3,15 +3,17 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
-<html lang="ko">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <%@ include file="/WEB-INF/common/head.jsp"%>
-  <title>주문 목록</title>
+<meta charset="UTF-8">
+<%@ include file="/WEB-INF/common/head.jsp"%>
+<title>주문 목록</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
-<body class="account-page">
 
-  <%@ include file="/WEB-INF/common/header/header.jsp"%>
+<body>
+<!-- 공통 헤더 -->
+  <%@ include file="/WEB-INF/common/header/header.jsp" %>
 
   <main class="main">
 
@@ -306,172 +308,199 @@
   <!-- Vendor JS -->
   <script src="<c:url value='/assets/vendor/bootstrap/js/bootstrap.bundle.min.js'/>"></script>
 
-  <!-- 검색/정렬/필터/페이징 -->
-  <script>
-  (function(){
-    const grid = document.querySelector('.orders-grid');
-    if (!grid) return;
+<!-- 검색/정렬/필터/페이징 -->
+<script>
+(function(){
+  const grid = document.querySelector('.orders-grid');
+  if (!grid) return;
 
-    const cards = Array.from(grid.children).filter(function(el){ return el.classList.contains('order-card'); });
-    const searchInput = document.getElementById('orderSearch');
-    const pagination = document.getElementById('pagination');
-    const emptyState = document.getElementById('emptyState');
+  // ✅ children → 명시적 선택자 (안정성)
+  const cards = Array.from(grid.querySelectorAll('.order-card'));
+  const searchInput = document.getElementById('orderSearch');
+  const pagination = document.getElementById('pagination');
+  const emptyState = document.getElementById('emptyState');
 
-    const pageSizeMenu = document.getElementById('pageSizeMenu');
-    const pageSizeLabel = document.getElementById('pageSizeLabel');
-    // 기존 개별 바인딩 대신 이벤트 위임으로 교체 (버튼 미동작 개선)
-    // const pageSizeLinks = pageSizeMenu ? Array.from(pageSizeMenu.querySelectorAll('.js-pagesize')) : [];
+  const pageSizeMenu = document.getElementById('pageSizeMenu');
+  const pageSizeLabel = document.getElementById('pageSizeLabel');
 
-    const state = { filter: 'all', query: '', page: 1, pageSize: 5 };
+  const state = { filter: 'all', query: '', page: 1, pageSize: 5 };
 
-    function matchesFilter(card){
-      return state.filter === 'all' || (card.dataset.status||'').toLowerCase() === state.filter;
-    }
-    function matchesQuery(card){
-      if (!state.query) return true;
-      const q = state.query;
-      const orderNo = (card.dataset.orderNo || '').toLowerCase();
-      const text = card.textContent.toLowerCase();
-      return orderNo.indexOf(q) > -1 || text.indexOf(q) > -1;
-    }
-    function tsOf(card){
-      // ISO 문자열 / 또는 공백형을 모두 처리
-      const raw = (card.dataset.orderTs || '').trim();
-      const iso  = raw.includes('T') ? raw : raw.replace(' ', 'T');
-      const t = Date.parse(iso);
-      return isNaN(t) ? 0 : t;
-    }
+  function matchesFilter(card){
+    return state.filter === 'all' || (card.dataset.status||'').toLowerCase() === state.filter;
+  }
+  function matchesQuery(card){
+    if (!state.query) return true;
+    const q = state.query;
+    const orderNo = (card.dataset.orderNo || '').toLowerCase();
+    const text = card.textContent.toLowerCase();
+    return orderNo.indexOf(q) > -1 || text.indexOf(q) > -1;
+  }
 
-    // ★ 최신순 정렬 포함
-    function getFiltered(){
-      return cards
-        .filter(function(c){ return matchesFilter(c) && matchesQuery(c); })
-        .sort(function(a,b){ return tsOf(b) - tsOf(a); }); // desc
-    }
+  // ts 파서 + 주문번호 기반 보정
+  function tsFromAttr(card){
+    const raw = (card.dataset.orderTs || '').trim();
+    if (!raw) return NaN;
+    const iso = raw.includes('T') ? raw : raw.replace(' ', 'T');
+    return Date.parse(iso);
+  }
+  function tsFromOrderNo(card){
+    const no = (card.dataset.orderNo || '').trim();
+    const m = no.match(/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})/); // yyyy MM dd HH mm
+    if (!m) return NaN;
+    const [, y, mo, d, h, mi] = m;
+    const dt = new Date(`${y}-${mo}-${d}T${h}:${mi}:00`);
+    return dt.getTime();
+  }
+  function tsOf(card){
+    let t = tsFromAttr(card);
+    if (isNaN(t)) t = tsFromOrderNo(card);
+    return isNaN(t) ? 0 : t;
+  }
 
-    function render(){
-      const list = getFiltered();
-      cards.forEach(function(c){ c.style.display = 'none'; });
+  // ✅ 최신순 정렬된 전체 목록 반환
+  function getSortedAll(){
+    return cards.slice().sort((a,b) => tsOf(b) - tsOf(a)); // desc
+  }
 
-      const total = list.length;
-      const totalPages = Math.max(1, Math.ceil(total / state.pageSize));
-      if (state.page > totalPages) state.page = 1;
+  // ✅ 필터/검색 적용 후 목록
+  function getFiltered(sortedAll){
+    return sortedAll.filter(c => matchesFilter(c) && matchesQuery(c));
+  }
 
-      const start = (state.page - 1) * state.pageSize;
-      const end = start + state.pageSize;
-      list.slice(start, end).forEach(function(c){ c.style.display = ''; });
+  function render(){
+    // 1) ✅ DOM을 최신순으로 재배치 (핵심 수정)
+    const sortedAll = getSortedAll();
+    const frag = document.createDocumentFragment();
+    sortedAll.forEach(c => frag.appendChild(c)); // appendChild는 이동(reorder)
+    grid.appendChild(frag);
 
-      emptyState.classList.toggle('d-none', total !== 0);
-      renderPagination(totalPages);
-    }
+    // 2) 필터/검색 후 페이징
+    const list = getFiltered(sortedAll);
 
-    function renderPagination(totalPages){
-      pagination.innerHTML = '';
+    // 먼저 전부 숨기고
+    cards.forEach(c => { c.style.display = 'none'; });
 
-      var total = (isFinite(totalPages) && totalPages > 0) ? totalPages : 1;
+    const total = list.length;
+    const totalPages = Math.max(1, Math.ceil(total / state.pageSize));
+    if (state.page > totalPages) state.page = 1;
 
-      // Prev
-      var prevDisabled = (state.page === 1);
-      var prev = document.createElement('button');
-      prev.type = 'button';
-      prev.className = 'btn-prev' + (prevDisabled ? ' disabled' : '');
-      if (prevDisabled) prev.setAttribute('disabled','');
-      prev.setAttribute('aria-label','이전 페이지');
-      prev.innerHTML = '<i class="bi bi-chevron-left"></i>';
-      prev.addEventListener('click', function(){ if(state.page > 1){ state.page--; render(); }});
-      pagination.appendChild(prev);
+    const start = (state.page - 1) * state.pageSize;
+    const end = start + state.pageSize;
+    // 보여줄 페이지만 표시 (DOM 순서는 이미 최신순으로 정렬됨)
+    list.slice(start, end).forEach(c => { c.style.display = ''; });
 
-      // Page numbers
-      var pagesWrap = document.createElement('div');
-      pagesWrap.className = 'page-numbers';
+    emptyState.classList.toggle('d-none', total !== 0);
+    renderPagination(totalPages);
+  }
 
-      var win = 2;
-      var s = Math.max(1, state.page - win);
-      var e = Math.min(total, state.page + win);
-      if (state.page <= win) e = Math.min(total, 1 + 2*win);
-      if (state.page + win > total) s = Math.max(1, total - 2*win);
+  function renderPagination(totalPages){
+    pagination.innerHTML = '';
+    const total = (isFinite(totalPages) && totalPages > 0) ? totalPages : 1;
 
-      function addBtn(p){
-        var b = document.createElement('button');
-        b.type = 'button';
-        if (p === state.page) b.classList.add('active');
-        b.setAttribute('aria-label', p + '페이지');
-        b.textContent = String(p);
-        b.addEventListener('click', function(){ state.page = p; render(); });
-        pagesWrap.appendChild(b);
-      }
+    const prev = document.createElement('button');
+    prev.type = 'button';
+    prev.className = 'btn-prev' + (state.page === 1 ? ' disabled' : '');
+    if (state.page === 1) prev.setAttribute('disabled','');
+    prev.setAttribute('aria-label','이전 페이지');
+    prev.innerHTML = '<i class="bi bi-chevron-left"></i>';
+    prev.addEventListener('click', () => { if(state.page > 1){ state.page--; render(); }});
+    pagination.appendChild(prev);
 
-      if (s > 1){
-        addBtn(1);
-        if (s > 2){
-          var gap1 = document.createElement('span');
-          gap1.className = 'gap';
-          gap1.setAttribute('aria-hidden','true');
-          gap1.textContent = '…';
-          pagesWrap.appendChild(gap1);
-        }
-      }
-      for (var p = s; p <= e; p++) addBtn(p);
-      if (e < total){
-        if (e < total - 1){
-          var gap2 = document.createElement('span');
-          gap2.className = 'gap';
-          gap2.setAttribute('aria-hidden','true');
-          gap2.textContent = '…';
-          pagesWrap.appendChild(gap2);
-        }
-        addBtn(total);
-      }
+    const pagesWrap = document.createElement('div');
+    pagesWrap.className = 'page-numbers';
+    const win = 2;
+    let s = Math.max(1, state.page - win);
+    let e = Math.min(total, state.page + win);
+    if (state.page <= win) e = Math.min(total, 1 + 2*win);
+    if (state.page + win > total) s = Math.max(1, total - 2*win);
 
-      if (total === 1 && pagesWrap.children.length === 0) addBtn(1);
-      pagination.appendChild(pagesWrap);
-
-      // Next
-      var nextDisabled = (state.page === total);
-      var next = document.createElement('button');
-      next.type = 'button';
-      next.className = 'btn-next' + (nextDisabled ? ' disabled' : '');
-      if (nextDisabled) next.setAttribute('disabled','');
-      next.setAttribute('aria-label','다음 페이지');
-      next.innerHTML = '<i class="bi bi-chevron-right"></i>';
-      next.addEventListener('click', function(){ if(state.page < total){ state.page++; render(); }});
-      pagination.appendChild(next);
+    function addBtn(p){
+      const b = document.createElement('button');
+      b.type = 'button';
+      if (p === state.page) b.classList.add('active');
+      b.setAttribute('aria-label', p + '페이지');
+      b.textContent = String(p);
+      b.addEventListener('click', () => { state.page = p; render(); });
+      pagesWrap.appendChild(b);
     }
 
-    // input 검색
-    document.addEventListener('input', function(e){
-      if (e.target === searchInput){
-        state.query = (e.target.value||'').trim().toLowerCase();
-        state.page = 1; render();
+    if (s > 1){
+      addBtn(1);
+      if (s > 2){
+        const gap1 = document.createElement('span');
+        gap1.className = 'gap'; gap1.setAttribute('aria-hidden','true'); gap1.textContent = '…';
+        pagesWrap.appendChild(gap1);
       }
-    });
+    }
+    for (let p = s; p <= e; p++) addBtn(p);
+    if (e < total){
+      if (e < total - 1){
+        const gap2 = document.createElement('span');
+        gap2.className = 'gap'; gap2.setAttribute('aria-hidden','true'); gap2.textContent = '…';
+        pagesWrap.appendChild(gap2);
+      }
+      addBtn(total);
+    }
 
-    // ★ 페이지당 보기: 이벤트 위임으로 클릭 처리 + 드롭다운 닫기
-    document.addEventListener('click', function(e){
-      const a = e.target.closest('#pageSizeMenu .js-pagesize');
-      if (!a) return;
-      e.preventDefault();
-      const size = parseInt(a.dataset.size, 10);
-      if (!isNaN(size) && size > 0){
-        state.pageSize = size;
-        if (pageSizeLabel) pageSizeLabel.textContent = a.textContent.trim();
-        state.page = 1;
-        render();
-      }
-      const dropdown = a.closest('.dropdown');
-      if (dropdown){
-        const toggle = dropdown.querySelector('[data-bs-toggle="dropdown"]');
-        if (toggle){
-          const inst = bootstrap.Dropdown.getOrCreateInstance(toggle);
-          inst.hide();
-        }
-      }
-    });
+    if (total === 1 && pagesWrap.children.length === 0) addBtn(1);
+    pagination.appendChild(pagesWrap);
 
-    // 초기 렌더(최신순 반영)
-    render();
-  })();
-  </script>
+    const next = document.createElement('button');
+    next.type = 'button';
+    next.className = 'btn-next' + (state.page === total ? ' disabled' : '');
+    if (state.page === total) next.setAttribute('disabled','');
+    next.setAttribute('aria-label','다음 페이지');
+    next.innerHTML = '<i class="bi bi-chevron-right"></i>';
+    next.addEventListener('click', () => { if(state.page < total){ state.page++; render(); }});
+    pagination.appendChild(next);
+  }
+
+  // 검색
+  document.addEventListener('input', function(e){
+    if (e.target === searchInput){
+      state.query = (e.target.value||'').trim().toLowerCase();
+      state.page = 1; render();
+    }
+  });
+
+  // (숨김 상태지만) 페이지당 보기 드롭다운 로직 유지
+  document.addEventListener('click', function(e){
+    const a = e.target.closest('#pageSizeMenu .js-pagesize');
+    if (!a) return;
+    e.preventDefault();
+    const size = parseInt(a.dataset.size, 10);
+    if (!isNaN(size) && size > 0){
+      state.pageSize = size;
+      if (pageSizeLabel) pageSizeLabel.textContent = a.textContent.trim();
+      state.page = 1;
+      render();
+    }
+    const dropdown = a.closest('.dropdown');
+    if (dropdown){
+      const toggle = dropdown.querySelector('[data-bs-toggle="dropdown"]');
+      if (toggle){
+        const inst = bootstrap.Dropdown.getOrCreateInstance(toggle);
+        inst.hide();
+      }
+    }
+  });
+
+  // 주문번호 클릭 이동(기존 유지)
+  grid.addEventListener('click', function(e){
+    const link = e.target.closest('.order-card .order-id a');
+    if (!link || !grid.contains(link)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const href = link.getAttribute('href');
+    if (href) window.location.assign(href);
+  });
+
+  // 초기 렌더: 최신순 재배치 → 페이징
+  render();
+})();
+</script>
+
+
 
   <!-- Collapse: 배타/재클릭 닫힘/끊김 방지 -->
   <script>
@@ -508,6 +537,57 @@
     });
   })();
   </script>
+<script>
+/* 1) 드롭다운 토글 버튼이면 type="button" 강제(폼 submit 방지) */
+(function ensureBtnType(){
+  const sel = [
+    'header#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"]',
+    '#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"]',
+    'header#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"]',
+    '#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"]'
+  ].join(',');
+
+  document.querySelectorAll(sel).forEach(btn => {
+    if (!btn.hasAttribute('type')) btn.setAttribute('type','button');
+  });
+})();
+
+/* 2) 캡처링 단계에서 좌표 기반 hit-test로 드롭다운 강제 토글 */
+(function forceDropdownToggle(){
+  const getBtns = () => Array.from(document.querySelectorAll(
+    'header#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"],' +
+    '#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"],' +
+    'header#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"],' +
+    '#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"]'
+  ));
+
+  function inside(rect, x, y){
+    return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+  }
+
+  // 캡처링 단계(true)로 등록 → 위에 뭔가 덮여 있어도 좌표로 판별해 토글
+  document.addEventListener('click', function(ev){
+    const x = ev.clientX, y = ev.clientY;
+    const btn = getBtns().find(b => inside(b.getBoundingClientRect(), x, y));
+    if (!btn) return;
+
+    // 기본 동작(폼 제출/포커스 등) 막고 Bootstrap 드롭다운을 직접 토글
+    ev.preventDefault();
+    // ev.stopPropagation(); // 필요시 주석 해제. 기본에선 버블링 유지.
+
+    try {
+      const dd = bootstrap.Dropdown.getOrCreateInstance(btn);
+      dd.toggle();
+    } catch (e) {
+      // bootstrap이 아직 로드 전이면 다음 틱에 재시도
+      setTimeout(() => {
+        const dd = bootstrap.Dropdown.getOrCreateInstance(btn);
+        dd.toggle();
+      }, 0);
+    }
+  }, true);
+})();
+</script>
 
 </body>
 </html>
