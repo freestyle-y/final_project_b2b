@@ -97,7 +97,7 @@
 							<li><a href="/admin/QNAList">문의 내역 관리</a></li>
 						</ul>
 					</li>
-					<li><a href="#">sample1</a></li>
+					<li><a href="/admin/updateCategory">sample1</a></li>
 					<li class="dropdown"><a href="#"><span>sample2</span><i class="bi bi-chevron-down toggle-dropdown"></i></a>
 						<ul>
 							<li><a href="#">Dropdown 1</a></li>

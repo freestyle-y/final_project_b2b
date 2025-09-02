@@ -456,4 +456,14 @@ public class ProductController {
 		model.addAttribute("inventoryList", inventoryList);
 		return "admin/inventoryList";
 	}
+	
+	// test
+	// 관리자 카테고리 추가/수정
+	@GetMapping("/admin/updateCategory")
+	public String updateCategory(Model model) {
+		 List<Map<String, Object>> categoryList = productService.selectAllCategory();
+		 //log.info(categoryList.toString());
+		 model.addAttribute("categoryList", categoryList);
+		return "admin/updateCategory";
+	}
 }

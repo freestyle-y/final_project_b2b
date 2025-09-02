@@ -159,4 +159,10 @@ public interface ProductMapper {
 	List<Address> warehouse(String id);
 	// 재고 창고 수정
 	void updateInventoryAddress(int inventoryId, int addressNo);
+	
+	// 관리자 카테고리 추가/수정
+	List<Map<String, Object>> allCategory();
+	
+	// 카테고리 이름 수정
+	void updateCategoryName(@Param("categoryId") int categoryId, @Param("newName") String newName);
 }
