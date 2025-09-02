@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RewardHistory {
 	private int rewardHistoryNo;
-	private int orderNo;
+	private String orderNo;
 	private int rewardUse;
 }

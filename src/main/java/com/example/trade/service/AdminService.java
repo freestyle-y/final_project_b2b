@@ -13,6 +13,7 @@ import com.example.trade.dto.ContractDelivery;
 import com.example.trade.dto.DeliveryHistory;
 import com.example.trade.dto.Order;
 import com.example.trade.dto.Page;
+import com.example.trade.dto.RewardHistory;
 import com.example.trade.mapper.AdminMapper;
 
 @Service
@@ -232,7 +233,24 @@ public class AdminService {
 	// 반품 완료 처리
 	@Transactional
 	public int updateReturnComplete(Order order) {
-		order.setDeliveryStatus("DS005"); // 반품완료
+		
+		int totalAmount = adminMapper.getTotalAmountByOrder(order); // 전체 결제 금액
+		int returnAmount = adminMapper.getReturnAmountByOrder(order); // 반품 상품 금액
+		int rewardUse = adminMapper.getRewardUseByOrder(order); // 사용한 적립금
+		
+		// 반품 제외 구매 금액
+		int remainAmount = totalAmount - returnAmount;
+		
+		// 반품 시 적립금 규칙 적용
+		// 사용 적립금이 반품 제외 금액의 10% 초과 -> 적립금 원복 + 차액 현금 환불
+		if(rewardUse > remainAmount * 0.1) {
+			RewardHistory rewardHistory = new RewardHistory();
+			rewardHistory.setOrderNo(order.getOrderNo());
+			rewardHistory.setRewardUse(-rewardUse); // 음수 insert
+			adminMapper.refundReward(rewardHistory);
+		}
+		
+		order.setDeliveryStatus("DS005"); // 반품완료로 상태 변경
 		return adminMapper.updateReturnComplete(order);
 	}
 
