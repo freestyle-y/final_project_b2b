@@ -135,18 +135,70 @@
 	
 	<!-- 사용자 ID로 간단한 주문 목록 조회(요약 필드만) -->
 	<select id="getOrderListByUserId" resultType="com.example.trade.dto.Order">
-	    SELECT
-	        order_no AS orderNo,
-	        user_id AS userId,
-	        product_name AS productName,
-	        option_name AS optionName,
-	        option_name_value AS optionNameValue,
-	        order_quantity AS orderQuantity,
-	        price
-	    FROM `order`
-	    WHERE user_id = #{userId}
-	    AND use_status = 'Y'
-	    ORDER BY order_no
+		SELECT
+	        o.order_no              AS orderNo,
+	        o.sub_order_no          AS subOrderNo,
+	        o.parent_sub_order_no   AS parentSubOrderNo,
+	        o.user_id               AS userId,
+	        o.address_no            AS addressNo,
+	        a.address               AS address,
+	        a.detail_address        AS detailAddress,
+	        o.delivery_request      AS deliveryRequest,
+	        o.product_no            AS productNo,
+	        o.product_name          AS productName,
+	        o.option_no             AS optionNo,
+	        o.option_name           AS optionName,
+	        o.option_name_value     AS optionNameValue,
+	        o.order_quantity        AS orderQuantity,
+	        o.price                 AS price,
+	        o.payment_type          AS paymentType,
+	        o.payment_time          AS paymentTime,
+	        o.return_quantity       AS returnQuantity,
+	        o.return_reason         AS returnReason,
+	        o.return_request_time   AS returnRequestTime,
+	        o.return_end_time       AS returnEndTime,
+	        o.exchange_quantity     AS exchangeQuantity,
+	        o.exchange_reason       AS exchangeReason,
+	        o.exchange_request_time AS exchangeRequestTime,
+	        o.exchange_end_time     AS exchangeEndTime,
+	        o.return_delivery_method AS returnDeliveryMethod,
+	        o.order_status          AS orderStatus,
+	        o.delivery_status       AS deliveryStatus,
+	        o.order_time            AS orderTime,
+	        o.order_reward          AS orderReward,
+	        o.order_reward_status   AS orderRewardStatus,
+	        o.review                AS review,
+	        o.grade                 AS grade,
+	        o.review_reward         AS reviewReward,
+	        o.review_reward_status  AS reviewRewardStatus,
+	        o.create_user           AS createUser,
+	        o.create_date           AS createDate,
+	        o.update_user           AS updateUser,
+	        o.update_date           AS updateDate,
+	        o.use_status            AS useStatus,
+	        a.main_address          AS mainAddress,
+			  u.`name`			 		  AS `name`,
+	 		  u.phone					  AS phone,
+			  u.email             	  AS email,
+			  pm.payment_code    	  AS paymentCode,
+			  pm.financial_institution AS financialInstitution,
+			  pm.account_number 	 	  AS accountNumber,
+			  
+	        (
+	            SELECT att.filepath
+	            FROM attachment att
+	            WHERE att.attachment_code = 'PRODUCT_IMAGE'
+	              AND att.use_status = 'Y'
+	              AND att.category_code = o.product_no
+	            ORDER BY att.priority ASC, att.attachment_no ASC
+	            LIMIT 1
+	        ) AS imagePath
+	
+	    FROM `order` o
+	    LEFT JOIN address a ON o.address_no = a.address_no
+	    INNER JOIN `user` u ON o.user_id = u.id
+	    LEFT JOIN payment_method pm ON o.payment_method_no = pm.payment_method_no
+	    WHERE o.user_id = #{userId}
 	</select>
 	
 	<!-- 주문 상세(수령인/주소/상품/결제정보) 조회 -->
@@ -227,4 +279,13 @@
 		WHERE product_no = #{productNo} AND option_no = #{optionNo} AND quantity >= #{quantity}
 	</update>
 
+	<select id="getUserInformation" resultType="com.example.trade.dto.User">
+		SELECT 
+		  customer_category AS customerCategory
+		 ,`name` AS name
+		 ,phone, sn, email, postal, address
+		 ,detail_address AS detailAddress
+		FROM `user`
+		WHERE id = #{userId}
+	</select>
 </mapper>

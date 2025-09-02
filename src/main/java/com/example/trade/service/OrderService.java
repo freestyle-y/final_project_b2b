@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.trade.dto.Attachment;
 import com.example.trade.dto.Order;
+import com.example.trade.dto.User;
 import com.example.trade.mapper.OrderMapper;
 import com.example.trade.mapper.ProductMapper;
 
@@ -86,6 +87,11 @@ public class OrderService {
 
 	public int updateOrderStatus(String orderNo, String subOrderNo) {
 		return orderMapper.updateOrderStatus(orderNo, subOrderNo);
+	}
+
+
+	public List<User> getUserInformation(String userId) {
+		return orderMapper.getUserInformation(userId);
 	}
 
 

@@ -1,22 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
-<html lang="ko">
+<html>
 <head>
   <meta charset="UTF-8" />
   <%@ include file="/WEB-INF/common/head.jsp"%>
   <title>결제 페이지</title>
-
-  <!-- ▼ 템플릿 CSS -->
-  <link href="${pageContext.request.contextPath}/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="${pageContext.request.contextPath}/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="${pageContext.request.contextPath}/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
-  <link href="${pageContext.request.contextPath}/assets/vendor/aos/aos.css" rel="stylesheet">
-  <link href="${pageContext.request.contextPath}/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
-  <link href="${pageContext.request.contextPath}/assets/vendor/drift-zoom/drift-basic.css" rel="stylesheet">
-  <link href="${pageContext.request.contextPath}/assets/css/main.css" rel="stylesheet">
-  <!-- ▲ 커스텀은 마지막 -->
 </head>
 <body class="checkout-page">
 
@@ -25,7 +16,6 @@
 
 <main class="main">
 
-  <!-- 템플릿 Page Title -->
   <div class="page-title light-background">
     <div class="container d-lg-flex justify-content-between align-items-center">
       <h1 class="mb-2 mb-lg-0">Checkout</h1>
@@ -198,7 +188,6 @@
                       </c:forEach>
                       <strong><span id="totalAmount">${total}</span> 원</strong>
                     </p>
-
                     <div class="row g-2 align-items-end mb-2">
                       <div class="col-md-4">
                         <label class="form-label">사용 가능 적립금</label>
@@ -321,6 +310,14 @@
                   <span>상품 총 금액</span>
                   <span id="summaryTotal"><strong>${total}</strong> 원</span>
                 </div>
+                
+                <div class="d-flex justify-content-between">
+                  <span>적립금</span>
+                  <span id="summaryTotal">
+				  	<strong><fmt:formatNumber value="${total/100}" type="number" /></strong> 원
+				  </span>
+                </div>
+                
                 <div class="d-flex justify-content-between">
                   <span>예상 결제 금액</span>
                   <span><strong><span id="summaryFinal">${total}</span></strong> 원</span>

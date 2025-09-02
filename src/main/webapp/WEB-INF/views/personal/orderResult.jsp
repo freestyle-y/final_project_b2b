@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %> 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <c:if test="${popRedirect}">
 <script>
   // ✅ 팝업 창에서 열렸다면 메인 창으로 이동시키고 팝업은 닫습니다.
@@ -16,22 +16,10 @@
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <%@ include file="/WEB-INF/common/home.jsp" %>
+  <%@ include file="/WEB-INF/common/head.jsp"%>
   <title>Order Confirmation - NiceShop Bootstrap Template</title>
   <meta name="description" content="">
   <meta name="keywords" content="">
-
-  <!-- 절대경로 적용 -->
-  <link href="<c:url value='/assets/img/favicon.png' />" rel="icon">
-  <link href="<c:url value='/assets/img/apple-touch-icon.png' />" rel="apple-touch-icon">
-
-  <link href="<c:url value='/assets/vendor/bootstrap/css/bootstrap.min.css' />" rel="stylesheet">
-  <link href="<c:url value='/assets/vendor/bootstrap-icons/bootstrap-icons.css' />" rel="stylesheet">
-  <link href="<c:url value='/assets/vendor/swiper/swiper-bundle.min.css' />" rel="stylesheet">
-  <link href="<c:url value='/assets/vendor/aos/aos.css' />" rel="stylesheet">
-  <link href="<c:url value='/assets/vendor/glightbox/css/glightbox.min.css' />" rel="stylesheet">
-  <link href="<c:url value='/assets/vendor/drift-zoom/drift-basic.css' />" rel="stylesheet">
-  <link href="<c:url value='/assets/css/main.css' />" rel="stylesheet">
 </head>
 
 <c:set var="order" value="${orderList[0]}"/>
@@ -99,7 +87,7 @@
 				    </li>
 				
 				    <li>
-				      <span>적립금</span>
+				      <span>사용한 적립금</span>
 				      <span>₩<fmt:formatNumber value="${usedPoint}" type="number" /> P</span>
 				    </li>
 				
@@ -125,21 +113,40 @@
 				  </ul>
 				</div>
 
-
-
-                <!-- 배송 정보 -->
-                <div class="delivery-info">
-                  <h5>Delivery Information</h5>
-                  <p>${productName}</p>
-                  <p class="delivery-estimate">
-                    <i class="bi bi-calendar-check"></i>
-                    <span>배송 준비 중</span>
-                  </p>
-                  <p class="shipping-method">
-                    <i class="bi bi-truck"></i>
-                    <span>일반 배송</span>
-                  </p>
-                </div>
+				<!-- 배송 정보 -->
+				<div class="delivery-info">
+				  <h5>Delivery Information</h5>
+				  <p><c:out value="${productName}"/></p>
+				
+				  <!-- 상태별 텍스트/아이콘 세팅 -->
+				  <c:set var="deliveryText" value="상태 미정"/>
+				  <c:set var="deliveryIcon" value="bi-question-circle"/>
+				
+				  <c:choose>
+				    <c:when test="${order.deliveryStatus eq 'DS001'}">
+				      <c:set var="deliveryText" value="배송 준비 중"/>
+				      <c:set var="deliveryIcon" value="bi-calendar-check"/>
+				    </c:when>
+				    <c:when test="${order.deliveryStatus eq 'DS002'}">
+				      <c:set var="deliveryText" value="배송중"/>
+				      <c:set var="deliveryIcon" value="bi-truck"/>
+				    </c:when>
+				    <c:when test="${order.deliveryStatus eq 'DS003'}">
+				      <c:set var="deliveryText" value="배송완료"/>
+				      <c:set var="deliveryIcon" value="bi-house-door"/>
+				    </c:when>
+				  </c:choose>
+				
+				  <p class="delivery-estimate">
+				    <i class="bi ${deliveryIcon}"></i>
+				    <span>${deliveryText}</span>
+				  </p>
+				
+				  <p class="shipping-method">
+				    <i class="bi bi-truck"></i>
+				    <span>일반 배송</span>
+				  </p>
+				</div>
 
                 <!-- 고객센터 -->
                 <div class="customer-service">

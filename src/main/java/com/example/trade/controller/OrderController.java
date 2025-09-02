@@ -15,6 +15,7 @@ import com.example.trade.dto.Address;
 import com.example.trade.dto.KakaoPayApprovalResponse;
 import com.example.trade.dto.Order;
 import com.example.trade.dto.PaymentMethod;
+import com.example.trade.dto.User;
 import com.example.trade.service.AddressService;
 import com.example.trade.service.KakaoPayService;
 import com.example.trade.service.OrderService;
@@ -81,11 +82,12 @@ public class OrderController {
         String userId = principal.getName();
 
         List<Order> orderList = orderService.getOrderListByuserId(userId);
-
+        List<User> userInformation = orderService.getUserInformation(userId);
         // 주문번호 기준으로 그룹핑
         Map<String, List<Order>> orderGroupMap = orderList.stream()
                 .collect(Collectors.groupingBy(Order::getOrderNo, LinkedHashMap::new, Collectors.toList()));
 
+        model.addAttribute("userInformation", userInformation);
         model.addAttribute("orderGroupMap", orderGroupMap);
 
         return "personal/orderList";
@@ -126,7 +128,6 @@ public class OrderController {
         Integer realPaidAmount = null;
 
         if (pgToken != null && !pgToken.isBlank()) {
-            // ✅ 수정: 팝업으로 도착한 승인 콜백
             KakaoPayApprovalResponse approval = kakaoPayService.payApprove(pgToken);
             usedPoint       = approval.getUsedPoint();
             usedKakaoPoint  = approval.getUsedKakaoPoint();

@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.example.trade.dto.Attachment;
 import com.example.trade.dto.Order;
+import com.example.trade.dto.User;
 
 @Mapper
 public interface OrderMapper {
@@ -30,5 +31,6 @@ public interface OrderMapper {
 						 ,@Param("paymentMethodNo") Integer paymentMethodNo);
 	int updateOrderStatus(@Param("orderNo") String orderNo, @Param("subOrderNo") String subOrderNo);
 	void updateDeliveryAddress(@Param("orderNo") String orderNo, @Param("addressNo") Integer addressNo);
-	int decreaseStock(@Param("productNo") int productNo, @Param("optionNo") int optionNo, @Param("quantity") int quantity);	
+	int decreaseStock(@Param("productNo") int productNo, @Param("optionNo") int optionNo, @Param("quantity") int quantity);
+	List<User> getUserInformation(String userId);	
 }
