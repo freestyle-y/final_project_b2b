@@ -166,12 +166,16 @@
         font-size: 1.5rem;
     }
     
+    .fa-brands {
+	    font-family: "Font Awesome 6 Brands"; /* 폰트 패밀리 명시 */
+	}
+	
     .fa-brands.fa-kakao {
         color: #FEE500;
     }
     
     .fa-brands.fa-naver {
-        color: #03C75A;
+        color: #ffffff;
     }
 
     @media (max-width: 768px) {
@@ -296,10 +300,28 @@
                                         <div class="form-group">
                                             <label for="simplePassword">간편 비밀번호</label>
                                             <div class="input-wrapper">
-                                                <input type="password" class="form-control" id="simplePassword" readonly value="${user.simplePassword != null ? '****' : '미설정'}">
-                                                <button type="button" class="btn btn-change" id="simplePasswordBtn" onclick="openChangeModal('simplePassword')">
-                                                    <c:out value="${user.simplePassword != null ? '변경' : '생성'}"/>
-                                                </button>
+                                                <c:choose>
+										            <c:when test="${user.simplePassword != null}">
+										                <span class="form-control" id="simplePassword" style="background-color: #f8f9fa; cursor: default;">
+										                    설정됨
+										                </span>
+										            </c:when>
+										            <c:otherwise>
+										                <span class="form-control" id="simplePassword" style="background-color: #f8f9fa; cursor: default;">
+										                    미설정
+										                </span>
+										            </c:otherwise>
+										        </c:choose>
+										        
+										        <button type="button" class="btn btn-change" id="simplePasswordBtn" onclick="openChangeModal('simplePassword')">
+										            <c:choose>
+										                <c:when test="${user.simplePassword != null}">변경</c:when>
+										                <c:otherwise>생성</c:otherwise>
+										            </c:choose>
+										        </button>
+										        <c:if test="${user.simplePassword != null}">
+										            <button type="button" class="btn btn-change" id="simplePasswordUnlinkBtn" onclick="unlinkSimplePassword()">해제</button>
+										        </c:if>
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -318,13 +340,13 @@
                                                         <c:set var="isKakaoLinked" value="true" />
                                                     </c:if>
                                                 </c:forEach>
-                                                <div class="social-item">
-                                                    <i class="fa-brands fa-kakao"></i>
-                                                    <span>카카오</span>
-                                                    <c:if test="${isKakaoLinked}">
-                                                        <button type="button" class="btn btn-change" onclick="unlinkSocial('kakao')">해제</button>
-                                                    </c:if>
-                                                </div>
+                                                <c:if test="${isKakaoLinked}">
+												    <div class="social-item">
+												        <img src="/images/kakaotalk.png" alt="카카오" 
+												             style="width:36px; height:36px; margin-right:8px; cursor:pointer;" 
+												             onclick="confirmUnlink('kakao')">
+												    </div>
+												</c:if>
                                                 
                                                 <!-- 네이버 연동 상태 -->
                                                 <c:set var="isNaverLinked" value="false" />
@@ -333,13 +355,13 @@
                                                         <c:set var="isNaverLinked" value="true" />
                                                     </c:if>
                                                 </c:forEach>
-                                                <div class="social-item">
-                                                    <i class="fa-brands fa-naver"></i>
-                                                    <span>네이버</span>
-                                                    <c:if test="${isNaverLinked}">
-                                                        <button type="button" class="btn btn-change" onclick="unlinkSocial('naver')">해제</button>
-                                                    </c:if>
-                                                </div>
+                                                <c:if test="${isNaverLinked}">
+												    <div class="social-item">
+												        <img src="/images/naver.png" alt="네이버" 
+												             style="width:48px; height:48px; margin-right:8px; cursor:pointer;" 
+												             onclick="confirmUnlink('naver')">
+												    </div>
+												</c:if>
                                                 
                                                 <c:if test="${socialList.size() < 2}">
                                                     <button type="button" class="btn btn-change" onclick="openSocialModal()">계정 추가</button>
@@ -436,14 +458,20 @@
       <div class="modal-content text-center">
         <h3 class="mb-3">소셜 로그인 연동</h3>
         <c:if test="${!isKakaoLinked}">
-            <button class="btn btn-custom mb-2 w-100" onclick="linkSocial('kakao')">
-                <i class="fa-brands fa-kakao"></i> 카카오 연동
-            </button>
+            <button class="btn btn-custom mb-2 w-100 d-flex align-items-center justify-content-center"
+	              onclick="linkSocial('kakao')"
+	              style="background-color: #FEE500; color: #3C1E1E;">
+	        <img src="/images/kakaotalk.png" alt="카카오" style="width:36px; height:36px; margin-right:8px;">
+	        카카오 연동
+	      </button>
         </c:if>
         <c:if test="${!isNaverLinked}">
-            <button class="btn btn-custom mb-2 w-100" onclick="linkSocial('naver')">
-                <i class="fa-brands fa-naver"></i> 네이버 연동
-            </button>
+            <button class="btn btn-custom mb-2 w-100 d-flex align-items-center justify-content-center"
+	              onclick="linkSocial('naver')"
+	              style="background-color: #03C75A; color: white;">
+	        <img src="/images/naver.png" alt="네이버" style="width:36px; height:36px; margin-right:8px;">
+	        네이버 연동
+	      </button>
         </c:if>
         <button class="btn btn-secondary w-100" onclick="$('#socialModal').hide()">취소</button>
       </div>
@@ -605,9 +633,10 @@ $(document).ready(function() {
                 data: JSON.stringify(data),
                 success: function(res){
                     alert('주소가 변경되었습니다.');
-                    $("#address").val(address);
-                    $("#detailAddress").val(detail);
+                    $("#simplePassword").text('설정됨'); 
+                    $("#simplePasswordBtn").text('변경');
                     $("#changeModal").hide();
+                    window.location.reload();
                 },
                 error: function(xhr){
                     alert('변경 실패: ' + xhr.responseText);
@@ -668,6 +697,30 @@ $(document).ready(function() {
             });
         }
     });
+    
+	 // ✅ 간편 비밀번호 해제 함수 추가
+	    window.unlinkSimplePassword = function() {
+	        if (!confirm("간편 비밀번호를 해제하시겠습니까?")) {
+	            return;
+	        }
+	
+	        $.ajax({
+	            url: '/public/updateUserInfo',
+	            type: 'PUT',
+	            contentType: 'application/json',
+	            data: JSON.stringify({simplePassword: null}), // ✅ null 값을 전송하여 해제 요청
+	            success: function(res) {
+	                alert('간편 비밀번호가 해제되었습니다.');
+	                // ✅ 해제 후 UI 업데이트
+	                $("#simplePassword").text('미설정');
+	                $("#simplePasswordBtn").text('생성');
+	                $("#simplePasswordUnlinkBtn").hide(); // 해제 버튼 숨기기
+	            },
+	            error: function(xhr) {
+	                alert('해제 실패: ' + xhr.responseText);
+	            }
+	        });
+	    };
 
     // -------------------------------
     // 4️⃣ 소셜 연동
@@ -682,6 +735,13 @@ $(document).ready(function() {
         $("#socialModal").css("display", "flex"); 
     }
     window.linkSocial = function(provider) { location.href = "/api/social/link/" + provider; }
+    
+    window.confirmUnlink = function(provider) {
+        if (confirm(provider + " 연동을 해제하시겠습니까?")) {
+            unlinkSocial(provider);
+        }
+    }
+    
     window.unlinkSocial = function(provider) {
         $.ajax({
             url: "/api/social/unlink/" + provider,
@@ -690,6 +750,8 @@ $(document).ready(function() {
             error: function(){ alert("연동 해제 실패"); }
         });
     }
+    
+    
 
     // -------------------------------
     // 5️⃣ 회원 탈퇴

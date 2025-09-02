@@ -361,12 +361,16 @@ body {
                             <span>or</span>
                         </div>
 
-                        <a href="/oauth2/authorization/naver" class="auth-btn social-btn mb-3" style="background-color: #03C75A; color: white;">
-						    <i class="fa-solid fa-n"></i>
+                        <a href="/oauth2/authorization/naver"
+						   class="auth-btn social-btn mb-3 d-flex align-items-center justify-content-center"
+						   style="background-color: #03C75A; color: white; text-decoration: none;">
+						    <img src="/images/naver.png" alt="네이버" style="width:36px; height:36px; margin-right:8px;">
 						    네이버로 로그인
 						</a>
-                        <a href="/oauth2/authorization/kakao" class="auth-btn social-btn" style="background-color: #FEE500; color: #3C1E1E;">
-						    <i class="fa-solid fa-k"></i>
+                        <a href="/oauth2/authorization/kakao"
+						   class="auth-btn social-btn d-flex align-items-center justify-content-center"
+						   style="background-color: #FEE500; color: #3C1E1E; text-decoration: none;">
+						    <img src="/images/kakaotalk.png" alt="카카오" style="width:36px; height:36px; margin-right:8px;">
 						    카카오로 로그인
 						</a>
 
