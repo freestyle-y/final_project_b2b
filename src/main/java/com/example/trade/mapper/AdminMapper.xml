@@ -442,8 +442,9 @@
 			option_name            AS optionName,
 			option_name_value      AS optionNameValue,
 			order_quantity         AS orderQuantity,
-			exchange_quantity      AS exchangeQuantity,
 			price                  AS price,
+			return_quantity        AS returnQuantity,
+			exchange_quantity      AS exchangeQuantity,
 			order_status           AS orderStatus,
 			delivery_status        AS deliveryStatus,
 			create_user            AS createUser,
@@ -559,5 +560,39 @@
 		INSERT INTO login_history
 			(id, login_time)
 		VALUES (#{userId}, NOW())
+	</insert>
+	
+	<!-- 주문 시 사용한 적립금 조회 -->
+	<select id="getRewardUseByOrder" parameterType="com.example.trade.dto.Order" resultType="int">
+		SELECT
+			rh.reward_use AS rewardUse
+		FROM `order` o INNER JOIN reward_history rh ON o.order_no = rh.order_no
+		WHERE o.order_no = #{orderNo}
+		AND o.sub_order_no = #{subOrderNo}
+	</select>
+	
+	<!-- 해당 주문의 전체 금액 조회 -->
+	<select id="getTotalAmountByOrder" parameterType="com.example.trade.dto.Order" resultType="int">
+		SELECT
+			SUM(order_quantity * price) AS totalAmount
+		FROM `order`
+		WHERE order_no = #{orderNo}
+		GROUP BY order_no
+	</select>
+	
+	<!-- 해당 주문의 반품 금액 조회 -->
+	<select id="getReturnAmountByOrder" parameterType="com.example.trade.dto.Order" resultType="int">
+		SELECT
+			(return_quantity * price) AS returnAmount
+		FROM `order`
+		WHERE order_no = #{orderNo}
+		AND sub_order_no = #{subOrderNo}
+	</select>
+	
+	<!-- 반품 시 적립금 원복 -->
+	<insert id="refundReward" parameterType="com.example.trade.dto.RewardHistory">
+		INSERT INTO reward_history
+			(order_no, reward_use)
+		VALUES (#{orderNo}, #{rewardUse})
 	</insert>
 </mapper>

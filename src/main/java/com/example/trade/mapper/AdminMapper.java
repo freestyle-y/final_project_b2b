@@ -11,6 +11,7 @@ import com.example.trade.dto.ContractDelivery;
 import com.example.trade.dto.DeliveryHistory;
 import com.example.trade.dto.Order;
 import com.example.trade.dto.Page;
+import com.example.trade.dto.RewardHistory;
 
 @Mapper
 public interface AdminMapper {
@@ -131,4 +132,16 @@ public interface AdminMapper {
 	
 	// 로그인 이력 저장
 	int insertLoginHistory(String userId);
+
+	// 주문 시 사용한 적립금 조회
+	int getRewardUseByOrder(Order order);
+	
+	// 해당 주문의 전체 결제 금액 조회
+	int getTotalAmountByOrder(Order order);
+
+	// 해당 주문의 반품 금액 조회
+	int getReturnAmountByOrder(Order order);
+
+	// 반품 시 적립금 원복
+	int refundReward(RewardHistory rewardHistory);
 }
