@@ -803,16 +803,28 @@
 		    t3.category_id AS categoryIdLv3,
 		    t3.category_name AS categoryNameLv3
 		FROM category t1
-		LEFT JOIN category t2 ON t2.parent_category = t1.category_id
-		LEFT JOIN category t3 ON t3.parent_category = t2.category_id
+		LEFT JOIN category t2 
+		       ON t2.parent_category = t1.category_id 
+		      AND t2.use_status = 'Y'
+		LEFT JOIN category t3 
+		       ON t3.parent_category = t2.category_id
+		      AND t3.use_status = 'Y'
 		WHERE t1.parent_category = 0
-		ORDER BY t1.category_id, t2.category_id, t3.category_id;
+		  AND t1.use_status = 'Y'
+		ORDER BY t1.category_id, t2.category_id, t3.category_id
 	</select>
 	
 	<!-- 카테고리 이름 수정 -->
 	<update id="updateCategoryName">
-	  UPDATE category
-	  SET category_name = #{newName}
-	  WHERE category_id = #{categoryId}
+		UPDATE category
+		SET category_name = #{newName}
+		WHERE category_id = #{categoryId}
+	</update>
+	
+	<!-- 카테고리 삭제 -->
+	<update id="deleteCategory">
+		UPDATE category
+		SET use_status = 'N'
+		WHERE category_id = #{categoryId}
 	</update>
 </mapper>

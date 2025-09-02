@@ -322,13 +322,13 @@ public class ProductRestController {
 	
 	// 카테고리 이름 수정
 	@PostMapping("/admin/updateCategoryName")
-	public String updateCategoryName(@RequestBody Map<String, Object> payload) {
+	public String updateCategoryName(@RequestBody Map<String, Object> request) {
 	    try {
-	        int categoryId = Integer.parseInt(payload.get("categoryId").toString());
-	        String newName = payload.get("newName").toString();
+	        int categoryId = Integer.parseInt(request.get("categoryId").toString());
+	        String newName = request.get("newName").toString();
 	        
-	        log.info(categoryId + "");
-	        log.info(newName);
+	        //log.info(categoryId + "");
+	        //log.info(newName);
 	        
 	        productService.updateCategoryName(categoryId, newName);
 	        return "success";
@@ -337,4 +337,40 @@ public class ProductRestController {
 	        return "fail";
 	    }
 	}
+	
+	// 카테고리 삭제
+	@PostMapping("admin/removeCategory")
+    public ResponseEntity<Map<String, Object>> removeCategory(@RequestBody Map<String, Object> request) {
+		int categoryId = Integer.parseInt(request.get("categoryId").toString());
+	    boolean removed = productService.removeCategory(categoryId);
+
+	    if (removed) {
+	        return ResponseEntity.ok(Map.of("success", true));
+	    } else {
+	        return ResponseEntity.ok(Map.of("success", false, "message", "삭제 실패"));
+	    }
+    }
+	
+	// 카테고리 추가
+	@PostMapping("/admin/createCategory")
+	public Map<String, Object> createCategory(@RequestBody Map<String, Object> request) {
+	    String parentId = request.get("parentId") != null 
+	            ? request.get("parentId").toString() 
+	            : "0"; 
+	    String newName = request.get("newName").toString();
+	    String loginUser = request.get("loginUser").toString();
+
+	    Category category = new Category();
+	    category.setParentCategory(parentId);
+	    category.setCategoryName(newName);
+	    category.setCreateUser(loginUser);
+
+	    Category created = productService.insertCategory(category);
+
+	    return Map.of(
+	        "success", true,
+	        "categoryId", created.getCategoryId()
+	    );
+	}
+
 }

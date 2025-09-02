@@ -165,4 +165,6 @@ public interface ProductMapper {
 	
 	// 카테고리 이름 수정
 	void updateCategoryName(@Param("categoryId") int categoryId, @Param("newName") String newName);
+	// 카테고리 삭제
+	int deleteCategory(int categoryId);
 }

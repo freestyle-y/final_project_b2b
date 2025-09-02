@@ -737,4 +737,10 @@ public class ProductService {
 	public void updateCategoryName(int categoryId, String newName) {
 	    productMapper.updateCategoryName(categoryId, newName);
 	}
+
+	// 카테고리 삭제
+	public boolean removeCategory(int categoryId) {
+		int affected = productMapper.deleteCategory(categoryId);
+        return affected > 0; // 삭제된 row가 1 이상이면 성공
+	}
 }

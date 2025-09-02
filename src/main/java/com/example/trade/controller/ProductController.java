@@ -463,7 +463,11 @@ public class ProductController {
 	public String updateCategory(Model model) {
 		 List<Map<String, Object>> categoryList = productService.selectAllCategory();
 		 //log.info(categoryList.toString());
+		 String loginUserName = SecurityContextHolder.getContext().getAuthentication().getName();
+		 //log.info(loginUserName);
+		 
 		 model.addAttribute("categoryList", categoryList);
+		 model.addAttribute("loginUserName", loginUserName);
 		return "admin/updateCategory";
 	}
 }
