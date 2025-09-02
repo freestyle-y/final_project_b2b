@@ -61,18 +61,7 @@ public class MemberRestController {
     }
     
 
-    // 기업회원 승인 처리
-    @PutMapping("/{id}/approve")
-    public ResponseEntity<Void> approveMember(@PathVariable("id") String id) {
-    	try {
-    		memberService.approveUser(id);
-    		return ResponseEntity.ok().build(); // 200 OK
-    	} catch (IllegalStateException e) {
-    		return ResponseEntity.badRequest().build(); // 잘못된 요청 (조건 불일치)
-    	} catch (Exception e) {
-    		return ResponseEntity.internalServerError().build(); // 서버 오류
-    	}
-    }
+    
     
  // 비밀번호 확인 AJAX
     @PostMapping("/checkPassword")

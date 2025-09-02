@@ -158,6 +158,57 @@ table.dataTable thead .sorting_desc:after {
 
     /* 날짜 셀 줄바꿈 방지 */
     .nowrap-cell { white-space: nowrap; }
+    
+    .status-cell {
+  position: relative;
+  cursor: pointer;
+}
+.status-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  min-width: 120px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  margin-top: 5px;
+  white-space: nowrap;
+}
+.status-dropdown ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.status-dropdown ul li {
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  color: #333;
+}
+.status-dropdown ul li:hover {
+  background-color: #f0f0f0;
+}
+.status-dropdown ul li.disabled {
+  color: #aaa;
+  cursor: not-allowed;
+  background-color: #f7f7f7;
+}
+/* 상태 뱃지 스타일 */
+.status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #fff;
+}
+.status-active { background-color: #1a73e8; }
+.status-inactive { background-color: #757575; }
+.status-suspended { background-color: #d9534f; }
+.status-pending { background-color: #f0ad4e; }
   </style>
 </head>
 <body class="index-page">
@@ -182,8 +233,8 @@ table.dataTable thead .sorting_desc:after {
       <select name="status">
         <option value="" ${empty status ? 'selected' : ''}>전체</option>
         <option value="CS001" ${status=='CS001' ? 'selected' : ''}>활성화</option>
-        <option value="CS002" ${status=='CS002' ? 'selected' : ''}>휴면</option>
-        <option value="CS003" ${status=='CS003' ? 'selected' : ''}>탈퇴</option>
+        <option value="CS002" ${status=='CS002' ? 'selected' : ''}>탈퇴</option>
+        <option value="CS003" ${status=='CS003' ? 'selected' : ''}>휴면</option>
         <option value="CS004" ${status=='CS004' ? 'selected' : ''}>가입대기</option>
       </select>
     </label>
@@ -220,7 +271,7 @@ table.dataTable thead .sorting_desc:after {
       </thead>
       <tbody>
         <c:forEach var="u" items="${users}">
-          <tr id="row-${u.id}">
+          <tr data-userid="${u.id}">
             <td>${u.id}</td>
             <td>
               <c:choose>
@@ -235,15 +286,26 @@ table.dataTable thead .sorting_desc:after {
             <td class="text-start">${fn:escapeXml(u.phone)}</td>
             <td class="text-start">${fn:escapeXml(u.companyName)}</td>
             <td class="text-start">${fn:escapeXml(u.businessNo)}</td>
-            <td id="status-${u.id}">
-              <c:choose>
-                <c:when test="${u.customerStatus eq 'CS001'}"><span class="status-badge status-active">활성화</span></c:when>
-                <c:when test="${u.customerStatus eq 'CS002'}"><span class="status-badge status-inactive">휴면</span></c:when>
-                <c:when test="${u.customerStatus eq 'CS003'}"><span class="status-badge status-suspended">탈퇴</span></c:when>
-                <c:when test="${u.customerStatus eq 'CS004'}"><span class="status-badge status-pending">가입대기</span></c:when>
-                <c:otherwise><span class="status-badge status-inactive">${u.customerStatus}</span></c:otherwise>
-              </c:choose>
-            </td>
+            <td id="status-cell-${u.id}" data-current-status="${u.customerStatus}" class="status-cell">
+    <span class="status-badge status-${u.customerStatus eq 'CS001' ? 'active' : u.customerStatus eq 'CS002' ? 'inactive' : u.customerStatus eq 'CS003' ? 'suspended' : u.customerStatus eq 'CS004' ? 'pending' : 'inactive'}">
+        <c:choose>
+            <c:when test="${u.customerStatus eq 'CS001'}">활성화</c:when>
+            <c:when test="${u.customerStatus eq 'CS002'}">탈퇴</c:when>
+            <c:when test="${u.customerStatus eq 'CS003'}">휴면</c:when>
+            <c:when test="${u.customerStatus eq 'CS004'}">가입대기</c:when>
+            <c:otherwise>알 수 없음</c:otherwise>
+        </c:choose>
+    </span>
+    
+    <div class="status-dropdown">
+        <ul>
+            <li data-status="CS001" data-label="활성화" data-userid="${u.id}">활성화</li>
+            <li data-status="CS002" data-label="탈퇴" data-userid="${u.id}">탈퇴</li>
+            <li data-status="CS003" data-label="휴면" data-userid="${u.id}">휴면</li>
+            <li data-status="CS004" data-label="가입대기" data-userid="${u.id}">가입대기</li>
+        </ul>
+    </div>
+</td>
             <td class="nowrap-cell" data-order="${u.createDate}">
               <c:choose>
                 <c:when test="${not empty u.createDate and fn:contains(u.createDate,'T')}">
@@ -336,12 +398,11 @@ table.dataTable thead .sorting_desc:after {
     if (!confirm("해당 회원을 승인하시겠습니까?")) return;
 
     $.ajax({
-      url: "/public/" + id + "/approve",
+      url: "/admin/" + id + "/approve",
       type: "PUT",
       success: function() {
         alert("승인 완료되었습니다.");
-        $("#row-" + id + " .btn-approve").closest('td').text('-');
-        $("#status-" + id).html('<span class="status-badge status-active">활성화</span>');
+        window.location.reload();
       },
       error: function() {
         alert("승인 처리 중 오류가 발생했습니다.");
@@ -451,6 +512,77 @@ table.dataTable thead .sorting_desc:after {
 
     // 안전 보정
     setTimeout(syncGroupHeaderWidthsStable, 0);
+    
+ // 1. 상태 셀 클릭 이벤트
+    $(document).on('click', '.status-cell', function(e) {
+        e.stopPropagation(); // 이벤트 버블링 방지
+        
+        // 모든 드롭다운 닫기
+        $('.status-dropdown').hide();
+
+        const $cell = $(this);
+        const $dropdown = $cell.find('.status-dropdown');
+        const currentStatus = $cell.data('current-status');
+
+        // 드롭다운 메뉴 열기
+        $dropdown.show();
+
+        // 현재 상태와 동일한 옵션 비활성화
+        $dropdown.find('li').each(function() {
+            if ($(this).data('status') === currentStatus) {
+                $(this).addClass('disabled');
+            } else {
+                $(this).removeClass('disabled');
+            }
+        });
+    });
+
+ // 2. 드롭다운 옵션 클릭 이벤트
+    $(document).on('click', '.status-dropdown li:not(.disabled)', function(e) {
+        e.stopPropagation();
+
+        const $li = $(this);
+        const newStatus = $li.data('status');
+        const newLabel = $.trim($li.text());
+        
+        const userId = $li.data('userid');
+        
+        console.log("userId:", userId);
+        console.log("newStatus:", newStatus);
+        console.log("newLabel:", newLabel);
+        
+        // 사용자에게 확인 받기
+        if (!confirm("회원(" + userId + ")의 상태를 '" + newLabel + "'(으)로 변경하시겠습니까?")) {
+            $li.closest('.status-dropdown').hide();
+            return;
+        }
+        
+        console.log("AJAX 호출 직전 userId:", userId);
+        console.log("최종 URL(3):","/admin/user/" + userId + "/status");
+
+        // 3. AJAX 요청으로 서버 API 호출
+        $.ajax({
+            url: "/admin/user/" + userId + "/status",
+            type: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify({ customerStatus: newStatus }),
+            success: function(response) {
+                    alert("상태가 성공적으로 변경되었습니다.");
+                    window.location.reload();
+            },
+            error: function(xhr) {
+                alert("상태 변경 요청에 실패했습니다.");
+                console.error("AJAX Error:", xhr.status, xhr.responseText);
+            }
+        });
+    });
+
+    // 4. 테이블 외부 클릭 시 모든 드롭다운 닫기
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('.status-cell').length) {
+            $('.status-dropdown').hide();
+        }
+    });
   });
 </script>
 </body>
