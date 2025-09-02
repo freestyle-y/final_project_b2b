@@ -63,7 +63,7 @@
 					<div class="dropdown account-dropdown">
 						<button class="header-action-btn" data-bs-toggle="dropdown">
 							<i class="bi bi-bell"></i>
-							<span class="badge bg-danger" id="notifCount">0</span>
+							<span class="badge bg-danger" id="notiCount">0</span>
 						</button>
 
 						<div class="dropdown-menu dropdown-menu-end p-0" style="width: 360px;">
@@ -73,7 +73,7 @@
 							</div>
 
 							<!-- 알림 리스트 -->
-							<div class="dropdown-body" id="notifList" style="max-height: 400px; overflow-y: auto;">
+							<div class="dropdown-body px-0 py-0" id="notiList" style="max-height: 600px; overflow-y: auto;">
 								<p class="text-center text-muted my-3">새로운 알림이 없습니다.</p>
 							</div>
 						</div>
@@ -151,36 +151,53 @@
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
-function loadNotifications() {
-	  $.ajax({
-	    url: "/member/notificationList",
-	    type: "GET",
-	    success: function(data) {
-	      $("#notifList").empty();
-	      if (data.length === 0) {
-	        $("#notifList").append('<p class="text-center text-muted my-3">새로운 알림이 없습니다.</p>');
-	        $("#notifCount").text(0);
-	      } else {
-	        $("#notifCount").text(data.length);
-	        data.forEach(function(n) {
-	          $("#notifList").append(
-	            '<a href="'+ (n.targetUrl || '#') +'" class="notification-entry d-flex align-items-start px-3 py-2 border-bottom text-decoration-none">' +
-	              '<i class="bi bi-info-circle text-primary me-2 fs-5"></i>' +   // imageUrl 없으므로 기본 아이콘
-	              '<div class="flex-grow-1">' +
-	                '<div class="fw-semibold small">'+ (n.notificationTitle || "알림") +'</div>' +
-	                '<div class="text-muted small">'+ n.notificationContent +'</div>' +
-	                '<div class="text-muted small">'+ n.createDate +'</div>' +
-	              '</div>' +
-	            '</a>'
-	          );
-	        });
-	      }
-	    }
-	  });
-	}
+	function loadNotifications() {
+		$.ajax({
+			url: "/member/notificationList", // 알림 목록을 가져오는 API
+			type: "GET",
+			success: function(data) {
+				// 알림 리스트 영역 초기화
+				$("#notiList").empty();
+	
+				// 알림이 없을 경우
+				if(data.length === 0) {
+					// "새로운 알림이 없습니다" 문구 출력
+					$("#notiList").append('<p class="text-center text-muted my-3">새로운 알림이 없습니다.</p>');
+					// 뱃지 숫자 0으로 표시
+					$("#notiCount").text(0);
+				} else {
+					// 알림 개수를 뱃지에 표시
+					$("#notiCount").text(data.length);
 
+					// 알림 목록 반복 출력
+					data.forEach(function(n, idx) {
+						// 마지막 항목 여부 확인 (마지막이면 border-bottom 제거)
+						const isLast = (idx === data.length - 1);
+
+						// 알림 목록 HTML 생성 및 추가
+						$("#notiList").append(
+							'<a href="' + (n.targetUrl || '#') + '" ' + 'class="notification-entry d-flex align-items-start px-3 py-2 text-decoration-none' + (isLast ? '' : ' border-bottom') + '">' +
+								// 알림 아이콘(현재 기본 아이콘)
+								'<i class="bi bi-info-circle text-primary me-2 fs-5"></i>' +
+								'<div class="flex-grow-1">' +
+									// 알림 제목
+									'<div class="fw-semibold small">' + n.notificationTitle + '</div>' +
+									// 알림 내용
+									'<div class="text-muted small">' + n.notificationContent + '</div>' +
+									// 알림 생성일
+									'<div class="text-muted small">' + n.createDate + '</div>' +
+								'</div>' +
+							'</a>'
+						);
+					});
+				}
+			}
+		});
+	}
+	
+	// 페이지 로드 시 실행 + 60초마다 알림 새로고침
 	$(document).ready(function() {
-	  loadNotifications();
-	  setInterval(loadNotifications, 60000);
+		loadNotifications();                 // 최초 1회 실행
+		setInterval(loadNotifications, 60000); // 60초마다 실행
 	});
 </script>
