@@ -1,33 +1,16 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8" />
-  <title>카테고리 관리</title>
+<meta charset="UTF-8">
+<title>Insert title here</title>
   <link rel="stylesheet" href="https://uicdn.toast.com/tui-tree/latest/tui-tree.css" />
   <link rel="stylesheet" href="https://uicdn.toast.com/tui.context-menu/latest/tui-context-menu.css"/>
-  <%@ include file="/WEB-INF/common/head.jsp"%>
+
 </head>
 <body>
-
-<!-- 공통 헤더 -->
-<%@include file="/WEB-INF/common/header/header.jsp"%>
-
-<main class="main">
-
-	<!-- Page Title -->
-    <div class="page-title light-background">
-      <div class="container d-lg-flex justify-content-between align-items-center">
-        <h1 class="mb-2 mb-lg-0">카테고리 수정</h1>
-        <nav class="breadcrumbs">
-          <ol>
-            <li><a href="/personal/mainPage">Home</a></li>
-            <li class="current">Category</li>
-          </ol>
-        </nav>
-      </div>
-	</div><!-- End Page Title -->
 
 <div id="tree" class="tui-tree-wrap"></div>
 
@@ -35,55 +18,27 @@
 <script src="https://uicdn.toast.com/tui-tree/latest/tui-tree.js"></script>
 
 <script>
-  // JSTL에서 넘어온 categoryList를 JS 배열로 변환
-  const rawCategoryList = [
-    <c:forEach var="cat" items="${categoryList}" varStatus="status">
+  // JSTL에서 넘어온 optionList를 트리 데이터로 변환
+  const rawOptionTree = [
+    <c:forEach var="entry" items="${groupedOptions}" varStatus="status1">
       {
-        categoryIdLv1: ${cat.categoryIdLv1 != null ? cat.categoryIdLv1 : 'null'},
-        categoryNameLv1: "${cat.categoryNameLv1}",
-        categoryIdLv2: ${cat.categoryIdLv2 != null ? cat.categoryIdLv2 : 'null'},
-        categoryNameLv2: "${cat.categoryNameLv2}",
-        categoryIdLv3: ${cat.categoryIdLv3 != null ? cat.categoryIdLv3 : 'null'},
-        categoryNameLv3: "${cat.categoryNameLv3}"
-      }<c:if test="${!status.last}">,</c:if>
+        text: "${entry.key}", // optionName (예: "사이즈", "용량")
+        data: { type: "optionGroup", optionGroupName: "${entry.key}" },
+        children: [
+          <c:forEach var="opt" items="${entry.value}" varStatus="status2">
+            {
+              text: "${opt.optionNameValue}", // 예: "300ml", "XL"
+              data: { optionNo: ${opt.optionNo} }
+            }<c:if test="${!status2.last}">,</c:if>
+          </c:forEach>
+        ]
+      }<c:if test="${!status1.last}">,</c:if>
     </c:forEach>
   ];
 
-  // 카테고리 데이터를 트리 형식으로 변환
-  function transformToTreeData(categoryList) {
-    const map = {};
-    const result = [];
-
-    categoryList.forEach(cat => {
-      const { categoryIdLv1, categoryNameLv1, categoryIdLv2, categoryNameLv2, categoryIdLv3, categoryNameLv3 } = cat;
-
-      if (categoryIdLv1 && !map[categoryIdLv1]) {
-        const node = { text: categoryNameLv1, data: { categoryId: categoryIdLv1 }, children: [] };
-        map[categoryIdLv1] = node;
-        result.push(node);
-      }
-
-      if (categoryIdLv2 && !map[categoryIdLv2]) {
-        const midNode = { text: categoryNameLv2, data: { categoryId: categoryIdLv2 }, children: [] };
-        map[categoryIdLv2] = midNode;
-        if (map[categoryIdLv1]) map[categoryIdLv1].children.push(midNode);
-      }
-
-      if (categoryIdLv3 && !map[categoryIdLv3]) {
-        const subNode = { text: categoryNameLv3, data: { categoryId: categoryIdLv3 } };
-        map[categoryIdLv3] = subNode;
-        if (map[categoryIdLv2]) map[categoryIdLv2].children.push(subNode);
-      }
-    });
-
-    return result;
-  }
-
-  const treeData = transformToTreeData(rawCategoryList);
-
-  //Create Tree component
+  // Tree 생성
   const tree = new tui.Tree('#tree', {
-    data: treeData,
+    data: rawOptionTree,
     nodeDefaultState: 'opened',
     template: {
       internalNode:
@@ -104,8 +59,7 @@
         '</div>'
     }
   });
-
-  //Bind custom event 
+  
   tree.on('selectContextMenu', function(e) {
       const command = e.command;
       const nodeId = e.nodeId;
@@ -157,44 +111,50 @@
       .enableFeature('Ajax', {
         command: {
           create: {
-            url: '/admin/createCategory',
+            url: '/',
             method: 'POST',
             contentType: 'application/json',
             params: function(treeData) {
               const nodeData = tree.getNodeData(treeData.parentId);
-              const parentId = nodeData?.data?.categoryId;
               const newName = treeData?.data?.text || "";
                 
-              console.log("Sending update:", { parentId, newName, loginUser });
+              console.log("Sending update:", { newName, loginUser });
                 
-              return { parentId, newName, loginUser };
+              return { newName, loginUser };
             }
           },
           update: {
+            url: '/admin/updateOptionName',
+            method: 'POST',
+            contentType: 'application/json',
+            params: function(treeData) {
+              const nodeData = tree.getNodeData(treeData.nodeId);
+              const type = nodeData?.data?.type;
+              const optionNo = nodeData?.data?.optionNo;
+              const newName = treeData?.data?.text || "";
+              
+              if (type === "optionGroup") {
+                 const optionGroupName = nodeData?.data?.optionGroupName;
+                 console.log("Updating option group:", { optionGroupName, newName, loginUser });
+                 return { optionGroupName, newName, loginUser };
+               } else {
+                 const optionNo = nodeData?.data?.optionNo;
+                 console.log("Updating option value:", { optionNo, newName, loginUser });
+                 return { optionNo, newName, loginUser };
+               }
+            }
+          },
+          remove: {
             url: '/',
             method: 'POST',
             contentType: 'application/json',
             params: function(treeData) {
               const nodeData = tree.getNodeData(treeData.nodeId);
-              const categoryId = nodeData?.data?.categoryId;
-              const newName = treeData?.data?.text || "";
-              
-              console.log("Sending update:", { categoryId, newName, loginUser });
-              
-              return { categoryId, newName, loginUser };
-            }
-          },
-          remove: {
-            url: '/admin/removeCategory',
-            method: 'POST',
-            contentType: 'application/json',
-            params: function(treeData) {
-              const nodeData = tree.getNodeData(treeData.nodeId);
-              const categoryId = nodeData?.data?.categoryId;
+              const optionNo = nodeData?.data?.optionNo;
 
-              console.log("Sending update:", { categoryId, loginUser });
+              console.log("Sending update:", { optionNo, loginUser });
               
-              return { categoryId, loginUser };
+              return { optionNo, loginUser };
             }
           }
         },
@@ -209,13 +169,6 @@
        	  return responseData.success !== false;
        	}
       });
- 
 </script>
-
-</main>
-
-<!-- 공통 풋터 -->
-<%@include file="/WEB-INF/common/footer/footer.jsp"%>
-
 </body>
 </html>

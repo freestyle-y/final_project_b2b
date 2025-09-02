@@ -734,13 +734,23 @@ public class ProductService {
 	}
 	 
 	// 카테고리 이름 수정
-	public void updateCategoryName(int categoryId, String newName) {
-	    productMapper.updateCategoryName(categoryId, newName);
+	public void updateCategoryName(int categoryId, String newName, String loginUser) {
+	    productMapper.updateCategoryName(categoryId, newName, loginUser);
 	}
 
 	// 카테고리 삭제
-	public boolean removeCategory(int categoryId) {
-		int affected = productMapper.deleteCategory(categoryId);
+	public boolean removeCategory(int categoryId, String loginUser) {
+		int affected = productMapper.deleteCategory(categoryId, loginUser);
         return affected > 0; // 삭제된 row가 1 이상이면 성공
+	}
+	
+	// 옵션 그룹 수정
+	public void updateOptionGroupName(String optionGroupName, String newName, String loginUser) {
+		productMapper.updateOptionGroupName(optionGroupName, newName, loginUser);
+	}
+		
+	// 옵션명 수정
+	public void updateOptionName(int optionNo, String newName, String loginUser) {
+	    productMapper.updateOptionName(optionNo, newName, loginUser);
 	}
 }

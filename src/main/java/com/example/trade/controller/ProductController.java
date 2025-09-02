@@ -1,6 +1,5 @@
 package com.example.trade.controller;
 
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -457,17 +456,35 @@ public class ProductController {
 		return "admin/inventoryList";
 	}
 	
-	// test
 	// 관리자 카테고리 추가/수정
 	@GetMapping("/admin/updateCategory")
 	public String updateCategory(Model model) {
-		 List<Map<String, Object>> categoryList = productService.selectAllCategory();
-		 //log.info(categoryList.toString());
-		 String loginUserName = SecurityContextHolder.getContext().getAuthentication().getName();
-		 //log.info(loginUserName);
+		List<Map<String, Object>> categoryList = productService.selectAllCategory();
+		//log.info(categoryList.toString());
+		String loginUserName = SecurityContextHolder.getContext().getAuthentication().getName();
+		//log.info(loginUserName);
 		 
-		 model.addAttribute("categoryList", categoryList);
-		 model.addAttribute("loginUserName", loginUserName);
+		model.addAttribute("categoryList", categoryList);
+		model.addAttribute("loginUserName", loginUserName);
 		return "admin/updateCategory";
+	}
+	
+	// 관리자 옵션 추가/수정
+	@GetMapping("/admin/updateOption")
+	public String updateOption(Model model) {
+		String loginUserName = SecurityContextHolder.getContext().getAuthentication().getName();
+		//log.info(loginUserName);
+
+		// 옵션 불러오기
+		List<Option> optionList = productService.selectOptionList();
+		//log.info(optionList.toString());
+
+		Map<String, List<Option>> groupedOptions = optionList.stream()
+		        .collect(Collectors.groupingBy(Option::getOptionName));
+		log.info(groupedOptions.toString());
+
+		model.addAttribute("groupedOptions", groupedOptions);
+		model.addAttribute("loginUserName", loginUserName);
+		return "admin/updateOption";
 	}
 }

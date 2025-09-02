@@ -181,6 +181,7 @@
 			category_name AS categoryName
 		FROM category
 		WHERE parent_category = '0'
+			AND use_status = 'Y'
 	</select>
 	
 	<!-- 카테고리(중분류) 목록 -->
@@ -190,6 +191,7 @@
 			category_name AS categoryName
 		FROM category
 		WHERE parent_category = #{id}
+			AND use_status = 'Y'
 	</select>
 	
 	<!-- 카테고리별 상품 목록 보기(판매중, 일시품절만) -->
@@ -212,7 +214,26 @@
 		        CASE 
 		            WHEN c3.category_id IS NOT NULL THEN c1.category_id
 		            ELSE NULL
-		        END AS category_id_lv3
+		        END AS category_id_lv3,
+		
+		        -- use_status 포함
+		        CASE 
+		            WHEN c3.category_id IS NOT NULL THEN c3.use_status
+		            WHEN c2.category_id IS NOT NULL THEN c2.use_status
+		            ELSE c1.use_status
+		        END AS use_status_lv1,
+		
+		        CASE 
+		            WHEN c3.category_id IS NOT NULL THEN c2.use_status
+		            WHEN c2.category_id IS NOT NULL THEN c1.use_status
+		            ELSE NULL
+		        END AS use_status_lv2,
+		
+		        CASE 
+		            WHEN c3.category_id IS NOT NULL THEN c1.use_status
+		            ELSE NULL
+		        END AS use_status_lv3
+		
 		    FROM category c1
 		    LEFT JOIN category c2 ON c1.parent_category = c2.category_id
 		    LEFT JOIN category c3 ON c2.parent_category = c3.category_id
@@ -242,12 +263,16 @@
 		    cp.category_id_lv2 AS categoryIdLv2,
 		    cp.category_id_lv3 AS categoryIdLv3
 		FROM product_filtered pf
-		LEFT JOIN category_path cp ON pf.category_id = cp.category_id
-		JOIN product_status_agg psa ON pf.product_no = psa.product_no
-		WHERE (#{parentId} IS NULL OR cp.category_id_lv1 = #{parentId})
-		  AND (#{middleId} IS NULL OR cp.category_id_lv2 = #{middleId})
+		LEFT JOIN category_path cp 
+		       ON pf.category_id = cp.category_id
+		JOIN product_status_agg psa 
+		      ON pf.product_no = psa.product_no
+		-- ❗ use_status가 하나라도 N인 경우 제외
+		WHERE cp.use_status_lv1 = 'Y'
+		  AND (cp.use_status_lv2 IS NULL OR cp.use_status_lv2 = 'Y')
+		  AND (cp.use_status_lv3 IS NULL OR cp.use_status_lv3 = 'Y')
 		GROUP BY pf.product_no, psa.productStatus, cp.category_id_lv1, cp.category_id_lv2, cp.category_id_lv3
-		ORDER BY pf.product_no
+		ORDER BY pf.product_no;
 	</select>
 	
 	<!-- 카테고리별 상품 목록 보기(전체) -->
@@ -817,14 +842,36 @@
 	<!-- 카테고리 이름 수정 -->
 	<update id="updateCategoryName">
 		UPDATE category
-		SET category_name = #{newName}
+		SET category_name = #{newName},
+			update_user = #{loginUser},
+			update_date = NOW()
 		WHERE category_id = #{categoryId}
 	</update>
 	
 	<!-- 카테고리 삭제 -->
 	<update id="deleteCategory">
 		UPDATE category
-		SET use_status = 'N'
+		SET use_status = 'N',
+			update_user = #{loginUser},
+			update_date = NOW()
 		WHERE category_id = #{categoryId}
+	</update>
+	
+	<!-- 옵션 그룹 수정 -->
+	<update id="updateOptionGroupName">
+		UPDATE `option`
+		SET option_name = #{newName},
+			update_user = #{loginUser},
+			update_date = NOW()
+		WHERE option_name = #{optionGroupName}
+	</update>
+	
+	<!-- 옵션 이름 수정 -->
+	<update id="updateOptionName">
+		UPDATE `option`
+		SET option_name_value = #{newName},
+			update_user = #{loginUser},
+			update_date = NOW()
+		WHERE option_no = #{optionNo}
 	</update>
 </mapper>

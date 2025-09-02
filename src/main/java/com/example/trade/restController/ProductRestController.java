@@ -326,11 +326,11 @@ public class ProductRestController {
 	    try {
 	        int categoryId = Integer.parseInt(request.get("categoryId").toString());
 	        String newName = request.get("newName").toString();
-	        
+	        String loginUser = request.get("loginUser").toString();
 	        //log.info(categoryId + "");
 	        //log.info(newName);
 	        
-	        productService.updateCategoryName(categoryId, newName);
+	        productService.updateCategoryName(categoryId, newName, loginUser);
 	        return "success";
 	    } catch (Exception e) {
 	        e.printStackTrace();
@@ -342,7 +342,9 @@ public class ProductRestController {
 	@PostMapping("admin/removeCategory")
     public ResponseEntity<Map<String, Object>> removeCategory(@RequestBody Map<String, Object> request) {
 		int categoryId = Integer.parseInt(request.get("categoryId").toString());
-	    boolean removed = productService.removeCategory(categoryId);
+		String loginUser = request.get("loginUser").toString();
+		
+	    boolean removed = productService.removeCategory(categoryId, loginUser);
 
 	    if (removed) {
 	        return ResponseEntity.ok(Map.of("success", true));
@@ -373,4 +375,28 @@ public class ProductRestController {
 	    );
 	}
 
+	// 옵션 이름 수정
+	@PostMapping("/admin/updateOptionName")
+	public String updateOptionName(@RequestBody Map<String, Object> request) {
+		String newName = request.get("newName").toString();
+	    String loginUser = request.get("loginUser").toString();
+
+	    // 옵션 그룹 이름 수정
+	    if (request.containsKey("optionGroupName")) {
+	        String optionGroupName = request.get("optionGroupName").toString();
+	        log.info("옵션 그룹 수정: " + optionGroupName + " → " + newName);
+	        productService.updateOptionGroupName(optionGroupName, newName, loginUser);
+	        return "success";
+
+	    // 옵션 값 이름 수정
+	    } else if (request.containsKey("optionNo")) {
+	        int optionNo = Integer.parseInt(request.get("optionNo").toString());
+	        log.info("옵션 값 수정: " + optionNo + " → " + newName);
+	        productService.updateOptionName(optionNo, newName, loginUser);
+	        return "success";
+	    }
+
+	    // 둘 다 안 온 경우
+	    return "fail";
+	}
 }

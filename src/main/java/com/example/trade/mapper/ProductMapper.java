@@ -164,7 +164,14 @@ public interface ProductMapper {
 	List<Map<String, Object>> allCategory();
 	
 	// 카테고리 이름 수정
-	void updateCategoryName(@Param("categoryId") int categoryId, @Param("newName") String newName);
+	void updateCategoryName(@Param("categoryId") int categoryId, @Param("newName") String newName, @Param("loginUser") String loginUser);
 	// 카테고리 삭제
-	int deleteCategory(int categoryId);
+	int deleteCategory(@Param("categoryId") int categoryId, @Param("loginUser") String loginUser);
+	
+	// 옵션 그룹 수정
+	void updateOptionGroupName(@Param("optionGroupName") String optionGroupName, @Param("newName") String newName, @Param("loginUser") String loginUser);
+	
+	// 옵션명 수정
+	void updateOptionName(@Param("optionNo") int optionNo, @Param("newName") String newName, @Param("loginUser") String loginUser);
+		
 }
