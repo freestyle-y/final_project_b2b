@@ -9,21 +9,18 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.trade.dto.Address;
-import com.example.trade.dto.Attachment;
 import com.example.trade.dto.KakaoPayApprovalResponse;
-import com.example.trade.dto.KakaoPayReadyResponse;
 import com.example.trade.dto.Order;
 import com.example.trade.dto.PaymentMethod;
 import com.example.trade.service.AddressService;
 import com.example.trade.service.KakaoPayService;
 import com.example.trade.service.OrderService;
 import com.example.trade.service.PaymentMethodService;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class OrderController {
@@ -66,40 +63,6 @@ public class OrderController {
         return "personal/payment"; 
     }
 
-    @GetMapping("/personal/payment/success")
-    public String paymentSuccess(@RequestParam("pg_token") String pgToken
-                                ,@RequestParam("orderNo") String orderNo
-                                ,Model model
-                                ,Principal princiapl) {
-    	String userId = princiapl.getName();
-        // 1. 카카오 결제 승인
-        KakaoPayApprovalResponse response = kakaoPayService.payApprove(pgToken);
-        // 2. 주문 정보
-        Order order = orderService.getOrder(orderNo);
-        // 3. 아이템 개수 조회
-        int itemCount = orderService.getOrderItemCount(orderNo);
-
-        // 4. 상품명 가공
-        String productName = order.getProductName();
-        if (itemCount > 1) {
-            productName += " 외 " + (itemCount - 1) + "건";
-        }
-
-        // 5. 실 결제 금액 계산 (상품 금액 - 사용 적립금)
-        // int finalPrice = order.getTotalPrice() - orderService.getReward(userId);
-        
-        System.out.println("[컨트롤러] usedPoint = " + response.getUsedPoint());
-        System.out.println("[컨트롤러] realPaidAmount = " + response.getRealPaidAmount());
-        
-        // 6. JSP에 전달
-        model.addAttribute("name", order.getName());  // 구매자
-        model.addAttribute("productName", productName); // 상품명
-        model.addAttribute("usedPoint", response.getUsedPoint());
-        model.addAttribute("realPaidAmount", response.getRealPaidAmount());
-        model.addAttribute("usedKakaoPoint", response.getUsedKakaoPoint());
-
-        return "personal/paymentSuccess";
-    }
     // 결제 취소 콜백 (cancel_url)
     @GetMapping("/personal/payment/cancel")
     public String paymentCancel() {
@@ -136,10 +99,68 @@ public class OrderController {
         return "personal/orderOne";
     }
     
-    @GetMapping("/personal/orderResult")
-    public String orderResult() {
-    	
-    	return "personal/orderResult";
+ // ✅ 수정: pg_token을 optional로 받고, 있으면 승인 호출
+    @GetMapping("/personal/payment/orderResult")
+    public String orderResult(@RequestParam String orderNo,
+                              @RequestParam(name = "pg_token", required = false) String pgToken,
+                              Model model,
+                              HttpSession session) { // ✅ 수정: 세션 주입
+        // 주문 리스트 & 일시
+        List<Order> orderList = orderService.getOrderList(orderNo);
+        Order first = orderList.get(0);
+        java.sql.Timestamp orderDate = java.sql.Timestamp.valueOf(first.getOrderTime());
+        model.addAttribute("orderList", orderList);
+        model.addAttribute("orderDate", orderDate);
+
+        // 주문 요약(구매자 이름/총액/상품명 가공)
+        Order summary = orderService.getOrder(orderNo);
+        model.addAttribute("name", summary.getName());
+        int itemCount = orderService.getOrderItemCount(orderNo);
+        String productName = summary.getProductName();
+        if (itemCount > 1) productName += " 외 " + (itemCount - 1) + "건";
+        model.addAttribute("productName", productName);
+
+        int subtotal = summary.getTotalPrice();
+        int usedPoint = 0;
+        int usedKakaoPoint = 0;
+        Integer realPaidAmount = null;
+
+        if (pgToken != null && !pgToken.isBlank()) {
+            // ✅ 수정: 팝업으로 도착한 승인 콜백
+            KakaoPayApprovalResponse approval = kakaoPayService.payApprove(pgToken);
+            usedPoint       = approval.getUsedPoint();
+            usedKakaoPoint  = approval.getUsedKakaoPoint();
+            realPaidAmount  = approval.getRealPaidAmount();
+
+            // ✅ 수정: 메인창에서도 바로 보여줄 수 있도록 세션에 저장
+            session.setAttribute("or_usedPoint_" + orderNo, usedPoint);
+            session.setAttribute("or_usedKakaoPoint_" + orderNo, usedKakaoPoint);
+            session.setAttribute("or_realPaidAmount_" + orderNo, realPaidAmount);
+
+            // ✅ 수정: 이 요청은 팝업 → 메인창으로 넘기기 위한 플래그
+            model.addAttribute("popRedirect", true);
+        } else {
+            // ✅ 수정: 메인창에서 새로 열렸을 때 세션에 저장된 값 사용 (없으면 기본 계산)
+            Integer sp  = (Integer) session.getAttribute("or_usedPoint_" + orderNo);
+            Integer skp = (Integer) session.getAttribute("or_usedKakaoPoint_" + orderNo);
+            Integer sra = (Integer) session.getAttribute("or_realPaidAmount_" + orderNo);
+            if (sp  != null) usedPoint = sp;
+            if (skp != null) usedKakaoPoint = skp;
+            if (sra != null) realPaidAmount = sra;
+
+            model.addAttribute("popRedirect", false);
+        }
+
+        int effectiveRealPaid = (realPaidAmount != null ? realPaidAmount : (subtotal - usedPoint));
+        int chargedCashOrCard = effectiveRealPaid - usedKakaoPoint;
+
+        model.addAttribute("subtotal", subtotal);
+        model.addAttribute("usedPoint", usedPoint);
+        model.addAttribute("usedKakaoPoint", usedKakaoPoint);
+        model.addAttribute("realPaidAmount", effectiveRealPaid);
+        model.addAttribute("chargedCashOrCard", chargedCashOrCard);
+
+        return "personal/orderResult";
     }
 
 }

@@ -64,9 +64,9 @@ public class OrderService {
     }
 
     @Transactional
-    public void saveMethodAndPoints(String orderNo, String methodKor, int usePoint, Integer addressNo) {
+    public void saveMethodAndPoints(String orderNo, String methodKor, int usePoint, Integer addressNo, Integer paymentMethodNo) {
         orderMapper.updateDeliveryAddress(orderNo, addressNo);
-        orderMapper.savePaymentMethod(orderNo, methodKor);
+        orderMapper.savePaymentMethod(orderNo, methodKor, paymentMethodNo);
         List<Order> orderList = orderMapper.getOrderList(orderNo);
         for (Order order : orderList) {
             int updatedRows = orderMapper.decreaseStock(order.getProductNo(), order.getOptionNo(), order.getOrderQuantity());

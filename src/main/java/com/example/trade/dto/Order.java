@@ -24,6 +24,7 @@ public class Order {
 	private int orderQuantity;
 	private int price;
 	private String paymentType;
+	private int paymentMethodNo;
 	private LocalDateTime paymentTime;
 	private int returnQuantity;
 	private String returnReason;
@@ -65,7 +66,12 @@ public class Order {
 	private String name;
 	private String phone;
 	private String postal;
-	
+	private String email;
 	// 사진 띄우기 용
 	private String imagePath;
+	
+	// payment_method 조인
+	private String paymentCode;
+	private String financialInstitution;
+	private String accountNumber;
 }

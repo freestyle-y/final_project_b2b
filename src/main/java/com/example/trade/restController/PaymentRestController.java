@@ -1,5 +1,7 @@
 package com.example.trade.restController;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -61,25 +63,59 @@ public class PaymentRestController {
     // ✅ 결제 수단 및 포인트 저장
     @PostMapping("/saveMethodAndPoints")
     public ResponseEntity<?> saveMethodAndPoints(@RequestBody Map<String, Object> request) {
-    	try {
-            String orderNo = (String) request.get("orderNo");
-            String paymentMethod = (String) request.get("paymentMethod");
-            int usePoint = request.get("usePoint") == null ? 0 : Integer.parseInt(request.get("usePoint").toString());
-            Integer addressNo = request.get("addressNo") != null ? Integer.parseInt(request.get("addressNo").toString()) : null;
+        try {
+            String orderNo = request.get("orderNo") != null ? request.get("orderNo").toString() : null;
+            String paymentMethod = request.get("paymentMethod") != null ? request.get("paymentMethod").toString() : null;
+            if (orderNo == null || paymentMethod == null) {
+                return ResponseEntity.badRequest().body(Map.of("message", "필수 파라미터 누락(orderNo/paymentMethod)"));
+            }
+
+            int usePoint = toIntOrDefault(request.get("usePoint"), 0);            // ✅ 수정
+            Integer addressNo = toIntegerOrNull(request.get("addressNo"));        // ✅ 수정
+
+            Integer paymentMethodNo = null;
+            if ("card".equals(paymentMethod)) {
+                paymentMethodNo = toIntegerOrNull(request.get("cardMethodNo"));   // ✅ 수정
+                if (paymentMethodNo == null) {
+                    return ResponseEntity.badRequest().body(Map.of("message", "카드를 선택하세요."));
+                }
+            }
+
             String methodKor = switch (paymentMethod) {
                 case "kakaopay" -> "카카오페이";
                 case "bank"     -> "계좌이체";
                 case "card"     -> "카드결제";
                 default         -> "기타";
             };
-            orderService.saveMethodAndPoints(orderNo, methodKor, usePoint, addressNo);
-            return ResponseEntity.ok().build();
+
+            // ✅ 수정: 서비스에 null 허용(wrapper)로 전달
+            orderService.saveMethodAndPoints(orderNo, methodKor, usePoint, addressNo, paymentMethodNo);
+
+            String redirectUrl = "/personal/payment/orderResult?orderNo=" + URLEncoder.encode(orderNo, StandardCharsets.UTF_8);
+            return ResponseEntity.ok(Map.of("redirectUrl", redirectUrl));
+
+        } catch (NumberFormatException | NullPointerException e) {                 // ✅ 수정
+            return ResponseEntity.badRequest().body(Map.of("message", "요청 파라미터 형식 오류: " + e.getMessage()));
         } catch (IllegalArgumentException e) {
-            // 재고 부족 등의 예외 메시지를 클라이언트에 전달
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         } catch (Exception e) {
-            // 기타 예외는 500 에러로 처리
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "서버 오류가 발생했습니다."));
         }
     }
+
+    private static int toIntOrDefault(Object o, int def) {
+        if (o == null) return def;
+        String s = o.toString().trim();
+        if (s.isEmpty()) return def;
+        return Integer.parseInt(s);
+    }
+
+    private static Integer toIntegerOrNull(Object o) {
+        if (o == null) return null;
+        String s = o.toString().trim();
+        if (s.isEmpty()) return null;
+        return Integer.valueOf(s);
+    }
+
+
 }

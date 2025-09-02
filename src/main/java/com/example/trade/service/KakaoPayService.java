@@ -1,6 +1,8 @@
 package com.example.trade.service;
 
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,7 +12,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.trade.dto.KakaoPayApprovalResponse;
@@ -65,23 +66,17 @@ public class KakaoPayService {
             itemName = firstProductName + " 외 " + (productCount - 1) + "건";
         }
 
-        // 2) 📌 클라이언트 최종 금액 검증 & 보정 (여기가 핵심)
+        // 2) 최종 금액 검증 & 보정
         int finalPrice = clientFinalPrice;
-        if (finalPrice > dbTotalPrice) {
-            // 클라 금액이 DB 총액보다 클 리는 없으니 방어 보정
-            finalPrice = dbTotalPrice;
-        }
-        if (finalPrice < 0) {
-            finalPrice = 0;
-        }
+        if (finalPrice > dbTotalPrice) finalPrice = dbTotalPrice;
+        if (finalPrice < 0) finalPrice = 0;
 
-        // (선택) 검증 로그: 사용 포인트 역산
         int usedPoint = dbTotalPrice - finalPrice;
         System.out.println("[KAKAO READY] dbTotal=" + dbTotalPrice
                 + ", clientFinal=" + clientFinalPrice
                 + ", usedPoint(derived)=" + usedPoint);
 
-        // 3) 카카오 파라미터 구성 (finalPrice 사용)
+        // 3) 카카오 파라미터 구성
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
@@ -94,14 +89,23 @@ public class KakaoPayService {
         params.put("partner_user_id", userId);
         params.put("item_name", itemName);
         params.put("quantity", 1);
-        params.put("total_amount", finalPrice); // ✅ 수정: 최종 금액으로 보냄
+        params.put("total_amount", finalPrice);
         params.put("tax_free_amount", 0);
-        params.put("approval_url", approvalUrl + "?orderNo=" + orderNo);
+
+        // ✅ 수정: 승인 성공 리다이렉트 URL을 /orderResult 로 변경
+        //   - 기존 approvalUrl 이 /personal/payment/success 라고 가정
+        //   - pg_token 은 카카오가 자동으로 붙여줍니다.
+        String orderResultUrl =
+                (approvalUrl != null && approvalUrl.contains("/success"))
+                        ? approvalUrl.replace("/success", "/orderResult")
+                        : (approvalUrl + "/personal/payment/orderResult"); // fallback
+        orderResultUrl += "?orderNo=" + URLEncoder.encode(orderNo, StandardCharsets.UTF_8); // ✅ 수정
+        params.put("approval_url", orderResultUrl); // ✅ 수정
+
         params.put("cancel_url", cancelUrl);
         params.put("fail_url", failUrl);
 
-        
-        System.out.println("[KAKAO READY PARAMS] " + params); // ✅ 최종 전송값 확인용
+        System.out.println("[KAKAO READY PARAMS] " + params);
 
         HttpEntity<Map<String, Object>> body = new HttpEntity<>(params, headers);
 
@@ -114,17 +118,14 @@ public class KakaoPayService {
 
         kakaoPayReadyResponse = response.getBody();
 
-        
         kakaoPayReadyResponse.setUsedPoint(usedPoint);
         kakaoPayReadyResponse.setRealPaidAmount(finalPrice);
-        
-        
+
         this.currentOrderNo = orderNo;
         this.currentUserId = userId;
 
         return kakaoPayReadyResponse;
     }
-
 
     /**
      * 결제 승인 요청

@@ -26,8 +26,9 @@ public interface OrderMapper {
 	void insertUsedPoint(@Param("orderNo") String orderNo
 						,@Param("rewardUse") int rewardUse);
 	int savePaymentMethod(@Param("orderNo") String orderNo
-						 ,@Param("methodKor") String methodKor);
-	int updateOrderStatus(String orderNo, String subOrderNo);
-	void updateDeliveryAddress(String orderNo, Integer addressNo);
+						 ,@Param("methodKor") String methodKor
+						 ,@Param("paymentMethodNo") Integer paymentMethodNo);
+	int updateOrderStatus(@Param("orderNo") String orderNo, @Param("subOrderNo") String subOrderNo);
+	void updateDeliveryAddress(@Param("orderNo") String orderNo, @Param("addressNo") Integer addressNo);
 	int decreaseStock(@Param("productNo") int productNo, @Param("optionNo") int optionNo, @Param("quantity") int quantity);	
 }

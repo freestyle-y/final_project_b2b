@@ -473,16 +473,20 @@
           type: "POST",
           url: "/personal/payment/saveMethodAndPoints",
           contentType: "application/json",
+          dataType: 'json',
           data: JSON.stringify({
             orderNo: "${orderList[0].orderNo}",
             paymentMethod: "bank",
             usePoint: usePoint,
             addressNo: addressNo
           }),
-          success: function () {
-            alert("계좌이체가 선택되었습니다. 기업 계좌로 입금 후 주문이 완료됩니다.");
-            location.href = "/personal/orderList";
-          },
+          success: function (res) {
+        	  if (res && res.redirectUrl) {
+        	    location.href = res.redirectUrl;
+        	  } else {
+        	    location.href = "/personal/orderList"; // 안전망
+        	  }
+        	},
           error: function (xhr) {
             const msg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : "결제수단/적립금 저장 실패";
             alert(msg);
@@ -534,17 +538,25 @@
         paymentMethod: method,
         addressNo: addressNo
       };
-
+      if (method === "card") {
+          const selected = document.querySelector("input[name='cardNo']:checked");
+          if (!selected) { alert("사용할 카드를 선택하세요."); return; }
+          data.cardMethodNo = parseInt(selected.value, 10);
+        }
       if (method === "card") {
         $.ajax({
           type: "POST",
           url: "/personal/payment/saveMethodAndPoints",
           contentType: "application/json",
+          dataType: 'json',
           data: JSON.stringify(data),
-          success: function () {
-            alert("카드결제가 완료되었습니다.");
-            location.href = "/personal/orderList";
-          },
+          success: function (res) {             // ✅ 수정
+        	  if (res && res.redirectUrl) {
+        	    location.href = res.redirectUrl;  // ✅ 수정
+        	  } else {
+        	    location.href = "/personal/orderList";
+        	  }
+        	},
           error: function (xhr) {
             const msg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : "결제수단/적립금 저장 실패";
             alert(msg);
@@ -555,44 +567,57 @@
       }
 
       if (method === "kakaopay") {
-        $.ajax({
-          type: "POST",
-          url: "/personal/payment/saveMethodAndPoints",
-          contentType: "application/json",
-          data: JSON.stringify(data),
-          success: function () {
-            $.ajax({
-              type: "POST",
-              url: "/personal/payment/ready",
-              contentType: "application/json",
-              data: JSON.stringify({
-                orderNo: data.orderNo,
-                name: data.name,
-                totalPrice: data.totalPrice
-              }),
-              success: function (response) {
-                if (response.next_redirect_pc_url) {
-                  const win = window.open(response.next_redirect_pc_url, "kakaoPayPopup","width=500,height=700");
-                  const timer = setInterval(function () {
-                    if (win.closed) { clearInterval(timer); location.href = "/personal/orderList"; }
-                  }, 1000);
-                } else {
-                  alert("카카오페이 결제 요청 실패");
-                }
-              },
-              error: function (xhr) {
-                alert((xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : "카카오페이 결제 중 오류 발생");
-              }
-            });
-          },
-          error: function (xhr) {
-            const msg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : "결제수단/적립금 저장 실패";
-            alert(msg);
-            if (msg.includes("재고 부족")) location.href = "/personal/mainPage";
-          }
-        });
-        return;
-      }
+    	  // ✅ 수정: 팝업을 "먼저" 띄워서 브라우저 팝업 차단 회피
+    	  const payWin = window.open("", "kakaoPayPopup", "width=520,height=720");
+    	  if (!payWin || payWin.closed) {
+    	    alert("팝업이 차단되었습니다. 브라우저 팝업 허용을 켜주세요.");
+    	    return;
+    	  }
+
+    	  $.ajax({
+    	    type: "POST",
+    	    url: "/personal/payment/saveMethodAndPoints",
+    	    contentType: "application/json",
+    	    data: JSON.stringify(data),
+    	    success: function () {
+    	      $.ajax({
+    	        type: "POST",
+    	        url: "/personal/payment/ready",
+    	        contentType: "application/json",
+    	        data: JSON.stringify({
+    	          orderNo: data.orderNo,
+    	          name: data.name,
+    	          totalPrice: data.totalPrice
+    	        }),
+    	        success: function (response) {
+    	          const redirectUrl =
+    	            response.next_redirect_pc_url ||
+    	            response.next_redirect_mobile_url ||
+    	            response.next_redirect_app_url;
+
+    	          if (redirectUrl) {
+    	            // ✅ 수정: 팝업 창으로 카카오 결제창 로드
+    	            payWin.location.replace(redirectUrl);
+    	          } else {
+    	            payWin.close();
+    	            alert("카카오페이 결제 요청 실패");
+    	          }
+    	        },
+    	        error: function (xhr) {
+    	          payWin.close();
+    	          alert((xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : "카카오페이 결제 중 오류 발생");
+    	        }
+    	      });
+    	    },
+    	    error: function (xhr) {
+    	      payWin.close();
+    	      const msg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : "결제수단/적립금 저장 실패";
+    	      alert(msg);
+    	      if (msg.includes("재고 부족")) location.href = "/personal/mainPage";
+    	    }
+    	  });
+    	  return;
+    	}
     }).fail(function () { alert("배송요청 저장 실패"); });
   }
 
