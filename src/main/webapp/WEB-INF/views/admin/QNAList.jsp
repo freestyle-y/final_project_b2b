@@ -75,8 +75,8 @@
 				<th>작성일시</th>
 				<th>수정자</th>
 				<th>수정일시</th>
+				<th>답변 여부</th>
 				<th>사용 여부</th>
-				<th>조회수</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -88,8 +88,13 @@
 					<td>${qna.createDate}</td>
 					<td>${qna.updateUser}</td>
 					<td>${qna.updateDate}</td>
+					<td>
+						<c:choose>
+							<c:when test="${qna.commentCount > 0}">답변 완료</c:when>
+							<c:otherwise>답변 대기</c:otherwise>
+						</c:choose>
+					</td>
 					<td>${qna.useStatus}</td>
-					<td>${qna.viewCount}</td>
 				</tr>
 			</c:forEach>
 		</tbody>

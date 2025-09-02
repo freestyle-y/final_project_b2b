@@ -144,4 +144,7 @@ public interface AdminMapper {
 
 	// 반품 시 적립금 원복
 	int refundReward(RewardHistory rewardHistory);
+
+	// 미응답 QNA 수 조회
+	int selectNoCommentQnaCount();
 }

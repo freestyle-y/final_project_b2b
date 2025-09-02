@@ -296,4 +296,9 @@ public class AdminService {
 	public int saveLoginHistory(String userId) {
 		return adminMapper.insertLoginHistory(userId);
 	}
+
+	// 미응답 QNA 수 조회
+	public int getNoCommentQnaCount() {
+		return adminMapper.selectNoCommentQnaCount();
+	}
 }

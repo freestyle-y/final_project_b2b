@@ -27,7 +27,12 @@ public class AdminController {
 	
 	// 관리자 메인 페이지
 	@GetMapping({"/admin/mainPage"})
-	public String adminMainPage() {
+	public String adminMainPage(Model model) {
+		// 미응답 QNA 수
+		int noCommentQnaCount = adminService.getNoCommentQnaCount();
+		if(noCommentQnaCount != 0) {
+			model.addAttribute("noCommentQnaCount",noCommentQnaCount);
+		}
 		return "admin/mainPage";
 	}
 	

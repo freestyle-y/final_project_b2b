@@ -75,18 +75,32 @@
 	<!-- QNA 목록 조회 -->
 	<select id="selectQNAListById" resultType="map">
 		SELECT
-			board_no AS boardNo,
-			board_title AS boardTitle,
-			board_content AS boardContent,
-			create_user AS createUser,
-			create_date AS createDate,
-			update_user AS updateUser,
-			update_date AS updateDate,
-			use_status AS useStatus,
-			view_count AS viewCount
-		FROM board
-		WHERE board_code = 'BC002'
-		ORDER BY board_no DESC
+			b.board_no AS boardNo,
+			b.board_title AS boardTitle,
+			b.board_content AS boardContent,
+			b.create_user AS createUser,
+			b.create_date AS createDate,
+			b.update_user AS updateUser,
+			b.update_date AS updateDate,
+			b.use_status AS useStatus,
+			b.view_count AS viewCount,
+			IFNULL(t.commentCount, 0) AS commentCount
+		FROM board b LEFT JOIN (SELECT board_no, COUNT(*) AS commentCount
+								FROM comment
+								WHERE use_status = 'Y'
+								GROUP BY board_no) t ON b.board_no = t.board_no
+		WHERE b.board_code = 'BC002'
+		ORDER BY b.board_no DESC
+	</select>
+	
+	<!-- 미응답 QNA 수 조회 -->
+	<select id="selectNoCommentQnaCount" resultType="int">
+		SELECT
+			COUNT(IFNULL(t.commentCount, 0)) AS noCommentCount
+		FROM board b LEFT JOIN (SELECT board_no, COUNT(*) AS commentCount
+								FROM comment
+								GROUP BY board_no) t ON b.board_no = t.board_no
+		WHERE b.board_code = 'BC002'
 	</select>
 	
 	<!-- QNA 목록 전체 행 수 조회 -->
