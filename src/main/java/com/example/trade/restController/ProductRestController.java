@@ -319,4 +319,22 @@ public class ProductRestController {
 	    productService.updateInventoryAddress(inventoryId, addressNo);
 	    return ResponseEntity.ok().build();
 	}
+	
+	// 카테고리 이름 수정
+	@PostMapping("/admin/updateCategoryName")
+	public String updateCategoryName(@RequestBody Map<String, Object> payload) {
+	    try {
+	        int categoryId = Integer.parseInt(payload.get("categoryId").toString());
+	        String newName = payload.get("newName").toString();
+	        
+	        log.info(categoryId + "");
+	        log.info(newName);
+	        
+	        productService.updateCategoryName(categoryId, newName);
+	        return "success";
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return "fail";
+	    }
+	}
 }

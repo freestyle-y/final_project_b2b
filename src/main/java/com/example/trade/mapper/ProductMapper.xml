@@ -791,4 +791,28 @@
 	    SET address_no = #{addressNo}
 	    WHERE inventory_id = #{inventoryId}
 	</update>
+	
+	
+	<!-- 관리자 카테고리 추가/수정 -->
+	<select id="allCategory" resultType="map">
+		SELECT 
+		    t1.category_id AS categoryIdLv1,
+		    t1.category_name AS categoryNameLv1,
+		    t2.category_id AS categoryIdLv2,
+		    t2.category_name AS categoryNameLv2,
+		    t3.category_id AS categoryIdLv3,
+		    t3.category_name AS categoryNameLv3
+		FROM category t1
+		LEFT JOIN category t2 ON t2.parent_category = t1.category_id
+		LEFT JOIN category t3 ON t3.parent_category = t2.category_id
+		WHERE t1.parent_category = 0
+		ORDER BY t1.category_id, t2.category_id, t3.category_id;
+	</select>
+	
+	<!-- 카테고리 이름 수정 -->
+	<update id="updateCategoryName">
+	  UPDATE category
+	  SET category_name = #{newName}
+	  WHERE category_id = #{categoryId}
+	</update>
 </mapper>

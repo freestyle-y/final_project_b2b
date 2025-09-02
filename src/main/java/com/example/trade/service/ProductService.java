@@ -727,4 +727,14 @@ public class ProductService {
 	public void updateInventoryAddress(int inventoryId, int addressNo) {
 		productMapper.updateInventoryAddress(inventoryId, addressNo);
 	}
+	
+	// 관리자 카테고리 추가/수정
+	public List<Map<String, Object>> selectAllCategory() {
+		return productMapper.allCategory();
+	}
+	 
+	// 카테고리 이름 수정
+	public void updateCategoryName(int categoryId, String newName) {
+	    productMapper.updateCategoryName(categoryId, newName);
+	}
 }
