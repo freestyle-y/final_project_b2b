@@ -166,7 +166,7 @@ table.dataTable thead .sorting_desc:after {
 }
 .status-dropdown {
   display: none;
-  position: absolute;
+  position: fixed;
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
@@ -538,6 +538,11 @@ table.dataTable thead .sorting_desc:after {
     // 안전 보정
     setTimeout(syncGroupHeaderWidthsStable, 0);
     
+    $(window).on("scroll", function() {
+    	$('.status-dropdown').hide();
+    });
+
+    
  // 1. 상태 셀 클릭 이벤트
     $(document).on('click', '.status-cell', function(e) {
         e.stopPropagation(); // 이벤트 버블링 방지
@@ -548,6 +553,10 @@ table.dataTable thead .sorting_desc:after {
         const $cell = $(this);
         const $dropdown = $cell.find('.status-dropdown');
         const currentStatus = $cell.data('current-status');
+        const top = $(this).offset().top + 30 - $(window).scrollTop();
+        const left = $(this).offset().left + 50;
+        $('.status-dropdown').css('top', top);
+        $('.status-dropdown').css('left', left);
 
         // 드롭다운 메뉴 열기
         $dropdown.show();

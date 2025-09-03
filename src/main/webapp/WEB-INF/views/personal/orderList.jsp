@@ -8,6 +8,12 @@
 <meta charset="UTF-8">
 <%@ include file="/WEB-INF/common/head.jsp"%>
 <title>주문 목록</title>
+<style>
+	body {
+		font-family: "SUIT", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", Arial, sans-serif;
+		background: #fff;
+	}
+</style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
@@ -24,7 +30,7 @@
         <nav class="breadcrumbs">
           <ol>
             <li><a href="<c:url value='/personal/mainPage'/>">Home</a></li>
-            <li class="current">My Orders</li>
+            <li class="current">주문</li>
           </ol>
         </nav>
       </div>
@@ -77,14 +83,14 @@
                   <li class="nav-item">
                     <a class="nav-link ${ordersActive ? 'active' : ''}" href="<c:url value='/personal/orderList'/>">
                       <i class="bi bi-box-seam"></i>
-                      <span>My Orders</span>
+                      <span>주문</span>
                       <span class="badge"><c:out value="${orderCount}"/></span>
                     </a>
                   </li>
                   <li class="nav-item">
                     <a class="nav-link ${wishlistActive ? 'active' : ''}" href="<c:url value='/personal/wishList'/>">
                       <i class="bi bi-heart"></i>
-                      <span>Wishlist</span>
+                      <span>찜</span>
 					</a>
                   </li>
                 </ul>
@@ -136,9 +142,9 @@
                   <c:set var="statusClass" value="processing" />
                   <c:set var="statusText"  value="Processing" />
                   <c:choose>
-                    <c:when test="${first.deliveryStatus eq 'DS001'}"><c:set var="statusClass" value="processing"/><c:set var="statusText" value="Processing"/></c:when>
-                    <c:when test="${first.deliveryStatus eq 'DS002'}"><c:set var="statusClass" value="shipped"/><c:set var="statusText" value="Shipped"/></c:when>
-                    <c:when test="${first.deliveryStatus eq 'DS003'}"><c:set var="statusClass" value="delivered"/><c:set var="statusText" value="Delivered"/></c:when>
+                    <c:when test="${first.deliveryStatus eq 'DS001'}"><c:set var="statusClass" value="processing"/><c:set var="statusText" value="배송 준비 중"/></c:when>
+                    <c:when test="${first.deliveryStatus eq 'DS002'}"><c:set var="statusClass" value="shipped"/><c:set var="statusText" value="배송 중"/></c:when>
+                    <c:when test="${first.deliveryStatus eq 'DS003'}"><c:set var="statusClass" value="delivered"/><c:set var="statusText" value="배송 완료"/></c:when>
                   </c:choose>
                   <c:if test="${not empty first.orderStatus and fn:contains(first.orderStatus, 'CANCEL')}">
                     <c:set var="statusClass" value="cancelled" />
@@ -157,7 +163,7 @@
                        data-order-ts="${fn:escapeXml(orderTimeRaw)}">
                     <div class="order-header">
                       <div class="order-id">
-                        <span class="label">Order No:</span>
+                        <span class="label">주문 번호:</span>
                         <a class="value text-decoration-none" href="<c:url value='/personal/orderOne?orderNo=${orderNo}'/>">#${orderNo}</a>
                       </div>
                       <div class="order-date">
@@ -180,15 +186,15 @@
 
                       <div class="order-info">
                         <div class="info-row">
-                          <span>Status</span>
+                          <span>배송 상태</span>
                           <span class="status ${statusClass}">${statusText}</span>
                         </div>
                         <div class="info-row">
-                          <span>Items</span>
-                          <span>${fn:length(items)} items</span>
+                          <span>상품</span>
+                          <span>${fn:length(items)} 개</span>
                         </div>
                         <div class="info-row">
-                          <span>Total</span>
+                          <span>합계</span>
                           <span class="price">₩<fmt:formatNumber value="${orderTotal}" type="number"/></span>
                         </div>
                       </div>
@@ -232,7 +238,7 @@
                       <!-- Details -->
                       <div class="collapse order-details" id="details_${orderNo}" data-bs-parent="#acc_${orderNo}">
                         <div class="details-content">
-                          <h6 class="mb-2">Items (${fn:length(items)})</h6>
+                          <h6 class="mb-2">상품 (${fn:length(items)})</h6>
 
                           <div class="order-items">
                             <c:forEach var="it" items="${items}">
@@ -244,7 +250,7 @@
                                   <div class="item-meta">
                                     <span class="sku">옵션: <c:out value="${it.optionName}"/> <c:out value="${it.optionNameValue}"/></span>
                                     <span class="ms-2">상품번호: <c:out value="${it.productNo}"/></span>
-                                    <span class="ms-2">Qty: <c:out value="${it.orderQuantity}"/></span>
+                                    <span class="ms-2">수량: <c:out value="${it.orderQuantity}"/></span>
                                   </div>
                                 </div>
                                 <div class="ms-auto fw-semibold">
@@ -258,13 +264,7 @@
                           </div>
 
                           <div class="row mt-3">
-                            <div class="col-md-6">
-                              <h6>Price Details</h6>
-                              <div class="price-breakdown">
-                                <div class="price-row"><span>Subtotal</span><span>₩<fmt:formatNumber value="${orderTotal}" type="number"/></span></div>
-                                <div class="price-row total"><span>Total</span><span>₩<fmt:formatNumber value="${orderTotal}" type="number"/></span></div>
-                              </div>
-                            </div>
+
                             <div class="col-md-6">
                               <h6>Shipping Address</h6>
                               <p class="mb-0">
@@ -274,9 +274,6 @@
                                 <span class="text-muted"><c:out value="${first.phone}"/></span><br>
                                 <span class="text-muted"><c:out value="${first.email}"/></span>
                               </p>
-                              <c:if test="${first.mainAddress eq 'Y'}">
-                                <span class="badge bg-success mt-2">기본 배송지</span>
-                              </c:if>
                               <c:if test="${not empty first.deliveryRequest}"><div class="mt-2 text-muted">요청사항: <c:out value="${first.deliveryRequest}"/></div></c:if>
                             </div>
                           </div>
