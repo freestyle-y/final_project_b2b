@@ -39,8 +39,7 @@
 					FROM product_request
 					GROUP BY product_request_no) t ON q.product_request_no = t.product_request_no
 		INNER JOIN address a ON t.address_no = a.address_no
-		INNER JOIN contract_order co ON c.contract_no = co.contract_no
-		INNER JOIN container ct ON co.contract_order_no = ct.contract_order_no
+		INNER JOIN container ct ON c.contract_no = ct.contract_no
 		LEFT JOIN contract_delivery cd ON ct.container_no = cd.container_no
 		WHERE t.create_user = #{username}
 		ORDER BY c.contract_no DESC
