@@ -19,15 +19,6 @@
 					<button class="header-action-btn mobile-search-toggle d-xl-none" type="button" data-bs-toggle="collapse" data-bs-target="#mobileSearch" aria-expanded="false" aria-controls="mobileSearch">
 						<i class="bi bi-search"></i>
 					</button>
-					<a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
-						<i class="bi bi-translate me-2"></i>EN
-					</a>
-					<ul class="dropdown-menu">
-						<li><a class="dropdown-item" href="#"><i class="bi bi-check2 me-2 selected-icon"></i>English</a></li>
-						<li><a class="dropdown-item" href="#">Español</a></li>
-						<li><a class="dropdown-item" href="#">Français</a></li>
-						<li><a class="dropdown-item" href="#">Deutsch</a></li>
-					</ul>
 					<!-- Account -->
 					<div class="dropdown account-dropdown">
 						<button class="header-action-btn" data-bs-toggle="dropdown">
@@ -92,24 +83,6 @@
 					<li><a href="/categories">상품 카테고리</a></li>
 					<li><a href="/biz/productRequest">구매 견적 요청</a></li>
 					<li><a href="/public/reviewList">상품 후기</a></li>
-					<li><a href="#">sample1</a></li>
-					<li class="dropdown"><a href="#"><span>sample2</span><i class="bi bi-chevron-down toggle-dropdown"></i></a>
-						<ul>
-							<li><a href="#">Dropdown 1</a></li>
-							<li><a href="#">Dropdown 2</a></li>
-							<li><a href="#">Dropdown 3</a></li>
-							<li><a href="#">Dropdown 4</a></li>
-							<li class="dropdown"><a href="#"><span>Deep Dropdown</span><i class="bi bi-chevron-down toggle-dropdown"></i></a>
-								<ul>
-									<li><a href="#">Deep Dropdown 1</a></li>
-									<li><a href="#">Deep Dropdown 2</a></li>
-									<li><a href="#">Deep Dropdown 3</a></li>
-									<li><a href="#">Deep Dropdown 4</a></li>
-									<li><a href="#">Deep Dropdown 5</a></li>
-								</ul>
-							</li>
-						</ul>
-					</li>
 					<li><a href="/personal/deliveryList">회원가입</a></li>
 					<li><a href="/personal/deliveryList">주문배송조회</a></li>
 					<li><a href="/public/helpDesk">고객센터</a></li>
