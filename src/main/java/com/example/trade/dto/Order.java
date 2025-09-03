@@ -74,4 +74,7 @@ public class Order {
 	private String paymentCode;
 	private String financialInstitution;
 	private String accountNumber;
+	
+	// 리뷰 작성 버튼 막기용
+	private boolean hasReview;
 }

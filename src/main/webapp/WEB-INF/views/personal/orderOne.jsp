@@ -132,6 +132,14 @@ body{
   .main table{ display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; }
   .main > table:first-of-type td:first-child{ width:140px; }
 }
+.main table .btn-review {
+  border:1px solid var(--ink-300);
+  background:#fff;
+  color:#111827;
+  padding:8px 12px;
+  border-radius:10px;
+  box-shadow:var(--shadow-sm);
+}
 </style>
 
 
@@ -210,10 +218,13 @@ body{
 						</c:choose>
 					  <c:choose>
 						<c:when test="${order.orderStatus == 'OS003'}">
-							<button onclick="toggleReviewForm(${status.index})">리뷰작성</button>
+						  <button type="button"
+							        onclick="openReviewDrawer('${order.orderNo}', '${order.subOrderNo}')">
+							  리뷰작성
+							</button>
 						</c:when>
 						<c:otherwise>
-							<button disabled title="구매확정 후 작성 가능합니다.">리뷰작성</button>
+						  <button disabled title="구매확정 후 작성 가능합니다.">리뷰작성</button>
 						</c:otherwise>
 					  </c:choose>
 
@@ -250,12 +261,75 @@ body{
             </tr>
         </c:forEach>
     </tbody>
+<div class="offcanvas offcanvas-end" tabindex="-1" id="reviewDrawer" aria-labelledby="reviewDrawerLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="reviewDrawerLabel">리뷰 작성</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="닫기"></button>
+  </div>
+  <div class="offcanvas-body">
+    <form method="post" action="/personal/addReview" id="reviewForm">
+      <input type="hidden" name="orderNo" id="reviewOrderNo" value="">
+      <input type="hidden" name="subOrderNo" id="reviewSubOrderNo" value="">
+
+      <div class="mb-3">
+        <label for="reviewGrade" class="form-label fw-bold">별점</label>
+        <select name="grade" id="reviewGrade" class="form-select">
+          <option value="5.0">★★★★★ (5.0)</option>
+          <option value="4.5">★★★★☆ (4.5)</option>
+          <option value="4.0">★★★★ (4.0)</option>
+          <option value="3.5">★★★☆ (3.5)</option>
+          <option value="3.0">★★★ (3.0)</option>
+          <option value="2.5">★★☆ (2.5)</option>
+          <option value="2.0">★★ (2.0)</option>
+          <option value="1.5">★☆ (1.5)</option>
+          <option value="1.0">★ (1.0)</option>
+          <option value="0.5">☆ (0.5)</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="reviewText" class="form-label fw-bold">리뷰 내용</label>
+        <textarea name="review" id="reviewText" rows="4" class="form-control" maxlength="500"
+                  placeholder="리뷰를 입력하세요 (최대 500자)"></textarea>
+        <div class="form-text"><span id="reviewCount">0</span> / 500</div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button type="button" class="btn btn-light" data-bs-dismiss="offcanvas">취소</button>
+        <button type="submit" class="btn btn-primary">등록</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 </table>
 
 </main>
 
 <!-- 공통 풋터 -->
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const reviewDrawer = document.getElementById('reviewDrawer');
+  const reviewOrderNo = document.getElementById('reviewOrderNo');
+  const reviewSubOrderNo = document.getElementById('reviewSubOrderNo');
+  const reviewText = document.getElementById('reviewText');
+  const reviewCount = document.getElementById('reviewCount');
+
+  // 오프캔버스 열릴 때 orderNo/subOrderNo 세팅
+  reviewDrawer.addEventListener('show.bs.offcanvas', function (event) {
+    const btn = event.relatedTarget;
+    reviewOrderNo.value = btn.getAttribute('data-order-no');
+    reviewSubOrderNo.value = btn.getAttribute('data-sub-order-no');
+    reviewText.value = "";
+    reviewCount.textContent = "0";
+  });
+
+  // 글자수 카운트
+  reviewText.addEventListener('input', function(){
+    reviewCount.textContent = String(this.value.length);
+  });
+</script>
 
 <script>
 function toggleReviewForm(index) {
