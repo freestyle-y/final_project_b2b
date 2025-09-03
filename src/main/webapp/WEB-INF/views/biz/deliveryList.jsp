@@ -97,7 +97,7 @@
 						<td>
 							<c:choose>
 								<c:when test="${empty bizDeliveryList.contractDeliveryNo}">
-									<button disabled>배송조회</button>
+									<button class="btn btn-secondary btn-sm" disabled>배송조회</button>
 								</c:when>
 								<c:otherwise>
 									<button onclick="location.href='/biz/deliveryOne?contractDeliveryNo=${bizDeliveryList.contractDeliveryNo}'" class="btn btn-primary btn-sm">배송조회</button>

@@ -100,19 +100,19 @@
 								<c:when test="${bizDeliveryList.contractDeliveryStatus eq null}">
 									<form action="/admin/bizDeliveryUpdate" method="get">
 										<input type="hidden" name="containerNo" value="${bizDeliveryList.containerNo}">
-										<button type="submit" class="btn btn-primary btn-sm">배송</button>
+										<button type="submit" class="btn btn-dark btn-sm">배송</button>
 									</form>
 								</c:when>
 								<%-- 배송 완료 처리 : 배송중일 때만 가능 --%>
 								<c:when test="${bizDeliveryList.contractDeliveryStatus eq '배송중'}">
 									<form action="/admin/bizDeliveryComplete" method="post" onsubmit="return confirm('배송 완료 처리하시겠습니까?');">
 										<input type="hidden" name="contractDeliveryNo" value="${bizDeliveryList.contractDeliveryNo}">
-										<button type="submit" class="btn btn-primary btn-sm">완료</button>
+										<button type="submit" class="btn btn-dark btn-sm">완료</button>
 									</form>
 								</c:when>
 								<c:otherwise>
-									<button type="button" class="btn btn-primary-outline btn-sm" disabled>배송</button>
-									<button type="button" class="btn btn-primary-outline btn-sm" disabled>완료</button>
+									<button type="button" class="btn btn-muted btn-sm" disabled>배송</button>
+									<button type="button" class="btn btn-muted btn-sm" disabled>완료</button>
 								</c:otherwise>
 							</c:choose>
 						</td>

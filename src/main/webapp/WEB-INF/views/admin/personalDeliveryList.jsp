@@ -112,7 +112,7 @@
 									<form action="/admin/personalDeliveryUpdate" method="get">
 										<input type="hidden" name="orderNo" value="${pd.orderNo}">
 										<input type="hidden" name="subOrderNo" value="${pd.subOrderNo}">
-										<button type="submit" class="btn btn-primary btn-sm">배송</button>
+										<button type="submit" class="btn btn-dark btn-sm">배송</button>
 									</form>
 								</c:when>
 								<%-- 배송 완료 처리 : 배송중(DS002)일 때만 가능 --%>
@@ -120,12 +120,12 @@
 									<form action="/admin/personalDeliveryComplete" method="post" onsubmit="return confirm('배송 완료 처리하시겠습니까?');">
 										<input type="hidden" name="orderNo" value="${pd.orderNo}">
 										<input type="hidden" name="subOrderNo" value="${pd.subOrderNo}">
-										<button type="submit" class="btn btn-primary btn-sm">완료</button>
+										<button type="submit" class="btn btn-dark btn-sm">완료</button>
 									</form>
 								</c:when>
 								<c:otherwise>
-									<button type="button" class="btn btn-primary-outline btn-sm" disabled>배송</button>
-									<button type="button" class="btn btn-primary-outline btn-sm" disabled>완료</button>
+									<button type="button" class="btn btn-muted btn-sm" disabled>배송</button>
+									<button type="button" class="btn btn-muted btn-sm" disabled>완료</button>
 								</c:otherwise>
 							</c:choose>
 						</td>
@@ -137,12 +137,12 @@
 									<form action="/admin/personalExchangeUpdate" method="get" style="display: inline;">
 										<input type="hidden" name="orderNo" value="${pd.orderNo}">
 										<input type="hidden" name="subOrderNo" value="${pd.subOrderNo}">
-										<button type="submit" class="btn btn-primary btn-sm">승인</button>
+										<button type="submit" class="btn btn-dark btn-sm">승인</button>
 									</form>
 									<form action="/admin/exchangeReject" method="post" onsubmit="return confirm('교환 거절 처리하시겠습니까?');" style="display: inline;">
 										<input type="hidden" name="orderNo" value="${pd.orderNo}">
 										<input type="hidden" name="subOrderNo" value="${pd.subOrderNo}">
-										<button type="submit" class="btn btn-primary btn-sm">거절</button>
+										<button type="submit" class="btn btn-dark btn-sm">거절</button>
 									</form>
 								</c:when>
 		
@@ -151,14 +151,14 @@
 									<form action="/admin/exchangeComplete" method="post" onsubmit="return confirm('교환 완료 처리하시겠습니까?');" style="display: inline;">
 										<input type="hidden" name="orderNo" value="${pd.orderNo}">
 										<input type="hidden" name="subOrderNo" value="${pd.subOrderNo}">
-										<button type="submit" class="btn btn-primary btn-sm">완료</button>
+										<button type="submit" class="btn btn-dark btn-sm">완료</button>
 									</form>
 								</c:when>
 		
 								<%-- 그 외 상태면 버튼 비활성화 --%>
 								<c:otherwise>
-									<button type="button" class="btn btn-primary-outline btn-sm" disabled>승인</button>
-									<button type="button" class="btn btn-primary-outline btn-sm" disabled>거절</button>
+									<button type="button" class="btn btn-muted btn-sm" disabled>승인</button>
+									<button type="button" class="btn btn-muted btn-sm" disabled>거절</button>
 								</c:otherwise>
 							</c:choose>
 						</td>
@@ -170,12 +170,12 @@
 									<form action="/admin/returnApprove" method="post" style="display: inline;">
 										<input type="hidden" name="orderNo" value="${pd.orderNo}">
 										<input type="hidden" name="subOrderNo" value="${pd.subOrderNo}">
-										<button type="submit" class="btn btn-primary btn-sm">승인</button>
+										<button type="submit" class="btn btn-dark btn-sm">승인</button>
 									</form>
 									<form action="/admin/returnReject" method="post" style="display: inline;">
 										<input type="hidden" name="orderNo" value="${pd.orderNo}">
 										<input type="hidden" name="subOrderNo" value="${pd.subOrderNo}">
-										<button type="submit" class="btn btn-primary btn-sm">거절</button>
+										<button type="submit" class="btn btn-dark btn-sm">거절</button>
 									</form>
 								</c:when>
 		
@@ -184,13 +184,13 @@
 									<form action="/admin/returnComplete" method="post" style="display: inline;">
 										<input type="hidden" name="orderNo" value="${pd.orderNo}">
 										<input type="hidden" name="subOrderNo" value="${pd.subOrderNo}">
-										<button type="submit" class="btn btn-primary btn-sm">완료</button>
+										<button type="submit" class="btn btn-dark btn-sm">완료</button>
 									</form>
 								</c:when>
 								<%-- 그 외 상태면 비활성화 --%>
 								<c:otherwise>
-									<button type="button" class="btn btn-primary-outline btn-sm" disabled>승인</button>
-									<button type="button" class="btn btn-primary-outline btn-sm" disabled>거절</button>
+									<button type="button" class="btn btn-muted btn-sm" disabled>승인</button>
+									<button type="button" class="btn btn-muted btn-sm" disabled>거절</button>
 								</c:otherwise>
 							</c:choose>
 						</td>
