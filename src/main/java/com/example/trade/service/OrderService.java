@@ -100,10 +100,5 @@ public class OrderService {
 	}
 
 
-	public boolean existsReview(String orderNo, String subOrderNo) {
-	    return orderMapper.existsReview(orderNo, subOrderNo) > 0;
-	}
-
-
 
 }

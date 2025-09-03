@@ -294,10 +294,5 @@
   FROM reward_history
   WHERE order_no = #{orderNo}
 </select>
-<select id="existsReview" resultType="int">
-    SELECT COUNT(*)
-    FROM `order`
-    WHERE order_no = #{orderNo}
-      AND sub_order_no = #{subOrderNo}
-</select>
+
 </mapper>
