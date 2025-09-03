@@ -269,7 +269,7 @@
 		SELECT
 			n.notification_no AS notificationNo,
 			CASE n.target_type
-				WHEN 'USER' THEN CONCAT('ID : ', n.target_value)
+				WHEN 'USER' THEN n.target_value
 				WHEN 'ROLE' THEN ct.code_name
 				WHEN 'ALL'  THEN '전체회원'
 			END AS targetDisplay,
