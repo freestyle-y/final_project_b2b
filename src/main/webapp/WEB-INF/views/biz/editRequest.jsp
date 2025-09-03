@@ -8,22 +8,148 @@
     <title>상품 요청 수정</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
+        /* Google Fonts - Noto Sans KR */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
+        /* Basic Body and Main Styling */
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        main.main {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        /* Form and Input Styling */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
         .product-group {
-            border: 1px solid #ccc;
-            padding: 10px;
+            border: 1px solid #e0e0e0;
+            padding: 20px;
+            border-radius: 8px;
+            background: #fdfdfd;
+            transition: box-shadow 0.3s ease-in-out;
             margin-bottom: 10px;
-            width: 700px;
-            max-width: 90%;
-            background: #f9f9f9;
+        }
+
+        .product-group:hover {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .product-group div {
+            margin-bottom: 15px;
+        }
+        
+        .product-group label {
+            width: 70px;
+            display: inline-block;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            width: 300px;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s ease-in-out;
+        }
+        
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        label strong {
+            color: #555;
+            font-weight: 500;
+        }
+
+        textarea {
+            width: calc(100% - 24px); /* 전체 너비에서 패딩 제외 */
+            resize: vertical;
+        }
+
+        /* Buttons & Checkboxes */
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s ease-in-out, transform 0.2s;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* File & Radio Styling */
+        #requests {
+            width: 100%;
+        }
+        
+        input[type="file"] {
+            display: block;
+            margin-top: 5px;
+        }
+
+        input[type="radio"] {
+            margin-right: 8px;
+        }
+
+        /* Submit Button */
+        button[type="submit"] {
+            background-color: #2ecc71;
+            color: white;
+            align-self: flex-end;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #27ae60;
+        }
+
+        .attachment-item a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        
+        .attachment-item a:hover {
+            text-decoration: underline;
+        }
+        
+        .delete-file-checkbox {
+            margin-left: 10px;
         }
     </style>
 </head>
 <body>
 
-<main class="main">
-
-<!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
+
+<main class="main">
 
 <h1>상품 요청 수정</h1>
 
@@ -31,17 +157,16 @@
     <div id="product-container">
         <c:forEach var="item" items="${productRequestOne}" varStatus="status">
             <div class="product-group">
-                <div>상품명: 
+                <div><label>상품명:</label> 
                     <input type="text" name="productRequestList[${status.index}].productName" value="${item.productName}" required>
                 </div>
-                <div>옵션: 
+                <div><label>옵션:</label> 
                     <input type="text" name="productRequestList[${status.index}].productOption" value="${item.productOption}" required>
                 </div>
-                <div>수량: 
+                <div><label>수량:</label> 
                     <input type="number" name="productRequestList[${status.index}].productQuantity" value="${item.productQuantity}" min="1" required>
                 </div>
                 
-                <!-- 숨겨야 하는 필드 -->
                 <input type="hidden" name="productRequestList[${status.index}].subProductRequestNo" value="${item.subProductRequestNo}" />
                 <input type="hidden" name="productRequestList[${status.index}].productRequestNo" value="${item.productRequestNo}" />
                 <input type="hidden" name="productRequestList[${status.index}].updateUser" value="${item.createUser}" />
@@ -58,7 +183,6 @@
 		                <c:forEach var="file" items="${firstItem.attachments}" varStatus="loop">
 		                    <li class="attachment-item" style="margin-bottom: 5px;">
 							    <a href="${file.filepath}" download>${file.filename}</a>
-							    <!-- 삭제용 체크박스 -->
 							    <label style="margin-left: 10px;">
 							        <input type="checkbox"
 								       class="delete-file-checkbox"
@@ -111,7 +235,6 @@
 
 </main>
 
-<!-- 공통 풋터 -->
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>
 
 <script>
