@@ -70,18 +70,6 @@
 						</div>
 					</div>
 
-					<!-- Wishlist -->
-					<a href="#" class="header-action-btn d-none d-md-block">
-						<i class="bi bi-heart"></i>
-						<span class="badge">0</span>
-					</a>
-
-					<!-- Cart -->
-					<a href="#" class="header-action-btn">
-						<i class="bi bi-cart3"></i>
-						<span class="badge">3</span>
-					</a>
-
 					<!-- Mobile Navigation Toggle -->
 					<i class="mobile-nav-toggle d-xl-none bi bi-list me-0"></i>
 

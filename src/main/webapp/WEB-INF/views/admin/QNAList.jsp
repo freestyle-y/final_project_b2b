@@ -75,7 +75,6 @@
 				<th>제목</th>
 				<th>작성자</th>
 				<th>작성일시</th>
-				<th>수정자</th>
 				<th>수정일시</th>
 				<th>답변 여부</th>
 				<th>사용 여부</th>
@@ -88,7 +87,6 @@
 					<td><a href="/admin/QNAOne?boardNo=${qna.boardNo}">${qna.boardTitle}</a></td>
 					<td>${qna.createUser}</td>
 					<td>${qna.createDate}</td>
-					<td>${qna.updateUser}</td>
 					<td>${qna.updateDate}</td>
 					<td>
 						<c:choose>

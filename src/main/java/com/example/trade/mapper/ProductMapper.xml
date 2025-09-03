@@ -267,12 +267,13 @@
 		       ON pf.category_id = cp.category_id
 		JOIN product_status_agg psa 
 		      ON pf.product_no = psa.product_no
-		-- ❗ use_status가 하나라도 N인 경우 제외
-		WHERE cp.use_status_lv1 = 'Y'
+		WHERE (#{parentId} IS NULL OR cp.category_id_lv1 = #{parentId})
+		  AND (#{middleId} IS NULL OR cp.category_id_lv2 = #{middleId})
+		  AND cp.use_status_lv1 = 'Y'
 		  AND (cp.use_status_lv2 IS NULL OR cp.use_status_lv2 = 'Y')
 		  AND (cp.use_status_lv3 IS NULL OR cp.use_status_lv3 = 'Y')
 		GROUP BY pf.product_no, psa.productStatus, cp.category_id_lv1, cp.category_id_lv2, cp.category_id_lv3
-		ORDER BY pf.product_no;
+		ORDER BY pf.product_no
 	</select>
 	
 	<!-- 카테고리별 상품 목록 보기(전체) -->
