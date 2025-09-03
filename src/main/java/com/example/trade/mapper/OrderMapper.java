@@ -33,5 +33,5 @@ public interface OrderMapper {
 	void updateDeliveryAddress(@Param("orderNo") String orderNo, @Param("addressNo") Integer addressNo);
 	int decreaseStock(@Param("productNo") int productNo, @Param("optionNo") int optionNo, @Param("quantity") int quantity);
 	List<User> getUserInformation(String userId);
-	int getUsedPointByOrderNo(String orderNo);	
+	Integer getUsedPointByOrderNo(String orderNo);	
 }

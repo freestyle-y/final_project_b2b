@@ -289,9 +289,10 @@
 		WHERE id = #{userId}
 	</select>
 	
-	<select id="getUsedPointByOrderNo" resultType="int">
-	    SELECT reward_use
-    	FROM reward_history
-    	WHERE order_no = #{orderNo}
-	</select>
+<select id="getUsedPointByOrderNo" parameterType="string" resultType="int">
+  SELECT COALESCE(SUM(reward_use), 0)
+  FROM reward_history
+  WHERE order_no = #{orderNo}
+</select>
+
 </mapper>
