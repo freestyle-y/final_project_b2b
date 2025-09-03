@@ -131,7 +131,7 @@ table.detail col:nth-child(5){width:14%;}
             <th>상품명</th>
             <th>옵션</th>
             <th>수량</th>
-            <th>단가</th>
+            <th>가격</th>
             <th>소계</th>
           </tr>
         </thead>
@@ -145,7 +145,7 @@ table.detail col:nth-child(5){width:14%;}
             <c:otherwise>
               <c:set var="grandTotal" value="0"/>
               <c:forEach var="item" items="${quotationOne.items}">
-                <c:set var="rowTotal" value="${item.productQuantity * item.price}"/>
+                <c:set var="rowTotal" value="${item.price}"/>
                 <c:set var="grandTotal" value="${grandTotal + rowTotal}"/>
                 <tr>
                   <td style="text-align:left"><c:out value="${item.productName}"/></td>

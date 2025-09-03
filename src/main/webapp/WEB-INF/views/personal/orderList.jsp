@@ -85,8 +85,7 @@
                     <a class="nav-link ${wishlistActive ? 'active' : ''}" href="<c:url value='/personal/wishList'/>">
                       <i class="bi bi-heart"></i>
                       <span>Wishlist</span>
-                      <span class="badge"><c:out value="${wishCount}"/></span>
-                    </a>
+					</a>
                   </li>
                 </ul>
               </nav>

@@ -298,7 +298,7 @@
         { targets: 4, width: '100px', className: 'text-center' },    // 작성자
         { targets: 5, width: '130px', className: 'text-center' }     // 작성일자
       ],
-      order: [[0, 'desc']], // 상품요청번호 기준 내림차순
+      order: [[1, 'desc']], // 상품요청번호 기준 내림차순
       dom: '<"row mb-2"<"col-12 col-md-6"l><"col-12 col-md-6"f>>t<"row mt-2"<"col-12 col-md-5"i><"col-12 col-md-7"p>>',
       language: {
         lengthMenu: '_MENU_ 개씩 보기',

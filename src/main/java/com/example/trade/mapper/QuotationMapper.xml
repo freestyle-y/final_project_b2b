@@ -62,6 +62,7 @@
 		q.quotation_no AS quotation_no,
 		q.product_request_no AS quotation_product_request_no,
 		q.status AS status,
+		q.refusal_reason AS refusalReason,
 		q.create_user AS create_user,
 		q.create_date AS create_date,
 		qi.item_id AS item_id,
@@ -87,6 +88,7 @@
 		q.quotation_no AS quotation_no,
 		q.product_request_no AS quotation_product_request_no,
 		q.status AS status,
+		q.refusal_reason AS refusalReason,
 		q.create_user AS create_user,
 		q.create_date AS create_date,
 		qi.item_id AS item_id,
@@ -215,6 +217,7 @@
 		<result property="productRequestNo"
 			column="quotation_product_request_no" />
 		<result property="status" column="status" />
+		<result column="refusalReason"    property="refusalReason"/>
 		<result property="createUser" column="create_user" />
 		<result property="createDate" column="create_date" />
 		<result property="requestCompanyUser"

@@ -87,10 +87,10 @@ public class QuotationController {
 	
 	// 관리자 견적서 수정 POST
 	@PostMapping("/admin/modifyQuotation")
-	public String modifyQuotation(
-	        @RequestParam("quotationNo") int quotationNo,
-	        @RequestParam("itemId") List<Integer> itemId,
-	        @RequestParam("price") List<Integer> price) {
+	public String modifyQuotation(@RequestParam("quotationNo") int quotationNo,
+	                              @RequestParam("itemId") List<Integer> itemId,
+	                              @RequestParam("price") List<Integer> price,
+	                              @RequestParam("productRequestNo") int productRequestNo) {
 
 	    for (int i = 0; i < itemId.size(); i++) {
 	        QuotationItem item = new QuotationItem();
@@ -98,9 +98,9 @@ public class QuotationController {
 	        item.setPrice(price.get(i));
 	        quotationService.updateQuotationItem(item);
 	    }
-
-	    return "redirect:/admin/quotationOne?quotationNo="+quotationNo;
+	    return "redirect:/admin/quotationOne?quotationNo="+quotationNo+"&productRequestNo="+productRequestNo;
 	}
+
 
 
 	// 관리자 견적서 삭제

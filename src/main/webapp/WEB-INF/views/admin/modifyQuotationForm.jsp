@@ -102,6 +102,7 @@
 
     <form action="/admin/modifyQuotation" method="post" id="editForm" class="m-0">
       <input type="hidden" name="quotationNo" value="${quotation.quotationNo}">
+      <input type="hidden" name="productRequestNo" value="${quotation.productRequestNo}">
       <c:if test="${not empty _csrf}">
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
       </c:if>
@@ -134,7 +135,6 @@
                   <!-- (수정) 숨김 필드를 td 내부로 이동해 유효 마크업 보장 -->
                   <input type="hidden" name="itemId" value="${item.itemId}">
                   <input type="hidden" name="productRequestNo" value="${item.productRequestNo}">
-                  <input type="hidden" name="subProductRequestNo" value="${item.subProductRequestNo}">
                 </td>
               </tr>
             </c:forEach>

@@ -85,7 +85,7 @@
                 <h4>${name} <span class="status-badge"><i class="bi bi-shield-check"></i></span></h4>
                 <div class="user-status">
                   <i class="bi bi-award"></i>
-                  <span>Premium Member</span>
+                  <span>개인회원</span>
                 </div>
               </div>
               
@@ -93,6 +93,10 @@
               <nav class="menu-nav">
                 <ul class="nav flex-column" role="tablist">
                   <li class="nav-item">
+                    <a class="nav-link ${ordersActive ? 'active' : ''}" href="<c:url value='/personal/orderList'/>">
+                      <i class="bi bi-box-seam"></i>
+                      <span>My Orders</span>
+                    </a>
                     <a class="nav-link active" data-bs-toggle="tab" href="#wishlist">
                       <i class="bi bi-heart"></i>
                       <span>Wishlist</span>

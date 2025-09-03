@@ -97,6 +97,8 @@ public class OrderController {
     @GetMapping("/personal/orderOne")
     public String orderOne(@RequestParam("orderNo") String orderNo, Model model) {
         List<Order> orderDetailList = orderService.getOrderDetailByOrderNo(orderNo);
+        int usedPoint = orderService.getUsedPointByOrderNo(orderNo);
+        model.addAttribute("usedPoint", usedPoint);
         model.addAttribute("orderDetailList", orderDetailList);
         return "personal/orderOne";
     }
@@ -106,46 +108,35 @@ public class OrderController {
     public String orderResult(@RequestParam String orderNo,
                               @RequestParam(name = "pg_token", required = false) String pgToken,
                               Model model,
-                              HttpSession session) { // ✅ 수정: 세션 주입
-        // 주문 리스트 & 일시
+                              HttpSession session) {
+
         List<Order> orderList = orderService.getOrderList(orderNo);
         Order first = orderList.get(0);
         java.sql.Timestamp orderDate = java.sql.Timestamp.valueOf(first.getOrderTime());
         model.addAttribute("orderList", orderList);
         model.addAttribute("orderDate", orderDate);
 
-        // 주문 요약(구매자 이름/총액/상품명 가공)
         Order summary = orderService.getOrder(orderNo);
-        model.addAttribute("name", summary.getName());
-        int itemCount = orderService.getOrderItemCount(orderNo);
-        String productName = summary.getProductName();
-        if (itemCount > 1) productName += " 외 " + (itemCount - 1) + "건";
-        model.addAttribute("productName", productName);
-
         int subtotal = summary.getTotalPrice();
-        int usedPoint = 0;
+
+        // ✅ reward_history에서 사용한 적립금 조회
+        int usedPoint = orderService.getUsedPointByOrderNo(orderNo);
+
         int usedKakaoPoint = 0;
         Integer realPaidAmount = null;
 
         if (pgToken != null && !pgToken.isBlank()) {
             KakaoPayApprovalResponse approval = kakaoPayService.payApprove(pgToken);
-            usedPoint       = approval.getUsedPoint();
             usedKakaoPoint  = approval.getUsedKakaoPoint();
             realPaidAmount  = approval.getRealPaidAmount();
 
-            // ✅ 수정: 메인창에서도 바로 보여줄 수 있도록 세션에 저장
-            session.setAttribute("or_usedPoint_" + orderNo, usedPoint);
             session.setAttribute("or_usedKakaoPoint_" + orderNo, usedKakaoPoint);
             session.setAttribute("or_realPaidAmount_" + orderNo, realPaidAmount);
 
-            // ✅ 수정: 이 요청은 팝업 → 메인창으로 넘기기 위한 플래그
             model.addAttribute("popRedirect", true);
         } else {
-            // ✅ 수정: 메인창에서 새로 열렸을 때 세션에 저장된 값 사용 (없으면 기본 계산)
-            Integer sp  = (Integer) session.getAttribute("or_usedPoint_" + orderNo);
             Integer skp = (Integer) session.getAttribute("or_usedKakaoPoint_" + orderNo);
             Integer sra = (Integer) session.getAttribute("or_realPaidAmount_" + orderNo);
-            if (sp  != null) usedPoint = sp;
             if (skp != null) usedKakaoPoint = skp;
             if (sra != null) realPaidAmount = sra;
 
@@ -163,5 +154,7 @@ public class OrderController {
 
         return "personal/orderResult";
     }
+
+
 
 }

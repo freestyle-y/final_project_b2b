@@ -94,6 +94,11 @@ public class OrderService {
 		return orderMapper.getUserInformation(userId);
 	}
 
+	// 결제 시 사용한 적립금 확인
+	public int getUsedPointByOrderNo(String orderNo) {
+		return orderMapper.getUsedPointByOrderNo(orderNo);
+	}
+
 
 
 }

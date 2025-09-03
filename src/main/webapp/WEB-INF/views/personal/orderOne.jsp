@@ -25,7 +25,7 @@
 body{
   font-family: "SUIT",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",Arial,sans-serif;
 }
-.main{ background:var(--bg-50); padding:24px; }
+.main{ background:#fff; padding:24px; }
 .main > h1{ font-size:26px; font-weight:700; color:var(--ink-900); margin:0 0 18px; letter-spacing:-.2px; }
 
 /* ===== 공통 테이블(카드형) ===== */
@@ -153,7 +153,8 @@ body{
     <tr><td>배송 요청사항</td><td>${orderDetailList[0].deliveryRequest}</td></tr>
     <tr><th colspan="2">결제 정보</th></tr>
     <tr><td>결제 수단</td><td>${orderDetailList[0].paymentType}</td></tr>
-    <tr><td>결제 금액</td><td>${orderDetailList[0].totalPrice}원</td></tr>
+    <tr><td>적립금 사용 내역</td><td>${usedPoint}원</td></tr>
+    <tr><td>결제 금액</td><td>${orderDetailList[0].totalPrice-usedPoint}원</td></tr>
 </table>
 
 <table border="1" style="border-collapse:collapse; text-align:center; width:100%;">
