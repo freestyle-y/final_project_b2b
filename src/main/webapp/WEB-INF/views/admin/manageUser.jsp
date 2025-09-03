@@ -82,8 +82,9 @@
 
     /* DataTables 박스 */
     #userTable_wrapper .dataTables_scroll, #userTable{
-      border:1px solid var(--tbl-border); border-radius:10px; overflow:hidden; background:#fff; font-size:.92rem;
+      border:1px solid var(--tbl-border); border-radius:10px; overflow:auto; background:#fff; font-size:.92rem;
     }
+    
 
     /* [수정] 폭/보더 계산 안정화 */
     #userTable{
@@ -209,6 +210,31 @@ table.dataTable thead .sorting_desc:after {
 .status-inactive { background-color: #757575; }
 .status-suspended { background-color: #d9534f; }
 .status-pending { background-color: #f0ad4e; }
+
+.category-pagination li.disabled a,
+.category-pagination li.disabled-link {
+    /* 클릭을 방지 */
+    pointer-events: none;
+    cursor: default;
+    /* 색상 변경 */
+    color: #999;
+    /* 밑줄 제거 */
+    text-decoration: none;
+}
+
+.category-pagination li.active a {
+  background-color: #e9ecef; /* 회색 배경 */
+  border-radius: 6px;
+  color: #495057; /* 짙은 회색 글자 */
+  font-weight: bold;
+  pointer-events: none; /* 클릭 비활성화 */
+  cursor: default;
+}
+
+/* 현재 페이지 버튼의 hover 효과 제거 */
+.category-pagination li.active a:hover {
+  background-color: #e9ecef;
+}
   </style>
 </head>
 <body class="index-page">
@@ -336,13 +362,12 @@ table.dataTable thead .sorting_desc:after {
 		<nav>
 			<ul class="justify-content-center">
 				<!-- 이전 버튼 -->
-				<c:if test="${page > 1}">
-					<li>
-						<a href="?page=${page - 1}&type=${type}&status=${status}&keyword=${keyword}">
-							<span class="d-none d-sm-inline">이전</span>
-						</a>
-					</li>
-				</c:if>
+				<li class="${page == 1 ? 'disabled' : ''}">
+				  <a href="?page=${page - 1}&type=${type}&status=${status}&keyword=${keyword}" 
+				     class="${page == 1 ? 'disabled-link' : ''}">
+				    <span class="d-none d-sm-inline">이전</span>
+				  </a>
+				</li>
 
 				<!-- 페이지 번호 -->
 				<c:forEach begin="${startPage}" end="${endPage}" var="i">

@@ -233,7 +233,7 @@
                                     <h3 class="mb-3">비밀번호 확인</h3>
                                     <input type="password" class="form-control mb-3" id="checkPassword" placeholder="비밀번호 입력">
                                     <div class="d-flex justify-content-between">
-                                        <button id="checkPasswordBtn" class="btn btn-custom">확인</button>
+                                        <button id="checkPasswordBtn" class="btn btn-dark">확인</button>
                                         <button id="goBackBtn" class="btn btn-secondary">뒤로가기</button>
                                     </div>
                                 </div>
@@ -447,7 +447,7 @@
             </div>
     
             <div class="d-flex justify-content-between">
-                <button id="saveChangeBtn" class="btn btn-custom">저장</button>
+                <button id="saveChangeBtn" class="btn btn-dark">저장</button>
                 <button onclick="$('#changeModal').hide()" class="btn btn-secondary">취소</button>
             </div>
         </div>
