@@ -26,16 +26,18 @@
 		text-align: center !important;
 	}
 	
-	/* DataTables 헤더 정렬 아이콘 때문에 밀리는 현상 수정 */
+	/* 테이블 헤더 가운데 정렬 */
 	table.dataTable thead th {
 		text-align: center !important;
-		padding-right: 0px !important; /* 우측 여백 제거 */
+		padding-right: 20px !important; /* 아이콘 공간 확보 */
+		vertical-align: middle; /* 텍스트와 아이콘 세로 가운데 정렬 */
 	}
 	
+	/* 정렬 아이콘 위치 조정 */
 	table.dataTable thead .sorting:after,
 	table.dataTable thead .sorting_asc:after,
 	table.dataTable thead .sorting_desc:after {
-		right: 0.3em; /* 아이콘 위치 조정 */
+		right: 5px;  /* 아이콘을 헤더 오른쪽 끝으로 이동 */
 		left: auto;
 	}
 	
@@ -70,12 +72,10 @@
 			<thead class="table-light">
 				<tr>
 					<th>번호</th>
-					<th>알림 대상</th>
-					<th>알림 종류</th>
+					<th>알림 ID</th>
+					<th>종류</th>
 					<th>제목</th>
 					<th>내용</th>
-					<th>target URL</th>
-					<th>image URL</th>
 					<th>확인 유무</th>
 					<th>확인 일시</th>
 					<th>작성자</th>
@@ -93,8 +93,6 @@
 						<td>${alarmList.notificationType}</td>
 						<td>${alarmList.notificationTitle}</td>
 						<td>${alarmList.notificationContent}</td>
-						<td>${alarmList.targetUrl}</td>
-						<td>${alarmList.imageUrl}</td>
 						<td>${alarmList.readStatus}</td>
 						<td>${alarmList.readDate}</td>
 						<td>${alarmList.createUser}</td>

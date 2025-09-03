@@ -28,7 +28,8 @@
     <!-- 읽음 처리 -->
     <update id="markAsRead" parameterType="int">
         UPDATE notification SET
-        	read_status = 'Y'
+        	read_status = 'Y',
+        	read_date = NOW()
         WHERE notification_no = #{notificationNo}
     </update>
 </mapper>

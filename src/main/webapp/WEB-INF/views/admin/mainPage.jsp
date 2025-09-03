@@ -161,15 +161,6 @@
 					</div>
 				</div>
 
-				<!-- 알림 등록 -->
-				<div class="col-12 col-sm-6 col-md-4 col-lg-3">
-					<div class="card h-100 text-center p-4 border-2 shadow-sm">
-						<i class="bi bi-bell fs-2 mb-3"></i>
-						<h5 class="fw-semibold mb-0">알림 등록</h5>
-						<a href="/admin/alarmWrite" class="stretched-link"></a>
-					</div>
-				</div>
-
 			</div>
 		</div>
 	</main>
