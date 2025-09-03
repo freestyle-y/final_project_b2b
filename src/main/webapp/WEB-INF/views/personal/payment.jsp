@@ -490,8 +490,12 @@
     document.querySelector("#selectedAddressNickname").innerText = nick;
     document.querySelector("#selectedAddressId").value = id;
 
-    const md = bootstrap.Modal.getInstance(document.getElementById("addressModal"));
-    md.hide();
+    const modalEl = document.getElementById("addressModal");
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+    modal.hide();
+    
+    document.body.classList.remove("modal-open");
+    document.querySelectorAll(".modal-backdrop").forEach(el => el.remove());
   }
 
   /* ---------- 적립금 계산/결제 로직 (기존 유지) ---------- */
