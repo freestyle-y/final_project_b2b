@@ -25,12 +25,14 @@ public class CommMainController {
 	@GetMapping({"/", "/public/mainPage"})
 	public String mainPage(Authentication authentication, Model model) {
 		// 로그인 안 된 경우 -> public
+		System.out.println("authentication = " + authentication);
 		if(authentication == null || !authentication.isAuthenticated()) {
 			List<Map<String, Object>> productList = productService.selectProductByWish();
 			model.addAttribute("productList", productList);
 			return "public/mainPage";
 		}
-
+		
+		System.out.println("authentication.getAuthorities() = " + authentication.getAuthorities());
 		// 로그인 된 경우 -> 권한 확인
 		for(GrantedAuthority authority : authentication.getAuthorities()) {
 			String role = authority.getAuthority();

@@ -50,6 +50,7 @@ public class MemberController {
 	// 로그인
 	@GetMapping("/public/login")
 	public String login() {
+		System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 		return "public/login";
 	}
 	

@@ -93,7 +93,7 @@ public class SecurityConfig {
 		httpSecurity.authorizeHttpRequests((requestMatcherRegistry)
 				-> requestMatcherRegistry
 										 // 모두 접근 가능 (공용 페이지, 정적 리소스)
-										 .requestMatchers("/", "/public/**", "/css/**","/js/**", "/images/**", "/uploads/**", "/assets/**").permitAll()
+										 .requestMatchers("/", "/public/**", "/css/**","/js/**", "/images/**", "/uploads/**", "/assets/**", "/error").permitAll()
 										 // 로그인 한 사용자만 접근 가능
 										 .requestMatchers("/member/**").authenticated()
 										 // 관리자만 접근 가능
