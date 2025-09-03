@@ -70,19 +70,14 @@
 			<thead class="table-light">
 				<tr>
 					<th>주문번호</th>
-					<th>서브주문번호</th>
+					<th>상세번호</th>
 					<th>상품</th>
 					<th>옵션</th>
 					<th>수량</th>
-					<th>가격</th>
-					<th>주문상태</th>
-					<th>구매자ID</th>
 					<th>성함</th>
 					<th>연락처</th>
 					<th>주소</th>
-					<th>상세주소</th>
-					<th>우편번호</th>
-					<th>배송상태</th>
+					<th>상태</th>
 					<th>배송처리</th>
 					<th>교환처리</th>
 					<th>반품처리</th>
@@ -96,14 +91,9 @@
 						<td>${pd.productName}</td>
 						<td>${pd.optionNameValue}</td>
 						<td>${pd.orderQuantity}</td>
-						<td>${pd.price}</td>
-						<td>${pd.orderStatus}</td>
-						<td>${pd.userId}</td>
 						<td>${pd.userName}</td>
 						<td>${pd.phone}</td>
-						<td>${pd.address}</td>
-						<td>${pd.detailAddress}</td>
-						<td>${pd.postal}</td>
+						<td>(${pd.postal}) ${pd.address} ${pd.detailAddress}</td>
 						<td>${pd.deliveryStatus}</td>
 						<td>
 							<c:choose>
@@ -167,12 +157,12 @@
 							<c:choose>
 								<%-- 반품 승인 / 거절 : 반품대기(DS004)일 때만 --%>
 								<c:when test="${pd.deliveryStatusCode eq 'DS004'}">
-									<form action="/admin/returnApprove" method="post" style="display: inline;">
+									<form action="/admin/returnApprove" method="post" onsubmit="return confirm('반품 승인 처리하시겠습니까?');" style="display: inline;">
 										<input type="hidden" name="orderNo" value="${pd.orderNo}">
 										<input type="hidden" name="subOrderNo" value="${pd.subOrderNo}">
 										<button type="submit" class="btn btn-dark btn-sm">승인</button>
 									</form>
-									<form action="/admin/returnReject" method="post" style="display: inline;">
+									<form action="/admin/returnReject" method="post" onsubmit="return confirm('반품 거절 처리하시겠습니까?');" style="display: inline;">
 										<input type="hidden" name="orderNo" value="${pd.orderNo}">
 										<input type="hidden" name="subOrderNo" value="${pd.subOrderNo}">
 										<button type="submit" class="btn btn-dark btn-sm">거절</button>
@@ -181,7 +171,7 @@
 		
 								<%-- 반품 완료 : 반품중(DS010)일 때만 --%>
 								<c:when test="${pd.deliveryStatusCode eq 'DS010'}">
-									<form action="/admin/returnComplete" method="post" style="display: inline;">
+									<form action="/admin/returnComplete" method="post" onsubmit="return confirm('반품 완료 처리하시겠습니까?');" style="display: inline;">
 										<input type="hidden" name="orderNo" value="${pd.orderNo}">
 										<input type="hidden" name="subOrderNo" value="${pd.subOrderNo}">
 										<button type="submit" class="btn btn-dark btn-sm">완료</button>
