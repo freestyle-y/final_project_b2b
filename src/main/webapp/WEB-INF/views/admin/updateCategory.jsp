@@ -171,7 +171,7 @@
             }
           },
           update: {
-            url: '/',
+            url: '/admin/updateCategoryName',
             method: 'POST',
             contentType: 'application/json',
             params: function(treeData) {

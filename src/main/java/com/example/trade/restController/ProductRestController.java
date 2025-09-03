@@ -377,26 +377,94 @@ public class ProductRestController {
 
 	// 옵션 이름 수정
 	@PostMapping("/admin/updateOptionName")
-	public String updateOptionName(@RequestBody Map<String, Object> request) {
+	public Map<String, Object> updateOptionName(@RequestBody Map<String, Object> request) {
 		String newName = request.get("newName").toString();
 	    String loginUser = request.get("loginUser").toString();
 
+	    Map<String, Object> response = new HashMap<>();
+	    
 	    // 옵션 그룹 이름 수정
 	    if (request.containsKey("optionGroupName")) {
 	        String optionGroupName = request.get("optionGroupName").toString();
 	        log.info("옵션 그룹 수정: " + optionGroupName + " → " + newName);
 	        productService.updateOptionGroupName(optionGroupName, newName, loginUser);
-	        return "success";
+	        response.put("success", true);
+	        return response;
 
 	    // 옵션 값 이름 수정
 	    } else if (request.containsKey("optionNo")) {
 	        int optionNo = Integer.parseInt(request.get("optionNo").toString());
 	        log.info("옵션 값 수정: " + optionNo + " → " + newName);
 	        productService.updateOptionName(optionNo, newName, loginUser);
-	        return "success";
+	        response.put("success", true);
+	        return response;
 	    }
 
 	    // 둘 다 안 온 경우
-	    return "fail";
+	    response.put("success", false);
+	    return response;
+	}
+	
+	// 옵션 삭제
+	@PostMapping("/admin/removeOption")
+	public Map<String, Object> removeOption(@RequestBody Map<String, Object> request) {
+	    String loginUser = request.get("loginUser").toString();
+
+	    Map<String, Object> response = new HashMap<>();
+	    
+	    // 옵션 그룹 이름 삭제
+	    if (request.containsKey("optionGroupName")) {
+	        String optionGroupName = request.get("optionGroupName").toString();
+	        log.info("옵션 그룹 수정: " + optionGroupName + " → ");
+	        productService.removeOptionGroup(optionGroupName, loginUser);
+	        response.put("success", true);
+	        return response;
+
+	    // 옵션 값 삭제
+	    } else if (request.containsKey("optionNo")) {
+	        int optionNo = Integer.parseInt(request.get("optionNo").toString());
+	        log.info("옵션 값 수정: " + optionNo + " → ");
+	        productService.removeOption(optionNo, loginUser);
+	        response.put("success", true);
+	        return response;
+	    }
+
+	    // 둘 다 안 온 경우
+	    response.put("success", false);
+	    return response;
+	}
+	
+	// 옵션 추가
+	@PostMapping("/admin/createOption")
+	public Map<String, Object> createOption(@RequestBody Map<String, Object> request) {
+	    Map<String, Object> response = new HashMap<>();
+	    
+	    String loginUser = request.get("loginUser").toString();
+	    String requestType = request.get("type").toString();
+	    Option option = new Option();
+	    // optionGroupName이 있으면 기존 그룹에 값 추가
+	    if ("optionValue".equals(requestType)) {
+	    	String optionGroupName = request.get("optionGroupName").toString();
+	        String newName = request.get("newName").toString();
+	        
+	        log.info("옵션 그룹 [" + optionGroupName + "]에 새 값 추가: " + newName);
+	        option.setOptionName(optionGroupName);
+	        option.setOptionNameValue(newName);
+	        option.setCreateUser(loginUser);
+	        productService.insertOption(option);
+	        response.put("success", true);
+	    } 
+	    // 없으면 새로운 옵션 그룹 추가
+	    else if ("optionGroup".equals(requestType)) {
+	        String newOptionGroupName = request.get("optionGroupName").toString();
+	        log.info("새로운 옵션 그룹 추가: " + newOptionGroupName);
+	        option.setOptionName(newOptionGroupName);
+	        option.setOptionNameValue("수정필요");
+	        option.setCreateUser(loginUser);
+	        productService.insertOption(option);
+	        response.put("success", true);
+	    }
+	    
+	    return response;
 	}
 }

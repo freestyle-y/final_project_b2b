@@ -753,4 +753,15 @@ public class ProductService {
 	public void updateOptionName(int optionNo, String newName, String loginUser) {
 	    productMapper.updateOptionName(optionNo, newName, loginUser);
 	}
+	
+	// 옵션 그룹 삭제
+	public void removeOptionGroup(String optionGroupName, String loginUser) {
+		productMapper.removeOptionGroup(optionGroupName, loginUser);
+	}
+	
+	// 옵션 삭제
+	public void removeOption(int optionNo, String loginUser) {
+		productMapper.removeOption(optionNo, loginUser);
+	}
+	
 }

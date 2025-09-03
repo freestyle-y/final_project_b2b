@@ -5,12 +5,30 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>옵션 관리</title>
   <link rel="stylesheet" href="https://uicdn.toast.com/tui-tree/latest/tui-tree.css" />
   <link rel="stylesheet" href="https://uicdn.toast.com/tui.context-menu/latest/tui-context-menu.css"/>
-
+  <%@ include file="/WEB-INF/common/head.jsp"%>
 </head>
 <body>
+
+<!-- 공통 헤더 -->
+<%@include file="/WEB-INF/common/header/header.jsp"%>
+<main class="main">
+
+	<!-- Page Title -->
+    <div class="page-title light-background">
+      <div class="container d-lg-flex justify-content-between align-items-center">
+        <h1 class="mb-2 mb-lg-0">옵션 수정</h1>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="/personal/mainPage">Home</a></li>
+            <li class="current">Option</li>
+          </ol>
+        </nav>
+      </div>
+	</div><!-- End Page Title -->
+	
 
 <div id="tree" class="tui-tree-wrap"></div>
 
@@ -111,16 +129,25 @@
       .enableFeature('Ajax', {
         command: {
           create: {
-            url: '/',
+            url: '/admin/createOption',
             method: 'POST',
             contentType: 'application/json',
             params: function(treeData) {
-              const nodeData = tree.getNodeData(treeData.parentId);
+              const parentNodeId = treeData.parentId;
               const newName = treeData?.data?.text || "";
-                
-              console.log("Sending update:", { newName, loginUser });
-                
-              return { newName, loginUser };
+
+              console.log(parentNodeId)
+              // 부모 노드 ID가 0인 경우, 새로운 최상위 옵션 그룹을 추가하는 경우입니다.
+              if (parentNodeId === 'tui-tree-node-0') {
+                console.log("새 옵션 그룹 추가:", { optionGroupName: newName, loginUser, type: "optionGroup" });
+                return { optionGroupName: newName, loginUser, type: "optionGroup" }; 
+              } else {
+                // 부모 노드 ID가 0이 아닌 경우, 기존 옵션 그룹에 옵션 값을 추가하는 경우입니다.
+                const nodeData = tree.getNodeData(parentNodeId);
+                const optionGroupName = nodeData?.data?.optionGroupName;
+                console.log("옵션 그룹에 새 값 추가:", { optionGroupName, newName, loginUser, type: "optionValue" });
+                return { optionGroupName, newName, loginUser, type: "optionValue" };
+              }
             }
           },
           update: {
@@ -137,29 +164,38 @@
                  const optionGroupName = nodeData?.data?.optionGroupName;
                  console.log("Updating option group:", { optionGroupName, newName, loginUser });
                  return { optionGroupName, newName, loginUser };
-               } else {
+             } else {
                  const optionNo = nodeData?.data?.optionNo;
                  console.log("Updating option value:", { optionNo, newName, loginUser });
                  return { optionNo, newName, loginUser };
-               }
+             }
             }
           },
           remove: {
-            url: '/',
+            url: '/admin/removeOption',
             method: 'POST',
             contentType: 'application/json',
             params: function(treeData) {
               const nodeData = tree.getNodeData(treeData.nodeId);
+              const type = nodeData?.data?.type;
               const optionNo = nodeData?.data?.optionNo;
-
-              console.log("Sending update:", { optionNo, loginUser });
+              
+              if (type === "optionGroup") {
+                  const optionGroupName = nodeData?.data?.optionGroupName;
+                  console.log("Updating option group:", { optionGroupName, loginUser });
+                  return { optionGroupName, loginUser };
+              } else {
+                  const optionNo = nodeData?.data?.optionNo;
+                  console.log("Updating option value:", { optionNo, loginUser });
+                  return { optionNo, loginUser };
+              }
               
               return { optionNo, loginUser };
             }
           }
         },
         parseData: function(command, responseData, treeData) {
-       	  if (command === 'create' && responseData.success) {
+       	  if ((command === 'create' || command === 'update' || command === 'remove') && responseData.success) {
        	    setTimeout(() => {
        	      console.log("리로딩 실행됨");
        	      location.reload(); // 트리 리로드
@@ -170,5 +206,11 @@
        	}
       });
 </script>
+
+</main>
+
+<!-- 공통 풋터 -->
+<%@include file="/WEB-INF/common/footer/footer.jsp"%>
+
 </body>
 </html>

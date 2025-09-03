@@ -433,6 +433,7 @@
 			option_name AS optionName,
 			option_name_value AS optionNameValue
 		FROM `option`
+		WHERE use_status = 'Y'
 	</select>
 	
 	<!-- 상품 요청 리스트 조회 -->
@@ -874,4 +875,23 @@
 			update_date = NOW()
 		WHERE option_no = #{optionNo}
 	</update>
+	
+	<!-- 옵션 그룹 삭제 -->
+	<update id="removeOptionGroup">
+		UPDATE `option`
+		SET use_status = 'N',
+			update_user = #{loginUser},
+			update_date = NOW()
+		WHERE option_name = #{optionGroupName}
+	</update>
+	
+	<!-- 옵션 삭제 -->
+	<update id="removeOption">
+		UPDATE `option`
+		SET use_status = 'N',
+			update_user = #{loginUser},
+			update_date = NOW()
+		WHERE option_no = #{optionNo}
+	</update>
+	
 </mapper>

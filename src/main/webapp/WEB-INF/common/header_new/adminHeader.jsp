@@ -69,6 +69,7 @@
 						</ul>
 					</li>
 					<li><a href="/admin/updateCategory">카테고리 수정</a></li>
+					<li><a href="/admin/updateOption">옵션 수정</a></li>
 					<li><a href="/public/logout">로그아웃</a></li>
 				</ul>
 			</nav>

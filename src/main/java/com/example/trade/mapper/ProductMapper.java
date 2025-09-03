@@ -170,8 +170,11 @@ public interface ProductMapper {
 	
 	// 옵션 그룹 수정
 	void updateOptionGroupName(@Param("optionGroupName") String optionGroupName, @Param("newName") String newName, @Param("loginUser") String loginUser);
-	
 	// 옵션명 수정
 	void updateOptionName(@Param("optionNo") int optionNo, @Param("newName") String newName, @Param("loginUser") String loginUser);
-		
+	
+	// 옵션 그룹 삭제
+	void removeOptionGroup(@Param("optionGroupName") String optionGroupName, @Param("loginUser") String loginUser);
+	// 옵션 삭제
+	void removeOption(@Param("optionNo") int optionNo, @Param("loginUser") String loginUser);
 }
