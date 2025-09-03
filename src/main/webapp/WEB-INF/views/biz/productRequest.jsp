@@ -8,27 +8,150 @@
     <title>상품 요청</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
+        /* Google Fonts - Noto Sans KR */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
+        main.main {
+            font-family: 'Noto Sans KR', sans-serif; /* 폰트 적용 */
+            background-color: #f0f2f5; /* 메인 배경색 */
+            color: #333; /* 기본 텍스트 색상 */
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 40px auto; /* 중앙 정렬 */
+            padding: 20px;
+            background-color: #fff; /* 내부 배경 흰색 */
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        /* Form and Input Styling */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
         .product-group {
-            border: 1px solid #ccc;
-            padding: 10px;
+            border: 1px solid #e0e0e0;
+            padding: 20px;
+            border-radius: 8px;
+            background: #fdfdfd;
+            transition: box-shadow 0.3s ease-in-out;
+            position: relative; /* 삭제 버튼 위치 기준점 */
+        }
+
+        .product-group:hover {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .product-group > div {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             margin-bottom: 10px;
-            position: relative;
-            width: 700px;
-            max-width: 90%;
-            background: #f9f9f9;
+        }
+
+        /* 마지막 div의 하단 여백 제거 */
+        .product-group > div:last-of-type {
+            margin-bottom: 0;
+        }
+
+        /* Input 필드와 라벨 너비 조정 */
+        .product-group label {
+            width: 70px; /* 라벨 너비 고정 */
+        }
+
+        .product-group input[type="text"],
+        .product-group input[type="number"],
+        .product-group textarea {
+            width: 300px; /* Input 필드 너비 조정 */
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s ease-in-out;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        label strong {
+            color: #555;
+            font-weight: 500;
+        }
+
+        textarea {
+            width: 100%;
+            resize: vertical;
+        }
+
+        /* Buttons */
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s ease-in-out, transform 0.2s;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        #addProductBtn {
+            background-color: #3498db;
+            color: white;
+            align-self: center;
+        }
+
+        #addProductBtn:hover {
+            background-color: #2980b9;
         }
 
         .remove-btn {
-            margin-top: 5px;
             background-color: #e74c3c;
             color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
+            font-size: 14px;
+            padding: 8px 12px;
+            margin-top: 10px;
+            align-self: flex-end; /* 오른쪽 아래 정렬 */
         }
 
         .remove-btn:hover {
             background-color: #c0392b;
+        }
+
+        /* File Input & Radio Buttons */
+        input[type="file"] {
+            display: block;
+            margin-top: 5px;
+        }
+
+        input[type="radio"] {
+            margin-right: 8px;
+        }
+
+        /* Submit Button */
+        button[type="submit"] {
+            background-color: #2ecc71;
+            color: white;
+            align-self: flex-end;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #27ae60;
         }
     </style>
 </head>

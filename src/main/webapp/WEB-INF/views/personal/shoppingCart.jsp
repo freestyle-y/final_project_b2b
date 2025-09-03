@@ -326,7 +326,9 @@
 				
 				                    <!-- ✅ 상품명, 옵션, 삭제 버튼 -->
 				                    <div class="product-details">
-				                        <h6 class="product-title">${item.productName}</h6>
+				                        <h6 class="product-title">
+				                        	<a href="/personal/productOne?productNo=${item.productNo}">${item.productName}</a>
+				                        </h6>
 				                        <div class="product-meta">
 				                            <span>옵션: ${item.optionNameValue}</span>
 				                        </div>

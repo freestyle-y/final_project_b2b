@@ -96,7 +96,6 @@
 			<nav id="navmenu" class="navmenu">
 				<ul>
 					<li><a href="/personal/mainPage" class="active">Home</a></li>
-					<li><a href="#">상품 카테고리</a></li>
 					<li><a href="/personal/productList">상품 목록</a></li>
 					<li><a href="/public/reviewList">상품 후기</a></li>
 					<li><a href="/personal/orderList">주문배송조회</a></li>
