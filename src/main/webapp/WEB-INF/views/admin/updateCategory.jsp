@@ -8,6 +8,13 @@
   <link rel="stylesheet" href="https://uicdn.toast.com/tui-tree/latest/tui-tree.css" />
   <link rel="stylesheet" href="https://uicdn.toast.com/tui.context-menu/latest/tui-context-menu.css"/>
   <%@ include file="/WEB-INF/common/head.jsp"%>
+  <style>
+  	.tui-tree-input{
+  		width: 150px;
+  		padding: 14px 0;
+  		font-size:13px;
+  	}
+  </style>
 </head>
 <body>
 
