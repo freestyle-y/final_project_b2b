@@ -30,7 +30,7 @@
         <nav class="breadcrumbs">
           <ol>
             <li><a href="/personal/mainPage">Home</a></li>
-            <li class="current">Category</li>
+            <li class="current">카테고리</li>
           </ol>
         </nav>
       </div>

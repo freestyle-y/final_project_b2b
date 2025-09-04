@@ -34,7 +34,6 @@
 	    gap: 5px;
 	}
 
-	
 	.pagination button {
 	    margin: 0 3px;
 	    padding: 6px 12px;

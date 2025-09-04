@@ -21,10 +21,11 @@
     }
 
     /* 페이징 버튼 */
-    .pagination {
-        text-align: center;
-        margin-top: 20px;
-    }
+	.pagination {
+	    display: flex;
+	    justify-content: center;
+	    margin-top: 20px;
+	}
 
     .pagination button {
         margin: 0 4px;
@@ -53,11 +54,11 @@
 	<!-- Page Title -->
     <div class="page-title light-background">
       <div class="container d-lg-flex justify-content-between align-items-center">
-        <h1 class="mb-2 mb-lg-0">Product Details</h1>
+        <h1 class="mb-2 mb-lg-0">상품 상세</h1>
         <nav class="breadcrumbs">
           <ol>
             <li><a href="/biz/mainPage">Home</a></li>
-            <li class="current">Product Details</li>
+            <li class="current">상품 상세</li>
           </ol>
         </nav>
       </div>
@@ -161,7 +162,7 @@
 				<!-- Product Variants -->
 				<div class="variant-section">
 				  <div class="color-selection">
-				    <label class="variant-label" for="optionSelect">Options:</label><br/>
+				    <label class="variant-label" for="optionSelect">옵션:</label><br/>
 				
 				    <!-- 드롭다운 셀렉트 박스 -->
 				    <select id="optionSelect" name="option" class="form-select" style="max-width: 300px;">

@@ -9,6 +9,13 @@
   <link rel="stylesheet" href="https://uicdn.toast.com/tui-tree/latest/tui-tree.css" />
   <link rel="stylesheet" href="https://uicdn.toast.com/tui.context-menu/latest/tui-context-menu.css"/>
   <%@ include file="/WEB-INF/common/head.jsp"%>
+  <style>
+  	.tui-tree-input{
+  		width: 150px;
+  		padding: 14px 0;
+  		font-size:13px;
+  	}
+  </style>
 </head>
 <body>
 
@@ -23,7 +30,7 @@
         <nav class="breadcrumbs">
           <ol>
             <li><a href="/personal/mainPage">Home</a></li>
-            <li class="current">Option</li>
+            <li class="current">옵션</li>
           </ol>
         </nav>
       </div>

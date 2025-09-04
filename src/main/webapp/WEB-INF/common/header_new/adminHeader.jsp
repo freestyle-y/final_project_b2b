@@ -58,7 +58,7 @@
 				<ul>
 					<li><a href="/admin/mainPage" class="active">Home</a></li>
 					<li><a href="/admin/insertProduct">상품 등록</a></li>
-					<li><a href="/admin/productList">상품 조회</a></li>
+					<li><a href="/admin/productList">상품 목록</a></li>
 					<li><a href="/admin/inventoryList">재고 관리</a></li>
 					<li><a href="/public/reviewList">상품 후기</a></li>
 					<li class="dropdown"><a href="#"><span>고객센터 관리</span><i class="bi bi-chevron-down toggle-dropdown"></i></a>

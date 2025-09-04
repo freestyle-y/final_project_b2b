@@ -13,7 +13,15 @@
 	    margin-bottom: 20px;
 	    border-radius: 6px;
 	    border: 1px solid #ccc;
+	
+	    display: block;
+	    margin-left: auto;
+	    margin-right: auto;
+	
+	    position: relative;   /* 클릭 안 되는 문제 방지 */
+	    z-index: 1;           /* 다른 요소 위에 위치 */
 	}
+
 
 	.wish-count {
 	    color: #e74c3c;
@@ -22,7 +30,9 @@
 	
 	.pagination {
 	    margin-top: 20px;
-	    text-align: center;
+	    display: flex;
+	    justify-content: center;
+	    gap: 5px;
 	}
 	
 	.pagination button {
@@ -53,7 +63,6 @@
 	  <!-- Section Title -->
 	  <div class="container section-title" data-aos="fade-up">
 	    <h2>Best Sellers</h2>
-	    <p>찜 많은순</p>
 	  </div><!-- End Section Title -->
 
 	  <!-- 검색 input -->

@@ -231,11 +231,11 @@ $(function () {
     <!-- Page Title -->
     <div class="page-title light-background">
       <div class="container d-lg-flex justify-content-between align-items-center">
-        <h1 class="mb-2 mb-lg-0">Category</h1>
+        <h1 class="mb-2 mb-lg-0">카테고리</h1>
         <nav class="breadcrumbs">
           <ol>
             <li><a href="/biz/mainPage">Home</a></li>
-            <li class="current">Category</li>
+            <li class="current">카테고리</li>
           </ol>
         </nav>
       </div>
@@ -251,7 +251,7 @@ $(function () {
             <!-- Product Categories Widget -->
             <div class="product-categories-widget widget-item">
 
-              <h3 class="widget-title">Categories</h3>
+              <h3 class="widget-title">카테고리</h3>
 
               <ul class="category-tree list-unstyled mb-0">
 
@@ -293,7 +293,7 @@ $(function () {
                   <div class="col-12 col-md-6 col-lg-4">
                     <div class="filter-item search-form">
                       <label for="productSearch" class="form-label mb-2">Search Products</label>
-                       <input type="text" class="form-control" id="productSearch" placeholder="Search for products..." aria-label="Search for products">
+                       <input type="text" class="form-control" id="productSearch" placeholder="상품명 검색..." aria-label="Search for products">
                     </div>
                   </div>
                 </div>

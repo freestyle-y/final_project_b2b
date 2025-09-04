@@ -84,7 +84,7 @@
 			<nav id="navmenu" class="navmenu">
 				<ul>
 					<li><a href="/biz/mainPage" class="active">Home</a></li>
-					<li><a href="/biz/productList">상품 카테고리</a></li>
+					<li><a href="/biz/productList">상품 목록</a></li>
 					<li><a href="/biz/productRequest">상품 요청</a></li>
 					<li><a href="/biz/productRequestList">상품 요청 목록</a></li>
 					<li><a href="/biz/quotationList?userId=biz001">견적서</a></li>
