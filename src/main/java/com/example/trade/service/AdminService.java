@@ -155,13 +155,16 @@ public class AdminService {
     	deliveryHistory.setDeliveryStatus("DS002"); // 배송중 처리
 		adminMapper.updatePersonalDelivery(order);
 		
+		// 기존 주문 조회
+		Order dbOrder = adminMapper.getOrderDetail(order);
+		
 		// 알림 발송 (배송 출발 알림)
 		Notification noti = new Notification();
 		noti.setTargetType("USER"); // 대상 타입
-		noti.setTargetValue(order.getUserId()); // 주문자 ID
+		noti.setTargetValue(dbOrder.getUserId()); // 주문자 ID
 		noti.setNotificationType("NC002"); // 알림 유형(배송)
 		noti.setNotificationTitle("배송 출발");
-		noti.setNotificationContent(order.getProductName() + " 상품의 배송을 시작했습니다.");
+		noti.setNotificationContent(dbOrder.getProductName() + " 상품의 배송을 시작했습니다.");
 		noti.setTargetUrl("/personal/orderOne?orderNo=" + order.getOrderNo()); // 클릭 시 이동할 URL
 		noti.setImageUrl(null); // 필요 시 썸네일 등
 		noti.setCreateUser("system"); // 시스템 발송 처리
