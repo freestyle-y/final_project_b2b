@@ -331,7 +331,12 @@
       background: #0056b3;
       border-color: #0056b3;
     }
-    
+    @media screen {
+  header#header, #header{
+    position: relative;
+    z-index: 1031; /* .toolbar(1000)보다 높고, 모달(1055)보다 낮게 */
+  }
+}
     /* 인쇄 스타일 */
     @media print {
       body {
