@@ -65,9 +65,11 @@
 									</div>
 								</div>
 								<!-- 버튼 -->
-								<div class="col-12 text-center">
-									<button type="submit" class="btn btn-primary btn-submit">등록</button>
-								</div>
+								<section class="register py-1">
+									<div class="d-grid">
+										<button type="submit" class="btn btn-register">등록</button>
+									</div>
+								</section>
 							</div>
 						</form>
 						

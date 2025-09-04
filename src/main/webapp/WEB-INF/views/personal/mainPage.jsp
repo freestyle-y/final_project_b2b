@@ -166,8 +166,6 @@
 	        const pagination = $('#pagination');
 	        pagination.empty();
 
-	        if (totalPages <= 1) return; // 페이지가 하나면 표시 안 함
-
 	        const maxVisible = 3; // 현재 페이지 기준으로 보여줄 버튼 개수 (홀수 권장)
 	        let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
 	        let end = start + maxVisible - 1;

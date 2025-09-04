@@ -11,6 +11,7 @@ import com.example.trade.dto.Board;
 import com.example.trade.dto.Comment;
 import com.example.trade.dto.ContractDelivery;
 import com.example.trade.dto.DeliveryHistory;
+import com.example.trade.dto.Notification;
 import com.example.trade.dto.Order;
 import com.example.trade.dto.Page;
 import com.example.trade.dto.RewardHistory;
@@ -109,7 +110,29 @@ public class AdminService {
 		String username = principal.getName(); // 로그인한 관리자
 		board.setCreateUser(username);
 		board.setBoardCode("BC003"); // 공통 코드 공지사항으로 세팅
-		return adminMapper.insertNotice(board);
+		
+		// 공지 등록
+		int result = adminMapper.insertNotice(board);
+
+		if(result > 0) {
+			// 전체 회원 목록 조회
+			List<String> userIds = adminMapper.getAllUserIds();
+			// 회원별 알림 생성
+			for(String userId : userIds) {
+				Notification noti = new Notification();
+				noti.setTargetType("USER"); // 개별 회원 대상
+				noti.setTargetValue(userId); // 대상 회원 ID
+				noti.setNotificationType("NC001"); // 알림 유형: 공지
+				noti.setNotificationTitle(board.getBoardTitle());
+				noti.setNotificationContent("새로운 공지사항을 확인하세요.");
+				noti.setTargetUrl("/public/noticeOne?boardNo=" + board.getBoardNo());
+				noti.setImageUrl(null); // 필요 시 썸네일 등
+				noti.setCreateUser("system");
+				
+				adminMapper.insertNotification(noti);
+			}
+		}
+		return result;
 	}
 	
 	// 공지사항 수정
@@ -153,6 +176,23 @@ public class AdminService {
 		order.setDeliveryStatus("DS002"); // 배송중 처리
     	deliveryHistory.setDeliveryStatus("DS002"); // 배송중 처리
 		adminMapper.updatePersonalDelivery(order);
+		
+		// 기존 주문 조회
+		Order dbOrder = adminMapper.getOrderDetail(order);
+		
+		// 알림 발송 (배송 출발 알림)
+		Notification noti = new Notification();
+		noti.setTargetType("USER"); // 대상 타입
+		noti.setTargetValue(dbOrder.getUserId()); // 주문자 ID
+		noti.setNotificationType("NC002"); // 알림 유형(배송)
+		noti.setNotificationTitle("배송 출발");
+		noti.setNotificationContent(dbOrder.getProductName() + " 상품의 배송을 시작했습니다.");
+		noti.setTargetUrl("/personal/orderOne?orderNo=" + order.getOrderNo()); // 클릭 시 이동할 URL
+		noti.setImageUrl(null); // 필요 시 썸네일 등
+		noti.setCreateUser("system"); // 시스템 발송 처리
+
+		adminMapper.insertNotification(noti);
+		
 		return adminMapper.insertDeliveryHistory(deliveryHistory);
 	}
 	
@@ -273,6 +313,23 @@ public class AdminService {
 		 // 생성된 contract_delivery_no를 deliveryHistory에 세팅
 	    deliveryHistory.setContractDeliveryNo(contractDelivery.getContractDeliveryNo());
 		deliveryHistory.setDeliveryStatus("DS002"); // 배송중 처리
+		
+		// 기업회원 배송 관련 정보 조회
+		Map<String, Object> bizOrder = adminMapper.getBizDeliveryInfo(contractDelivery.getContractDeliveryNo());
+
+		// 배송 시작 시 알림 생성
+		Notification noti = new Notification();
+		noti.setTargetType("USER");
+		noti.setTargetValue((String) bizOrder.get("userId")); // 기업 담당자 ID
+		noti.setNotificationType("NC002"); // 배송 알림
+		noti.setNotificationTitle("배송 출발");
+		noti.setNotificationContent("계약번호 " + bizOrder.get("contractNo") + "번 상품의 배송을 시작했습니다.");
+		noti.setTargetUrl("/biz/deliveryList");
+		noti.setImageUrl(null); // 필요 시 썸네일 등
+		noti.setCreateUser("system");
+		
+		adminMapper.insertNotification(noti);
+		
 		return adminMapper.insertBizDeliveryHistory(deliveryHistory);
 	}
 	

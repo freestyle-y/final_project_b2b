@@ -117,14 +117,65 @@ $(function () {
         const pagination = $('#pagination');
         pagination.empty();
 
-        for(let i = 1; i <= totalPages; i++) {
+        const maxVisible = 3; // 현재 페이지 기준으로 보여줄 버튼 개수 (홀수 권장)
+        let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+        let end = start + maxVisible - 1;
+        if (end > totalPages) {
+            end = totalPages;
+            start = Math.max(1, end - maxVisible + 1);
+        }
+
+        // ◀ 이전 버튼
+        if (currentPage > 1) {
+            pagination.append(
+                $('<button>').text('◀ 이전').on('click', function() {
+                    currentPage--;
+                    renderPage(currentPage);
+                })
+            );
+        }
+
+        // 1페이지 표시
+        if (start > 1) {
+            pagination.append(
+                $('<button>').text(1).on('click', function() {
+                    currentPage = 1;
+                    renderPage(currentPage);
+                })
+            );
+            if (start > 2) pagination.append($('<span>').text('...'));
+        }
+
+        // 중간 페이지들
+        for (let i = start; i <= end; i++) {
             const btn = $('<button>').text(i);
-            if(i === currentPage) btn.addClass('active');
+            if (i === currentPage) btn.addClass('active');
             btn.on('click', function() {
                 currentPage = i;
                 renderPage(currentPage);
             });
             pagination.append(btn);
+        }
+
+        // 마지막 페이지 표시
+        if (end < totalPages) {
+            if (end < totalPages - 1) pagination.append($('<span>').text('...'));
+            pagination.append(
+                $('<button>').text(totalPages).on('click', function() {
+                    currentPage = totalPages;
+                    renderPage(currentPage);
+                })
+            );
+        }
+
+        // 다음 ▶ 버튼
+        if (currentPage < totalPages) {
+            pagination.append(
+                $('<button>').text('다음 ▶').on('click', function() {
+                    currentPage++;
+                    renderPage(currentPage);
+                })
+            );
         }
     }
 

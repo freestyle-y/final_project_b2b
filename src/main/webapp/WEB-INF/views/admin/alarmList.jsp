@@ -66,7 +66,7 @@
 	</div>
 	<!-- End Page Title -->
 	
-	<div class="container-fluid py-4">
+	<div class="container-xl py-3">
 	
 		<table id="table" class="table table-bordered table-hover datatable text-center">
 			<thead class="table-light">

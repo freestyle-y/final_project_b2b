@@ -58,9 +58,11 @@
 									</div>
 								</div>
 								<!-- 버튼 -->
-								<div class="col-12 text-center">
-									<button type="submit" class="btn btn-primary btn-submit">교환 배송 처리</button>
-								</div>
+								<section class="register py-1">
+									<div class="d-grid">
+										<button type="submit" class="btn btn-register">교환 배송 처리</button>
+									</div>
+								</section>
 							</div>
 						</form>
 						

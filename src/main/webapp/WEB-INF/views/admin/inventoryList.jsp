@@ -324,11 +324,6 @@
                 renderPage(currentPage);
             }
 
-            // const $search = $('<input type="text" id="search-input" placeholder="상품명 검색...">').on('input', function () {
-            //     filterItems($(this).val());
-            // });
-
-            // $('h1').after($search);
             $('#search-input').on('input', function() {
                 filterItems($(this).val());
             });

@@ -9,6 +9,7 @@ import com.example.trade.dto.Board;
 import com.example.trade.dto.Comment;
 import com.example.trade.dto.ContractDelivery;
 import com.example.trade.dto.DeliveryHistory;
+import com.example.trade.dto.Notification;
 import com.example.trade.dto.Order;
 import com.example.trade.dto.Page;
 import com.example.trade.dto.RewardHistory;
@@ -147,4 +148,13 @@ public interface AdminMapper {
 
 	// 미응답 QNA 수 조회
 	int selectNoCommentQnaCount();
+
+	// 배송 출발 시 알림 등록
+	int insertNotification(Notification noti);
+
+	// 배송 처리 후 기업 회원의 주문 조회
+	Map<String, Object> getBizDeliveryInfo(int contractDeliveryNo);
+
+	// 전체 회원 목록 조회
+	List<String> getAllUserIds();
 }
