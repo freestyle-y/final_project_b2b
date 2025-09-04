@@ -70,12 +70,12 @@ public class ContractController {
 	    System.out.println("contractNo: " + contractNo);
 	    System.out.println("contractOne size: " + (contractOne != null ? contractOne.size() : "null"));
 	    // ✅ 총액 계산
-	    int totalPrice = 0;
+	    BigDecimal totalPrice = BigDecimal.ZERO;
 	    for (Contract c : contractOne) {
-	    	
-	        if (c.getPrice() != 0 && c.getProductQuantity() != 0) {
-	        	System.out.println("→ 계약번호: " + c.getContractNo() + ", 계약금: " + c.getDownPayment());
-	            totalPrice += c.getPrice() * c.getProductQuantity();
+	        if (c.getPrice() != null && c.getProductQuantity() > 0) {
+	            BigDecimal qty = BigDecimal.valueOf(c.getProductQuantity());
+	            BigDecimal lineTotal = c.getPrice().multiply(qty); // 단가 × 수량
+	            totalPrice = totalPrice.add(lineTotal);            // 합계 누적
 	        }
 	    }
 
@@ -111,10 +111,12 @@ public class ContractController {
 	    List<Contract> contractUser = contractService.getContractUserByQuotation(quotationNo);
 
 	    // ✅ 총액 = 각 상품별 price 합산
-	    int totalPrice = 0;
+	    BigDecimal totalPrice = BigDecimal.ZERO;
 	    if (quotation != null && quotation.getItems() != null) {
 	        for (var item : quotation.getItems()) {
-	            totalPrice += item.getPrice();   // 단가×수량이 아니라 이미 입력한 총액 그대로 합산
+	            if (item.getPrice() != null) {
+	                totalPrice = totalPrice.add(item.getPrice());
+	            }
 	        }
 	    }
 	    model.addAttribute("totalPrice", totalPrice);
@@ -271,11 +273,13 @@ public class ContractController {
 		List<Contract> contractSupplier = contractService.getContractSupplier(contractNo);
 
 		// ✅ 총액 계산
-		int totalPrice = 0;
+		BigDecimal totalPrice = BigDecimal.ZERO;
 		for (Contract c : contractOne) {
-			if (c.getPrice() != 0 && c.getProductQuantity() != 0) {
-				totalPrice += c.getPrice() * c.getProductQuantity();
-			}
+		    if (c.getPrice() != null && c.getProductQuantity() > 0) {
+		        BigDecimal qty = BigDecimal.valueOf(c.getProductQuantity());
+		        BigDecimal lineTotal = c.getPrice().multiply(qty); // 단가 × 수량
+		        totalPrice = totalPrice.add(lineTotal);            // 합계 누적
+		    }
 		}
 
 		// ✅ 서명 이미지 조회 추가

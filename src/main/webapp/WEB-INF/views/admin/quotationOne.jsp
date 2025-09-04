@@ -38,10 +38,10 @@ table.detail col:nth-child(1){ width:8%; }
 table.detail col:nth-child(2){ width:12%; }
 table.detail col:nth-child(3){ width:10%; }
 table.detail col:nth-child(4){ width:16%; }
-table.detail col:nth-child(5){ width:22%; }
+table.detail col:nth-child(5){ width:20%; }
 table.detail col:nth-child(6){ width:12%; }
 table.detail col:nth-child(7){ width:6%; }
-table.detail col:nth-child(8){ width:10%; }
+table.detail col:nth-child(8){ width:12%; }
 table.detail col:nth-child(9){ width:6%; }
 
 .nowrap{ white-space:nowrap!important; }

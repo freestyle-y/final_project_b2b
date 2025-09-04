@@ -17,7 +17,7 @@
 <style>
   :root { --tbl-border:#E5E7EB; --tbl-head:#F9FAFB; --tbl-hover:#F3F4F6; --tbl-zebra:#FAFAFA; --tbl-empty:#FFF0F0; }
   body { font-family:"SUIT",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",Arial,sans-serif; }
-  .table-wrap{ max-width:1400px; margin:0 auto; }
+  .table-wrap{ max-width:1200px; margin:0 auto; }
 
   #contractTable_wrapper .dataTables_scroll, #contractTable{
     border:1px solid var(--tbl-border); border-radius:10px; overflow:hidden; background:#fff; font-size:.92rem;
@@ -79,7 +79,7 @@
     width:40px !important; min-width:40px !important; max-width:40px !important;
     padding-left:.25rem !important; padding-right:.25rem !important;
   }
-  #contractTable td:nth-child(1) input[type="checkbox"]{ margin:0; display:inline-block; }
+  #contractTable td:nth-child(1) input[type="radio"]{ margin:0; display:inline-block; }
 
   /* 번호열(ch) 기준 고정 */
   #contractTable th:nth-child(2), #contractTable td:nth-child(2),
@@ -166,7 +166,7 @@
           <c:forEach var="con" items="${contractList}">
             <tr>
               <td>
-                <input type="checkbox" name="selectedContracts" value="${con.contractNo}" />
+                <input type="radio" name="selectedContracts" value="${con.contractNo}" />
                 <input type="hidden" class="quotationNo" value="${con.quotationNo}" />
               </td>
               <td>

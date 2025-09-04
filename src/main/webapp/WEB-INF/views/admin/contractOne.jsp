@@ -631,7 +631,7 @@ body {
 				</thead>
 				<tbody>
 					<tr>
-						<td>갑 (공급자)</td>
+						<td>공급자</td>
 						<td>freeStyle</td>
 						<td>${contractSupplier[0].name}</td>
 						<td>${contractSupplier[0].phone}</td>
@@ -640,7 +640,7 @@ body {
 					</tr>
 					<c:if test="${not empty contractUser}">
 						<tr>
-							<td>을 (수요자)</td>
+							<td>수요자</td>
 							<td>${contractUser[0].companyName}</td>
 							<td>${contractUser[0].name}</td>
 							<td>${contractUser[0].phone}</td>

@@ -47,7 +47,7 @@ public class Contract {
 	private String productName;
 	private String productOption;
 	private int productQuantity;
-	private int price;
+	private BigDecimal price;
 	// user 조인
 	private String name;
 	private String companyName;

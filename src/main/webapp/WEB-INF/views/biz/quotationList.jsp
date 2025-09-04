@@ -199,9 +199,13 @@
     <div class="d-flex justify-content-center mt-4">
       <c:choose>
         <c:when test="${empty quotationList}">
-          <button type="button" class="btn btn-quotation-write" onclick="openWriteQuotationPopup()">
-            <i class="fas fa-plus me-2"></i>견적서 작성
-          </button>
+        <section class="register py-1">
+   			<div class="d-grid">
+         	 <button type="button" class="btn btn-quotation-write" onclick="openWriteQuotationPopup()">
+           		 <i class="fas fa-plus me-2"></i>견적서 작성
+         	 </button>
+             </div>
+		</section>
         </c:when>
         <c:when test="${not empty param.productRequestNo}">
           <c:set var="hasReject" value="false" />
@@ -211,9 +215,13 @@
             </c:if>
           </c:forEach>
           <c:if test="${hasReject}">
+        <section class="register py-1">
+   			<div class="d-grid">
             <button type="button" class="btn btn-quotation-write" onclick="openWriteQuotationPopup()">
               <i class="fas fa-plus me-2"></i>견적서 작성
             </button>
+             </div>
+             </section>
           </c:if>
         </c:when>
       </c:choose>

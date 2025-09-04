@@ -1,5 +1,6 @@
 package com.example.trade.controller;
 
+import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.Comparator;
 import java.util.List;
@@ -89,7 +90,7 @@ public class QuotationController {
 	@PostMapping("/admin/modifyQuotation")
 	public String modifyQuotation(@RequestParam("quotationNo") int quotationNo,
 	                              @RequestParam("itemId") List<Integer> itemId,
-	                              @RequestParam("price") List<Integer> price,
+	                              @RequestParam("price") List<BigDecimal> price,
 	                              @RequestParam("productRequestNo") int productRequestNo) {
 
 	    for (int i = 0; i < itemId.size(); i++) {
@@ -117,7 +118,7 @@ public class QuotationController {
 	public String submitQuotation(
 	        @RequestParam("productRequestNos") List<Integer> productRequestNos,
 	        @RequestParam("subProductRequestNos") List<Integer> subProductRequestNos,
-	        @RequestParam("prices") List<Integer> prices,
+	        @RequestParam("prices") List<BigDecimal> prices,
 	        Principal principal) {
 
 	    String userId = principal.getName();

@@ -150,7 +150,7 @@
 		WHERE pr.product_request_no = #{productRequestNo}
 	</select>
 
-	<!-- 견적서 마스터 insert -->
+	<!-- 견적서 insert -->
 	<insert id="insertQuotationMaster" useGeneratedKeys="true"
 		keyProperty="quotationNo">
 		INSERT INTO quotation (
@@ -232,7 +232,7 @@
 				column="item_product_request_no" />
 			<result property="subProductRequestNo"
 				column="sub_product_request_no" />
-			<result property="price" column="price" />
+			<result column="price" property="price" jdbcType="DECIMAL" javaType="java.math.BigDecimal"/>
 			<result property="productName" column="product_name" />
 			<result property="productOption" column="product_option" />
 			<result property="productQuantity" column="product_quantity" />

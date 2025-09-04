@@ -345,7 +345,7 @@
 
               <div class="order-totals vstack gap-2 border-top pt-3">
                 <div class="d-flex justify-content-between"><span>상품 총 금액</span><span id="summaryTotal"><strong>${total}</strong> 원</span></div>
-                <div class="d-flex justify-content-between"><span>적립금</span><span id="summaryTotal"><strong><fmt:formatNumber value="${total/100}" type="number"/></strong> 원</span></div>
+                <div class="d-flex justify-content-between"><span>적립금</span><span id="summaryPoints"><strong><fmt:formatNumber value="${total/100}" type="number"/></strong> 원</span></div>
                 <div class="d-flex justify-content-between"><span>예상 결제 금액</span><span><strong><span id="summaryFinal">${total}</span></strong> 원</span></div>
               </div>
 

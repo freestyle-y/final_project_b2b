@@ -1,5 +1,7 @@
 package com.example.trade.dto;
 
+import java.math.BigDecimal;
+
 import lombok.Data;
 
 @Data
@@ -9,7 +11,7 @@ public class QuotationItem {
  private int quotationNo;
  private int productRequestNo;
  private int subProductRequestNo;
- private int price;
+ private BigDecimal price;
 
  // JOIN 결과용
  private String productName;
