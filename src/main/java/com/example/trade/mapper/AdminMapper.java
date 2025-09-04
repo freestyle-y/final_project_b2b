@@ -151,4 +151,7 @@ public interface AdminMapper {
 
 	// 배송 출발 시 알림 등록
 	int insertNotification(Notification noti);
+
+	// 배송 처리 후 기업 회원의 주문 조회
+	Map<String, Object> getBizDeliveryInfo(int contractDeliveryNo);
 }

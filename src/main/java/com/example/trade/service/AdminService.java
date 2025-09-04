@@ -291,6 +291,23 @@ public class AdminService {
 		 // 생성된 contract_delivery_no를 deliveryHistory에 세팅
 	    deliveryHistory.setContractDeliveryNo(contractDelivery.getContractDeliveryNo());
 		deliveryHistory.setDeliveryStatus("DS002"); // 배송중 처리
+		
+		// 기업회원 배송 관련 정보 조회
+		Map<String, Object> bizOrder = adminMapper.getBizDeliveryInfo(contractDelivery.getContractDeliveryNo());
+
+		// 배송 시작 시 알림 생성
+		Notification noti = new Notification();
+		noti.setTargetType("USER");
+		noti.setTargetValue((String) bizOrder.get("userId")); // 기업 담당자 ID
+		noti.setNotificationType("NC002"); // 배송 알림
+		noti.setNotificationTitle("배송 출발");
+		noti.setNotificationContent("계약번호 " + bizOrder.get("contractNo") + "번 상품의 배송을 시작했습니다.");
+		noti.setTargetUrl("/biz/deliveryList");
+		noti.setImageUrl(null); // 필요 시 썸네일 등
+		noti.setCreateUser("system");
+		
+		adminMapper.insertNotification(noti);
+		
 		return adminMapper.insertBizDeliveryHistory(deliveryHistory);
 	}
 	
