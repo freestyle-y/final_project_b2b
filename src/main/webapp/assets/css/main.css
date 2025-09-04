@@ -12606,3 +12606,16 @@ section,
     justify-content: center;
   }
 }
+
+/* main.css (공통 스타일시트) */
+.container {
+  max-width: 1200px !important;
+}
+
+.container-xl {
+  max-width: 1200px !important;
+}
+
+.container-fluid {
+  max-width: 1200px !important;
+}

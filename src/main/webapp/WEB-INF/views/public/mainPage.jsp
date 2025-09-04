@@ -7,47 +7,9 @@
 <%@ include file="/WEB-INF/common/head.jsp"%>
 <title>공용 메인 페이지</title>
 <style>
-	#search-input {
-	    padding: 10px;
-	    width: 300px;
-	    margin-bottom: 20px;
-	    border-radius: 6px;
-	    border: 1px solid #ccc;
-	
-	    display: block;
-	    margin-left: auto;
-	    margin-right: auto;
-	
-	    position: relative;   /* 클릭 안 되는 문제 방지 */
-	    z-index: 1;           /* 다른 요소 위에 위치 */
-	}
-
-
 	.wish-count {
 	    color: #e74c3c;
 	    font-weight: bold;
-	}
-	
-	.pagination {
-	    margin-top: 20px;
-	    display: flex;
-	    justify-content: center;
-	    gap: 5px;
-	}
-	
-	.pagination button {
-	    margin: 0 3px;
-	    padding: 6px 12px;
-	    border: 1px solid #ccc;
-	    border-radius: 5px;
-	    background-color: #fff;
-	    cursor: pointer;
-	}
-	
-	.pagination button.active {
-	    background-color: #333;
-	    color: #fff;
-	    border-color: #333;
 	}
 </style>
 </head>
@@ -65,10 +27,21 @@
 	    <h2>Best Sellers</h2>
 	  </div><!-- End Section Title -->
 
-	  <!-- 검색 input -->
-	  <div class="container" style="margin-bottom: 10px;">
-	    <input type="text" id="search-input" placeholder="상품 검색">
-	  </div>
+	<!-- 검색 input -->
+	<div class="header sticky-top mb-4">
+		<div class="row justify-content-center">
+			<div class="col-md-3 col-lg-3">
+				<div class="search-form">
+					<div class="input-group">
+						<input type="text" class="form-control" id="search-input" placeholder="상품 검색">
+						<button class="btn" type="button">
+							<i class="bi bi-search"></i>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 	
 	  <div class="container" data-aos="fade-up" data-aos-delay="100">
 	    <div class="row g-5" id="product-container">
@@ -133,8 +106,9 @@
 	  </div>
 
 	  <!-- 페이징 버튼 -->
-	  <div id="pagination" class="pagination justify-content-center"></div>
-	</section><!-- /Best Sellers Section -->
+	  <div id="pagination" class="category-pagination justify-content-center mt-4"></div>
+	</section>
+	<!-- /Best Sellers Section -->
 
 </main>
 
@@ -143,101 +117,119 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-$(document).ready(function() {
-    const container = $('#product-container');
-    const cards = container.children('.product-card').toArray();
-    const itemsPerPage = 4;
-    let currentPage = 1;
-    let filteredCards = cards;
+	$(document).ready(function() {
+	    const container = $('#product-container');
+	    const cards = container.children('.product-card').toArray();
+	    const itemsPerPage = 4;
+	    let currentPage = 1;
+	    let filteredCards = cards;
+	
+	    function renderPage(page) {
+	        container.empty();
+	        const start = (page - 1) * itemsPerPage;
+	        const end = start + itemsPerPage;
+	        filteredCards.slice(start, end).forEach(card => container.append(card));
+	        renderPagination();
+	    }
+	
+	    function renderPagination() {
+	        const totalPages = Math.ceil(filteredCards.length / itemsPerPage);
+	        const pagination = $('#pagination');
+	        pagination.empty();
 
-    function renderPage(page) {
-        container.empty();
-        const start = (page - 1) * itemsPerPage;
-        const end = start + itemsPerPage;
-        filteredCards.slice(start, end).forEach(card => container.append(card));
-        renderPagination();
-    }
+	        // <ul> 생성
+	        const ul = $('<ul>').addClass('justify-content-center');
 
-    function renderPagination() {
-        const totalPages = Math.ceil(filteredCards.length / itemsPerPage);
-        const pagination = $('#pagination');
-        pagination.empty();
-        
-        const maxVisible = 3; // 현재 페이지 기준으로 보여줄 버튼 개수 (홀수 권장)
-        let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
-        let end = start + maxVisible - 1;
-        if (end > totalPages) {
-            end = totalPages;
-            start = Math.max(1, end - maxVisible + 1);
-        }
+	        const maxVisible = 3;
+	        let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+	        let end = start + maxVisible - 1;
 
-        // ◀ 이전 버튼
-        if (currentPage > 1) {
-            pagination.append(
-                $('<button>').text('◀ 이전').on('click', function() {
-                    currentPage--;
-                    renderPage(currentPage);
-                })
-            );
-        }
+	        if (end > totalPages) {
+	            end = totalPages;
+	            start = Math.max(1, end - maxVisible + 1);
+	        }
 
-        // 1페이지 표시
-        if (start > 1) {
-            pagination.append(
-                $('<button>').text(1).on('click', function() {
-                    currentPage = 1;
-                    renderPage(currentPage);
-                })
-            );
-            if (start > 2) pagination.append($('<span>').text('...'));
-        }
+	        // ◀ 이전 버튼
+	        if (currentPage > 1) {
+	            const li = $('<li>').append(
+	                $('<a href="#">').html('<i class="bi bi-chevron-left"></i>').on('click', function (e) {
+	                    e.preventDefault();
+	                    currentPage--;
+	                    renderPage(currentPage);
+	                })
+	            );
+	            ul.append(li);
+	        }
 
-        // 중간 페이지들
-        for (let i = start; i <= end; i++) {
-            const btn = $('<button>').text(i);
-            if (i === currentPage) btn.addClass('active');
-            btn.on('click', function() {
-                currentPage = i;
-                renderPage(currentPage);
-            });
-            pagination.append(btn);
-        }
+	        // 1페이지 버튼
+	        if (start > 1) {
+	            const li = $('<li>').append(
+	                $('<a href="#">').text(1).on('click', function (e) {
+	                    e.preventDefault();
+	                    currentPage = 1;
+	                    renderPage(currentPage);
+	                })
+	            );
+	            ul.append(li);
+	            if (start > 2) {
+	                ul.append($('<li>').html('<span>...</span>'));
+	            }
+	        }
 
-        // 마지막 페이지 표시
-        if (end < totalPages) {
-            if (end < totalPages - 1) pagination.append($('<span>').text('...'));
-            pagination.append(
-                $('<button>').text(totalPages).on('click', function() {
-                    currentPage = totalPages;
-                    renderPage(currentPage);
-                })
-            );
-        }
+	        // 중간 페이지 버튼들
+	        for (let i = start; i <= end; i++) {
+	            const a = $('<a href="#">').text(i).on('click', function (e) {
+	                e.preventDefault();
+	                currentPage = i;
+	                renderPage(currentPage);
+	            });
+	            if (i === currentPage) a.addClass('active');
+	            ul.append($('<li>').append(a));
+	        }
 
-        // 다음 ▶ 버튼
-        if (currentPage < totalPages) {
-            pagination.append(
-                $('<button>').text('다음 ▶').on('click', function() {
-                    currentPage++;
-                    renderPage(currentPage);
-                })
-            );
-        }
-    }
+	        // 마지막 페이지 버튼
+	        if (end < totalPages) {
+	            if (end < totalPages - 1) {
+	                ul.append($('<li>').html('<span>...</span>'));
+	            }
+	            const li = $('<li>').append(
+	                $('<a href="#">').text(totalPages).on('click', function (e) {
+	                    e.preventDefault();
+	                    currentPage = totalPages;
+	                    renderPage(currentPage);
+	                })
+	            );
+	            ul.append(li);
+	        }
 
-    // 검색 기능
-    $('#search-input').on('input', function() {
-        const keyword = $(this).val().toLowerCase();
-        filteredCards = cards.filter(card => 
-            $(card).data('name').toLowerCase().includes(keyword)
-        );
-        currentPage = 1;
-        renderPage(currentPage);
-    });
+	        // ▶ 다음 버튼
+	        if (currentPage < totalPages) {
+	            const li = $('<li>').append(
+	                $('<a href="#">').html('<i class="bi bi-chevron-right"></i>').on('click', function (e) {
+	                    e.preventDefault();
+	                    currentPage++;
+	                    renderPage(currentPage);
+	                })
+	            );
+	            ul.append(li);
+	        }
 
-    // 초기 렌더링
-    renderPage(currentPage);
-});
+	        pagination.append($('<nav>').append(ul));
+	    }
+	
+	    // 검색 기능
+	    $('#search-input').on('input', function() {
+	        const keyword = $(this).val().toLowerCase();
+	        filteredCards = cards.filter(card => 
+	            $(card).data('name').toLowerCase().includes(keyword)
+	        );
+	        currentPage = 1;
+	        renderPage(currentPage);
+	    });
+	
+	    // 초기 렌더링
+	    renderPage(currentPage);
+	});
 </script>
 
 </body>
