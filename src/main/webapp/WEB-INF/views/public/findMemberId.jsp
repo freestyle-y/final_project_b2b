@@ -8,21 +8,7 @@
 <title>아이디 찾기</title>
 <meta name="description" content="아이디를 찾는 페이지입니다.">
 <meta name="keywords" content="아이디, 찾기, 회원, 로그인">
-
-<link href="/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link href="https://fonts.googleapis.com" rel="preconnect">
-<link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-
-<link href="/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-<link href="/assets/vendor/aos/aos.css" rel="stylesheet">
-<link href="/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
-<link href="/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
-<link href="/assets/vendor/drift-zoom/drift-basic.css" rel="stylesheet">
-
-<link href="/assets/css/main.css" rel="stylesheet">
+<%@ include file="/WEB-INF/common/head.jsp"%>
 <style>
 /* 아래 스타일은 템플릿의 CSS 파일에 정의된 내용을 포함합니다. */
 :root {
@@ -423,6 +409,55 @@ body {
             alert('일치하는 회원이 없습니다.');
         </c:if>
     });
+    /* 1) 드롭다운 토글 버튼이면 type="button" 강제(폼 submit 방지) */
+    (function ensureBtnType(){
+      const sel = [
+        'header#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"]',
+        '#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"]',
+        'header#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"]',
+        '#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"]'
+      ].join(',');
+
+      document.querySelectorAll(sel).forEach(btn => {
+        if (!btn.hasAttribute('type')) btn.setAttribute('type','button');
+      });
+    })();
+
+    /* 2) 캡처링 단계에서 좌표 기반 hit-test로 드롭다운 강제 토글 */
+    (function forceDropdownToggle(){
+      const getBtns = () => Array.from(document.querySelectorAll(
+        'header#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"],' +
+        '#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"],' +
+        'header#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"],' +
+        '#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"]'
+      ));
+
+      function inside(rect, x, y){
+        return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+      }
+
+      // 캡처링 단계(true)로 등록 → 위에 뭔가 덮여 있어도 좌표로 판별해 토글
+      document.addEventListener('click', function(ev){
+        const x = ev.clientX, y = ev.clientY;
+        const btn = getBtns().find(b => inside(b.getBoundingClientRect(), x, y));
+        if (!btn) return;
+
+        // 기본 동작(폼 제출/포커스 등) 막고 Bootstrap 드롭다운을 직접 토글
+        ev.preventDefault();
+        // ev.stopPropagation(); // 필요시 주석 해제. 기본에선 버블링 유지.
+
+        try {
+          const dd = bootstrap.Dropdown.getOrCreateInstance(btn);
+          dd.toggle();
+        } catch (e) {
+          // bootstrap이 아직 로드 전이면 다음 틱에 재시도
+          setTimeout(() => {
+            const dd = bootstrap.Dropdown.getOrCreateInstance(btn);
+            dd.toggle();
+          }, 0);
+        }
+      }, true);
+    })();
 </script>
 </body>
 </html>
