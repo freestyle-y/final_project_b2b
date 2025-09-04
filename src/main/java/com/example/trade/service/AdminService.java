@@ -11,6 +11,7 @@ import com.example.trade.dto.Board;
 import com.example.trade.dto.Comment;
 import com.example.trade.dto.ContractDelivery;
 import com.example.trade.dto.DeliveryHistory;
+import com.example.trade.dto.Notification;
 import com.example.trade.dto.Order;
 import com.example.trade.dto.Page;
 import com.example.trade.dto.RewardHistory;
@@ -153,6 +154,20 @@ public class AdminService {
 		order.setDeliveryStatus("DS002"); // 배송중 처리
     	deliveryHistory.setDeliveryStatus("DS002"); // 배송중 처리
 		adminMapper.updatePersonalDelivery(order);
+		
+		// 알림 발송 (배송 출발 알림)
+		Notification noti = new Notification();
+		noti.setTargetType("USER"); // 대상 타입
+		noti.setTargetValue(order.getUserId()); // 주문자 ID
+		noti.setNotificationType("NC002"); // 알림 유형(배송)
+		noti.setNotificationTitle("배송 출발");
+		noti.setNotificationContent(order.getProductName() + " 상품의 배송을 시작했습니다.");
+		noti.setTargetUrl("/personal/orderOne?orderNo=" + order.getOrderNo()); // 클릭 시 이동할 URL
+		noti.setImageUrl(null); // 필요 시 썸네일 등
+		noti.setCreateUser("system"); // 시스템 발송 처리
+
+		adminMapper.insertNotification(noti);
+		
 		return adminMapper.insertDeliveryHistory(deliveryHistory);
 	}
 	

@@ -609,4 +609,27 @@
 			(order_no, reward_use)
 		VALUES (#{orderNo}, #{rewardUse})
 	</insert>
+	
+	<!-- 개인 회원 배송 출발 시 알림 발송 -->
+	<insert id="insertNotification" parameterType="com.example.trade.dto.Notification">
+		INSERT INTO notification (
+			target_type,
+			target_value,
+			notification_type,
+			notification_title,
+			notification_content,
+			target_url,
+			image_url,
+			create_user
+		) VALUES (
+			#{targetType},
+			#{targetValue},
+			#{notificationType},
+			#{notificationTitle},
+			#{notificationContent},
+			#{targetUrl},
+			#{imageUrl},
+			#{createUser}
+		)
+	</insert>
 </mapper>
