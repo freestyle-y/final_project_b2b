@@ -62,9 +62,9 @@
   .btn{
     display:inline-flex; align-items:center; justify-content:center;
     padding:10px 18px; border-radius:10px; border:1px solid var(--border);
-    background:#fff; font-weight:700; cursor:pointer; transition:all .2s;
+    font-weight:700; cursor:pointer; transition:all .2s;
   }
-  .btn:hover{background:#F8FAFF}
+  
   .btn-primary{
     color:#fff; border-color:transparent;
     background:linear-gradient(135deg, #3B82F6 0%, #6366F1 100%);
@@ -101,15 +101,15 @@
         <tr>
           <th scope="row">계약서 주문번호</th>
           <td>
-            <input id="contractOrderNo" type="number" name="contractOrderNo"
-                   class="form-input" value="${container.contractOrderNo}" min="0" step="1" placeholder="숫자만 입력" />
+            <input id="contractNo" type="number" name="contractNo"
+                   class="form-input" value="${container.contractNo}" min="0" step="1" placeholder="숫자만 입력" />
           </td>
         </tr>
       </table>
 
       <div class="actions">
-        <button type="button" class="btn btn-ghost" onclick="history.back()">취소</button>
-        <button type="submit" class="btn btn-primary">수정 완료</button>
+        <button type="button" class="btn btn-dark" onclick="history.back()">취소</button>
+        <button type="submit" class="btn btn-dark">수정 완료</button>
       </div>
     </form>
   </div>
@@ -121,7 +121,7 @@
   // 간단 유효성 검사
   function validateForm(f){
     const loc = f.containerLocation.value.trim();
-    const order = f.contractOrderNo.value;
+    const order = f.contractNo.value;
 
     if(!loc){
       alert('위치를 입력해 주세요.');
@@ -130,7 +130,7 @@
     }
     if(order !== '' && Number(order) < 0){
       alert('계약서 주문번호는 0 이상의 숫자여야 합니다.');
-      f.contractOrderNo.focus();
+      f.contractNo.focus();
       return false;
     }
     return true;

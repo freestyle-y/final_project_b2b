@@ -146,25 +146,24 @@
 			<td>
 			  <c:choose>
 			    <c:when test="${empty row.containerNo}">
-			      <!-- 컨테이너 없음: 버튼 없음 -->
 			    </c:when>
 			    <c:when test="${row.deliveryExist == 0}">
-			      <!-- 배송 미입력: 버튼 없음 -->
 			    </c:when>
 			    <c:when test="${row.latestDeliveryStatus == 1}">
 			      <button type="button"
-			              class="btn btn-warning btn-sm"
+			              class="btn btn-dark"
 			              data-container-no="${row.containerNo}"
 			              onclick="recallProduct(this)">상품회수</button>
 			    </c:when>
-			    <c:otherwise>
+			    <c:when test="${row.recalled == 1}">
 			      <button type="button"
 			              class="btn btn-outline-secondary btn-sm"
 			              data-container-no="${row.containerNo}"
 			              onclick="recallProductCancel(this)">회수취소</button>
-			    </c:otherwise>
+			    </c:when>
 			  </c:choose>
 			</td>
+
             </tr>
           </c:forEach>
         </tbody>
@@ -281,5 +280,57 @@
     form.submit();
   }
 </script>
+<script>
+/* 1) 드롭다운 토글 버튼이면 type="button" 강제(폼 submit 방지) */
+(function ensureBtnType(){
+  const sel = [
+    'header#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"]',
+    '#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"]',
+    'header#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"]',
+    '#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"]'
+  ].join(',');
+
+  document.querySelectorAll(sel).forEach(btn => {
+    if (!btn.hasAttribute('type')) btn.setAttribute('type','button');
+  });
+})();
+
+/* 2) 캡처링 단계에서 좌표 기반 hit-test로 드롭다운 강제 토글 */
+(function forceDropdownToggle(){
+  const getBtns = () => Array.from(document.querySelectorAll(
+    'header#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"],' +
+    '#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"],' +
+    'header#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"],' +
+    '#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"]'
+  ));
+
+  function inside(rect, x, y){
+    return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+  }
+
+  // 캡처링 단계(true)로 등록 → 위에 뭔가 덮여 있어도 좌표로 판별해 토글
+  document.addEventListener('click', function(ev){
+    const x = ev.clientX, y = ev.clientY;
+    const btn = getBtns().find(b => inside(b.getBoundingClientRect(), x, y));
+    if (!btn) return;
+
+    // 기본 동작(폼 제출/포커스 등) 막고 Bootstrap 드롭다운을 직접 토글
+    ev.preventDefault();
+    // ev.stopPropagation(); // 필요시 주석 해제. 기본에선 버블링 유지.
+
+    try {
+      const dd = bootstrap.Dropdown.getOrCreateInstance(btn);
+      dd.toggle();
+    } catch (e) {
+      // bootstrap이 아직 로드 전이면 다음 틱에 재시도
+      setTimeout(() => {
+        const dd = bootstrap.Dropdown.getOrCreateInstance(btn);
+        dd.toggle();
+      }, 0);
+    }
+  }, true);
+})();
+</script>
+
 </body>
 </html>

@@ -34,7 +34,7 @@
 <update id="updateContainer" parameterType="com.example.trade.dto.Container">
 	UPDATE container
 	SET container_location = #{containerLocation},
-	    contract_no = #{contractrNo}
+	    contract_no = #{contractNo}
 	WHERE container_no = #{containerNo}
 </update>
 	

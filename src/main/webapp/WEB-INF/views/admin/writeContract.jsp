@@ -4,8 +4,10 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
 <html lang="ko">
-<script
-	src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+<link href="https://cdn.jsdelivr.net/gh/sunn-us/SUIT/fonts/static/woff2/SUIT.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
 <head>
 <meta charset="UTF-8">
 <%@ include file="/WEB-INF/common/head.jsp"%>
@@ -305,23 +307,6 @@ body {
 	text-align: center;
 }
 
-.btn {
-	display: inline-block;
-	padding: 10px 20px;
-	margin: 0 5px;
-	border: 1px solid #ddd;
-	border-radius: 5px;
-	text-decoration: none;
-	color: #333;
-	background: #fff;
-	cursor: pointer;
-	transition: all 0.3s ease;
-}
-
-.btn:hover {
-	background: #f5f5f5;
-	border-color: #999;
-}
 
 .btn-primary {
 	background: #007bff;
@@ -433,6 +418,61 @@ body {
 		margin-bottom: 0 !important;
 	}
 }
+/* ===== 버튼 공통 ===== */
+.btn-register{
+  background:#111; color:#fff; border:0;
+  border-radius:14px; padding:.6rem 1rem;
+  font-weight:700; line-height:1; display:inline-flex;
+  align-items:center; justify-content:center;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);
+  transition:transform .02s ease, opacity .2s ease, background .2s ease;
+}
+.btn-register:hover{ background:#0f0f0f; }
+.btn-register:active{ transform:translateY(1px); }
+
+/* 지우기 버튼(연한 아웃라인) */
+.btn-clear{
+  background:#fff; color:#374151;
+  border:1px solid #D1D5DB; border-radius:10px;
+  padding:.4rem .8rem; font-weight:600;
+  transition:background .15s ease, border-color .15s ease;
+}
+.btn-clear:hover{ background:#F3F4F6; border-color:#9CA3AF; }
+.btn-clear:active{ transform:translateY(1px); }
+
+/* 버튼 포커스 링(접근성) */
+.btn-register:focus, .btn-clear:focus{
+  outline:0; box-shadow:0 0 0 .2rem rgba(17,24,39,.15);
+}
+
+/* ===== 테이블 입력 공통 ===== */
+.contract-table .form-input{
+  width:100%; height:36px;
+  padding:6px 10px;
+  background:#fff; color:#111827;
+  border:1px solid #D1D5DB; border-radius:8px;
+  font-size:14px; line-height:1.3;
+  outline:none;
+  transition:border-color .15s ease, box-shadow .15s ease, background .15s ease;
+  box-sizing:border-box;
+}
+.contract-table .form-input:focus{
+  border-color:#111827;
+  box-shadow:0 0 0 .2rem rgba(17,24,39,.12);
+}
+.contract-table .form-input[readonly]{ background:#F9FAFB; color:#6B7280; cursor:default; }
+
+/* number 스피너 제거 */
+.contract-table .form-input[type=number]::-webkit-outer-spin-button,
+.contract-table .form-input[type=number]::-webkit-inner-spin-button{
+  -webkit-appearance:none; margin:0;
+}
+.contract-table .form-input[type=number]{ -moz-appearance:textfield; }
+
+/* 셀은 가운데 정렬, 입력은 좌측 정렬 */
+.contract-table td{ text-align:center; }
+.contract-table td .form-input{ text-align:left; }
+
 </style>
 </head>
 <body>
@@ -440,11 +480,11 @@ body {
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
 </div>
-
-<div class="toolbar no-print">
-	<button class="btn btn-primary" type="submit" form="contractForm">작성완료</button>
-	<a class="btn" href="${pageContext.request.contextPath}/admin/contractList">목록</a>
+<section class="register py-1">
+<div class="toolbar no-print text-center">
+	<button class="btn btn-register" type="submit" form="contractForm">작성완료</button>
 </div>
+</section>
 <form id="contractForm" method="post" action="${pageContext.request.contextPath}/admin/contract/write">
 	<c:if test="${not empty contractOne}">
 		<c:set var="first" value="${contractOne[0]}" />
@@ -479,21 +519,21 @@ body {
 				<div class="signature-boxes">
 					<!-- 갑 서명 -->
 					<div class="signature-box" id="sig-supplier">
-						<div class="signature-label">갑 (공급자) 서명</div>
+						<div class="signature-label">공급자</div>
 						<div class="signature-field" style="padding: 0">
 							<canvas style="width: 100%; height: 60px;"></canvas>
 						</div>
 						<div class="no-print" style="margin-top: 8px">
-							<button type="button" class="btn" data-action="clear">지우기</button>
+							<button type="button" class="btn btn-dark" data-action="clear">지우기</button>
 						</div>
 						<input type="hidden" name="supplierSignature" />
 						<img alt="supplier signature" style="display: none;" />
 					</div>
 					<!-- 을 서명 -->
 					<div class="signature-box" id="sig-buyer">
-						<div class="signature-label">을 (수요자) 서명</div>
+						<div class="signature-label">수요자</div>
 						<div class="signature-field" style="padding: 0">
-							관리자는 갑(공급자)에<br>
+							관리자는 공급자에<br>
 							서명해 주시기 바랍니다.
 						</div>
 						<input type="hidden" name="buyerSignature" />
@@ -514,14 +554,14 @@ body {
 				</thead>
 				<tbody>
 					<tr>
-						<td><input type="number" name="downPayment" required /></td>
-						<td><input type="number" name="finalPayment" required /></td>
+						<td><input type="number" name="downPayment" required class="form-input"/></td>
+						<td><input type="number" name="finalPayment" required class="form-input"/></td>
 						<td>
 							<span id="totalAmountDisplay">
 								₩<fmt:formatNumber value="${totalPrice}" type="number" groupingUsed="true" />
 							</span>
 							<input type="hidden" name="totalAmount" id="totalAmount" value="${totalPrice}" /></td>
-						<td><input type="date" name="createDate" required /></td>
+						<td><input type="date" name="createDate" required class="form-input"/></td>
 					</tr>
 				</tbody>
 			</table>
@@ -557,9 +597,9 @@ body {
 						</c:when>
 						<c:otherwise>
 							<tr>
-								<td><input type="text" name="productName" required /></td>
-								<td><input type="text" name="productOption" /></td>
-								<td><input type="number" name="productQuantity" required /></td>
+								<td><input type="text" name="productName" required class="form-input"/></td>
+								<td><input type="text" name="productOption" class="form-input"/></td>
+								<td><input type="number" name="productQuantity" required class="form-input"/></td>
 							</tr>
 						</c:otherwise>
 					</c:choose>
@@ -579,14 +619,14 @@ body {
 				</thead>
 				<tbody>
 					<tr>
-						<td>갑 (공급자)</td>
+						<td>공급자</td>
 						<td><span>freeStyle</span></td>
 						<td><span>${contractSupplier[0].name}</span></td>
 						<td><span>${contractSupplier[0].phone}</span></td>
 						<td><span>${contractSupplier[0].address} ${contractSupplier[0].detailAddress}</span></td>
 					</tr>
 					<tr>
-						<td>을 (수요자)</td>
+						<td>수요자</td>
 						<td><span>${contractUser[0].companyName}</span></td>
 						<td><span>${contractUser[0].name}</span></td>
 						<td><span>${contractUser[0].phone}</span></td>
@@ -607,23 +647,23 @@ body {
 				<tbody>
 					<tr>
 						<td>계약 기간</td>
-						<td><input type="text" name="term" value="계약 체결일로부터 1년" readonly /></td>
-						<td><input type="text" name="termEtc" value="자동 갱신" readonly /></td>
+						<td><input type="text" name="term" value="계약 체결일로부터 1년" readonly class="form-input"/></td>
+						<td><input type="text" name="termEtc" value="자동 갱신" readonly class="form-input"/></td>
 					</tr>
 					<tr>
 						<td>납기</td>
-						<td><input type="text" name="delivery" value="주문 후 15일 이내" readonly /></td>
-						<td><input type="text" name="deliveryEtc" value="부득이 시 연기 가능" 	readonly /></td>
+						<td><input type="text" name="delivery" value="주문 후 15일 이내" readonly class="form-input"/></td>
+						<td><input type="text" name="deliveryEtc" value="부득이 시 연기 가능" 	readonly class="form-input"/></td>
 					</tr>
 					<tr>
 						<td>결제 조건</td>
-						<td><input type="text" name="payment" value="계약금 30%, 납품 후 70%" readonly /></td>
-						<td><input type="text" name="paymentEtc" value="계약서 명시" readonly /></td>
+						<td><input type="text" name="payment" value="계약금 30%, 납품 후 70%" readonly class="form-input"/></td>
+						<td><input type="text" name="paymentEtc" value="계약서 명시" readonly class="form-input"/></td>
 					</tr>
 					<tr>
 						<td>품질 보증</td>
-						<td><input type="text" name="warranty" value="그런 거 없음" readonly /></td>
-						<td><input type="text" name="warrantyEtc" value="하자 시 유감"	readonly /></td>
+						<td><input type="text" name="warranty" value="그런 거 없음" readonly class="form-input"/></td>
+						<td><input type="text" name="warrantyEtc" value="하자 시 유감"	readonly class="form-input"/></td>
 					</tr>
 				</tbody>
 			</table>

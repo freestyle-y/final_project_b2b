@@ -13,11 +13,13 @@ SELECT
    , c.final_payment_status AS finalPaymentStatus
    , c.final_payment_date   AS finalPaymentDate
    , ct.container_no        AS containerNo
+
    , EXISTS (
        SELECT 1
        FROM contract_delivery cd
        WHERE cd.container_no = ct.container_no
      ) AS deliveryExist
+
    , CASE
        WHEN ct.container_no IS NOT NULL
             AND DATE(c.final_payment_date) &lt; CURDATE()
@@ -30,10 +32,21 @@ SELECT
                 ), '') &lt;&gt; 'DS009'
        THEN 1 ELSE 0
      END AS latestDeliveryStatus
+
+   , CASE
+       WHEN (
+         SELECT cd4.contract_delivery_status
+         FROM contract_delivery cd4
+         WHERE cd4.container_no = ct.container_no
+         ORDER BY cd4.contract_delivery_time DESC, cd4.contract_delivery_no DESC
+         LIMIT 1
+       ) = 'DS009'
+       THEN 1 ELSE 0
+     END AS recalled
+
 FROM contract c
 LEFT JOIN container ct ON ct.contract_no = c.contract_no
 ORDER BY c.contract_no DESC;
-
 </select>
 
 

@@ -307,14 +307,11 @@ body {
 	border: 1px solid #ddd;
 	border-radius: 5px;
 	text-decoration: none;
-	color: #333;
-	background: #fff;
 	cursor: pointer;
 	transition: all 0.3s ease;
 }
 
 .btn:hover {
-	background: #f5f5f5;
 	border-color: #999;
 }
 
@@ -463,8 +460,8 @@ body {
 </div>
 
 	<div class="toolbar no-print">
-		<button class="btn btn-primary" onclick="window.print()">PDF/인쇄</button>
-		<a class="btn" href="${pageContext.request.contextPath}/admin/contractList">목록</a>
+		<button class="btn btn-dark" onclick="window.print()">PDF/인쇄</button>
+		<a class="btn btn-dark" href="${pageContext.request.contextPath}/admin/contractList">목록</a>
 	</div>
 	<form action="${pageContext.request.contextPath}/admin/attachmentUpload" method="post" enctype="multipart/form-data" onsubmit="return uploadFiles(this)">
 <!-- [수정] 클래스 추가: toolbar-upload -->
@@ -473,12 +470,12 @@ body {
     <input type="file" name="files" multiple>
     <input type="hidden" name="attachmentCode" value="CONTRACT">
     <input type="hidden" name="contractNo" value="${contractOne[0].contractNo}">
-    <button class="btn btn-primary" type="submit">업로드</button>
+    <button class="btn btn-dark" type="submit">업로드</button>
 
     <!-- [추가] 오른쪽 '첨부파일' 토글 버튼 -->
     <button type="button" id="attachmentTrigger" class="attachment-trigger"
             aria-expanded="false" title="첨부파일 보기/숨기기">
-      첨부파일
+      ▽첨부파일
     </button>
   </c:if>
 </div>
