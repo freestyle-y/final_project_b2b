@@ -66,7 +66,7 @@
 </div>
 <!-- End Page Title -->
 
-<div class="container-fluid py-4">
+<div class="container-xl py-3">
 
 	<table id="table" class="table table-bordered table-hover datatable text-center">
 		<thead class="table-light">
@@ -98,7 +98,7 @@
 	</table>
 
 	<div class="text-first mt-3">
-		<a href="/admin/noticeWrite" class="btn btn-primary">공지 등록</a>
+		<a href="/admin/noticeWrite" class="btn btn-primary">새 공지 등록</a>
 	</div>
 
 </div>
