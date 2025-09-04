@@ -9,6 +9,22 @@
 		WHERE id = #{id}
 	</select>
 	
+	<!-- 찜 개수 -->
+	<select id="wishCount" parameterType="String">
+		SELECT COUNT(*)
+		FROM wish_list
+		WHERE user_id = #{id}
+			AND use_status = 'Y'
+	</select>
+	
+	<!-- 장바구니 개수 -->
+	<select id="cartCount" parameterType="String">
+		SELECT COUNT(*)
+		FROM shopping_cart
+		WHERE user_id = #{id}
+			AND use_status = 'Y'
+	</select>
+	
 	<!-- 상품 후기 -->
 	<select id="reviewList" resultType="map">
 		SELECT 

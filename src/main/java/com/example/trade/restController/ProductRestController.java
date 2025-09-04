@@ -31,6 +31,20 @@ public class ProductRestController {
 		this.productService = productService;
 	}
 	
+	// 찜 개수
+	@GetMapping("/personal/wishCount")
+	public int wishCount() {
+		String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+		return productService.selectWishCount(userId);
+	}
+	
+	// 장바구니 개수
+	@GetMapping("/personal/cartCount")
+	public int cartCount() {
+		String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+		return productService.selectCartCount(userId);
+	}
+	
 	// 찜 삭제
 	@PostMapping("/personal/wish/delete")
 	public Map<String, Object> deleteWishItems(@RequestBody Map<String, Object> request) {

@@ -9,9 +9,34 @@
 <head>
 <meta charset="UTF-8">
 <%@ include file="/WEB-INF/common/head.jsp"%>
-<title>찜</title>
+<title>찜 리스트</title>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<style>
+	/* Pagination button styles */
+	.pagination {
+		margin-top: 20px;
+		display: flex;
+		justify-content: center;
+		gap: 5px;
+	}
+
+	.pagination button {
+		margin: 0 4px;
+		padding: 6px 12px;
+		border-radius: 5px;
+		border: 1px solid #ccc;
+		background: #fff;
+		cursor: pointer;
+		font-size: 1em;
+	}
+
+	.pagination button.active {
+		background-color: #333;
+		color: white;
+		border-color: #333;
+	}
+</style>
 <script>
  	// 선택된 상품 삭제
  	$(document).on('click', '.btn-remove', function() {
@@ -38,6 +63,7 @@
 	        success: function(response) {
 	            if (response.success) {
 	                alert("삭제가 완료되었습니다.");
+	                updateWishCount();
 	                location.reload(); // 필요하면 삭제 후 새로고침 또는 UI에서 제거 처리
 	            } else {
 	                alert("삭제 실패: " + (response.message || "알 수 없는 오류"));
@@ -48,40 +74,122 @@
 	        }
 	    });
 	});
+	
+	// 페이징 구현
+	$(document).ready(function () {
+		const itemsPerPage = 3; // 한 페이지에 표시할 아이템 수
+		let currentPage = 1;
 
+		const $wishlistGrid = $('.wishlist-grid');
+		const cards = $wishlistGrid.find('.wishlist-card').toArray();
+
+		function renderPage(page) {
+			$(cards).hide();
+			const start = (page - 1) * itemsPerPage;
+			const end = start + itemsPerPage;
+
+			$(cards).slice(start, end).show();
+			renderPagination();
+		}
+
+		function renderPagination() {
+			const totalPages = Math.ceil(cards.length / itemsPerPage);
+			const pagination = $('#wishlist-pagination');
+			pagination.empty();
+
+			if (totalPages <= 1) return;
+
+			const maxVisible = 3;
+			let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+			let end = start + maxVisible - 1;
+			if (end > totalPages) {
+				end = totalPages;
+				start = Math.max(1, end - maxVisible + 1);
+			}
+
+			// '◀ 이전' 버튼
+			if (currentPage > 1) {
+				pagination.append(
+					$('<button>').text('◀ 이전').on('click', function() {
+						currentPage--;
+						renderPage(currentPage);
+					})
+				);
+			}
+
+			// 첫 페이지 버튼
+			if (start > 1) {
+				pagination.append(
+					$('<button>').text('1').on('click', function() {
+						currentPage = 1;
+						renderPage(currentPage);
+					})
+				);
+				if (start > 2) pagination.append($('<span>').text('...'));
+			}
+
+			// 중간 페이지 버튼들
+			for (let i = start; i <= end; i++) {
+				const btn = $('<button>').text(i);
+				if (i === currentPage) btn.addClass('active');
+				btn.on('click', function() {
+					currentPage = i;
+					renderPage(currentPage);
+				});
+				pagination.append(btn);
+			}
+
+			// 마지막 페이지 버튼
+			if (end < totalPages) {
+				if (end < totalPages - 1) pagination.append($('<span>').text('...'));
+				pagination.append(
+					$('<button>').text(totalPages).on('click', function() {
+						currentPage = totalPages;
+						renderPage(currentPage);
+					})
+				);
+			}
+
+			// '다음 ▶' 버튼
+			if (currentPage < totalPages) {
+				pagination.append(
+					$('<button>').text('다음 ▶').on('click', function() {
+						currentPage++;
+						renderPage(currentPage);
+					})
+				);
+			}
+		}
+
+		// 초기 페이지 렌더링
+		renderPage(currentPage);
+	});
 </script>
 
 </head>
 <body>
 
-<!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
 
 <main class="main">
 
-	<!-- Page Title -->
-    <div class="page-title light-background">
+	<div class="page-title light-background">
       <div class="container d-lg-flex justify-content-between align-items-center">
-        <h1 class="mb-2 mb-lg-0">WishList</h1>
+        <h1 class="mb-2 mb-lg-0">찜 리스트</h1>
         <nav class="breadcrumbs">
           <ol>
             <li><a href="/personal/mainPage">Home</a></li>
-            <li class="current">WishList</li>
+            <li class="current">찜 리스트</li>
           </ol>
         </nav>
       </div>
-	</div><!-- End Page Title -->
-	
-    <!-- Account Section -->
-    <section id="account" class="account section">
+	</div><section id="account" class="account section">
 
       <div class="container" data-aos="fade-up" data-aos-delay="100">
         <div class="row g-4">
-          <!-- Profile Menu -->
           <div class="col-lg-3">
             <div class="profile-menu collapse d-lg-block" id="profileMenu">
-             <!-- User Info -->
-			 <div class="user-info" data-aos="fade-right">
+             <div class="user-info" data-aos="fade-right">
                 <h4>${name} <span class="status-badge"><i class="bi bi-shield-check"></i></span></h4>
                 <div class="user-status">
                   <i class="bi bi-award"></i>
@@ -89,17 +197,17 @@
                 </div>
               </div>
               
-              <!-- Navigation Menu -->
               <nav class="menu-nav">
                 <ul class="nav flex-column" role="tablist">
                   <li class="nav-item">
                     <a class="nav-link ${ordersActive ? 'active' : ''}" href="<c:url value='/personal/orderList'/>">
                       <i class="bi bi-box-seam"></i>
-                      <span>My Orders</span>
+                      <span>주문</span>
+                      <span class="badge">${fn:length(orderGroupMap)}</span>
                     </a>
                     <a class="nav-link active" data-bs-toggle="tab" href="#wishlist">
                       <i class="bi bi-heart"></i>
-                      <span>Wishlist</span>
+                      <span>찜</span>
                       <span class="badge">${fn:length(wishList)}</span>
                     </a>
                   </li>
@@ -108,19 +216,16 @@
             </div>
           </div>
 
-          <!-- Content Area -->
           <div class="col-lg-9">
             <div class="content-area">
               <div class="tab-content">
               
-                <!-- Wishlist Tab -->
                 <div class="tab-pane fade show active" id="wishlist">
                   <div class="section-header" data-aos="fade-up">
-                    <h2>My Wishlist</h2>
+                    <h2>찜 리스트</h2>
                   </div>
 
                   <div class="wishlist-grid">
-                    <!-- Wishlist Item -->
                     <c:forEach var="item" items="${wishList}">
 					    <div class="wishlist-card" data-aos="fade-up" data-aos-delay="100">
 					        <div class="wishlist-image">
@@ -175,6 +280,7 @@
 					    </div>
 					</c:forEach>
                   </div>
+                  <div id="wishlist-pagination" class="pagination"></div>
                 </div>
               </div>
             </div>
@@ -183,14 +289,10 @@
 
       </div>
 
-    </section><!-- /Account Section -->
-
-	<!-- Scroll Top -->
-  	<a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+    </section><a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 	
 </main>
 
-<!-- 공통 풋터 -->
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>
 
 </body>

@@ -20,6 +20,7 @@ import com.example.trade.service.AddressService;
 import com.example.trade.service.KakaoPayService;
 import com.example.trade.service.OrderService;
 import com.example.trade.service.PaymentMethodService;
+import com.example.trade.service.ProductService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -30,13 +31,16 @@ public class OrderController {
     private final KakaoPayService kakaoPayService;
     private final PaymentMethodService paymentMethodService;
     private final AddressService addressService;
+    private final ProductService productService;
     public OrderController(OrderService orderService, KakaoPayService kakaoPayService,
-			PaymentMethodService paymentMethodService, AddressService addressService) {
+			PaymentMethodService paymentMethodService, AddressService addressService,
+			ProductService productService) {
 		super();
 		this.orderService = orderService;
 		this.kakaoPayService = kakaoPayService;
 		this.paymentMethodService = paymentMethodService;
 		this.addressService = addressService;
+		this.productService = productService;
 	}
     // 결제 페이지 (주문정보 보여주기)
 
@@ -87,9 +91,11 @@ public class OrderController {
         Map<String, List<Order>> orderGroupMap = orderList.stream()
                 .collect(Collectors.groupingBy(Order::getOrderNo, LinkedHashMap::new, Collectors.toList()));
 
+        List<Map<String, Object>> wishList = productService.selectWishList(userId);
         model.addAttribute("userInformation", userInformation);
         model.addAttribute("orderGroupMap", orderGroupMap);
-
+        model.addAttribute("wishList", wishList);
+        
         return "personal/orderList";
     }
     

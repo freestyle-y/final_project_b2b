@@ -91,6 +91,7 @@
                     <a class="nav-link ${wishlistActive ? 'active' : ''}" href="<c:url value='/personal/wishList'/>">
                       <i class="bi bi-heart"></i>
                       <span>찜</span>
+                      <span class="badge">${fn:length(wishList)}</span>
 					</a>
                   </li>
                 </ul>

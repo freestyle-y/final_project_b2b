@@ -49,6 +49,16 @@ public class ProductService {
 		return productMapper.selectName(id);
 	}
 	
+	// 찜 개수 조회
+	public int selectWishCount(String id) {
+		return productMapper.wishCount(id);
+	}
+	
+	// 장바구니 개수 조회
+	public int selectCartCount(String id) {
+		return productMapper.cartCount(id);
+	}
+	
 	// 상품 후기 목록 보기
 	public List<Map<String, Object>> selectReviewList() {
 		return productMapper.reviewList();

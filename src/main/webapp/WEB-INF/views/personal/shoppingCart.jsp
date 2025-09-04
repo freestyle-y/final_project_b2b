@@ -166,6 +166,7 @@
                     itemDiv.remove();
 
                     updateTotal(); // 총액 재계산
+                    updateCartCount();
                 } else {
                     alert('삭제에 실패했습니다: ' + response.message);
                 }
@@ -240,11 +241,11 @@
 	<!-- Page Title -->
     <div class="page-title light-background">
       <div class="container d-lg-flex justify-content-between align-items-center">
-        <h1 class="mb-2 mb-lg-0">Cart</h1>
+        <h1 class="mb-2 mb-lg-0">장바구니</h1>
         <nav class="breadcrumbs">
           <ol>
             <li><a href="index.html">Home</a></li>
-            <li class="current">Cart</li>
+            <li class="current">장바구니</li>
           </ol>
         </nav>
       </div>
@@ -273,16 +274,16 @@
 			        <input type="checkbox" id="selectAll" onclick="toggleAllCheckboxes(this)" />
 			      </div>
                   <div class="col-lg-5">
-                    <h5>Product</h5>
+                    <h5>상품</h5>
                   </div>
                   <div class="col-lg-2 text-center">
-                    <h5>Price</h5>
+                    <h5>가격</h5>
                   </div>
                   <div class="col-lg-2 text-center">
-                    <h5>Quantity</h5>
+                    <h5>수량</h5>
                   </div>
                   <div class="col-lg-2 text-center">
-                    <h5>Total</h5>
+                    <h5>금액</h5>
                   </div>
                 </div>
               </div>
@@ -398,7 +399,7 @@
 
           <div class="col-lg-4 mt-4 mt-lg-0" data-aos="fade-up" data-aos-delay="300">
             <div class="cart-summary">
-              <h4 class="summary-title">Order Summary</h4>
+              <h4 class="summary-title">주문 요약</h4>
 			  
 			  <div class="summary-item reward">
                 <span class="summary-label">적립금</span>
@@ -406,19 +407,19 @@
               </div>
               
               <div class="summary-total">
-                <span class="summary-label">Total</span>
+                <span class="summary-label">총액</span>
                 <span class="summary-value" id="totalPrice">0원</span>
               </div>
 
 			  <div class="checkout-button">
 			    <a href="javascript:void(0);" class="btn btn-accent w-100" onclick="handleBuyClick()">
-			      Proceed to Checkout <i class="bi bi-arrow-right"></i>
+			      결제하기 <i class="bi bi-arrow-right"></i>
 			    </a>
 			  </div>
 
               <div class="continue-shopping">
                 <a href="/personal/productList" class="btn btn-link w-100">
-                  <i class="bi bi-arrow-left"></i> Continue Shopping
+                  <i class="bi bi-arrow-left"></i> 계속 쇼핑하기
                 </a>
               </div>
 

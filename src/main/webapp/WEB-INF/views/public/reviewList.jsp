@@ -23,11 +23,13 @@
 		font-size: 1em;
 	}
 
-	/* 페이징 버튼 스타일 */
 	.pagination {
-		text-align: center;
-		margin-top: 20px;
+	    margin-top: 20px;
+	    display: flex;
+	    justify-content: center;
+	    gap: 5px;
 	}
+
 	.pagination button {
 		margin: 0 4px;
 		padding: 6px 12px;
@@ -58,7 +60,7 @@
          <div class="col-12">
            <div class="info-tabs-container">
              <nav class="tabs-navigation nav">
-               <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#ecommerce-product-details-5-customer-reviews" type="button">Reviews (${fn:length(reviewList)})</button>
+               <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#ecommerce-product-details-5-customer-reviews" type="button">상품 리뷰 (${fn:length(reviewList)})</button>
              </nav>
 
              <div class="tab-content">
@@ -161,20 +163,73 @@
 		}
 
 		function renderPagination() {
-			const $pagination = $('#review-pagination');
-			$pagination.empty();
-			const totalPages = Math.ceil(filteredCards.length / itemsPerPage);
-			
-			for (let i = 1; i <= totalPages; i++) {
-				const $btn = $('<button>').text(i);
-				if (i === currentPage) $btn.addClass('active');
-				$btn.on('click', function () {
-					currentPage = i;
-					renderPage(currentPage);
-				});
-				$pagination.append($btn);
-			}
-		}
+	        const totalPages = Math.ceil(filteredCards.length / itemsPerPage);
+	        const pagination = $('#review-pagination');
+	        pagination.empty();
+
+	        if (totalPages <= 1) return; // 페이지가 하나면 표시 안 함
+
+	        const maxVisible = 3; // 현재 페이지 기준으로 보여줄 버튼 개수 (홀수 권장)
+	        let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+	        let end = start + maxVisible - 1;
+	        if (end > totalPages) {
+	            end = totalPages;
+	            start = Math.max(1, end - maxVisible + 1);
+	        }
+
+	        // ◀ 이전 버튼
+	        if (currentPage > 1) {
+	            pagination.append(
+	                $('<button>').text('◀ 이전').on('click', function() {
+	                    currentPage--;
+	                    renderPage(currentPage);
+	                })
+	            );
+	        }
+
+	        // 1페이지 표시
+	        if (start > 1) {
+	            pagination.append(
+	                $('<button>').text(1).on('click', function() {
+	                    currentPage = 1;
+	                    renderPage(currentPage);
+	                })
+	            );
+	            if (start > 2) pagination.append($('<span>').text('...'));
+	        }
+
+	        // 중간 페이지들
+	        for (let i = start; i <= end; i++) {
+	            const btn = $('<button>').text(i);
+	            if (i === currentPage) btn.addClass('active');
+	            btn.on('click', function() {
+	                currentPage = i;
+	                renderPage(currentPage);
+	            });
+	            pagination.append(btn);
+	        }
+
+	        // 마지막 페이지 표시
+	        if (end < totalPages) {
+	            if (end < totalPages - 1) pagination.append($('<span>').text('...'));
+	            pagination.append(
+	                $('<button>').text(totalPages).on('click', function() {
+	                    currentPage = totalPages;
+	                    renderPage(currentPage);
+	                })
+	            );
+	        }
+
+	        // 다음 ▶ 버튼
+	        if (currentPage < totalPages) {
+	            pagination.append(
+	                $('<button>').text('다음 ▶').on('click', function() {
+	                    currentPage++;
+	                    renderPage(currentPage);
+	                })
+	            );
+	        }
+	    }
 
 		function filterCards(keyword) {
 			filteredCards = cards.filter(card => {

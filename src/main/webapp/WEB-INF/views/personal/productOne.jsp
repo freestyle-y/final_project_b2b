@@ -26,9 +26,11 @@
     
     /* ✅ 리뷰 페이징 버튼 스타일 */
 	.pagination {
-	    text-align: center;
+	    display: flex;
+	    justify-content: center;
 	    margin-top: 20px;
 	}
+	
 	.pagination button {
 	    margin: 0 4px;
 	    padding: 6px 12px;
@@ -55,11 +57,11 @@
     <!-- Page Title -->
     <div class="page-title light-background">
       <div class="container d-lg-flex justify-content-between align-items-center">
-        <h1 class="mb-2 mb-lg-0">Product Details</h1>
+        <h1 class="mb-2 mb-lg-0">상품 상세</h1>
         <nav class="breadcrumbs">
           <ol>
             <li><a href="/personal/mainPage">Home</a></li>
-            <li class="current">Product Details</li>
+            <li class="current">상품 상세</li>
           </ol>
         </nav>
       </div>
@@ -170,7 +172,7 @@
 				<!-- Product Variants -->
 				<div class="variant-section">
 				  <div class="color-selection">
-				    <label class="variant-label" for="optionSelect">Options:</label><br/>
+				    <label class="variant-label" for="optionSelect">옵션:</label><br/>
 				
 				    <!-- 드롭다운 셀렉트 박스 -->
 				    <select id="optionSelect" name="option" class="form-select" style="max-width: 300px;">
@@ -200,7 +202,7 @@
               <!-- Purchase Options -->
               <div class="purchase-section">
                 <div class="quantity-control">
-                  <label class="control-label">Quantity:</label>
+                  <label class="control-label">수량:</label>
                   <div class="quantity-input-group">
                     <div class="quantity-selector">
                       <button class="quantity-btn decrease" type="button">
@@ -217,11 +219,11 @@
                 <div class="action-buttons">
                   <button id="addCartBtn" class="btn primary-action">
                     <i class="bi bi-bag-plus"></i>
-                    Add to Cart
+                    장바구니 담기
                   </button>
                   <button id="buyNowBtn" class="btn secondary-action">
                     <i class="bi bi-lightning"></i>
-                    Buy Now
+                    구매하기
                   </button>
                   
                   <button id="wishHeart" class="btn icon-action ${product.isWish ? 'red' : ''}" 
@@ -508,6 +510,7 @@
                     if (res.success) {
                     	heart.toggleClass('red'); // 빨간색 토글
                         icon.toggleClass('bi-heart bi-heart-fill'); // 아이콘 토글
+                        updateWishCount();
                     } else {
                         alert('찜 처리에 실패했습니다.');
                     }
@@ -580,6 +583,7 @@
                 success: function(res) {
                     // 정상 담겼으면 장바구니로 이동할지 물어보기
                     if (res.success) {
+						updateCartCount();
                         if (confirm('장바구니에 담겼습니다. 장바구니로 이동하시겠습니까?')) {
                             window.location.href = '/personal/shoppingCart'; // 장바구니 페이지 URL에 맞게 조정
                         }

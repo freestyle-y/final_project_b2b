@@ -27,6 +27,7 @@ import com.example.trade.dto.Product;
 import com.example.trade.dto.ProductRequest;
 import com.example.trade.dto.ProductRequestForm;
 import com.example.trade.dto.PurchaseListWrapper;
+import com.example.trade.service.OrderService;
 import com.example.trade.service.ProductService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -36,8 +37,10 @@ import lombok.extern.slf4j.Slf4j;
 public class ProductController {
 
 	private final ProductService productService;
-	public ProductController(ProductService productService) {
+	private final OrderService orderService;
+	public ProductController(ProductService productService, OrderService orderService) {
 		this.productService = productService;
+		this.orderService = orderService;
 	}
 	
 	// 상품 후기 페이지
@@ -66,9 +69,15 @@ public class ProductController {
 		String name = productService.selectName(loginUserName);
 		List<Map<String, Object>> wishList = productService.selectWishList(loginUserName);
 		//log.info(wishList.toString());
+		List<Order> orderList = orderService.getOrderListByuserId(loginUserName);
+		Map<String, List<Order>> orderGroupMap = orderList.stream()
+                .collect(Collectors.groupingBy(Order::getOrderNo, LinkedHashMap::new, Collectors.toList()));
+
+		
 		model.addAttribute("name", name);
 		model.addAttribute("loginUserName", loginUserName);
 		model.addAttribute("wishList", wishList);
+		model.addAttribute("orderGroupMap", orderGroupMap);
 		return "personal/wishList";
 	}
 	

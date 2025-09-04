@@ -73,13 +73,13 @@
 					<!-- Wishlist -->
 					<a href="/personal/wishList" class="header-action-btn d-none d-md-block">
 						<i class="bi bi-heart"></i>
-						<span class="badge">0</span>
+						<span class="badge" id="wishCount">0</span>
 					</a>
 
 					<!-- Cart -->
 					<a href="/personal/shoppingCart" class="header-action-btn">
 						<i class="bi bi-cart3"></i>
-						<span class="badge">3</span>
+						<span class="badge" id="cartCount">0</span>
 					</a>
 
 					<!-- Mobile Navigation Toggle -->
@@ -134,6 +134,29 @@
 		});
 	}
 
+	// 찜 개수 갱신
+	function updateWishCount() {
+		$.ajax({
+			url: "/personal/wishCount",
+			type: "GET",
+			success: function(count) {
+				$("#wishCount").text(count);
+			}
+		});
+	}
+	
+	// 장바구니 개수 갱신
+	function updateCartCount() {
+		$.ajax({
+			url: "/personal/cartCount",
+			type: "GET",
+			success: function(count) {
+				$("#cartCount").text(count);
+			}
+		});
+	}
+	
+	
 	function loadNotifications() {
 		$.ajax({
 			url: "/member/notificationList", // 알림 목록을 가져오는 API
@@ -203,9 +226,13 @@
 	$(document).ready(function() {
 		loadNotifications();
 		updateNotificationCount();
+		updateWishCount();
+		updateCartCount();
 		setInterval(function() {
 			loadNotifications();
 			updateNotificationCount();
+			updateWishCount();
+			updateCartCount();
 		}, 60000);
 	});
 </script>

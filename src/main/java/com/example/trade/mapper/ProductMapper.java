@@ -19,6 +19,11 @@ import com.example.trade.dto.ProductRequest;
 public interface ProductMapper {
 	// 개인 이름 조회
 	String selectName(String id);
+	// 찜 개수
+	int wishCount(String id);
+	// 장바구니 개수
+	int cartCount(String id);
+	
 	// 상품 후기 목록 보기
 	List<Map<String, Object>> reviewList();
 	// 상품 목록(찜 많은순)
