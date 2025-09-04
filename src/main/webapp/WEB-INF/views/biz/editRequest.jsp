@@ -91,21 +91,6 @@
             resize: vertical;
         }
 
-        /* Buttons & Checkboxes */
-        button {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 500;
-            transition: background-color 0.3s ease-in-out, transform 0.2s;
-        }
-
-        button:active {
-            transform: scale(0.98);
-        }
-
         /* File & Radio Styling */
         #requests {
             width: 100%;
@@ -118,17 +103,6 @@
 
         input[type="radio"] {
             margin-right: 8px;
-        }
-
-        /* Submit Button */
-        button[type="submit"] {
-            background-color: #2ecc71;
-            color: white;
-            align-self: flex-end;
-        }
-
-        button[type="submit"]:hover {
-            background-color: #27ae60;
         }
 
         .attachment-item a {
@@ -230,7 +204,11 @@
     </div>
 
     <br/>
-    <button type="submit">수정 완료</button>
+    <section class="register py-1">
+	   <div class="text-end">
+	      <button type="submit" class="btn btn-register btn-sm">수정 완료</button>
+	   </div>
+	</section>
 </form>
 
 </main>

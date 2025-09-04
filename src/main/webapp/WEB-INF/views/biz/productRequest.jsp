@@ -95,44 +95,6 @@
             resize: vertical;
         }
 
-        /* Buttons */
-        button {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 500;
-            transition: background-color 0.3s ease-in-out, transform 0.2s;
-        }
-
-        button:active {
-            transform: scale(0.98);
-        }
-
-        #addProductBtn {
-            background-color: #3498db;
-            color: white;
-            align-self: center;
-        }
-
-        #addProductBtn:hover {
-            background-color: #2980b9;
-        }
-
-        .remove-btn {
-            background-color: #e74c3c;
-            color: white;
-            font-size: 14px;
-            padding: 8px 12px;
-            margin-top: 10px;
-            align-self: flex-end; /* 오른쪽 아래 정렬 */
-        }
-
-        .remove-btn:hover {
-            background-color: #c0392b;
-        }
-
         /* File Input & Radio Buttons */
         input[type="file"] {
             display: block;
@@ -141,17 +103,6 @@
 
         input[type="radio"] {
             margin-right: 8px;
-        }
-
-        /* Submit Button */
-        button[type="submit"] {
-            background-color: #2ecc71;
-            color: white;
-            align-self: flex-end;
-        }
-
-        button[type="submit"]:hover {
-            background-color: #27ae60;
         }
     </style>
 </head>
@@ -175,7 +126,11 @@
         </div>
     </div>
 
-    <button type="button" id="addProductBtn">+ 상품 추가</button>
+	<section class="register py-1">
+	   <div class="text-center">
+	      <button type="button" id="addProductBtn" class="btn btn-register btn-sm">+ 상품 추가</button>
+	   </div>
+	</section>
 
     <br/><br/>
     
@@ -204,7 +159,11 @@
     </div>
 
     <br/>
-    <button type="submit">요청 제출</button>
+    <section class="register py-1">
+	   <div class="text-end">
+	      <button type="submit" class="btn btn-register btn-sm">요청 제출</button>
+	   </div>
+	</section>
 </form>
 
 </main>
@@ -237,7 +196,11 @@
 	                <div>옵션: <input type="text" name="productRequestList[\${index}].productOption" required></div>
 	                <div>수량: <input type="number" name="productRequestList[\${index}].productQuantity" min="1" required></div>
 	                <input type="hidden" name="productRequestList[\${index}].createUser" value="${loginUserName}" />
-	                <button type="button" class="remove-btn">삭제</button>
+	                <section class="register py-1">
+	             	   <div class="text-front">
+	             	      <button type="button" class="remove-btn btn btn-danger">삭제</button>
+	             	   </div>
+	             	</section>
 	            </div>
 	        `.replace(/\$\{index\}/g, index);
 	

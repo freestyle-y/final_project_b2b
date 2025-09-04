@@ -69,39 +69,6 @@
             text-decoration: underline;
         }
 
-        .button-area {
-            text-align: right;
-            margin-top: 30px;
-        }
-
-        .btn {
-            padding: 10px 18px;
-            margin-left: 10px;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-
-        .btn-edit {
-            background-color: #3b82f6;
-            color: white;
-        }
-
-        .btn-edit:hover {
-            background-color: #2563eb;
-        }
-
-        .btn-delete {
-            background-color: #ef4444;
-            color: white;
-        }
-
-        .btn-delete:hover {
-            background-color: #dc2626;
-        }
-
         .file-section {
             margin-top: 25px;
             font-size: 0.95rem;
@@ -163,8 +130,12 @@
     <c:set var="status" value="${productRequestOne[0].status}" />
     <div class="button-area">
         <c:if test="${status eq '확인전'}">
-            <button class="btn btn-edit" onclick="location.href='/biz/editRequest?requestNo=${param.requestNo}'">수정</button>
-            <button class="btn btn-delete" onclick="confirmDelete(${param.requestNo})">삭제</button>
+	        <section class="register py-1">
+			   <div class="d-flex justify-content-end align-items-center gap-2">
+			      <button class="btn btn-primary" onclick="location.href='/biz/editRequest?requestNo=${param.requestNo}'">수정</button>
+			      <button class="btn btn-danger" onclick="confirmDelete(${param.requestNo})">삭제</button>
+			   </div>
+			</section>
         </c:if>
     </div>
 </div>

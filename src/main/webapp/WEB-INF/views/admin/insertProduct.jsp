@@ -85,45 +85,6 @@
         max-width: 200px;
     }
 
-    button {
-        padding: 12px 25px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 15px;
-        font-weight: 500;
-        color: #fff;
-        transition: background-color 0.3s, transform 0.1s;
-    }
-    
-    button:active {
-        transform: scale(0.98);
-    }
-    
-    /* 각 버튼의 용도에 따른 색상 구분 */
-    button.add-btn {
-        background-color: #2ecc71;
-    }
-    
-    button.add-btn:hover {
-        background-color: #27ae60;
-    }
-
-    button[type="submit"] {
-        background-color: #3498db;
-        margin-top: 15px;
-        align-self: flex-end;
-    }
-    
-    button[type="submit"]:hover {
-        background-color: #2980b9;
-    }
-    
-    .centered-button {
-        display: flex;
-        justify-content: flex-end;
-    }
-
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
@@ -447,7 +408,11 @@
             </select>
             <div class="sub-section">
                 <input type="text" id="newMajorCategory" placeholder="새 대분류 입력">
-                <button type="button" class="add-btn" onclick="addCategory('Major')">대분류 추가</button>
+                <section class="register py-1">
+				   <div class="text-center">
+				      <button type="button" class="btn btn-register btn-xs" onclick="addCategory('Major')">대분류 추가</button>
+				   </div>
+				</section>
             </div>
         </div>
 
@@ -458,7 +423,11 @@
             </select>
             <div class="sub-section">
                 <input type="text" id="newMiddleCategory" placeholder="새 중분류 입력">
-                <button type="button" class="add-btn" onclick="addCategory('Middle')">중분류 추가</button>
+                <section class="register py-1">
+				   <div class="text-center">
+				      <button type="button" class="btn btn-register btn-xs" onclick="addCategory('Middle')">중분류 추가</button>
+				   </div>
+				</section>
             </div>
         </div>
 
@@ -469,7 +438,11 @@
             </select>
             <div class="sub-section">
                 <input type="text" id="newMinorCategory" placeholder="새 소분류 입력">
-                <button type="button" class="add-btn" onclick="addCategory('Minor')">소분류 추가</button>
+                <section class="register py-1">
+				   <div class="text-center">
+				      <button type="button" class="btn btn-register btn-xs" onclick="addCategory('Minor')">소분류 추가</button>
+				   </div>
+				</section>
             </div>
         </div>
 
@@ -499,18 +472,22 @@
             <input type="text" id="newOptionValue" placeholder="예: XXL">
         </div>
         
-        <div class="form-group centered-button">
-            <button type="button" class="add-btn" onclick="addOption()">옵션 추가</button>
-        </div>
-
+        <section class="register py-1">
+		   <div class="text-end">
+		      <button type="button" class="btn btn-register btn-xs" onclick="addOption()">옵션 추가</button>
+		   </div>
+		</section>
+				
         <div class="form-group">
             <label>금액:</label>
             <input type="number" name="price" required>
         </div>
 
-        <div class="form-group centered-button">
-            <button type="submit">상품 등록</button>
-        </div>
+		<section class="register py-1">
+		   <div class="text-end">
+		      <button type="submit" class="btn btn-register">상품 등록</button>
+		   </div>
+		</section>
     </form>
 </div>
 
