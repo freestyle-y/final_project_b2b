@@ -1,5 +1,6 @@
-<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>  
 <!DOCTYPE html>
 <html>
 <head>
@@ -110,7 +111,6 @@
 </head>
 <body>
 
-<!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
 
 <main class="main">
@@ -132,14 +132,15 @@
                 <tr>
                     <td>${item.productName}</td>
                     <td>${item.productOption}</td>
-                    <td>${item.productQuantity}</td>
+                    <td>
+                        <fmt:formatNumber value="${item.productQuantity}" type="number" />
+                    </td>
                     <td>${item.address} ${item.detail_address} (${item.postal})</td>
                 </tr>
             </c:forEach>
         </tbody>
     </table>
 
-    <!-- 첨부파일 목록 -->
     <c:set var="firstItem" value="${productRequestOne[0]}" />
     <div class="file-section">
         <strong>첨부파일:</strong>
@@ -159,7 +160,6 @@
         </c:choose>
     </div>
 
-    <!-- 수정 / 삭제 버튼 -->
     <c:set var="status" value="${productRequestOne[0].status}" />
     <div class="button-area">
         <c:if test="${status eq '확인전'}">
@@ -171,7 +171,6 @@
 
 </main>
 
-<!-- 공통 풋터 -->
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>
 
 <script>

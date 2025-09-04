@@ -8,7 +8,6 @@
   <%@ include file="/WEB-INF/common/head.jsp" %>
   <title>상품 요청 목록</title>
 
-  <!-- libs -->
   <link href="https://cdn.jsdelivr.net/gh/sunn-us/SUIT/fonts/static/woff2/SUIT.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
@@ -61,13 +60,9 @@
 
   <div class="table-wrap">
     <table id="productRequestTable" class="table table-striped table-hover table-bordered align-middle">
-      <!-- 열 폭을 colgroup으로 ‘한 번만’ 정의 → 헤더/바디 완전 일치 -->
       <colgroup>
         <col style="width:9ch;">
-        <col>                      <!-- 상품명(가변) -->
-        <col style="width:16ch;">  <!-- 옵션 -->
-        <col style="width:10ch;">  <!-- 수량 -->
-      </colgroup>
+        <col>                      <col style="width:16ch;">  <col style="width:10ch;">  </colgroup>
       <thead class="table-light">
         <tr>
           <th class="text-center">번호</th>
@@ -109,6 +104,11 @@
 <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
+  // 숫자를 쉼표 형식으로 변환하는 함수
+  function formatNumberWithCommas(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+  
   function visuallyGroupFirstColumn(api){
     let last = null;
     api.column(0, { page:'current' }).nodes().each(function(cell){
@@ -128,6 +128,21 @@
       else{ $td.removeClass('cell-empty').removeAttr('title'); }
     });
   }
+  
+  // 수량 컬럼의 숫자를 포맷팅하는 새로운 함수
+  function formatQuantityColumn(api) {
+      // 수량 컬럼 (네 번째 컬럼, 인덱스 3)의 모든 셀에 대해 반복
+      api.column(3, { page: 'current' }).nodes().each(function(cell) {
+          const $c = $(cell);
+          // 텍스트에서 쉼표를 제거하고 숫자로 변환
+          const quantity = parseInt($c.text().trim().replace(/,/g, ''), 10);
+          
+          if (!isNaN(quantity)) {
+              // 유효한 숫자일 경우, 포맷팅 함수를 적용
+              $c.text(formatNumberWithCommas(quantity));
+          }
+      });
+  }
 
   $(function(){
     const dt = $('#productRequestTable').DataTable({
@@ -143,10 +158,19 @@
         zeroRecords:'일치하는 데이터가 없습니다.',
         paginate:{ first:'처음', last:'마지막', next:'다음', previous:'이전' }
       },
-      drawCallback:function(){ const api=this.api(); visuallyGroupFirstColumn(api); highlightEmptyCells(api); },
+      drawCallback:function(){
+        const api=this.api();
+        visuallyGroupFirstColumn(api);
+        highlightEmptyCells(api);
+        // ✅ 페이지가 그려질 때마다 수량 포맷팅 함수 호출
+        formatQuantityColumn(api);
+      },
       initComplete:function(){
         const api=this.api();
-        visuallyGroupFirstColumn(api); highlightEmptyCells(api);
+        visuallyGroupFirstColumn(api);
+        highlightEmptyCells(api);
+        // ✅ DataTables 초기화가 완료되었을 때 수량 포맷팅 함수 호출
+        formatQuantityColumn(api);
         // 폰트 로딩 이후 1회 보정
         const adjust = () => api.columns.adjust();
         setTimeout(adjust,0);
