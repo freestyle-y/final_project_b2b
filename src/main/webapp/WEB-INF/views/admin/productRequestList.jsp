@@ -25,7 +25,7 @@ body{
 }
 
 /* 전체 폭 */
-.table-wrap{ max-width:1000px; margin:0 auto; }
+.table-wrap{ max-width:1200px; margin:0 auto; }
 
 #productRequestTable_wrapper .dataTables_scroll, #productRequestTable{
   border:1px solid var(--tbl-border); border-radius:10px; overflow:hidden; background:#fff; font-size:.92rem;
@@ -82,8 +82,11 @@ div.dataTables_scrollBody::-webkit-scrollbar-track{ background:#F3F4F6; }
 td.cell-empty{ background:var(--tbl-empty) !important; }
 
 /* 요청번호 시각 병합 */
-td.group-col.visually-merged{
-  border-top-color:transparent !important; color:transparent; text-shadow:none; pointer-events:none;
+td.group-col.visually-merged {
+  color: transparent !important;
+  text-shadow: none !important;
+  pointer-events: none !important;
+  user-select: none !important;
 }
 
 /* 열별 최소 폭 */
@@ -191,8 +194,9 @@ a{ color:#4c59ff; text-decoration:none; }
       const raw = $cell.data('value') ?? $cell.text().trim();
       $cell.removeClass('visually-merged').removeAttr('aria-hidden');
       if(lastVal !== null && String(raw) === String(lastVal)){
-        $cell.addClass('visually-merged').attr('aria-hidden','true');
-      }
+    	  $cell.addClass('visually-merged').attr('aria-hidden','true');
+    	  $cell.text(""); // 텍스트 자체 제거
+    	}
       lastVal = raw;
     });
   }
@@ -279,6 +283,57 @@ a{ color:#4c59ff; text-decoration:none; }
       }
     });
   });
+</script>
+<script>
+/* 1) 드롭다운 토글 버튼이면 type="button" 강제(폼 submit 방지) */
+(function ensureBtnType(){
+  const sel = [
+    'header#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"]',
+    '#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"]',
+    'header#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"]',
+    '#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"]'
+  ].join(',');
+
+  document.querySelectorAll(sel).forEach(btn => {
+    if (!btn.hasAttribute('type')) btn.setAttribute('type','button');
+  });
+})();
+
+/* 2) 캡처링 단계에서 좌표 기반 hit-test로 드롭다운 강제 토글 */
+(function forceDropdownToggle(){
+  const getBtns = () => Array.from(document.querySelectorAll(
+    'header#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"],' +
+    '#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"],' +
+    'header#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"],' +
+    '#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"]'
+  ));
+
+  function inside(rect, x, y){
+    return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+  }
+
+  // 캡처링 단계(true)로 등록 → 위에 뭔가 덮여 있어도 좌표로 판별해 토글
+  document.addEventListener('click', function(ev){
+    const x = ev.clientX, y = ev.clientY;
+    const btn = getBtns().find(b => inside(b.getBoundingClientRect(), x, y));
+    if (!btn) return;
+
+    // 기본 동작(폼 제출/포커스 등) 막고 Bootstrap 드롭다운을 직접 토글
+    ev.preventDefault();
+    // ev.stopPropagation(); // 필요시 주석 해제. 기본에선 버블링 유지.
+
+    try {
+      const dd = bootstrap.Dropdown.getOrCreateInstance(btn);
+      dd.toggle();
+    } catch (e) {
+      // bootstrap이 아직 로드 전이면 다음 틱에 재시도
+      setTimeout(() => {
+        const dd = bootstrap.Dropdown.getOrCreateInstance(btn);
+        dd.toggle();
+      }, 0);
+    }
+  }, true);
+})();
 </script>
 </body>
 </html>

@@ -4,13 +4,18 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<%@ include file="/WEB-INF/common/head.jsp"%>
 <title>견적 작성</title>
 
 <!-- 폰트/부트스트랩 -->
 <link href="https://cdn.jsdelivr.net/gh/sunn-us/SUIT/fonts/static/woff2/SUIT.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
 <style>
+   a {
+      text-decoration: none;
+      color: inherit;
+   }
   body {
     font-family:"SUIT",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Apple SD Gothic Neo",
                  "Noto Sans KR","Malgun Gothic",Arial,sans-serif;
@@ -18,7 +23,7 @@
   }
 
   .quotation-container {
-    max-width: 1000px;
+    max-width: 1200px;
     margin: 30px auto;
     background:#fff;
     border-radius: 12px;
@@ -66,28 +71,11 @@
     font-size:0.9rem;
   }
 
-  button[type="submit"] {
-    display:block;
-    margin:0 auto;
-    padding:12px 28px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border:none;
-    border-radius:30px;
-    color:#fff;
-    font-weight:600;
-    font-size:1rem;
-    transition: all .3s ease;
-    box-shadow:0 4px 15px rgba(0,0,0,0.2);
-  }
 
-  button[type="submit"]:hover {
-    transform:translateY(-2px);
-    box-shadow:0 6px 20px rgba(0,0,0,0.25);
-  }
 </style>
 </head>
 <body>
-
+<%@include file="/WEB-INF/common/header/header.jsp"%>
 <div class="quotation-container">
   <h2>견적 작성하기</h2>
 
@@ -136,9 +124,13 @@
       </tbody>
     </table>
 
-    <button type="submit">제출</button>
+	<section class="register py-1">
+		<div class="text-center">
+			<button type="submit" class="btn btn-register">제출</button>
+		</div>
+	</section>
   </form>
 </div>
-
+<%@include file="/WEB-INF/common/footer/footer.jsp"%>
 </body>
 </html>

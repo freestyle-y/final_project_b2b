@@ -15,7 +15,7 @@
   <style>
     :root{ --tbl-border:#E5E7EB; --tbl-head:#F9FAFB; --tbl-hover:#F3F4F6; --tbl-zebra:#FAFAFA; --tbl-empty:#FFF0F0; }
     body{ font-family:"SUIT",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",Arial,sans-serif; background:#fff; }
-    .table-wrap{ max-width:100%; margin:0 auto; }
+    .table-wrap{ max-width:1200px; margin:0 auto; }
 
     table#recallTable{
       table-layout:fixed;
@@ -72,7 +72,7 @@
     <table id="recallTable" class="table table-striped table-hover table-bordered align-middle m-0">
       <thead>
         <tr>
-          <th>컨테이너번호</th>
+          <th>번호</th>
           <th>위치</th>
           <th>구매자</th>
           <th>회사명</th>
@@ -160,5 +160,108 @@
     });
   });
 </script>
+<script>
+/* 1) 드롭다운 토글 버튼이면 type="button" 강제(폼 submit 방지) */
+(function ensureBtnType(){
+  const sel = [
+    'header#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"]',
+    '#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"]',
+    'header#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"]',
+    '#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"]'
+  ].join(',');
+
+  document.querySelectorAll(sel).forEach(btn => {
+    if (!btn.hasAttribute('type')) btn.setAttribute('type','button');
+  });
+})();
+
+/* 2) 캡처링 단계에서 좌표 기반 hit-test로 드롭다운 강제 토글 */
+(function forceDropdownToggle(){
+  const getBtns = () => Array.from(document.querySelectorAll(
+    'header#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"],' +
+    '#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"],' +
+    'header#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"],' +
+    '#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"]'
+  ));
+
+  function inside(rect, x, y){
+    return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+  }
+
+  // 캡처링 단계(true)로 등록 → 위에 뭔가 덮여 있어도 좌표로 판별해 토글
+  document.addEventListener('click', function(ev){
+    const x = ev.clientX, y = ev.clientY;
+    const btn = getBtns().find(b => inside(b.getBoundingClientRect(), x, y));
+    if (!btn) return;
+
+    // 기본 동작(폼 제출/포커스 등) 막고 Bootstrap 드롭다운을 직접 토글
+    ev.preventDefault();
+    // ev.stopPropagation(); // 필요시 주석 해제. 기본에선 버블링 유지.
+
+    try {
+      const dd = bootstrap.Dropdown.getOrCreateInstance(btn);
+      dd.toggle();
+    } catch (e) {
+      // bootstrap이 아직 로드 전이면 다음 틱에 재시도
+      setTimeout(() => {
+        const dd = bootstrap.Dropdown.getOrCreateInstance(btn);
+        dd.toggle();
+      }, 0);
+    }
+  }, true);
+})();
+</script>
+<script>
+/* 1) 드롭다운 토글 버튼이면 type="button" 강제(폼 submit 방지) */
+(function ensureBtnType(){
+  const sel = [
+    'header#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"]',
+    '#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"]',
+    'header#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"]',
+    '#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"]'
+  ].join(',');
+
+  document.querySelectorAll(sel).forEach(btn => {
+    if (!btn.hasAttribute('type')) btn.setAttribute('type','button');
+  });
+})();
+
+/* 2) 캡처링 단계에서 좌표 기반 hit-test로 드롭다운 강제 토글 */
+(function forceDropdownToggle(){
+  const getBtns = () => Array.from(document.querySelectorAll(
+    'header#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"],' +
+    '#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"],' +
+    'header#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"],' +
+    '#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"]'
+  ));
+
+  function inside(rect, x, y){
+    return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+  }
+
+  // 캡처링 단계(true)로 등록 → 위에 뭔가 덮여 있어도 좌표로 판별해 토글
+  document.addEventListener('click', function(ev){
+    const x = ev.clientX, y = ev.clientY;
+    const btn = getBtns().find(b => inside(b.getBoundingClientRect(), x, y));
+    if (!btn) return;
+
+    // 기본 동작(폼 제출/포커스 등) 막고 Bootstrap 드롭다운을 직접 토글
+    ev.preventDefault();
+    // ev.stopPropagation(); // 필요시 주석 해제. 기본에선 버블링 유지.
+
+    try {
+      const dd = bootstrap.Dropdown.getOrCreateInstance(btn);
+      dd.toggle();
+    } catch (e) {
+      // bootstrap이 아직 로드 전이면 다음 틱에 재시도
+      setTimeout(() => {
+        const dd = bootstrap.Dropdown.getOrCreateInstance(btn);
+        dd.toggle();
+      }, 0);
+    }
+  }, true);
+})();
+</script>
+
 </body>
 </html>

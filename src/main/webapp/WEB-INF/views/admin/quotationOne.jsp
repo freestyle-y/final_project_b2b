@@ -13,12 +13,16 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
+   a {
+      text-decoration: none;
+      color: inherit;
+   }
 :root{
   --tbl-border:#E5E7EB; --tbl-head:#F9FAFB; --tbl-hover:#F3F4F6; --tbl-zebra:#FAFAFA;
   --badge-green:#10b981; --badge-yellow:#f59e0b; --badge-red:#ef4444; --badge-gray:#6b7280;
 }
 body{ font-family:"SUIT",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",Arial,sans-serif; }
-.wrap{ max-width:1400px; margin:24px auto; padding:0 12px; }
+.wrap{ max-width:1300px; margin:24px auto; padding:0 12px; }
 
 .panel{ border:1px solid var(--tbl-border); border-radius:14px; background:#fff; box-shadow:0 2px 10px rgba(0,0,0,.03); overflow:hidden; }
 .panel-header{ padding:16px 20px; border-bottom:1px solid var(--tbl-border); display:flex; gap:12px; align-items:center; }
@@ -88,7 +92,7 @@ table.detail col:nth-child(9){ width:6%; }
             </c:if>
             <input type="hidden" name="quotationNo" value="${firstApprovedQuotationNo}"/>
             <input type="hidden" name="productRequestNo" value="${productRequestNo}"/>
-            <button type="submit" class="btn btn-primary btn-sm rounded-pill fw-bold">계약서 작성</button>
+            <button type="submit" class="btn btn-dark btn-sm rounded-pill fw-bold">계약서 작성</button>
           </form>
         </c:if>
       </div>
@@ -277,6 +281,57 @@ function deleteQuotation(quotationNo){
 function reWriteQuotation(productRequestNo){
   location.href = "${pageContext.request.contextPath}/admin/writeQuotationForm?productRequestNo=" + encodeURIComponent(productRequestNo);
 }
+</script>
+<script>
+/* 1) 드롭다운 토글 버튼이면 type="button" 강제(폼 submit 방지) */
+(function ensureBtnType(){
+  const sel = [
+    'header#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"]',
+    '#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"]',
+    'header#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"]',
+    '#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"]'
+  ].join(',');
+
+  document.querySelectorAll(sel).forEach(btn => {
+    if (!btn.hasAttribute('type')) btn.setAttribute('type','button');
+  });
+})();
+
+/* 2) 캡처링 단계에서 좌표 기반 hit-test로 드롭다운 강제 토글 */
+(function forceDropdownToggle(){
+  const getBtns = () => Array.from(document.querySelectorAll(
+    'header#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"],' +
+    '#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"],' +
+    'header#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"],' +
+    '#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"]'
+  ));
+
+  function inside(rect, x, y){
+    return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+  }
+
+  // 캡처링 단계(true)로 등록 → 위에 뭔가 덮여 있어도 좌표로 판별해 토글
+  document.addEventListener('click', function(ev){
+    const x = ev.clientX, y = ev.clientY;
+    const btn = getBtns().find(b => inside(b.getBoundingClientRect(), x, y));
+    if (!btn) return;
+
+    // 기본 동작(폼 제출/포커스 등) 막고 Bootstrap 드롭다운을 직접 토글
+    ev.preventDefault();
+    // ev.stopPropagation(); // 필요시 주석 해제. 기본에선 버블링 유지.
+
+    try {
+      const dd = bootstrap.Dropdown.getOrCreateInstance(btn);
+      dd.toggle();
+    } catch (e) {
+      // bootstrap이 아직 로드 전이면 다음 틱에 재시도
+      setTimeout(() => {
+        const dd = bootstrap.Dropdown.getOrCreateInstance(btn);
+        dd.toggle();
+      }, 0);
+    }
+  }, true);
+})();
 </script>
 </body>
 </html>

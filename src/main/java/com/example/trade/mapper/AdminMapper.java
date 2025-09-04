@@ -154,4 +154,7 @@ public interface AdminMapper {
 
 	// 배송 처리 후 기업 회원의 주문 조회
 	Map<String, Object> getBizDeliveryInfo(int contractDeliveryNo);
+
+	// 전체 회원 목록 조회
+	List<String> getAllUserIds();
 }

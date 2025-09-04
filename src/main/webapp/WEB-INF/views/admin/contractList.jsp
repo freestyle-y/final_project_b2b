@@ -98,6 +98,7 @@
   #contractTable tbody td:nth-child(4),
   #contractTable tbody td:nth-child(7){
     min-width:220px; text-align:right !important;
+    font-size: 0.75rem; font-weight: bold;
   }
 
   /* 날짜 최소 폭 */
@@ -210,55 +211,89 @@
 
       <div class="d-flex gap-2 mt-3">
         <button type="button" class="btn btn-outline-danger" onclick="deleteContract()">파기</button>
-        <button type="button" class="btn btn-primary" onclick="insertDownPayment()">계약금 입금 확인</button>
-        <button type="button" class="btn btn-primary" onclick="insertFinalPayment()">잔금 입금 확인</button>
-        <button type="button" class="btn btn-success" onclick="insertContainer()">컨테이너 상품 입력</button>
+        <button type="button" class="btn btn-dark" onclick="insertDownPayment()">계약금 입금 확인</button>
+        <button type="button" class="btn btn-dark" onclick="insertFinalPayment()">잔금 입금 확인</button>
+        <button type="button" class="btn btn-dark" onclick="insertContainer()">컨테이너 상품 입력</button>
       </div>
     </form>
   </div>
 </div>
 
 <script>
-  function getCheckedContract() {
-    const checkedItems = document.querySelectorAll("input[name='selectedContracts']:checked");
-    if (checkedItems.length === 0) { alert("계약을 선택하세요."); return null; }
-    if (checkedItems.length > 1) { alert("하나의 계약만 선택할 수 있습니다."); return null; }
-    return checkedItems[0];
-  }
+function getCheckedContract() {
+	  const checkedItems = document.querySelectorAll("input[name='selectedContracts']:checked");
+	  if (checkedItems.length === 0) { 
+	    alert("계약을 선택하세요."); 
+	    return null; 
+	  }
+	  if (checkedItems.length > 1) { 
+	    alert("하나의 계약만 선택할 수 있습니다."); 
+	    return null; 
+	  }
+	  return checkedItems[0];
+	}
 
-  function deleteContract() {
-    const checked = getCheckedContract(); if (!checked) return;
-    if (!confirm("정말 파기하시겠습니까?")) return;
+	function deleteContract() {
+	  const checked = getCheckedContract(); if (!checked) return;
+	  if (!confirm("정말 파기하시겠습니까?")) return;
 
-    const contractNo = checked.value;
-    const row = checked.closest("tr");
-    const quotationNo = row.querySelector(".quotationNo").value;
+	  const contractNo = checked.value;
+	  const row = checked.closest("tr");
+	  const quotationNo = row.querySelector(".quotationNo").value;
 
-    const form = document.getElementById("contractForm");
-    form.action = "/admin/deleteContract?quotationNo=" + quotationNo + "&contractNo=" + contractNo;
-    form.method = "post";
-    form.submit();
-  }
+	  const form = document.getElementById("contractForm");
+	  form.action = "/admin/deleteContract?quotationNo=" + quotationNo + "&contractNo=" + contractNo;
+	  form.method = "post";
+	  form.submit();
+	}
 
-  function insertDownPayment() {
-    const checked = getCheckedContract(); if (!checked) return;
-    const form = document.getElementById("contractForm");
-    form.action = "/admin/insertDownPayment?contractNo=" + checked.value;
-    form.method = "post"; form.submit();
-  }
+	function insertDownPayment() {
+	  const checked = getCheckedContract(); 
+	  if (!checked) return;
 
-  function insertFinalPayment() {
-    const checked = getCheckedContract(); if (!checked) return;
-    const form = document.getElementById("contractForm");
-    form.action = "/admin/insertFinalPayment?contractNo=" + checked.value;
-    form.method = "post"; form.submit();
-  }
+	  const row = checked.closest("tr");
+	  const statusCell = row.cells[4]; // 계약금 입금 상태 열
+	  const statusText = statusCell ? statusCell.innerText.trim() : "";
 
-  function insertContainer() {
-    const checked = document.querySelector("input[name='selectedContracts']:checked");
-    if(!checked) { alert("컨테이너에 입력할 상품을 선택하세요."); return; }
-    location.href = "/admin/insertContainer?contractNo=" + checked.value;
-  }
+	  if (statusText.includes("입금완료")) {
+	    alert("이미 계약금 입금이 완료된 계약입니다.");
+	    return;
+	  }
+
+	  const form = document.getElementById("contractForm");
+	  form.action = "/admin/insertDownPayment?contractNo=" + checked.value;
+	  form.method = "post"; 
+	  form.submit();
+	}
+
+	function insertFinalPayment() {
+	  const checked = getCheckedContract(); 
+	  if (!checked) return;
+
+	  const row = checked.closest("tr");
+	  const statusCell = row.cells[7]; // 잔금 입금 상태 열
+	  const statusText = statusCell ? statusCell.innerText.trim() : "";
+
+	  if (statusText.includes("입금완료")) {
+	    alert("이미 잔금 입금이 완료된 계약입니다.");
+	    return;
+	  }
+
+	  const form = document.getElementById("contractForm");
+	  form.action = "/admin/insertFinalPayment?contractNo=" + checked.value;
+	  form.method = "post"; 
+	  form.submit();
+	}
+
+	function insertContainer() {
+	  const checked = document.querySelector("input[name='selectedContracts']:checked");
+	  if(!checked) { 
+	    alert("컨테이너에 입력할 상품을 선택하세요."); 
+	    return; 
+	  }
+	  location.href = "/admin/insertContainer?contractNo=" + checked.value;
+	}
+
 </script>
 
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>
@@ -356,6 +391,57 @@
 
     table.columns.adjust().draw(false);
   });
+</script>
+<script>
+/* 1) 드롭다운 토글 버튼이면 type="button" 강제(폼 submit 방지) */
+(function ensureBtnType(){
+  const sel = [
+    'header#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"]',
+    '#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"]',
+    'header#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"]',
+    '#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"]'
+  ].join(',');
+
+  document.querySelectorAll(sel).forEach(btn => {
+    if (!btn.hasAttribute('type')) btn.setAttribute('type','button');
+  });
+})();
+
+/* 2) 캡처링 단계에서 좌표 기반 hit-test로 드롭다운 강제 토글 */
+(function forceDropdownToggle(){
+  const getBtns = () => Array.from(document.querySelectorAll(
+    'header#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"],' +
+    '#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"],' +
+    'header#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"],' +
+    '#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"]'
+  ));
+
+  function inside(rect, x, y){
+    return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+  }
+
+  // 캡처링 단계(true)로 등록 → 위에 뭔가 덮여 있어도 좌표로 판별해 토글
+  document.addEventListener('click', function(ev){
+    const x = ev.clientX, y = ev.clientY;
+    const btn = getBtns().find(b => inside(b.getBoundingClientRect(), x, y));
+    if (!btn) return;
+
+    // 기본 동작(폼 제출/포커스 등) 막고 Bootstrap 드롭다운을 직접 토글
+    ev.preventDefault();
+    // ev.stopPropagation(); // 필요시 주석 해제. 기본에선 버블링 유지.
+
+    try {
+      const dd = bootstrap.Dropdown.getOrCreateInstance(btn);
+      dd.toggle();
+    } catch (e) {
+      // bootstrap이 아직 로드 전이면 다음 틱에 재시도
+      setTimeout(() => {
+        const dd = bootstrap.Dropdown.getOrCreateInstance(btn);
+        dd.toggle();
+      }, 0);
+    }
+  }, true);
+})();
 </script>
 </body>
 </html>

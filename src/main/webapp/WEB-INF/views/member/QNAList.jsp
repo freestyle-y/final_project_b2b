@@ -49,7 +49,7 @@
 		<!-- 총 건수 / 문의 등록 페이지 / 검색 -->
 		<div class="board-tools">
 			<div class="board-total">총 ${page.totalCount}건</div>
-		    <a href="/member/QNAWrite" class="btn btn-primary btn-sm">
+		    <a href="/member/QNAWrite" class="btn btn-dark btn-sm">
 				<i class="bi bi-pencil-square"></i> 새 문의
 			</a>
 			<div class="board-search">

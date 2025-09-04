@@ -110,7 +110,29 @@ public class AdminService {
 		String username = principal.getName(); // 로그인한 관리자
 		board.setCreateUser(username);
 		board.setBoardCode("BC003"); // 공통 코드 공지사항으로 세팅
-		return adminMapper.insertNotice(board);
+		
+		// 공지 등록
+		int result = adminMapper.insertNotice(board);
+
+		if(result > 0) {
+			// 전체 회원 목록 조회
+			List<String> userIds = adminMapper.getAllUserIds();
+			// 회원별 알림 생성
+			for(String userId : userIds) {
+				Notification noti = new Notification();
+				noti.setTargetType("USER"); // 개별 회원 대상
+				noti.setTargetValue(userId); // 대상 회원 ID
+				noti.setNotificationType("NC001"); // 알림 유형: 공지
+				noti.setNotificationTitle(board.getBoardTitle());
+				noti.setNotificationContent("새로운 공지사항을 확인하세요.");
+				noti.setTargetUrl("/public/noticeOne?boardNo=" + board.getBoardNo());
+				noti.setImageUrl(null); // 필요 시 썸네일 등
+				noti.setCreateUser("system");
+				
+				adminMapper.insertNotification(noti);
+			}
+		}
+		return result;
 	}
 	
 	// 공지사항 수정

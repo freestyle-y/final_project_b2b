@@ -5,15 +5,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<%@ include file="/WEB-INF/common/head.jsp"%>
 <title>마이페이지 - NiceShop</title>
-
-<!-- Bootstrap and Custom CSS Files -->
-<link href="/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-<link href="/assets/vendor/aos/aos.css" rel="stylesheet">
-<link href="/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
-<link href="/assets/css/main.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<!-- Custom CSS for unified form design -->
 <style>
     /* 공통 스타일 */
     .register-container {
@@ -801,6 +794,57 @@ $(document).ready(function() {
         });
     });
 });
+
+                            /* 1) 드롭다운 토글 버튼이면 type="button" 강제(폼 submit 방지) */
+                            (function ensureBtnType(){
+                              const sel = [
+                                'header#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"]',
+                                '#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"]',
+                                'header#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"]',
+                                '#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"]'
+                              ].join(',');
+
+                              document.querySelectorAll(sel).forEach(btn => {
+                                if (!btn.hasAttribute('type')) btn.setAttribute('type','button');
+                              });
+                            })();
+
+                            /* 2) 캡처링 단계에서 좌표 기반 hit-test로 드롭다운 강제 토글 */
+                            (function forceDropdownToggle(){
+                              const getBtns = () => Array.from(document.querySelectorAll(
+                                'header#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"],' +
+                                '#header .account-dropdown > .header-action-btn[data-bs-toggle="dropdown"],' +
+                                'header#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"],' +
+                                '#header .alarm-dropdown   > .header-action-btn[data-bs-toggle="dropdown"]'
+                              ));
+
+                              function inside(rect, x, y){
+                                return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+                              }
+
+                              // 캡처링 단계(true)로 등록 → 위에 뭔가 덮여 있어도 좌표로 판별해 토글
+                              document.addEventListener('click', function(ev){
+                                const x = ev.clientX, y = ev.clientY;
+                                const btn = getBtns().find(b => inside(b.getBoundingClientRect(), x, y));
+                                if (!btn) return;
+
+                                // 기본 동작(폼 제출/포커스 등) 막고 Bootstrap 드롭다운을 직접 토글
+                                ev.preventDefault();
+                                // ev.stopPropagation(); // 필요시 주석 해제. 기본에선 버블링 유지.
+
+                                try {
+                                  const dd = bootstrap.Dropdown.getOrCreateInstance(btn);
+                                  dd.toggle();
+                                } catch (e) {
+                                  // bootstrap이 아직 로드 전이면 다음 틱에 재시도
+                                  setTimeout(() => {
+                                    const dd = bootstrap.Dropdown.getOrCreateInstance(btn);
+                                    dd.toggle();
+                                  }, 0);
+                                }
+                              }, true);
+                            })();
+
 </script>
 
 <!-- 필수 스크립트들을 마지막에 로드 -->
