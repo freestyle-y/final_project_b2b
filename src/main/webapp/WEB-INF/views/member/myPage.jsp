@@ -677,6 +677,10 @@ $(document).ready(function() {
                 alert("전화번호는 010-1234-5678 형식으로 입력해주세요.");
                 return;
             }
+            if(currentField === "name" && !/^[가-힣a-zA-Z\s]+$/.test(value)){
+                alert("이름은 한글과 영문만 입력 가능합니다. (숫자/특수문자 불가)");
+                return;
+            }
 
             let data = {};
             data[currentField] = value;
@@ -725,31 +729,33 @@ $(document).ready(function() {
     // -------------------------------
     // 4️⃣ 소셜 연동
     // -------------------------------
-    window.openSocialModal = function() {
-        const isKakaoLinked = <c:out value="${isKakaoLinked}"/>;
-        const isNaverLinked = <c:out value="${isNaverLinked}"/>;
-        if (isKakaoLinked && isNaverLinked) {
-            alert("이미 2개의 소셜 계정이 연동되어 있습니다.");
-            return;
-        }
-        $("#socialModal").css("display", "flex"); 
-    }
-    window.linkSocial = function(provider) { location.href = "/api/social/link/" + provider; }
-    
-    window.confirmUnlink = function(provider) {
-        if (confirm(provider + " 연동을 해제하시겠습니까?")) {
-            unlinkSocial(provider);
-        }
-    }
-    
-    window.unlinkSocial = function(provider) {
-        $.ajax({
-            url: "/api/social/unlink/" + provider,
-            type: "DELETE",
-            success: function(res){ alert(res); location.reload(); },
-            error: function(){ alert("연동 해제 실패"); }
-        });
-    }
+    <c:if test="${user.customerCategory == 'CC003'}">
+	    window.openSocialModal = function() {
+	        const isKakaoLinked = <c:out value="${isKakaoLinked}"/>;
+	        const isNaverLinked = <c:out value="${isNaverLinked}"/>;
+	        if (isKakaoLinked && isNaverLinked) {
+	            alert("이미 2개의 소셜 계정이 연동되어 있습니다.");
+	            return;
+	        }
+	        $("#socialModal").css("display", "flex"); 
+	    }
+	    window.linkSocial = function(provider) { location.href = "/api/social/link/" + provider; }
+	    
+	    window.confirmUnlink = function(provider) {
+	        if (confirm(provider + " 연동을 해제하시겠습니까?")) {
+	            unlinkSocial(provider);
+	        }
+	    }
+	    
+	    window.unlinkSocial = function(provider) {
+	        $.ajax({
+	            url: "/api/social/unlink/" + provider,
+	            type: "DELETE",
+	            success: function(res){ alert(res); location.reload(); },
+	            error: function(){ alert("연동 해제 실패"); }
+	        });
+	    }
+    </c:if>
     
     
 
