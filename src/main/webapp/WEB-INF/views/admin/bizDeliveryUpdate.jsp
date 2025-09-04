@@ -35,7 +35,7 @@
 					<div class="contact-form-wrapper">
 						<h2 class="text-center mb-4">배송 처리(기업)</h2>
 						
-							<form action="/admin/bizDeliveryUpdate" method="post">
+							<form id="bizDeliveryForm" action="/admin/bizDeliveryUpdate" method="post">
 							<input type="hidden" name="containerNo" value="${containerNo}">
 							<div class="row g-3">
 								<!-- 택배사 입력 -->
@@ -43,7 +43,7 @@
 									<div class="form-group">
 										<div class="input-with-icon">
 											<i class="bi bi-text-left"></i>
-											<input type="text" class="form-control" name="deliveryCompany" id="deliveryCompany" placeholder="택배사 입력" required>
+											<input type="text" class="form-control" name="deliveryCompany" id="deliveryCompany" placeholder="택배사 입력">
 										</div>
 									</div>
 								</div>
@@ -52,7 +52,7 @@
 									<div class="form-group">
 										<div class="input-with-icon">
 											<i class="bi bi-text-left"></i>
-											<input type="text" class="form-control" name="trackingNo" id="trackingNo" placeholder="운송장 번호 입력" required>
+											<input type="text" class="form-control" name="trackingNo" id="trackingNo" placeholder="운송장 번호 입력">
 										</div>
 									</div>
 								</div>
@@ -75,6 +75,39 @@
 
 <!-- 공통 풋터 -->
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>
-   
+
+<script>
+	// 유효성 검사
+	document.getElementById("bizDeliveryForm").addEventListener("submit", function(e) {
+		const company = document.getElementById("deliveryCompany").value.trim();
+		const trackingNo = document.getElementById("trackingNo").value.trim();
+
+		// 택배사 입력 확인
+		if(!company) {
+			e.preventDefault();
+			alert("택배사를 입력해주세요.");
+			document.getElementById("deliveryCompany").focus();
+			return;
+		}
+
+		// 운송장 번호 입력 확인
+		if(!trackingNo) {
+			e.preventDefault();
+			alert("운송장 번호를 입력해주세요.");
+			document.getElementById("trackingNo").focus();
+			return;
+		}
+
+		// 운송장 번호 숫자만 허용
+		const numberRegex = /^[0-9]+$/;
+		if(!numberRegex.test(trackingNo)) {
+			e.preventDefault();
+			alert("운송장 번호는 숫자만 입력 가능합니다.");
+			document.getElementById("trackingNo").focus();
+			return;
+		}
+	});
+</script>
+
 </body>
 </html>

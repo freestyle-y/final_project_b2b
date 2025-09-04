@@ -43,7 +43,7 @@
 						<h2 class="text-center mb-4">1:1 문의 등록</h2>
 						
 						<!-- 문의 등록 폼 -->
-						<form action="/member/QNAWrite" method="post">
+						<form id="qnaForm" action="/member/QNAWrite" method="post">
 						<!-- hidden 값 : 구분 코드(BC002) -->
        					<input type="hidden" name="boardCode" value="BC002">
 							<div class="row g-3">
@@ -52,7 +52,7 @@
 									<div class="form-group">
 										<div class="input-with-icon">
 											<i class="bi bi-text-left"></i>
-											<input type="text" class="form-control" name="boardTitle" placeholder="제목" required>
+											<input type="text" class="form-control" id="boardTitle" name="boardTitle" placeholder="제목">
 										</div>
 									</div>
 								</div>
@@ -91,7 +91,7 @@
 <!-- Froala Language Pack (Korean) -->
 <script src="https://cdn.jsdelivr.net/npm/froala-editor@4.0.15/js/languages/ko.js"></script>
 <script>
-	new FroalaEditor('#boardContent', {
+	const editor = new FroalaEditor('#boardContent', {
 		height : 500,
 		language : 'ko',
 		placeholderText : '문의 내용을 입력하세요.',
@@ -102,6 +102,26 @@
 		// Enter → <br> / Shift + Enter → <p>
 		enter: FroalaEditor.ENTER_BR,
 		shiftEnter: FroalaEditor.ENTER_P
+	});
+	
+	// 유효성 검사
+	document.getElementById("qnaForm").addEventListener("submit", function(e) {
+		const title = document.getElementById("boardTitle").value.trim();
+		const content = editor.html.get().replace(/<p><br><\/p>/g, "").trim(); // 빈값 처리
+
+		if(!title) {
+			e.preventDefault();
+			alert("제목을 입력해주세요.");
+			document.getElementById("boardTitle").focus();
+			return;
+		}
+
+		if(!content || content === "<br>") {
+			e.preventDefault();
+			alert("내용을 입력해주세요.");
+			editor.events.focus(); // 에디터 포커스
+			return;
+		}
 	});
 </script>
 

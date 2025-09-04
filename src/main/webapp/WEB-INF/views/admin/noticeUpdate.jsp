@@ -37,7 +37,7 @@
 					<div class="contact-form-wrapper">
 						<h2 class="text-center mb-4">공지사항 수정</h2>
 							<!-- 공지사항 수정 폼 -->
-							<form action="/admin/noticeUpdate" method="post">
+							<form id="noticeForm" action="/admin/noticeUpdate" method="post">
 							<!-- boardNo hidden -->
     						<input type="hidden" name="boardNo" value="${noticeOne.boardNo}">
 							<div class="row g-3">
@@ -46,7 +46,7 @@
 									<div class="form-group">
 										<div class="input-with-icon">
 											<i class="bi bi-text-left"></i>
-											<input type="text" class="form-control" name="boardTitle" value="${noticeOne.boardTitle}" placeholder="제목" required>
+											<input type="text" class="form-control" id="boardTitle" name="boardTitle" value="${noticeOne.boardTitle}" placeholder="제목">
 										</div>
 									</div>
 								</div>
@@ -61,7 +61,7 @@
 								<!-- 사용 여부 -->
 								<div class="col-md-12">
 									<div class="form-group">
-										<select id="useStatus" name="useStatus" class="form-select" required>
+										<select id="useStatus" name="useStatus" class="form-select">
 											<option value="Y" ${noticeOne.useStatus == 'Y' ? 'selected' : ''}>사용 여부 : 사용</option>
 											<option value="N" ${noticeOne.useStatus == 'N' ? 'selected' : ''}>사용 여부 : 미사용</option>
 										</select>
@@ -92,7 +92,7 @@
 <!-- Froala Language Pack (Korean) -->
 <script src="https://cdn.jsdelivr.net/npm/froala-editor@4.0.15/js/languages/ko.js"></script>
 <script>
-	new FroalaEditor('#boardContent', {
+	const editor = new FroalaEditor('#boardContent', {
 		height : 500,
 		language : 'ko',
 		placeholderText : '공지사항 내용을 입력하세요.',
@@ -103,6 +103,26 @@
 		// Enter → <br> / Shift + Enter → <p>
 		enter: FroalaEditor.ENTER_BR,
 		shiftEnter: FroalaEditor.ENTER_P
+	});
+	
+	// 유효성 검사
+	document.getElementById("noticeForm").addEventListener("submit", function(e) {
+		const title = document.getElementById("boardTitle").value.trim();
+		const content = editor.html.get().replace(/<p><br><\/p>/g, "").trim(); // 빈값 처리
+
+		if(!title) {
+			e.preventDefault();
+			alert("제목을 입력해주세요.");
+			document.getElementById("boardTitle").focus();
+			return;
+		}
+
+		if(!content || content === "<br>") {
+			e.preventDefault();
+			alert("내용을 입력해주세요.");
+			editor.events.focus(); // 에디터 포커스
+			return;
+		}
 	});
 </script>
 
