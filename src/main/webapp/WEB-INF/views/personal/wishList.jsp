@@ -77,7 +77,7 @@
 	
 	// 페이징 구현
 	$(document).ready(function () {
-		const itemsPerPage = 3; // 한 페이지에 표시할 아이템 수
+		const itemsPerPage = 4; // 한 페이지에 표시할 아이템 수
 		let currentPage = 1;
 
 		const $wishlistGrid = $('.wishlist-grid');
@@ -92,74 +92,90 @@
 			renderPagination();
 		}
 
-		function renderPagination() {
-			const totalPages = Math.ceil(cards.length / itemsPerPage);
-			const pagination = $('#wishlist-pagination');
-			pagination.empty();
+	    function renderPagination() {
+	        const totalPages = Math.ceil(cards.length / itemsPerPage);
+	        const pagination = $('#pagination');
+	        pagination.empty();
 
-			if (totalPages <= 1) return;
+	        // <ul> 생성
+	        const ul = $('<ul>').addClass('justify-content-center');
 
-			const maxVisible = 3;
-			let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
-			let end = start + maxVisible - 1;
-			if (end > totalPages) {
-				end = totalPages;
-				start = Math.max(1, end - maxVisible + 1);
-			}
+	        const maxVisible = 3;
+	        let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+	        let end = start + maxVisible - 1;
 
-			// '◀ 이전' 버튼
-			if (currentPage > 1) {
-				pagination.append(
-					$('<button>').text('◀ 이전').on('click', function() {
-						currentPage--;
-						renderPage(currentPage);
-					})
-				);
-			}
+	        if (end > totalPages) {
+	            end = totalPages;
+	            start = Math.max(1, end - maxVisible + 1);
+	        }
 
-			// 첫 페이지 버튼
-			if (start > 1) {
-				pagination.append(
-					$('<button>').text('1').on('click', function() {
-						currentPage = 1;
-						renderPage(currentPage);
-					})
-				);
-				if (start > 2) pagination.append($('<span>').text('...'));
-			}
+	        // ◀ 이전 버튼
+	        if (currentPage > 1) {
+	            const li = $('<li>').append(
+	                $('<a href="#">').html('<i class="bi bi-chevron-left"></i>').on('click', function (e) {
+	                    e.preventDefault();
+	                    currentPage--;
+	                    renderPage(currentPage);
+	                })
+	            );
+	            ul.append(li);
+	        }
 
-			// 중간 페이지 버튼들
-			for (let i = start; i <= end; i++) {
-				const btn = $('<button>').text(i);
-				if (i === currentPage) btn.addClass('active');
-				btn.on('click', function() {
-					currentPage = i;
-					renderPage(currentPage);
-				});
-				pagination.append(btn);
-			}
+	        // 1페이지 버튼
+	        if (start > 1) {
+	            const li = $('<li>').append(
+	                $('<a href="#">').text(1).on('click', function (e) {
+	                    e.preventDefault();
+	                    currentPage = 1;
+	                    renderPage(currentPage);
+	                })
+	            );
+	            ul.append(li);
+	            if (start > 2) {
+	                ul.append($('<li>').html('<span>...</span>'));
+	            }
+	        }
 
-			// 마지막 페이지 버튼
-			if (end < totalPages) {
-				if (end < totalPages - 1) pagination.append($('<span>').text('...'));
-				pagination.append(
-					$('<button>').text(totalPages).on('click', function() {
-						currentPage = totalPages;
-						renderPage(currentPage);
-					})
-				);
-			}
+	        // 중간 페이지 버튼들
+	        for (let i = start; i <= end; i++) {
+	            const a = $('<a href="#">').text(i).on('click', function (e) {
+	                e.preventDefault();
+	                currentPage = i;
+	                renderPage(currentPage);
+	            });
+	            if (i === currentPage) a.addClass('active');
+	            ul.append($('<li>').append(a));
+	        }
 
-			// '다음 ▶' 버튼
-			if (currentPage < totalPages) {
-				pagination.append(
-					$('<button>').text('다음 ▶').on('click', function() {
-						currentPage++;
-						renderPage(currentPage);
-					})
-				);
-			}
-		}
+	        // 마지막 페이지 버튼
+	        if (end < totalPages) {
+	            if (end < totalPages - 1) {
+	                ul.append($('<li>').html('<span>...</span>'));
+	            }
+	            const li = $('<li>').append(
+	                $('<a href="#">').text(totalPages).on('click', function (e) {
+	                    e.preventDefault();
+	                    currentPage = totalPages;
+	                    renderPage(currentPage);
+	                })
+	            );
+	            ul.append(li);
+	        }
+
+	        // ▶ 다음 버튼
+	        if (currentPage < totalPages) {
+	            const li = $('<li>').append(
+	                $('<a href="#">').html('<i class="bi bi-chevron-right"></i>').on('click', function (e) {
+	                    e.preventDefault();
+	                    currentPage++;
+	                    renderPage(currentPage);
+	                })
+	            );
+	            ul.append(li);
+	        }
+
+	        pagination.append($('<nav>').append(ul));
+	    }
 
 		// 초기 페이지 렌더링
 		renderPage(currentPage);
@@ -280,7 +296,7 @@
 					    </div>
 					</c:forEach>
                   </div>
-                  <div id="wishlist-pagination" class="pagination"></div>
+                  <div id="pagination" class="category-pagination justify-content-center mt-4"></div>
                 </div>
               </div>
             </div>

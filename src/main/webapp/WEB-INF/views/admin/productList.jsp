@@ -8,28 +8,12 @@
 <%@ include file="/WEB-INF/common/head.jsp"%>
 <title>상품 목록 관리</title>
 <style>
-	.pagination {
-	    margin-top: 20px;
-	    text-align: center;
-	    display: block;
-	    width: 100%;
-	    margin-left: 10%;
-	}
-	
-	.pagination button {
-	    margin: 0 3px;
-	    padding: 6px 12px;
-	    border: 1px solid #ccc;
-	    border-radius: 5px;
-	    background-color: #fff;
-	    cursor: pointer;
-	}
-
-	.pagination button.active {
-	    background-color: #333;
-	    color: #fff;
-	    border-color: #333;
-	}
+#pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+    transform: translateX(160px);
+}
 </style>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -116,20 +100,89 @@ $(function () {
 	}
 
     // 페이징 버튼 렌더링
-    function renderPagination() {
+        function renderPagination() {
         const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
         const pagination = $('#pagination');
         pagination.empty();
 
-        for(let i = 1; i <= totalPages; i++) {
-            const btn = $('<button>').text(i);
-            if(i === currentPage) btn.addClass('active');
-            btn.on('click', function() {
+     // <ul> 생성
+        const ul = $('<ul>').addClass('justify-content-center');
+
+        const maxVisible = 3;
+        let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+        let end = start + maxVisible - 1;
+
+        if (end > totalPages) {
+            end = totalPages;
+            start = Math.max(1, end - maxVisible + 1);
+        }
+
+        // ◀ 이전 버튼
+        if (currentPage > 1) {
+            const li = $('<li>').append(
+                $('<a href="#">').html('<i class="bi bi-chevron-left"></i>').on('click', function (e) {
+                    e.preventDefault();
+                    currentPage--;
+                    renderPage(currentPage);
+                })
+            );
+            ul.append(li);
+        }
+
+        // 1페이지 버튼
+        if (start > 1) {
+            const li = $('<li>').append(
+                $('<a href="#">').text(1).on('click', function (e) {
+                    e.preventDefault();
+                    currentPage = 1;
+                    renderPage(currentPage);
+                })
+            );
+            ul.append(li);
+            if (start > 2) {
+                ul.append($('<li>').html('<span>...</span>'));
+            }
+        }
+
+        // 중간 페이지 버튼들
+        for (let i = start; i <= end; i++) {
+            const a = $('<a href="#">').text(i).on('click', function (e) {
+                e.preventDefault();
                 currentPage = i;
                 renderPage(currentPage);
             });
-            pagination.append(btn);
+            if (i === currentPage) a.addClass('active');
+            ul.append($('<li>').append(a));
         }
+
+        // 마지막 페이지 버튼
+        if (end < totalPages) {
+            if (end < totalPages - 1) {
+                ul.append($('<li>').html('<span>...</span>'));
+            }
+            const li = $('<li>').append(
+                $('<a href="#">').text(totalPages).on('click', function (e) {
+                    e.preventDefault();
+                    currentPage = totalPages;
+                    renderPage(currentPage);
+                })
+            );
+            ul.append(li);
+        }
+
+        // ▶ 다음 버튼
+        if (currentPage < totalPages) {
+            const li = $('<li>').append(
+                $('<a href="#">').html('<i class="bi bi-chevron-right"></i>').on('click', function (e) {
+                    e.preventDefault();
+                    currentPage++;
+                    renderPage(currentPage);
+                })
+            );
+            ul.append(li);
+        }
+
+        pagination.append($('<nav>').append(ul));
     }
 
     // 검색 필터
@@ -392,7 +445,7 @@ $(function () {
 	<!-- Scroll Top -->
   	<a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 	
-	<div class="pagination" id="pagination"></div>
+	<div id="pagination" class="category-pagination justify-content-center mt-4"></div>
 </main>
 
 <!-- 공통 풋터 -->

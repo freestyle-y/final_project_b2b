@@ -36,25 +36,6 @@
             font-weight: 700;
         }
 
-        #search-input {
-            display: block;
-            margin: 20px auto;
-            padding: 12px;
-            width: 80%;
-            max-width: 400px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            font-size: 1em;
-            box-sizing: border-box;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-        
-        #search-input:focus {
-            outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 8px rgba(52, 152, 219, 0.2);
-        }
-
         .inventory-list-container {
             padding: 0 20px;
         }
@@ -133,31 +114,6 @@
             color: #e74c3c;
         }
 
-        /* 페이징 버튼 스타일 */
-        .pagination {
-            text-align: center;
-            margin-top: 20px;
-            user-select: none;
-            padding-bottom: 20px;
-        }
-        .pagination button {
-            margin: 0 4px;
-            padding: 8px 14px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            background: #fff;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-        }
-        .pagination button.active {
-            background-color: #333;
-            color: white;
-            border-color: #333;
-        }
-        .pagination button:hover:not(.active) {
-            background-color: #f0f0f0;
-        }
 
         /* 모달 스타일 */
         .modal {
@@ -298,21 +254,89 @@
             }
 
             function renderPagination() {
-                $('#pagination').remove();
-                const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
-                if (totalPages <= 1) return;
+            	const totalPages = Math.ceil(filteredItems.length  / itemsPerPage);
+                const pagination = $('#pagination');
+                pagination.empty();
+                
 
-                const $pagination = $('<div id="pagination" class="pagination"></div>');
-                for (let i = 1; i <= totalPages; i++) {
-                    const $btn = $('<button>').text(i);
-                    if (i === currentPage) $btn.addClass('active');
-                    $btn.on('click', function () {
+             // <ul> 생성
+                const ul = $('<ul>').addClass('justify-content-center');
+
+                const maxVisible = 3;
+                let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+                let end = start + maxVisible - 1;
+
+                if (end > totalPages) {
+                    end = totalPages;
+                    start = Math.max(1, end - maxVisible + 1);
+                }
+
+                // ◀ 이전 버튼
+                if (currentPage > 1) {
+                    const li = $('<li>').append(
+                        $('<a href="#">').html('<i class="bi bi-chevron-left"></i>').on('click', function (e) {
+                            e.preventDefault();
+                            currentPage--;
+                            renderPage(currentPage);
+                        })
+                    );
+                    ul.append(li);
+                }
+
+                // 1페이지 버튼
+                if (start > 1) {
+                    const li = $('<li>').append(
+                        $('<a href="#">').text(1).on('click', function (e) {
+                            e.preventDefault();
+                            currentPage = 1;
+                            renderPage(currentPage);
+                        })
+                    );
+                    ul.append(li);
+                    if (start > 2) {
+                        ul.append($('<li>').html('<span>...</span>'));
+                    }
+                }
+
+                // 중간 페이지 버튼들
+                for (let i = start; i <= end; i++) {
+                    const a = $('<a href="#">').text(i).on('click', function (e) {
+                        e.preventDefault();
                         currentPage = i;
                         renderPage(currentPage);
                     });
-                    $pagination.append($btn);
+                    if (i === currentPage) a.addClass('active');
+                    ul.append($('<li>').append(a));
                 }
-                container.after($pagination);
+
+                // 마지막 페이지 버튼
+                if (end < totalPages) {
+                    if (end < totalPages - 1) {
+                        ul.append($('<li>').html('<span>...</span>'));
+                    }
+                    const li = $('<li>').append(
+                        $('<a href="#">').text(totalPages).on('click', function (e) {
+                            e.preventDefault();
+                            currentPage = totalPages;
+                            renderPage(currentPage);
+                        })
+                    );
+                    ul.append(li);
+                }
+
+                // ▶ 다음 버튼
+                if (currentPage < totalPages) {
+                    const li = $('<li>').append(
+                        $('<a href="#">').html('<i class="bi bi-chevron-right"></i>').on('click', function (e) {
+                            e.preventDefault();
+                            currentPage++;
+                            renderPage(currentPage);
+                        })
+                    );
+                    ul.append(li);
+                }
+
+                pagination.append($('<nav>').append(ul));
             }
 
             function filterItems(keyword) {
@@ -339,7 +363,20 @@
 <div class="container">
     <h1>재고 관리</h1>
     
-    <input type="text" id="search-input" placeholder="상품명 검색...">
+    <div class="header mb-4">
+		<div class="row justify-content-center">
+			<div class="col-md-3 col-lg-3">
+				<div class="search-form">
+					<div class="input-group">
+						<input type="text" class="form-control" id="search-input" placeholder="상품 검색">
+						<button class="btn" type="button">
+							<i class="bi bi-search"></i>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
     <div id="warehouseModal" class="modal">
         <div class="modal-content">
@@ -378,6 +415,8 @@
         </c:forEach>
     </div>
 </div>
+<div id="pagination" class="category-pagination justify-content-center mt-4"></div>
+
 
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>
 

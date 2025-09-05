@@ -11,40 +11,6 @@
 <!-- Font Awesome for star icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-<style>
-	/* 검색창 스타일 */
-	#search-input {
-		display: block;
-		margin: 0 auto 30px auto;
-		padding: 10px;
-		width: 300px;
-		border-radius: 6px;
-		border: 1px solid #ccc;
-		font-size: 1em;
-	}
-
-	.pagination {
-	    margin-top: 20px;
-	    display: flex;
-	    justify-content: center;
-	    gap: 5px;
-	}
-
-	.pagination button {
-		margin: 0 4px;
-		padding: 6px 12px;
-		border-radius: 5px;
-		border: 1px solid #ccc;
-		background: #fff;
-		cursor: pointer;
-		font-size: 1em;
-	}
-	.pagination button.active {
-		background-color: #333;
-		color: white;
-		border-color: #333;
-	}
-</style>
 </head>
 <body>
 
@@ -68,7 +34,22 @@
                <div class="tab-pane fade show active" id="ecommerce-product-details-5-customer-reviews">
                  <div class="reviews-content">
 
-                   <div class="customer-reviews-list">     
+                   <div class="customer-reviews-list">    
+	                   <div class="header sticky-top mb-4">
+						<div class="row justify-content-center">
+							<div class="col-md-3 col-lg-3">
+								<div class="search-form">
+									<div class="input-group">
+										<input type="text" class="form-control" id="search-input" placeholder="상품 검색">
+										<button class="btn" type="button">
+											<i class="bi bi-search"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>  
+					
                      <div id="review-list">
 				      <c:forEach var="item" items="${reviewList}">
 				        <div class="review-card" data-grade="${item.grade}">
@@ -125,7 +106,7 @@
                  </div>
                </div>
                <!-- ✅ 페이지네이션 버튼 영역 -->
-			  <div id="review-pagination" class="pagination"></div>
+			  <div id="pagination" class="category-pagination justify-content-center mt-4"></div>
              </div>
            </div>
          </div>
@@ -164,14 +145,16 @@
 
 		function renderPagination() {
 	        const totalPages = Math.ceil(filteredCards.length / itemsPerPage);
-	        const pagination = $('#review-pagination');
+	        const pagination = $('#pagination');
 	        pagination.empty();
 
-	        if (totalPages <= 1) return; // 페이지가 하나면 표시 안 함
+	        // <ul> 생성
+	        const ul = $('<ul>').addClass('justify-content-center');
 
-	        const maxVisible = 3; // 현재 페이지 기준으로 보여줄 버튼 개수 (홀수 권장)
+	        const maxVisible = 3;
 	        let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
 	        let end = start + maxVisible - 1;
+
 	        if (end > totalPages) {
 	            end = totalPages;
 	            start = Math.max(1, end - maxVisible + 1);
@@ -179,56 +162,70 @@
 
 	        // ◀ 이전 버튼
 	        if (currentPage > 1) {
-	            pagination.append(
-	                $('<button>').text('◀ 이전').on('click', function() {
+	            const li = $('<li>').append(
+	                $('<a href="#">').html('<i class="bi bi-chevron-left"></i>').on('click', function (e) {
+	                    e.preventDefault();
 	                    currentPage--;
 	                    renderPage(currentPage);
 	                })
 	            );
+	            ul.append(li);
 	        }
 
-	        // 1페이지 표시
+	        // 1페이지 버튼
 	        if (start > 1) {
-	            pagination.append(
-	                $('<button>').text(1).on('click', function() {
+	            const li = $('<li>').append(
+	                $('<a href="#">').text(1).on('click', function (e) {
+	                    e.preventDefault();
 	                    currentPage = 1;
 	                    renderPage(currentPage);
 	                })
 	            );
-	            if (start > 2) pagination.append($('<span>').text('...'));
+	            ul.append(li);
+	            if (start > 2) {
+	                ul.append($('<li>').html('<span>...</span>'));
+	            }
 	        }
 
-	        // 중간 페이지들
+	        // 중간 페이지 버튼들
 	        for (let i = start; i <= end; i++) {
-	            const btn = $('<button>').text(i);
-	            if (i === currentPage) btn.addClass('active');
-	            btn.on('click', function() {
+	            const a = $('<a href="#">').text(i).on('click', function (e) {
+	                e.preventDefault();
 	                currentPage = i;
 	                renderPage(currentPage);
 	            });
-	            pagination.append(btn);
+	            if (i === currentPage) a.addClass('active');
+	            ul.append($('<li>').append(a));
 	        }
 
-	        // 마지막 페이지 표시
+	        // 마지막 페이지 버튼
 	        if (end < totalPages) {
-	            if (end < totalPages - 1) pagination.append($('<span>').text('...'));
-	            pagination.append(
-	                $('<button>').text(totalPages).on('click', function() {
+	            if (end < totalPages - 1) {
+	                ul.append($('<li>').html('<span>...</span>'));
+	            }
+	            const li = $('<li>').append(
+	                $('<a href="#">').text(totalPages).on('click', function (e) {
+	                    e.preventDefault();
 	                    currentPage = totalPages;
 	                    renderPage(currentPage);
 	                })
 	            );
+	            ul.append(li);
 	        }
 
-	        // 다음 ▶ 버튼
+	        // ▶ 다음 버튼
 	        if (currentPage < totalPages) {
-	            pagination.append(
-	                $('<button>').text('다음 ▶').on('click', function() {
+	            const li = $('<li>').append(
+	                $('<a href="#">').html('<i class="bi bi-chevron-right"></i>').on('click', function (e) {
+	                    e.preventDefault();
 	                    currentPage++;
 	                    renderPage(currentPage);
 	                })
 	            );
+	            ul.append(li);
 	        }
+
+	        pagination.append($('<nav>').append(ul));
 	    }
 
 		function filterCards(keyword) {
@@ -240,22 +237,9 @@
 			renderPage(currentPage);
 		}
 
-		const $search = $('<input type="text" id="search-input" placeholder="상품명 검색...">')
-		.css({
-			display: 'block',
-			margin: '0 auto 30px auto',
-			padding: '10px',
-			width: '300px',
-			borderRadius: '6px',
-			border: '1px solid #ccc',
-			fontSize: '1em'
-		})
-		.on('input', function () {
+		$('#search-input').on('input', function () {
 			filterCards($(this).val());
 		});
-
-		// 검색창을 review-list 위에 삽입
-		$('#review-list').before($search);
 		
 		// 초기 페이지 렌더링
 		renderPage(currentPage);
