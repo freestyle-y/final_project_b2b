@@ -46,32 +46,104 @@ body {
 	border-bottom: 2px solid #333;
 	padding-bottom: 20px;
 }
-
-.company-logo {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	margin-bottom: 20px;
+/* === Brand Logo (BLACK ed.) === */
+:root{
+  --ink-0:#000000;  /* pure black */
+  --ink-1:#0b0b0b;  /* charcoal */
+  --ink-2:#171717;  /* dark gray */
+  --ink-3:#262626;  /* slate-ish gray */
+  --paper:#ffffff;  /* background text contrast */
 }
 
-.logo-box {
-	width: 50px;
-	height: 50px;
-	border: 3px solid #333;
-	border-radius: 8px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 24px;
-	font-weight: bold;
-	color: #333;
-	margin-right: 15px;
+.company-logo{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  margin-bottom:20px;
 }
 
-.company-name {
-	font-size: 28px;
-	font-weight: bold;
-	color: #333;
+/* 다크 블록 엠블럼 */
+.brand-emblem{
+  position:relative;
+  width:64px; height:64px;
+  border-radius:16px;
+  display:flex; align-items:center; justify-content:center;
+  background:
+    radial-gradient(120% 120% at 12% 0%, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 60%),
+    linear-gradient(135deg, var(--ink-1) 0%, var(--ink-2) 100%);
+  box-shadow:
+    0 12px 26px rgba(0,0,0,.40),
+    0 6px 18px rgba(0,0,0,.28),
+    inset 0 0 0 1px rgba(255,255,255,.06);
+  overflow:hidden;
+  isolation:isolate;
+}
+
+/* 부드러운 하이라이트 */
+.brand-emblem::before{
+  content:"";
+  position:absolute; inset:0;
+  background: radial-gradient(80% 80% at 30% 0%, rgba(255,255,255,.18), transparent 60%);
+  mix-blend-mode:screen; opacity:.5;
+}
+
+/* 스치듯 지나가는 무광택 광택(그레이) */
+.brand-emblem::after{
+  content:"";
+  position:absolute; top:-20%; bottom:-20%; left:-120%;
+  width:60%;
+  background: linear-gradient(100deg, transparent 0%, rgba(255,255,255,.28) 45%, rgba(255,255,255,.06) 60%, transparent 100%);
+  transform:skewX(-18deg);
+  animation:shine 3s ease-in-out 0.6s infinite;
+  pointer-events:none;
+  opacity:.9;
+}
+@keyframes shine{
+  0%{ left:-120%; } 55%{ left:120%; } 100%{ left:120%; }
+}
+
+.brand-letter{
+  color:#f3f3f3;
+  font-weight:900;
+  font-size:28px;
+  letter-spacing:.5px;
+  text-shadow:
+    0 2px 8px rgba(0,0,0,.35),
+    0 0 18px rgba(255,255,255,.25);
+  transform:translateY(1px);
+}
+
+/* 워드마크: 전체 블랙 계열, Style에 아주 옅은 흑색 그라데이션 */
+.brand-wordmark{
+  display:flex; align-items:baseline; gap:4px;
+  font-size:30px; line-height:1; letter-spacing:.2px;
+}
+.brand-wordmark .brand-free{
+  font-weight:800; color:#0f0f0f;
+}
+.brand-wordmark .brand-style{
+  font-weight:900;
+  background-image:linear-gradient(90deg, var(--ink-0) 0%, var(--ink-3) 50%, var(--ink-0) 100%);
+  -webkit-background-clip:text; background-clip:text;
+  color:transparent;
+}
+
+/* 호버 시 살짝 깊이감만 강화 (색은 그대로 블랙) */
+.company-logo:hover .brand-emblem{
+  box-shadow:
+    0 16px 32px rgba(0,0,0,.45),
+    0 10px 22px rgba(0,0,0,.32),
+    inset 0 0 0 1px rgba(255,255,255,.08);
+}
+
+/* 인쇄/모션 접근성 */
+@media print{
+  .brand-emblem::after{ display:none !important; }
+  .company-logo{ gap:12px; }
+}
+@media (prefers-reduced-motion: reduce){
+  .brand-emblem::after{ animation:none; }
 }
 
 .contract-title {
@@ -492,10 +564,14 @@ body {
 	<input type="hidden" name="quotationNo" value="${quotationNo}" />
 		<div class="contract-container">
 			<div class="contract-header">
-				<div class="company-logo">
-					<div class="logo-box">y</div>
-					<div class="company-name">freeStyle</div>
-				</div>
+      <div class="company-logo" aria-label="freeStyle">
+  <div class="brand-emblem" aria-hidden="true">
+    <span class="brand-letter">y</span>
+  </div>
+  <div class="brand-wordmark">
+    <span class="brand-free">free</span><span class="brand-style">Style</span>
+  </div>
+</div>
 				<div class="contract-title">계약서 작성</div>
 			</div>
 			<div class="document-info">

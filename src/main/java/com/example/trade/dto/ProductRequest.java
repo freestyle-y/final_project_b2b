@@ -27,5 +27,12 @@ public class ProductRequest {
 	
 	// quotatio 조인
 	private String quotationStatus;
-
+	
+	// ProductRequest.java
+	private Integer revisionNo;                 // 0=미작성, 1=첫 견적, 2=재작성...
+	private Long    quotationNo;                // 견적 번호
+	private LocalDateTime quotationCreatedAt;   // 견적 생성일(정렬용)
+	
+	// user 조인
+	private String name;
 }

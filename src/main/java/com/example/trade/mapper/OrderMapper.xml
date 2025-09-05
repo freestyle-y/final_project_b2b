@@ -73,22 +73,20 @@
 	<!-- 회원 적립금 가져오기 -->
 	<select id="getReward" resultType="int">
 		SELECT
-			IFNULL((
-				SELECT SUM(o.order_reward + o.review_reward)
-					FROM `order` o
-					WHERE o.user_id = #{userId}
-					AND o.order_status = 'OS003'
-			), 0)
-		-
-			IFNULL((
-				SELECT SUM(rh.reward_use)
-					FROM reward_history rh
-					WHERE rh.order_no IN (
-						SELECT o2.order_no
-							FROM `order` o2
-							WHERE o2.user_id = #{userId}
-					)
-			), 0) AS reward
+		    IFNULL((
+		        SELECT SUM(IFNULL(o.order_reward,0) + IFNULL(o.review_reward,0))
+		        FROM `order` o
+		        WHERE o.user_id = #{userId}
+		          AND o.order_status = 'OS003'
+		    ), 0)
+		    -
+		    IFNULL((
+		        SELECT SUM(rh.reward_use)
+		        FROM reward_history rh
+		        JOIN `order` o2 ON rh.order_no = o2.order_no
+		        WHERE o2.user_id = #{userId}
+		    ), 0) AS reward;
+
 	</select>
 	
 	<!-- 결제용 주문 요약 -->
@@ -198,7 +196,7 @@
 	    LEFT JOIN address a ON o.address_no = a.address_no
 	    INNER JOIN `user` u ON o.user_id = u.id
 	    LEFT JOIN payment_method pm ON o.payment_method_no = pm.payment_method_no
-	    WHERE o.user_id = #{userId}
+	    WHERE o.user_id = #{userId} AND o.use_status = "Y"
 	</select>
 	
 	<!-- 주문 상세(수령인/주소/상품/결제정보) 조회 -->
@@ -256,10 +254,14 @@
 	<!-- 결제 방식 입력 -->
 	<update id="savePaymentMethod">
 		UPDATE `order`
-			SET payment_type = #{methodKor}
-			,payment_method_no = #{paymentMethodNo}
-			,payment_time = NOW()
-			,use_status = 'Y'
+		SET payment_type      = #{methodKor}
+		   ,payment_method_no = #{paymentMethodNo}
+		   ,payment_time      = NOW()
+		   ,use_status        = 'Y'
+		   ,order_status      = CASE 
+		                          WHEN #{methodKor} = '계좌이체' THEN 'OS001'
+		                          ELSE 'OS002'
+		                        END
 		WHERE order_no = #{orderNo}
 	</update>
 	

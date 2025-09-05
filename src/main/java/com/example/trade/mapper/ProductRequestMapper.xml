@@ -1,20 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.trade.mapper.ProductRequestMapper">
-	<select id="getProductRequestList" resultType="com.example.trade.dto.ProductRequest">
-		SELECT 
-			p.product_request_no AS productRequestNo
-			,p.sub_product_request_no AS subProductRequestNo
-			,p.address_no AS addressNo
-			,p.product_name AS productName
-			,p.product_option AS productOption
-			,p.product_quantity AS productQuantity
-			,p.requests AS requests , p.`status` AS status
-			,p.create_user AS createUser
-			,p.create_date AS createDate
-			,q.`status` AS quotationStatus
-		FROM product_request p LEFT OUTER JOIN quotation q 
-		ON p.product_request_no = q.product_request_no
-		WHERE p.use_status = 'Y'
-	</select>
+<select id="getProductRequestListRaw" resultType="com.example.trade.dto.ProductRequest">
+  SELECT
+      p.product_request_no      AS productRequestNo,
+      p.sub_product_request_no  AS subProductRequestNo,
+      p.address_no              AS addressNo,
+      p.product_name            AS productName,
+      p.product_option          AS productOption,
+      p.product_quantity        AS productQuantity,
+      p.requests                AS requests,
+      p.`status`                AS `status`,
+      p.create_user             AS createUser,
+      p.create_date             AS createDate,
+      p.use_status              AS useStatus,
+
+      q.`status`                AS quotationStatus,
+      q.quotation_no            AS quotationNo,
+      q.create_date AS createDate,
+	  u.`name` AS name
+  FROM product_request p
+  LEFT JOIN quotation q
+    ON q.product_request_no = p.product_request_no
+  INNER JOIN `user` u ON p.create_user = u.id
+  WHERE p.use_status = 'Y'
+  ORDER BY
+    p.product_request_no,
+    q.create_date,
+    q.quotation_no,
+    p.sub_product_request_no
+</select>
+
 </mapper>

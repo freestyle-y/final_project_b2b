@@ -126,6 +126,13 @@
 #contractTable_wrapper .dataTables_scrollHead thead tr:nth-child(2) th {
   text-align: center !important;
 }
+
+  #contractTable_wrapper .pagination{
+  --bs-pagination-active-bg: #000;        /* 활성 페이지 배경 = 검정 */
+  --bs-pagination-active-border-color: #000;
+  --bs-pagination-active-color: #fff;     /* 활성 페이지 숫자 = 흰색 */
+  --bs-pagination-focus-box-shadow: 0 0 0 .25rem rgba(0,0,0,.25);
+}
 </style>
 </head>
 <body>

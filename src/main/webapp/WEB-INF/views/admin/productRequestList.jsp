@@ -103,6 +103,13 @@ td.group-col.visually-merged {
 #productRequestTable_wrapper .dataTables_scrollBody table{ table-layout:auto; }
 
 a{ color:#4c59ff; text-decoration:none; }
+
+#productRequestTable_wrapper .pagination{
+  --bs-pagination-active-bg: #000;        /* 활성 페이지 배경 = 검정 */
+  --bs-pagination-active-border-color: #000;
+  --bs-pagination-active-color: #fff;     /* 활성 페이지 숫자 = 흰색 */
+  --bs-pagination-focus-box-shadow: 0 0 0 .25rem rgba(0,0,0,.25);
+}
 </style>
 </head>
 <body>
@@ -136,22 +143,18 @@ a{ color:#4c59ff; text-decoration:none; }
           <c:set var="firstProduct" value="${productList[0]}" />
           <c:forEach var="p" items="${productList}" varStatus="status">
             <tr>
-              <td class="group-col" data-value="${firstProduct.productRequestNo}">
-                <c:choose>
-                  <c:when test="${empty firstProduct.quotationStatus}">
-                    <a href="${pageContext.request.contextPath}/admin/quotationList?productRequestNo=${firstProduct.productRequestNo}">
-                      ${firstProduct.productRequestNo}
-                    </a>
-                  </c:when>
-                  <c:otherwise>
-                    ${firstProduct.productRequestNo}
-                  </c:otherwise>
-                </c:choose>
-              </td>
+				<td class="group-col" data-value="${firstProduct.productRequestNo}-${firstProduct.revisionNo}"
+				    data-order="${firstProduct.productRequestNo * 1000 + 
+				    (firstProduct.revisionNo == null || firstProduct.revisionNo == 0 ? 0 : firstProduct.revisionNo)}">
+				    ${firstProduct.productRequestNo}
+				  		<c:if test="${firstProduct.revisionNo != null && firstProduct.revisionNo > 0}">
+				    		<small class="text-muted ms-1">(${firstProduct.revisionNo}차)</small>
+				  		</c:if>
+				</td>
               <td>${p.productName}</td>
               <td>${p.productOption}</td>
               <td>${p.productQuantity}</td>
-              <td>${p.createUser}</td>
+              <td>${p.name}</td>
               <td class="text-center"
                   data-order="${empty p.quotationStatus ? 0 : (p.quotationStatus == '승인거절' ? 1 : (p.quotationStatus == '승인' ? 2 : 0))}">
                 <c:choose>
@@ -252,11 +255,10 @@ a{ color:#4c59ff; text-decoration:none; }
       scrollCollapse:true,
 
       /* [수정] 컬럼별 정렬 클래스 부여 */
-      columnDefs:[
-        { targets:[0,5], className:'dt-center' }, // 요청번호, 수량, 상태 -> 가운데
-        { targets:[4], className:'dt-center' },    // 상품명, 옵션, 작성자 -> 왼쪽
-        { targets:[1,2,3], className:'dt-left' }    // 상품명, 옵션, 작성자 -> 왼쪽
-      ],
+columnDefs:[
+  { targets:[0,3,4,5], className:'dt-center' }, // 요청번호, 수량, 상태
+  { targets:[1,2], className:'dt-left' }    // 상품명, 옵션, 작성자
+],
 
       dom:'<"row mb-2"<"col-12 col-md-6"l><"col-12 col-md-6"f>>t<"row mt-2"<"col-12 col-md-5"i><"col-12 col-md-7"p>>',
       order:[[0,'desc']],

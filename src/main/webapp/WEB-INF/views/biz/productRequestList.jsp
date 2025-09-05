@@ -49,6 +49,13 @@
     }
     td.cell-empty{ background:var(--tbl-empty) !important; }
     a{ color:#4c59ff; text-decoration:none; }
+    
+      #productRequestTable_wrapper .pagination{
+  --bs-pagination-active-bg: #000;        /* 활성 페이지 배경 = 검정 */
+  --bs-pagination-active-border-color: #000;
+  --bs-pagination-active-color: #fff;     /* 활성 페이지 숫자 = 흰색 */
+  --bs-pagination-focus-box-shadow: 0 0 0 .25rem rgba(0,0,0,.25);
+}
   </style>
 </head>
 <body>

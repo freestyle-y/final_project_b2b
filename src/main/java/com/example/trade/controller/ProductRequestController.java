@@ -26,13 +26,18 @@ public class ProductRequestController {
 	public String productRequestList(Model model, Principal principal) {
 	    String userId = principal.getName();
 	    List<ProductRequest> list = productRequestService.getProductRequestList();
-	    
-	    // productRequestNo 기준으로 묶기
-	    Map<Integer, List<ProductRequest>> grouped = list.stream()
-	        .collect(Collectors.groupingBy(ProductRequest::getProductRequestNo, LinkedHashMap::new, Collectors.toList()));
+
+	    // 요청번호-회차로 그룹핑 (표시는 요청번호만, 병합 기준만 회차 포함)
+	    Map<String, List<ProductRequest>> grouped = list.stream()
+	        .collect(Collectors.groupingBy(
+	            pr -> pr.getProductRequestNo() + "-" + (pr.getRevisionNo()==null?0:pr.getRevisionNo()),
+	            LinkedHashMap::new,
+	            Collectors.toList()
+	        ));
 
 	    model.addAttribute("userId", userId);
 	    model.addAttribute("groupedList", grouped);
 	    return "admin/productRequestList";
 	}
+
 }

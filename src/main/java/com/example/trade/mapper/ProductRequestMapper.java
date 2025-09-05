@@ -9,5 +9,6 @@ import com.example.trade.dto.ProductRequest;
 @Mapper
 public interface ProductRequestMapper {
 
-	List<ProductRequest> getProductRequestList();
+
+	List<ProductRequest> getProductRequestListRaw();
 }

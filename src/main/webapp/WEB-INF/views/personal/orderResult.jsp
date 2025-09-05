@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %> 
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <c:if test="${popRedirect}">
 <script>
   // ✅ 팝업 창에서 열렸다면 메인 창으로 이동시키고 팝업은 닫습니다.
@@ -13,14 +13,41 @@
   }
 </script>
 </c:if>
-
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <%@ include file="/WEB-INF/common/head.jsp"%>
-  <title>Order Confirmation - NiceShop Bootstrap Template</title>
-  <meta name="description" content="">
-  <meta name="keywords" content="">
+
+  <!-- Pretendard (KR) : 한글 기본 폰트 -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css"
+        crossorigin>
+
+  <style>
+    /* Korean typography baseline */
+    html, body, button, input, select, textarea {
+      font-family: "Pretendard Variable","Pretendard","Noto Sans KR",
+                   "Apple SD Gothic Neo",-apple-system,BlinkMacSystemFont,
+                   "Segoe UI",Roboto,"Malgun Gothic",Arial,sans-serif;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-optical-sizing: auto;
+      text-rendering: optimizeLegibility;
+      word-break: keep-all; /* 한글 줄바꿈 자연스럽게 */
+    }
+    /* 숫자(가격/수량/주문번호) 탭 간격 고정 */
+    .num, .price, [data-price], #subtotal, #chargedCashOrCard, #realPaidAmount,
+    #summaryTotal, #summaryFinal {
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum" 1;
+    }
+    h1,h2,h3 { font-weight: 700; letter-spacing: -0.1px; }
+    button,.btn { font-weight: 500; }
+  </style>
+
+  <title>주문 확인</title>
 </head>
 
 <c:set var="order" value="${orderList[0]}"/>
@@ -65,49 +92,48 @@
                   <div class="stepper-container">
                     <div class="stepper-item completed">
                       <div class="stepper-icon">1</div>
-                      <div class="stepper-text">Confirmed</div>
+                      <div class="stepper-text">결제 확인</div>
                     </div>
                     <div class="stepper-item current">
                       <div class="stepper-icon">2</div>
-                      <div class="stepper-text">Processing</div>
+                      <div class="stepper-text">배송 준비 중</div>
                     </div>
                     <div class="stepper-item">
                       <div class="stepper-icon">3</div>
-                      <div class="stepper-text">Delivered</div>
+                      <div class="stepper-text">배송 중</div>
                     </div>
                   </div>
                 </div>
 
                 <!-- 가격 요약 -->
 				<div class="price-summary">
-				  <h5>Order Summary</h5>
+				  <h5>주문 요약</h5>
 				  <ul class="summary-list">
 				    <li>
-				      <span>Subtotal</span>
-				      <span>₩<fmt:formatNumber value="${subtotal}" /></span>
+				      <span>총 상품 가격</span>
+				      <span><fmt:formatNumber value="${subtotal}" />원</span>
 				    </li>
 				
 				    <li>
 				      <span>사용한 적립금</span>
-				      <span>₩<fmt:formatNumber value="${usedPoint}" type="number" /> P</span>
+				      <span><fmt:formatNumber value="${usedPoint}" type="number" /> P</span>
 				    </li>
 				
 				    <c:if test="${order.paymentType eq '카카오페이'}">
 				      <li>
-				        <span>카카오페이 포인트 사용</span>
-				        <span>₩<fmt:formatNumber value="${empty usedKakaoPoint ? 0 : usedKakaoPoint}" type="number" /> P</span>
+				        <span>카카오페이 포인트</span>
+				        <span><fmt:formatNumber value="${empty usedKakaoPoint ? 0 : usedKakaoPoint}" type="number" /> P</span>
 				      </li>
 				    </c:if>
 				
-				    <!-- ✅ 수정: 카카오페이면 카카오포인트까지 뺀 '실 결제 금액'을 Total로 -->
 				    <li class="total">
-				      <span>Total</span>
+				      <span>결제 금액</span>
 				      <c:choose>
 				        <c:when test="${order.paymentType eq '카카오페이'}">
-				          <span>₩<fmt:formatNumber value="${chargedCashOrCard}" type="number" /></span> <!-- ✅ 수정 -->
+				          <span><fmt:formatNumber value="${chargedCashOrCard}" type="number" />원</span> <!-- ✅ 수정 -->
 				        </c:when>
 				        <c:otherwise>
-				          <span>₩<fmt:formatNumber value="${realPaidAmount}" type="number" /></span>    <!-- 적립금만 반영 -->
+				          <span><fmt:formatNumber value="${realPaidAmount}" type="number" />원</span>    <!-- 적립금만 반영 -->
 				        </c:otherwise>
 				      </c:choose>
 				    </li>
@@ -116,7 +142,7 @@
 
 				<!-- 배송 정보 -->
 				<div class="delivery-info">
-				  <h5>Delivery Information</h5>
+				  <h5>배송 정보</h5>
 				  <p><c:out value="${productName}"/></p>
 				
 				  <!-- 상태별 텍스트/아이콘 세팅 -->
@@ -151,14 +177,14 @@
 
                 <!-- 고객센터 -->
                 <div class="customer-service">
-                  <h5>Need Help?</h5>
-                  <a href="#" class="help-link">
-                    <i class="bi bi-chat-dots"></i>
-                    <span>Contact Support</span>
-                  </a>
-                  <a href="#" class="help-link">
+                  <h5>고객 센터</h5>
+                  <a href="/public/FAQList" class="help-link">
                     <i class="bi bi-question-circle"></i>
-                    <span>FAQs</span>
+                    <span>FAQ</span>
+                  </a>
+                  <a href="/public/QNAList" class="help-link">
+                    <i class="bi bi-question-circle"></i>
+                    <span>1:1 문의</span>
                   </a>
                 </div>
               </div>
@@ -170,15 +196,15 @@
               <!-- 배송지 정보 -->
               <div class="details-card" data-aos="fade-up">
                 <div class="card-header">
-                  <h3><i class="bi bi-geo-alt"></i> Shipping Details</h3>
+                  <h3><i class="bi bi-geo-alt"></i> 배송 정보</h3>
                 </div>
                 <div class="card-body">
                   <div class="row g-4">
                     <div class="col-md-6">
                       <div class="detail-group">
-                        <label>Ship To</label>
+                        <label>배송지</label>
                         <address>
-                          ${order.name} (${order.userId})<br>
+                          ${order.name}<br>
                           ${order.address} ${order.detailAddress}<br>
                           ${order.deliveryRequest}
                         </address>
@@ -186,7 +212,7 @@
                     </div>
                     <div class="col-md-6">
                       <div class="detail-group">
-                        <label>Contact</label>
+                        <label>연락처</label>
                         <div class="contact-info">
                           <p><i class="bi bi-envelope"></i> ${order.email}</p>
                           <p><i class="bi bi-telephone"></i> ${order.phone}</p>
@@ -200,7 +226,7 @@
               <!-- 결제 정보 -->
               <div class="details-card" data-aos="fade-up">
                 <div class="card-header">
-                  <h3><i class="bi bi-credit-card"></i> Payment Details</h3>
+                  <h3><i class="bi bi-credit-card"></i> 결제 정보</h3>
                 </div>
                 <div class="card-body">
                   <div class="payment-method">
@@ -208,7 +234,7 @@
                       <i class="bi bi-credit-card-2-front"></i>
                     </div>
 					<div class="payment-details">
-					  <div class="card-type">${order.paymentCode}</div>
+					  <div class="card-type">${order.paymentType}</div>
 					  <div class="card-number">
 					    <c:choose>
 					      <c:when test="${order.paymentCode eq 'CARD'}">
@@ -223,17 +249,14 @@
 					</div>
 
                   </div>
-                  <div class="billing-address mt-4">
-                    <h5>Billing Address</h5>
-                    <p>${order.address} ${order.detailAddress}</p>
-                  </div>
+
                 </div>
               </div>
 
               <!-- 주문 상품 목록 -->
               <div class="details-card" data-aos="fade-up">
                 <div class="card-header">
-                  <h3><i class="bi bi-bag-check"></i> Order Items</h3>
+                  <h3><i class="bi bi-bag-check"></i> 주문 상품</h3>
                 </div>
                 <div class="card-body">
                   <c:forEach var="item" items="${orderList}">
@@ -243,8 +266,8 @@
                       </div>
                       <div class="item-info">
                         <h6>${item.productName}</h6>
-                        <p>${item.optionName}: ${item.optionNameValue}</p>
-                        <p>수량: ${item.orderQuantity}개 | ₩<fmt:formatNumber value="${item.price}" /></p>
+                        <p>옵션: ${item.optionName} ${item.optionNameValue}</p>
+                        <p>수량: ${item.orderQuantity}개 | <fmt:formatNumber value="${item.price}" />원</p>
                       </div>
                     </div>
                   </c:forEach>
@@ -256,12 +279,12 @@
                 <div class="row g-3">
                   <div class="col-md-6">
                     <a href="<c:url value='/personal/mainPage'/>" class="btn btn-back">
-                      <i class="bi bi-arrow-left"></i> Return to Shop
+                      <i class="bi bi-arrow-left"></i>쇼핑 계속하기
                     </a>
                   </div>
                   <div class="col-md-6">
                     <a href="<c:url value='/personal/orderList'/>" class="btn btn-account">
-                      <span>View in orderList</span>
+                      <span>주문 내역 보기</span>
                       <i class="bi bi-arrow-right"></i>
                     </a>
                   </div>

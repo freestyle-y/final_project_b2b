@@ -23,7 +23,7 @@
     body{
       font-family:"SUIT",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",Arial,sans-serif;
     }
-    .table-wrap{ max-width:1100px; margin:0 auto; }
+    .table-wrap{ max-width:1200px; margin:0 auto; }
 
     /* DataTables 컨테이너 + 실제 테이블 공통 외곽선/라운드 */
     #containerTable_wrapper .dataTables_scroll,
@@ -99,6 +99,13 @@
     div.dataTables_scrollBody::-webkit-scrollbar{ height:10px; width:10px; }
     div.dataTables_scrollBody::-webkit-scrollbar-thumb{ background:#D1D5DB; border-radius:6px; }
     div.dataTables_scrollBody::-webkit-scrollbar-track{ background:#F3F4F6; }
+    
+      #containerTable_wrapper .pagination{
+  --bs-pagination-active-bg: #000;        /* 활성 페이지 배경 = 검정 */
+  --bs-pagination-active-border-color: #000;
+  --bs-pagination-active-color: #fff;     /* 활성 페이지 숫자 = 흰색 */
+  --bs-pagination-focus-box-shadow: 0 0 0 .25rem rgba(0,0,0,.25);
+}
   </style>
 </head>
 <body>
