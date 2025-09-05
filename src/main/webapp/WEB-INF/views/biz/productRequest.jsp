@@ -16,7 +16,7 @@
             background-color: #f0f2f5; /* 메인 배경색 */
             color: #333; /* 기본 텍스트 색상 */
             line-height: 1.6;
-            max-width: 800px;
+            max-width: 1200px;
             margin: 40px auto; /* 중앙 정렬 */
             padding: 20px;
             background-color: #fff; /* 내부 배경 흰색 */
@@ -114,7 +114,6 @@
 <main class="main">
 
 <h1>상품 요청</h1>
-
 <form method="post" action="/biz/productRequest" enctype="multipart/form-data">
     <div id="product-container">
         <!-- 초기 상품 입력 항목 -->
@@ -169,7 +168,6 @@
 	   </div>
 	</section>
 </form>
-
 </main>
 
 <!-- 공통 풋터 -->

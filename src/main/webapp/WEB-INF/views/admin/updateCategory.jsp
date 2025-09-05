@@ -22,22 +22,22 @@
 <%@include file="/WEB-INF/common/header/header.jsp"%>
 
 <main class="main">
-
 	<!-- Page Title -->
-    <div class="page-title light-background">
-      <div class="container d-lg-flex justify-content-between align-items-center">
-        <h1 class="mb-2 mb-lg-0">카테고리 수정</h1>
-        <nav class="breadcrumbs">
-          <ol>
-            <li><a href="/personal/mainPage">Home</a></li>
-            <li class="current">카테고리</li>
-          </ol>
-        </nav>
-      </div>
+	   <div class="page-title light-background">
+	     <div class="container d-lg-flex justify-content-between align-items-center">
+	       <h1 class="mb-2 mb-lg-0">카테고리 수정</h1>
+	       <nav class="breadcrumbs">
+	         <ol>
+	           <li><a href="/personal/mainPage">Home</a></li>
+	           <li class="current">카테고리</li>
+	         </ol>
+	       </nav>
+	     </div>
 	</div><!-- End Page Title -->
 
-<div id="tree" class="tui-tree-wrap"></div>
+	<div class="container">
 
+		<div id="tree" class="tui-tree-wrap"></div>
 <script src="https://uicdn.toast.com/tui.context-menu/latest/tui-context-menu.js"></script>
 <script src="https://uicdn.toast.com/tui-tree/latest/tui-tree.js"></script>
 
@@ -218,7 +218,7 @@
       });
  
 </script>
-
+	</div>
 </main>
 
 <!-- 공통 풋터 -->

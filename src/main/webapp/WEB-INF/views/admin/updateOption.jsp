@@ -36,8 +36,8 @@
       </div>
 	</div><!-- End Page Title -->
 	
-
-<div id="tree" class="tui-tree-wrap"></div>
+	<div class="container">
+		<div id="tree" class="tui-tree-wrap"></div>
 
 <script src="https://uicdn.toast.com/tui.context-menu/latest/tui-context-menu.js"></script>
 <script src="https://uicdn.toast.com/tui-tree/latest/tui-tree.js"></script>
@@ -213,7 +213,7 @@
        	}
       });
 </script>
-
+	</div>
 </main>
 
 <!-- 공통 풋터 -->

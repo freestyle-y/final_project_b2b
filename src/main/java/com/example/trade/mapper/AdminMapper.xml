@@ -410,6 +410,7 @@
 		LEFT JOIN comm_tbl ct1 ON o.order_status = ct1.code_number
 		LEFT JOIN comm_tbl ct2 ON o.delivery_status = ct2.code_number
 		WHERE u.customer_category = 'CC003'
+			AND (o.order_status = 'OS002' OR o.order_status = 'OS003')
 		ORDER BY o.order_no DESC
 	</select>
 	

@@ -143,6 +143,7 @@
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
 
+<div class="container">
 <!-- ✅ 상품 기본 정보 표시 -->
 <div class="product-section">
     <h3>상품 정보</h3>
@@ -239,7 +240,7 @@
         <button type="submit">이미지 업로드</button>
     </form>
 </div>
-
+</div>
 <!-- 공통 풋터 -->
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -407,6 +408,8 @@ $(function() {
         });
     });
 });
-</script>    
+</script>
+
+
 </body>
 </html>
