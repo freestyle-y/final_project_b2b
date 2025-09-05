@@ -345,19 +345,8 @@ $(function () {
                 <div class="row g-3">
                   <div class="col-12 col-md-6 col-lg-4">
                     <div class="filter-item search-form">
-                      <label for="productSearch" class="form-label mb-2">Search Products</label>
+                      <label for="productSearch" class="form-label mb-2">상품 검색</label>
                        <input type="text" class="form-control" id="productSearch" placeholder="상품명 검색..." aria-label="Search for products">
-                    </div>
-                  </div>
-                </div>
-
-                <div class="row mt-3">
-                  <div class="col-12" data-aos="fade-up" data-aos-delay="200">
-                    <div class="active-filters">
-                      <span class="active-filter-label">Active Filters:</span>
-                      <div class="filter-tags">
-                        <button class="clear-all-btn">Clear All</button>
-                      </div>
                     </div>
                   </div>
                 </div>
