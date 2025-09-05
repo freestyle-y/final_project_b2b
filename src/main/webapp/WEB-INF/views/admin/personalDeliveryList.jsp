@@ -52,23 +52,10 @@
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
 
-	<!-- Page Title -->
-	<div class="page-title light-background">
-		<div class="container d-lg-flex justify-content-between align-items-center">
-			<h1 class="mb-2 mb-lg-0">배송 관리(개인)</h1>
-			<nav class="breadcrumbs">
-				<ol>
-					<li><%@include file="/WEB-INF/common/home.jsp"%></li>
-					<li class="current">Delivery</li>
-				</ol>
-			</nav>
-		</div>
-	</div>
-	<!-- End Page Title -->
-
 	<div class="container-xl py-3">
+		<h1 class="h4 mb-3">배송 관리(개인 회원)</h1>
 	
-		<table id="table" class="table table-bordered table-hover datatable text-center">
+		<table id="table" class="table table-bordered table-hover datatable text-center nowrap">
 			<thead class="table-light">
 				<tr>
 					<th>주문번호</th>
@@ -204,6 +191,7 @@
 <script>
 	$(function() {
 		$('#table').DataTable({
+			scrollX: true,  // 가로 스크롤 활성화
 			searching : true, // 검색창 표시 여부
 			ordering : true, // 정렬 기능(컬럼 헤더 클릭 시 오름/내림차순 정렬)
 			paging : true, // 페이징

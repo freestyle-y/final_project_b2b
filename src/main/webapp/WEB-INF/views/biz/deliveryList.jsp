@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -67,7 +68,7 @@
 
 	<div class="container-fluid py-4">
 	
-		<table id="table" class="table table-bordered table-hover datatable text-center">
+		<table id="table" class="table table-bordered table-hover datatable text-center nowrap">
 			<thead class="table-light">
 				<tr>
 					<th>계약 번호</th>
@@ -87,10 +88,10 @@
 				<c:forEach var="bizDeliveryList" items="${bizDeliveryList}">
 					<tr>
 						<td><a href="/biz/contractOne?contractNo=${bizDeliveryList.contractNo}">${bizDeliveryList.contractNo}</a></td>
-						<td>${bizDeliveryList.downPayment}</td>
+						<td>₩<fmt:formatNumber value="${bizDeliveryList.downPayment}" pattern="#,###"/></td>
 						<td>${bizDeliveryList.downPaymentStatus}</td>
 						<td>${bizDeliveryList.downPaymentDate}</td>
-						<td>${bizDeliveryList.finalPayment}</td>
+						<td>₩<fmt:formatNumber value="${bizDeliveryList.finalPayment}" pattern="#,###"/></td>
 						<td>${bizDeliveryList.finalPaymentStatus}</td>
 						<td>${bizDeliveryList.finalPaymentDate}</td>
 						<td>${bizDeliveryList.address}</td>
@@ -124,6 +125,7 @@
 <script>
 	$(function() {
 		$('#table').DataTable({
+			scrollX: true,  // 가로 스크롤 활성화
 			searching : true, // 검색창 표시 여부
 			ordering : true, // 정렬 기능(컬럼 헤더 클릭 시 오름/내림차순 정렬)
 			paging : true, // 페이징
