@@ -258,6 +258,7 @@ table.detail col:nth-child(9){ width:6%; }
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
+const PRODUCT_REQUEST_NO = '<c:out value="${productRequestNo}"/>';
 function modifyQuotation(quotationNo){
   location.href = "${pageContext.request.contextPath}/admin/modifyQuotationForm?quotationNo=" + encodeURIComponent(quotationNo);
 }
@@ -266,12 +267,16 @@ function deleteQuotation(quotationNo){
   const form = document.createElement('form');
   form.method = "post";
   form.action = "${pageContext.request.contextPath}/admin/deleteQuotation";
-  <%-- CSRF --%>
   <c:if test="${not empty _csrf}">
     const csrf = document.createElement('input');
     csrf.type = 'hidden'; csrf.name = "${_csrf.parameterName}"; csrf.value = "${_csrf.token}";
     form.appendChild(csrf);
   </c:if>
+  const pr = document.createElement('input');
+  pr.type = 'hidden';
+  pr.name = 'productRequestNo';
+  pr.value = PRODUCT_REQUEST_NO;   // 위에서 주입한 상수 사용
+  form.appendChild(pr);
   const q = document.createElement('input');
   q.type = 'hidden'; q.name = 'quotationNo'; q.value = quotationNo;
   form.appendChild(q);

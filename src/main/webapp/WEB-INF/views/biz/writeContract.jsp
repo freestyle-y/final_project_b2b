@@ -577,7 +577,7 @@
 
 				<!-- 갑 서명 -->
 				<div class="signature-box">
-					<div class="signature-label">갑 (공급자) 서명</div>
+					<div class="signature-label">공급자 서명</div>
 					<div class="signature-field">
 						<c:choose>
 							<c:when test="${not empty supplierSign}">
@@ -591,7 +591,7 @@
 
 				<!-- 을 서명 -->
 				<div class="signature-box" id="sig-buyer">
-				  <div class="signature-label">을 (수요자) 서명</div>
+				  <div class="signature-label">수요자 서명</div>
 				
 				  <c:choose>
 				    <c:when test="${not empty buyerSign}">

@@ -69,7 +69,7 @@ public class QuotationService {
     }
     @Transactional
 	public int deleteQuotation(int quotationNo, int productRequestNo) {
-    	quotationMapper.deleteQuotationItemsByQuotationNo(quotationNo);
+    	
 		return quotationMapper.deleteQuotation(quotationNo, productRequestNo);
 	}
     public void updateQuotationItem(QuotationItem item) {

@@ -33,6 +33,7 @@
 			,create_user AS createUser
 			,create_date AS createDate
 		FROM contract
+		WHERE use_status = "Y"
 	</select>
 	
 	<!-- 관리자 계약서 상세 페이지 -->	
@@ -123,11 +124,12 @@
 	</update>
 	
 	<!-- 관리자 계약서 삭제 -->
-	<delete id="deleteContract">
-		DELETE FROM contract
+	<update id="deleteContract">
+		UPDATE contract
+		SET use_status = "N"
 		WHERE contract_no = #{contractNo}
 		AND quotation_No = #{quotationNo}
-	</delete>
+	</update>
 
 
 	<!-- 관리자 계약금 상태 입력 -->

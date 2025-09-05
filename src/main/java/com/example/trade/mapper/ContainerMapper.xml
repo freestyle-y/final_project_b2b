@@ -16,12 +16,14 @@
 			  ,container_location AS containerLocation
 			  ,contract_no AS contractNo
 		FROM container
+		WHERE use_status = "Y"
 	</select>
 	
-	<delete id="deleteContainer">
-		DELETE FROM container
+	<update id="deleteContainer">
+		UPDATE container
+		SET use_status = "N"
 		WHERE container_no = #{containerNo}
-	</delete>
+	</update>
 	
 	<select id="getContainerOne" parameterType="int" resultType="com.example.trade.dto.Container">
 	SELECT container_no AS containerNo,

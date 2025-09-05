@@ -63,6 +63,11 @@ table.detail col:nth-child(5){width:14%;}
 /* 오프캔버스(거절) UI */
 .reason-chip{ min-width:96px; }
 .counter{ font-size:.85rem; color:#6b7280; }
+
+   a {
+      text-decoration: none;
+      color: inherit;
+   }
 </style>
 </head>
 <body>

@@ -25,7 +25,7 @@
 		LEFT JOIN product_request pr
 		ON qi.product_request_no = pr.product_request_no
 		AND qi.sub_product_request_no = pr.sub_product_request_no
-		LEFT JOIN user u ON pr.create_user = u.id -- ✅ user 테이블과 조인
+		LEFT JOIN user u ON pr.create_user = u.id
 		WHERE q.use_status = 'Y'
 		ORDER BY q.product_request_no ASC, q.quotation_no DESC
 	</select>
@@ -186,16 +186,12 @@
 		WHERE quotation_no = #{quotationNo}
 	</update>
 
-	<delete id="deleteQuotationItemsByQuotationNo">
-		DELETE FROM quotation_item WHERE quotation_no = #{quotationNo}
-	</delete>
-
-	<delete id="deleteQuotation">
-		DELETE FROM quotation
-		WHERE quotation_no =
-		#{quotationNo}
+	<update id="deleteQuotation">
+		UPDATE quotation
+		SET use_status = "N"
+		WHERE quotation_no = #{quotationNo}
 		AND product_request_no = #{productRequestNo}
-	</delete>
+	</update>
 
 	<update id="updateQuotationItem">
 		UPDATE quotation_item

@@ -143,14 +143,29 @@ a{ color:#4c59ff; text-decoration:none; }
           <c:set var="firstProduct" value="${productList[0]}" />
           <c:forEach var="p" items="${productList}" varStatus="status">
             <tr>
-				<td class="group-col" data-value="${firstProduct.productRequestNo}-${firstProduct.revisionNo}"
-				    data-order="${firstProduct.productRequestNo * 1000 + 
-				    (firstProduct.revisionNo == null || firstProduct.revisionNo == 0 ? 0 : firstProduct.revisionNo)}">
-				    ${firstProduct.productRequestNo}
-				  		<c:if test="${firstProduct.revisionNo != null && firstProduct.revisionNo > 0}">
-				    		<small class="text-muted ms-1">(${firstProduct.revisionNo}차)</small>
-				  		</c:if>
-				</td>
+			<td class="group-col"
+			    data-value="${firstProduct.productRequestNo}-${firstProduct.revisionNo}"
+			    data-order="${firstProduct.productRequestNo * 1000 + (firstProduct.revisionNo == null || firstProduct.revisionNo == 0 ? 0 : firstProduct.revisionNo)}">
+			
+			  <c:choose>
+			    <c:when test="${empty firstProduct.quotationStatus 
+			                   or fn:trim(firstProduct.quotationStatus) eq '승인거절'}">
+			      <a href="${pageContext.request.contextPath}/admin/quotationList?productRequestNo=${firstProduct.productRequestNo}">
+			        ${firstProduct.productRequestNo}
+			        <c:if test="${firstProduct.revisionNo != null && firstProduct.revisionNo > 0}">
+			          <small class="text-muted ms-1">(${firstProduct.revisionNo}차)</small>
+			        </c:if>
+			      </a>
+			    </c:when>
+			
+			    <c:otherwise>
+			      ${firstProduct.productRequestNo}
+			      <c:if test="${firstProduct.revisionNo != null && firstProduct.revisionNo > 0}">
+			        <small class="text-muted ms-1">(${firstProduct.revisionNo}차)</small>
+			      </c:if>
+			    </c:otherwise>
+			  </c:choose>
+			</td>
               <td>${p.productName}</td>
               <td>${p.productOption}</td>
               <td>${p.productQuantity}</td>
