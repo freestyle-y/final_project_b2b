@@ -58,7 +58,7 @@
 			<nav class="breadcrumbs">
 				<ol>
 					<li><%@include file="/WEB-INF/common/home.jsp"%></li>
-					<li class="current">Delivery</li>
+					<li class="current">주문 배송 조회</li>
 				</ol>
 			</nav>
 		</div>

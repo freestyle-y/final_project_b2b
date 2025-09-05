@@ -59,7 +59,7 @@
 			<nav class="breadcrumbs">
 				<ol>
 					<li><%@include file="/WEB-INF/common/home.jsp"%></li>
-					<li class="current">Alarm</li>
+					<li class="current">알림 목록</li>
 				</ol>
 			</nav>
 		</div>

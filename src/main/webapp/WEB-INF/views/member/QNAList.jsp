@@ -37,7 +37,7 @@
 			<nav class="breadcrumbs">
 				<ol>
 					<li><%@include file="/WEB-INF/common/home.jsp"%></li>
-					<li class="current">QNA</li>
+					<li class="current">문의 내역</li>
 				</ol>
 			</nav>
 		</div>

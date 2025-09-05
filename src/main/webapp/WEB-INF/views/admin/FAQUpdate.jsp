@@ -16,11 +16,11 @@
 	<!-- Page Title -->
 	<div class="page-title light-background">
 		<div class="container d-lg-flex justify-content-between align-items-center">
-			<h1 class="mb-2 mb-lg-0">FAQ</h1>
+			<h1 class="mb-2 mb-lg-0">자주 묻는 질문 수정</h1>
 			<nav class="breadcrumbs">
 				<ol>
 					<li><%@include file="/WEB-INF/common/home.jsp"%></li>
-					<li class="current">FAQ</li>
+					<li class="current">자주 묻는 질문</li>
 				</ol>
 			</nav>
 		</div>

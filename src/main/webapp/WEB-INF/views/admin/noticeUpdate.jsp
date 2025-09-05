@@ -16,11 +16,11 @@
 	<!-- Page Title -->
 	<div class="page-title light-background">
 		<div class="container d-lg-flex justify-content-between align-items-center">
-			<h1 class="mb-2 mb-lg-0">Notice</h1>
+			<h1 class="mb-2 mb-lg-0">공지사항 수정</h1>
 			<nav class="breadcrumbs">
 				<ol>
 					<li><%@include file="/WEB-INF/common/home.jsp"%></li>
-					<li class="current">Notice</li>
+					<li class="current">공지사항</li>
 				</ol>
 			</nav>
 		</div>

@@ -59,7 +59,7 @@
 			<nav class="breadcrumbs">
 				<ol>
 					<li><%@include file="/WEB-INF/common/home.jsp"%></li>
-					<li class="current">Login History</li>
+					<li class="current">로그인 이력</li>
 				</ol>
 			</nav>
 		</div>

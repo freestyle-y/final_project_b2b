@@ -21,7 +21,7 @@
 			<nav class="breadcrumbs">
 				<ol>
 					<li><%@include file="/WEB-INF/common/home.jsp"%></li>
-					<li class="current">Helpdesk</li>
+					<li class="current">고객센터</li>
 				</ol>
 			</nav>
 		</div>

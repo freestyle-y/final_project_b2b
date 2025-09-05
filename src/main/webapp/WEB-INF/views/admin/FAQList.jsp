@@ -59,7 +59,7 @@
 		<nav class="breadcrumbs">
 			<ol>
 				<li><%@include file="/WEB-INF/common/home.jsp"%></li>
-				<li class="current">FAQ</li>
+				<li class="current">자주 묻는 질문</li>
 			</ol>
 		</nav>
 	</div>

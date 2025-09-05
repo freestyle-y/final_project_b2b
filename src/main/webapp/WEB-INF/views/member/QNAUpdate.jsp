@@ -26,7 +26,7 @@
 			<nav class="breadcrumbs">
 				<ol>
 					<li><%@include file="/WEB-INF/common/home.jsp"%></li>
-					<li class="current">QNA</li>
+					<li class="current">1:1 문의</li>
 				</ol>
 			</nav>
 		</div>
