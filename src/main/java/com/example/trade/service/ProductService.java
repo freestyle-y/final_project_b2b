@@ -304,16 +304,26 @@ public class ProductService {
 	public List<Map<String, Object>> selectPersonalProductOne(String id, int productNo) {
 	    List<Map<String, Object>> productList = productMapper.personalProductOne(id, productNo);
 	    List<Map<String, Object>> imageList = productMapper.productImage(productNo);
-
+	    List<Map<String, Object>> detailImageList = productMapper.productDetailImage(productNo);
+	    
 	    Map<Integer, List<String>> imageMap = new HashMap<>();
 	    for (Map<String, Object> image : imageList) {
 	        String filepath = (String) image.get("filepath");
 	        imageMap.computeIfAbsent(productNo, k -> new ArrayList<>()).add(filepath);
 	    }
+	    
+	    Map<Integer, List<String>> detailImageMap = new HashMap<>();
+	    for (Map<String, Object> detailImage : detailImageList) {
+	        String detailFilepath = (String) detailImage.get("filepath");
+	        detailImageMap.computeIfAbsent(productNo, k -> new ArrayList<>()).add(detailFilepath);
+	    }
 
 	    for (Map<String, Object> product : productList) {
 	        List<String> filepaths = imageMap.get(productNo);
+	        List<String> detailFilepaths = detailImageMap.get(productNo);
+	        
 	        product.put("imagePaths", filepaths);
+	        product.put("detailImagePaths", detailFilepaths);
 	    }
 
 	    return productList;
@@ -323,16 +333,26 @@ public class ProductService {
 	public List<Map<String, Object>> selectProductOne(int productNo) {
 	    List<Map<String, Object>> productList = productMapper.productOne(productNo);
 	    List<Map<String, Object>> imageList = productMapper.productImage(productNo);
-
+	    List<Map<String, Object>> detailImageList = productMapper.productDetailImage(productNo);
+	    
 	    Map<Integer, List<String>> imageMap = new HashMap<>();
 	    for (Map<String, Object> image : imageList) {
 	        String filepath = (String) image.get("filepath");
 	        imageMap.computeIfAbsent(productNo, k -> new ArrayList<>()).add(filepath);
 	    }
+	    
+	    Map<Integer, List<String>> detailImageMap = new HashMap<>();
+	    for (Map<String, Object> detailImage : detailImageList) {
+	        String detailFilepath = (String) detailImage.get("filepath");
+	        detailImageMap.computeIfAbsent(productNo, k -> new ArrayList<>()).add(detailFilepath);
+	    }
 
 	    for (Map<String, Object> product : productList) {
 	        List<String> filepaths = imageMap.get(productNo);
+	        List<String> detailFilepaths = detailImageMap.get(productNo);
+	        
 	        product.put("imagePaths", filepaths);
+	        product.put("detailImagePaths", detailFilepaths);
 	    }
 
 	    return productList;
@@ -579,7 +599,7 @@ public class ProductService {
     }
 	
 	// 상품 등록
-	public void insertProduct(Product product, List<MultipartFile> productImages) {
+	public void insertProduct(Product product, List<MultipartFile> productImages, List<MultipartFile> detailImages) {
         // 1. product_no 설정
         Integer existingProductNo = productMapper.findProductNoByName(product.getProductName());
 
@@ -637,6 +657,49 @@ public class ProductService {
             }
         }
 		
+		// 3. 상세 이미지 처리
+		if (detailImages != null && !detailImages.isEmpty()) {
+		    int detailPriority = 1;
+
+		    for (MultipartFile file : detailImages) {
+		        if (!file.isEmpty()) {
+		            try {
+		                // 1. 원본 파일명
+		                String originalFileName = file.getOriginalFilename();
+
+		                // 2. 고유한 파일명 생성
+		                String uniqueFileName = UUID.randomUUID().toString().replace("-", "") + "_" + originalFileName;
+
+		                // 3. 저장 경로
+		                File saveFile = new File(UPLOAD_DIR + uniqueFileName);
+		                saveFile.getParentFile().mkdirs(); // 디렉토리 없으면 생성
+		                file.transferTo(saveFile); // 파일 저장
+
+		                // 4. static 리소스 폴더에 복사
+		                File saveFileStatic = new File(UPLOAD_DIR_STATIC + uniqueFileName);
+		                saveFileStatic.getParentFile().mkdirs();
+		                Files.copy(saveFile.toPath(), saveFileStatic.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+		                // 5. DB 저장
+		                Attachment attachment = new Attachment();
+		                attachment.setCategoryCode(resolvedProductNo);
+		                attachment.setAttachmentCode("PRODUCT_DETAIL"); // ✅ 상세이미지로 구분
+		                attachment.setFilename(originalFileName);
+		                attachment.setFilepath("/uploads/product/" + uniqueFileName);
+		                attachment.setUseStatus("Y");
+		                attachment.setCreateUser(product.getCreateUser());
+		                attachment.setPriority(detailPriority++);
+
+		                productMapper.insertAttachment(attachment);
+
+		            } catch (IOException e) {
+		                throw new RuntimeException("상세 이미지 업로드 실패: " + file.getOriginalFilename(), e);
+		            }
+		        }
+		    }
+		}
+
+		
 		// 3. 재고 테이블에 초기 재고(0) 등록
 		productMapper.insertInventory(resolvedProductNo, product.getOptionNo());
 	}
@@ -671,6 +734,52 @@ public class ProductService {
                     Attachment attachment = new Attachment();
                     attachment.setCategoryCode(productNo); // 상품 번호
                     attachment.setAttachmentCode("PRODUCT_IMAGE");
+                    attachment.setFilename(originalFileName); // 원본 파일명
+                    attachment.setFilepath("/uploads/product/" + uniqueFileName); // 웹에서 접근 가능한 경로
+                    attachment.setUseStatus("Y");
+                    attachment.setCreateUser(loginUserName); // 또는 로그인 유저 ID
+                    attachment.setPriority(priority++);
+                    
+                    productMapper.insertAttachment(attachment);
+
+                } catch (IOException e) {
+                	 e.printStackTrace();
+                    throw new RuntimeException("파일 업로드 실패: " + file.getOriginalFilename(), e);
+                }
+            }
+        }
+	}
+	
+	// 상품 상세 등록
+	public void insertDetailProductImages(int productNo, List<MultipartFile> imageFiles, String loginUserName) {
+		Integer maxPriority = productMapper.findMaxDetailPriorityByCategoryCode(productNo);
+	    int priority = (maxPriority != null) ? maxPriority + 1 : 1;
+	    
+		for (MultipartFile file : imageFiles) {
+            if (!file.isEmpty()) {
+                try {
+                    // 1. 원본 파일명
+                    String originalFileName = file.getOriginalFilename();
+
+                    // 2. 고유한 파일명 생성 (중복 방지)
+                    String uniqueFileName = UUID.randomUUID().toString().replace("-", "");
+                    uniqueFileName += "_" + originalFileName;
+                    
+                    // 3. 저장할 경로 생성
+                    File saveFile = new File(UPLOAD_DIR + uniqueFileName);
+                    // 디렉토리가 없으면 생성
+                    saveFile.getParentFile().mkdirs();
+                    // 4. 로컬에 파일 저장
+                    file.transferTo(saveFile);
+
+                    File saveFileStatic = new File(UPLOAD_DIR_STATIC + uniqueFileName);
+                    saveFileStatic.getParentFile().mkdirs();
+                    Files.copy(saveFile.toPath(), saveFileStatic.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    
+                    // 5. DB 저장
+                    Attachment attachment = new Attachment();
+                    attachment.setCategoryCode(productNo); // 상품 번호
+                    attachment.setAttachmentCode("PRODUCT_DETAIL");
                     attachment.setFilename(originalFileName); // 원본 파일명
                     attachment.setFilepath("/uploads/product/" + uniqueFileName); // 웹에서 접근 가능한 경로
                     attachment.setUseStatus("Y");

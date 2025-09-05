@@ -159,6 +159,9 @@ public class ProductController {
 	    List<String> imagePaths = (List<String>) first.get("imagePaths");
 	    commonInfo.put("imagePaths", imagePaths);
 	    
+	    List<String> detailImagePaths = (List<String>) first.get("detailImagePaths");
+	    commonInfo.put("detailImagePaths", detailImagePaths);
+	    
 	    // 옵션 리스트 생성
 	    List<Map<String, Object>> optionList = new ArrayList<>();
 	    for (Map<String, Object> item : productOne) {
@@ -334,6 +337,9 @@ public class ProductController {
 	    List<String> imagePaths = (List<String>) first.get("imagePaths");
 	    commonInfo.put("imagePaths", imagePaths);
 
+	    List<String> detailImagePaths = (List<String>) first.get("detailImagePaths");
+	    commonInfo.put("detailImagePaths", detailImagePaths);
+	    
 	    // 옵션 리스트 생성
 	    List<Map<String, Object>> optionList = new ArrayList<>();
 	    for (Map<String, Object> item : productOne) {
@@ -387,9 +393,10 @@ public class ProductController {
 	// 상품 등록 DB insert
 	@PostMapping("/admin/insertProduct")
 	public String insertProduct(Product product,
-			@RequestParam("productImage") List<MultipartFile> productImages) {
+			@RequestParam("productImage") List<MultipartFile> productImages,
+			@RequestParam("detailImages") List<MultipartFile> detailImages) {
 		//log.info(product.toString());
-		productService.insertProduct(product, productImages);
+		productService.insertProduct(product, productImages, detailImages);
 		return "redirect:/admin/inventoryList";
 	}
 	
@@ -425,6 +432,9 @@ public class ProductController {
 	    List<String> imagePaths = (List<String>) first.get("imagePaths");
 	    commonInfo.put("imagePaths", imagePaths);
 	    
+	    List<String> detailImagePaths = (List<String>) first.get("detailImagePaths");
+	    commonInfo.put("detailImagePaths", detailImagePaths);
+	    
 	    // 옵션 리스트 생성
 	    List<Map<String, Object>> optionList = new ArrayList<>();
 	    for (Map<String, Object> item : productOne) {
@@ -453,6 +463,17 @@ public class ProductController {
 		//log.info(loginUserName);
 		
 		productService.insertProductImages(productNo, imageFiles, loginUserName);
+		return "redirect:/admin/productOne?productNo=" + productNo;
+	}
+	
+	// 상품 상세 이미지 등록
+	@PostMapping("/admin/uploadDetailImage")
+	public String uploadDetailImage(@RequestParam int productNo, 
+			@RequestParam("detailImageFiles") List<MultipartFile> imageFiles) {
+		String loginUserName = SecurityContextHolder.getContext().getAuthentication().getName();
+		//log.info(loginUserName);
+		
+		productService.insertDetailProductImages(productNo, imageFiles, loginUserName);
 		return "redirect:/admin/productOne?productNo=" + productNo;
 	}
 	

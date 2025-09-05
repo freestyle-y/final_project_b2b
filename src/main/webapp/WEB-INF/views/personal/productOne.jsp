@@ -254,7 +254,10 @@
                     <div class="row g-4">
                       <div class="col-lg-8">
                         <div class="content-section">
-                          
+                          	<c:forEach var="detailImg" items="${product.detailImagePaths}">
+							    <img src="${pageContext.request.contextPath}${detailImg}" alt="상세 이미지"
+							    	style="max-width: 1170px; height: auto; display: block; margin: 20px auto;" />
+							</c:forEach>
                         </div>
                       </div>
                     </div>

@@ -288,6 +288,22 @@ public class ProductRestController {
 		int productNo = Integer.parseInt(data.get("productNo"));
 	    String imagePath = data.get("imagePath");
 
+	    //log.info(data.toString());
+	    try {
+	        productService.deleteProductImage(userId, productNo, imagePath);
+	        return ResponseEntity.ok("success");
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
+	    }
+	}
+	
+	// 상품 상세 이미지 삭제
+	@PostMapping("/admin/deleteDetailImage")
+	public ResponseEntity<String> deleteDetailImage(@RequestBody Map<String, String> data) {
+		String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+		int productNo = Integer.parseInt(data.get("productNo"));
+	    String imagePath = data.get("imagePath");
+
 	    log.info(data.toString());
 	    try {
 	        productService.deleteProductImage(userId, productNo, imagePath);

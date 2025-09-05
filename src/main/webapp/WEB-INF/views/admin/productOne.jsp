@@ -202,6 +202,39 @@
 	        </c:forEach>
 	    </div>
 	</div>
+	
+	<div class="image-slider detail-image-slider">
+	    <button class="prev-btn">&lt;</button>
+	
+	    <div class="slides-container">
+	        <c:forEach var="detailImg" items="${product.detailImagePaths}">
+	            <div class="slide-wrapper" style="position: relative;">
+	                <img src="${pageContext.request.contextPath}${detailImg}" alt="상세 이미지"
+	                     class="slide" />
+	                <button class="delete-detail-image-btn" data-img-path="${detailImg}" style="
+	                    position: absolute;
+	                    top: 5px;
+	                    right: 5px;
+	                    background: red;
+	                    color: white;
+	                    border: none;
+	                    border-radius: 50%;
+	                    cursor: pointer;
+	                    font-weight: bold;
+	                ">×</button>
+	            </div>
+	        </c:forEach>
+	    </div>
+	
+	    <button class="next-btn">&gt;</button>
+	
+	    <div class="dots-container">
+	        <c:forEach var="imgPath" items="${product.detailImagePaths}" varStatus="status">
+	            <span class="dot" data-index="${status.index}"></span>
+	        </c:forEach>
+	    </div>
+	</div>
+
 </div>
 
 <!-- ✅ 옵션 가격만 수정 -->
@@ -231,54 +264,65 @@
     <button type="button" id="updatePricesBtn">가격 수정</button>
 </div>
 
-<!-- ✅ 이미지 업로드 -->
-<div class="product-section">
-    <h3>상품 이미지 등록</h3>
-    <form action="/admin/uploadProductImage" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="productNo" value="${product.productNo}" />
-        <input type="file" name="imageFiles" accept="image/*" multiple required />
-        <button type="submit">이미지 업로드</button>
-    </form>
-</div>
+	<!-- ✅ 이미지 업로드 -->
+	<div class="product-section">
+	    <h3>상품 이미지 등록</h3>
+	    <form action="/admin/uploadProductImage" method="post" enctype="multipart/form-data">
+	        <input type="hidden" name="productNo" value="${product.productNo}" />
+	        <input type="file" name="imageFiles" accept="image/*" multiple required />
+	        <button type="submit">이미지 업로드</button>
+	    </form>
+	</div>
+	
+	<div class="product-section">
+	    <h3>상품 상세 이미지 등록</h3>
+	    <form action="/admin/uploadDetailImage" method="post" enctype="multipart/form-data" style="margin-top: 20px;">
+	        <input type="hidden" name="productNo" value="${product.productNo}" />
+	        <input type="file" name="detailImageFiles" accept="image/*" multiple required />
+	        <button type="submit">상세 이미지 업로드</button>
+	    </form>
+	</div>
+	
 </div>
 <!-- 공통 풋터 -->
 <%@include file="/WEB-INF/common/footer/footer.jsp"%>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(function() {
-    const $slidesContainer = $('.slides-container');
-    const $slides = $('.slide');
-    const $dots = $('.dot');
-    const totalSlides = $slides.length;
-    let currentIndex = 0;
+    $('.image-slider').each(function () {
+        const $slider = $(this); // 현재 슬라이더
+        const $slidesContainer = $slider.find('.slides-container');
+        const $slides = $slider.find('.slide');
+        const $dots = $slider.find('.dot');
+        let currentIndex = 0;
 
-    function updateSlider(index) {
-        // 이미지 이동
-        $slidesContainer.css('transform', 'translateX(' + (-index * 100) + '%)');
-        // 점 활성화 변경
-        $dots.removeClass('active').eq(index).addClass('active');
-    }
+        function updateSlider(index) {
+            $slidesContainer.css('transform', 'translateX(' + (-index * 100) + '%)');
+            $dots.removeClass('active').eq(index).addClass('active');
+        }
 
-    $('.next-btn').click(function() {
-        currentIndex = (currentIndex + 1) % totalSlides;
+        $slider.find('.next-btn').click(function () {
+            currentIndex = (currentIndex + 1) % $slides.length;
+            updateSlider(currentIndex);
+        });
+
+        $slider.find('.prev-btn').click(function () {
+            currentIndex = (currentIndex - 1 + $slides.length) % $slides.length;
+            updateSlider(currentIndex);
+        });
+
+        $dots.click(function () {
+            const index = $(this).data('index');
+            currentIndex = index;
+            updateSlider(currentIndex);
+        });
+
+        // 초기 상태
         updateSlider(currentIndex);
     });
 
-    $('.prev-btn').click(function() {
-        currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
-        updateSlider(currentIndex);
-    });
-
-    $dots.click(function() {
-        const index = $(this).data('index');
-        currentIndex = index;
-        updateSlider(currentIndex);
-    });
-
-    // 초기 상태 세팅
-    updateSlider(currentIndex);
-    
- 	// 상품 상태 변경 이벤트
+    // 상품 상태 변경 이벤트
     $('#productStatusSelect').on('change', function() {
         const newStatus = $(this).val();
         const productNo = $(this).data('product-no');
@@ -299,13 +343,13 @@ $(function() {
             }
         });
     });
- 	
- 	// 이미지 삭제
+
+    // 이미지 삭제 버튼
     $(document).on('click', '.delete-image-btn', function () {
         if (!confirm('이 이미지를 삭제하시겠습니까?')) return;
 
         const imgPath = $(this).data('img-path');
-        const productNo = ${product.productNo};
+        const productNo = "${product.productNo}";
 
         $.ajax({
             url: '/admin/deleteProductImage',
@@ -325,7 +369,32 @@ $(function() {
         });
     });
 
-    // ✅ 사용여부 토글 AJAX
+    // 상세 이미지 삭제 버튼
+    $(document).on('click', '.delete-detail-image-btn', function () {
+        if (!confirm('이 상세 이미지를 삭제하시겠습니까?')) return;
+
+        const imgPath = $(this).data('img-path');
+        const productNo = "${product.productNo}";
+
+        $.ajax({
+            url: '/admin/deleteDetailImage',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                productNo: productNo,
+                imagePath: imgPath
+            }),
+            success: function () {
+                alert('상세 이미지가 삭제되었습니다.');
+                location.reload();
+            },
+            error: function () {
+                alert('상세 이미지 삭제에 실패했습니다.');
+            }
+        });
+    });
+
+    // 사용여부 토글 AJAX
     $(document).on('change', '.useStatus-toggle', function() {
         const productNo = $(this).data('product-no');
         const newStatus = $(this).is(':checked') ? 'Y' : 'N';
@@ -346,16 +415,15 @@ $(function() {
         });
     });
 
- 	
- 	// ✅ 옵션 가격 수정 AJAX
+    // 옵션 가격 수정 AJAX
     $('#updatePricesBtn').click(function() {
-        const productNo = ${product.productNo}; // EL 코드 그대로 JS에 사용
+        const productNo = "${product.productNo}"; // 반드시 문자열로 감싸야 함
         const priceUpdates = [];
 
         let isValid = true;
-        
+
         $('.optionNo').each(function(index) {
-        	const optionNo = $(this).val();
+            const optionNo = $(this).val();
             const $priceInput = $('.priceInput').eq(index);
             const priceStr = $priceInput.val().trim();
 
@@ -391,6 +459,8 @@ $(function() {
             });
         });
 
+        if (!isValid) return;
+
         $.ajax({
             url: '/admin/updateProductPrices',
             type: 'POST',
@@ -409,6 +479,7 @@ $(function() {
     });
 });
 </script>
+
 
 
 </body>

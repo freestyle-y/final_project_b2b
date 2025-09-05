@@ -170,7 +170,7 @@
             <div class="info-tabs-container">
               <nav class="tabs-navigation nav">
                 <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#ecommerce-product-details-5-overview" type="button">상품 상세정보</button>
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#ecommerce-product-details-5-customer-reviews" type="button">리뷰 (${fn:length(productReview)})개</button>
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#ecommerce-product-details-5-customer-reviews" type="button">리뷰 ${fn:length(productReview)}개</button>
               </nav>
 
               <div class="tab-content">
@@ -180,7 +180,10 @@
                     <div class="row g-4">
                       <div class="col-lg-8">
                         <div class="content-section">
-                          
+                          	<c:forEach var="detailImg" items="${product.detailImagePaths}">
+							    <img src="${pageContext.request.contextPath}${detailImg}" alt="상세 이미지"
+							    	style="max-width: 1170px; height: auto; display: block; margin: 20px auto;" />
+							</c:forEach>
                         </div>
                       </div>
                     </div>

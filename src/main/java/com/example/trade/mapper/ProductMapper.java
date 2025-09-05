@@ -136,6 +136,9 @@ public interface ProductMapper {
 	
 	// 최대 priority 찾기(이미지)
 	Integer findMaxPriorityByCategoryCode(int categoryCode);
+	// 최대 priority 찾기(상세정보)
+	Integer findMaxDetailPriorityByCategoryCode(int categoryCode);
+	
 	// 최대 priority 찾기(첨부파일)
 	Integer findMaxPriorityByRequestNo(int requestNo);
 	// 파일 저장
@@ -182,4 +185,7 @@ public interface ProductMapper {
 	void removeOptionGroup(@Param("optionGroupName") String optionGroupName, @Param("loginUser") String loginUser);
 	// 옵션 삭제
 	void removeOption(@Param("optionNo") int optionNo, @Param("loginUser") String loginUser);
+	
+	// 상품 디테일 이미지 불러오기
+	List<Map<String, Object>> productDetailImage(int productNo);
 }

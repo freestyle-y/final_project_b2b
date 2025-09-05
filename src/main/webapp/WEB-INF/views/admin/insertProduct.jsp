@@ -398,6 +398,11 @@
             <input type="file" name="productImage" accept="image/*" multiple>
         </div>
 
+		<div class="form-group">
+		    <label>상세 이미지 등록:</label>
+		    <input type="file" name="detailImages" accept="image/*" multiple>
+		</div>
+		
         <div class="form-group">
             <label>대분류:</label>
             <select id="majorCategory" onchange="onMajorCategoryChange()">
