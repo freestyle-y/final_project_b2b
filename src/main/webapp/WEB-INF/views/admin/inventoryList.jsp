@@ -226,7 +226,15 @@
                 success: function() {
                     alert('창고가 지정되었습니다.');
                     
-                    const updatedHtml = selectedText + ' <button type="button" class="assign-btn" onclick="assignWarehouse(' + inventoryId + ')">변경</button>';
+                  	const updatedHtml =
+					  ' <section class="register py-1" style="display: flex; align-items: center; gap: 10px;">' +
+					  selectedText +
+					  '<div class="text-center" style="display: inline-flex;">' +
+					  '<button type="button" class="btn btn-register btn-sm" ' +
+					  'style="font-size: 14px; padding: 8px 15px; line-height: 1.1; height: 40px;" ' +
+					  'onclick="assignWarehouse(' + inventoryId + ')">창고 변경</button>' +
+					  '</div></section>';
+					  
                     $('#warehouse-btn-' + inventoryId).html(updatedHtml);
 
                     $('#warehouseModal').fadeOut(300);
@@ -396,19 +404,46 @@
                     <span id="warehouse-btn-${item.inventoryId}">
                         <c:choose>
                             <c:when test="${empty item.address}">
-                                <button type="button" class="assign-btn" onclick="assignWarehouse(${item.inventoryId})">창고 지정</button>
+	                            <section class="register py-1">
+								  <div class="text-center">
+								    <button type="button"
+								            class="btn btn-register btn-sm"
+								            style="font-size: 14px; padding: 8px 15px; line-height: 1.1; height: 40px;"
+								            onclick="assignWarehouse(${item.inventoryId})">
+								      창고 지정
+								    </button>
+								  </div>
+								</section>
                             </c:when>
                             <c:otherwise>
-                                [${item.postal}] ${item.address} ${item.detailAddress}
-                                <button type="button" class="assign-btn" onclick="assignWarehouse(${item.inventoryId})">변경</button>
-                            </c:otherwise>
+							  <section class="register py-1" style="display: flex; align-items: center; gap: 10px;">
+							    [${item.postal}] ${item.address} ${item.detailAddress}
+							    <div class="text-center" style="display: inline-flex;">
+							      <button type="button"
+							              class="btn btn-register btn-sm"
+							              style="font-size: 14px; padding: 8px 15px; line-height: 1.1; height: 40px;"
+							              onclick="assignWarehouse(${item.inventoryId})">
+							        창고 변경
+							      </button>
+							    </div>
+							  </section>
+							</c:otherwise>
                         </c:choose>
                     </span>
                 </div>
                 <div>
                     <strong>수량:</strong>
                     <input type="number" id="qty-${item.inventoryId}" value="${item.quantity}" min="0" />
-                    <button type="button" class="update-btn" onclick="updateQuantity(${item.inventoryId}, ${item.productNo}, ${item.optionNo})">재고 수정</button>
+                    <section class="register py-1">
+					  <div class="text-center">
+					    <button type="button"
+					            class="btn btn-register btn-sm"
+					            style="font-size: 14px; padding: 8px 15px; line-height: 1.1; height: 40px;"
+					            onclick="updateQuantity(${item.inventoryId}, ${item.productNo}, ${item.optionNo})">
+					      재고 수정
+					    </button>
+					  </div>
+					</section>
                 </div>
                 <div id="status-${item.inventoryId}" class="status-msg"></div>
             </div>

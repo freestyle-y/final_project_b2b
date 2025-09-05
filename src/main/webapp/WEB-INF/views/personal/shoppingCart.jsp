@@ -299,6 +299,7 @@
 				         data-product-no="${item.productNo}"
 				         data-option-no="${item.optionNo}"
 				         data-product-name="${item.productName}"
+				         data-option-name="${item.optionName}"
 				         data-option-name-value="${item.optionNameValue}"
 				         data-quantity="${item.quantity}"
 				         data-price="${item.price}"

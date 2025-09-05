@@ -206,7 +206,9 @@
     <br/>
     <section class="register py-1">
 	   <div class="text-end">
-	      <button type="submit" class="btn btn-register btn-sm">수정 완료</button>
+	      <button type="submit" class="btn btn-register"
+	      	style="font-size: 14px; padding: 10px 20px; height: 45px; line-height: 1.1;">
+	      수정 완료</button>
 	   </div>
 	</section>
 </form>

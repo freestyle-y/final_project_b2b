@@ -128,7 +128,9 @@
 
 	<section class="register py-1">
 	   <div class="text-center">
-	      <button type="button" id="addProductBtn" class="btn btn-register btn-sm">+ 상품 추가</button>
+	      <button type="button" id="addProductBtn" class="btn btn-register"
+	      	style="font-size: 14px; padding: 10px 20px; height: 45px; line-height: 1.1;">
+	      + 상품 추가</button>
 	   </div>
 	</section>
 
@@ -161,7 +163,9 @@
     <br/>
     <section class="register py-1">
 	   <div class="text-end">
-	      <button type="submit" class="btn btn-register btn-sm">요청 제출</button>
+	      <button type="submit" class="btn btn-register btn-sm"
+	      	style="font-size: 14px; padding: 10px 20px; height: 45px; line-height: 1.1;">
+	      요청 제출</button>
 	   </div>
 	</section>
 </form>

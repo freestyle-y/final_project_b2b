@@ -98,7 +98,7 @@ public class ProductController {
 	public String purchase(@ModelAttribute PurchaseListWrapper wrapper,
 			RedirectAttributes redirectAttributes) {
 		List<Order> purchaseList = wrapper.getPurchaseList();
-		//log.info(purchaseList.toString());
+		log.info(purchaseList.toString());
 		String orderNo = null;
 		
 		try {

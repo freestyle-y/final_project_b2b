@@ -410,7 +410,9 @@
                 <input type="text" id="newMajorCategory" placeholder="새 대분류 입력">
                 <section class="register py-1">
 				   <div class="text-center">
-				      <button type="button" class="btn btn-register btn-xs" onclick="addCategory('Major')">대분류 추가</button>
+				      <button type="button" class="btn btn-register btn-xs" onclick="addCategory('Major')"
+				      	style="font-size: 14px; padding: 10px 20px; height: 45px; line-height: 1.1;">
+				      대분류 추가</button>
 				   </div>
 				</section>
             </div>
@@ -425,7 +427,9 @@
                 <input type="text" id="newMiddleCategory" placeholder="새 중분류 입력">
                 <section class="register py-1">
 				   <div class="text-center">
-				      <button type="button" class="btn btn-register btn-xs" onclick="addCategory('Middle')">중분류 추가</button>
+				      <button type="button" class="btn btn-register btn-xs" onclick="addCategory('Middle')"
+				      	style="font-size: 14px; padding: 10px 20px; height: 45px; line-height: 1.1;">
+				      중분류 추가</button>
 				   </div>
 				</section>
             </div>
@@ -440,7 +444,9 @@
                 <input type="text" id="newMinorCategory" placeholder="새 소분류 입력">
                 <section class="register py-1">
 				   <div class="text-center">
-				      <button type="button" class="btn btn-register btn-xs" onclick="addCategory('Minor')">소분류 추가</button>
+				      <button type="button" class="btn btn-register btn-xs" onclick="addCategory('Minor')"
+				      	style="font-size: 14px; padding: 10px 20px; height: 45px; line-height: 1.1;">
+				      소분류 추가</button>
 				   </div>
 				</section>
             </div>
@@ -474,7 +480,9 @@
         
         <section class="register py-1">
 		   <div class="text-end">
-		      <button type="button" class="btn btn-register btn-xs" onclick="addOption()">옵션 추가</button>
+		      <button type="button" class="btn btn-register btn-xs" onclick="addOption()"
+		      	style="font-size: 14px; padding: 10px 20px; height: 45px; line-height: 1.1;">
+		      옵션 추가</button>
 		   </div>
 		</section>
 				
@@ -485,7 +493,9 @@
 
 		<section class="register py-1">
 		   <div class="text-end">
-		      <button type="submit" class="btn btn-register">상품 등록</button>
+		      <button type="submit" class="btn btn-register"
+		      	style="font-size: 14px; padding: 10px 20px; height: 45px; line-height: 1.1;">
+		      상품 등록</button>
 		   </div>
 		</section>
     </form>
