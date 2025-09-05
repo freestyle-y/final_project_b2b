@@ -83,6 +83,15 @@
 						<a href="/admin/containerList" class="stretched-link"></a>
 					</div>
 				</div>
+				
+				<!-- 기업 회원 배송 관리 -->
+				<div class="col-12 col-sm-6 col-md-4 col-lg-3">
+					<div class="card h-100 text-center p-4 border-2 shadow-sm">
+						<i class="bi bi-buildings fs-2 mb-3"></i>
+						<h5 class="fw-semibold mb-0">기업 회원 배송 관리</h5>
+						<a href="/admin/bizDeliveryList" class="stretched-link"></a>
+					</div>
+				</div>
 
 				<!-- 회수 상품 목록 -->
 				<div class="col-12 col-sm-6 col-md-4 col-lg-3">
@@ -92,13 +101,13 @@
 						<a href="/admin/recallProductList" class="stretched-link"></a>
 					</div>
 				</div>
-
-				<!-- 로그인 이력 -->
+				
+				<!-- 개인 회원 배송 관리 -->
 				<div class="col-12 col-sm-6 col-md-4 col-lg-3">
 					<div class="card h-100 text-center p-4 border-2 shadow-sm">
-						<i class="bi bi-clock-history fs-2 mb-3"></i>
-						<h5 class="fw-semibold mb-0">로그인 이력</h5>
-						<a href="/admin/loginHistory" class="stretched-link"></a>
+						<i class="bi bi-truck fs-2 mb-3"></i>
+						<h5 class="fw-semibold mb-0">개인 회원 배송 관리</h5>
+						<a href="/admin/personalDeliveryList" class="stretched-link"></a>
 					</div>
 				</div>
 
@@ -133,22 +142,13 @@
 						<a href="/admin/FAQList" class="stretched-link"></a>
 					</div>
 				</div>
-
-				<!-- 개인 회원 배송 관리 -->
+				
+				<!-- 로그인 이력 -->
 				<div class="col-12 col-sm-6 col-md-4 col-lg-3">
 					<div class="card h-100 text-center p-4 border-2 shadow-sm">
-						<i class="bi bi-truck fs-2 mb-3"></i>
-						<h5 class="fw-semibold mb-0">개인 회원 배송 관리</h5>
-						<a href="/admin/personalDeliveryList" class="stretched-link"></a>
-					</div>
-				</div>
-
-				<!-- 기업 회원 배송 관리 -->
-				<div class="col-12 col-sm-6 col-md-4 col-lg-3">
-					<div class="card h-100 text-center p-4 border-2 shadow-sm">
-						<i class="bi bi-buildings fs-2 mb-3"></i>
-						<h5 class="fw-semibold mb-0">기업 회원 배송 관리</h5>
-						<a href="/admin/bizDeliveryList" class="stretched-link"></a>
+						<i class="bi bi-clock-history fs-2 mb-3"></i>
+						<h5 class="fw-semibold mb-0">로그인 이력</h5>
+						<a href="/admin/loginHistory" class="stretched-link"></a>
 					</div>
 				</div>
 

@@ -122,7 +122,7 @@ public class AdminService {
 				Notification noti = new Notification();
 				noti.setTargetType("USER"); // 개별 회원 대상
 				noti.setTargetValue(userId); // 대상 회원 ID
-				noti.setNotificationType("NC001"); // 알림 유형: 공지
+				noti.setNotificationType("NC005"); // 알림 유형: 공지
 				noti.setNotificationTitle(board.getBoardTitle());
 				noti.setNotificationContent("새로운 공지사항을 확인하세요.");
 				noti.setTargetUrl("/public/noticeOne?boardNo=" + board.getBoardNo());

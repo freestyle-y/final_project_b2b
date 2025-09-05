@@ -45,6 +45,33 @@
 	.dataTables_filter input {
 		width: 300px !important;
 	}
+	
+	/* 현재 페이지(active) 버튼 */
+	.dataTables_wrapper .dataTables_paginate .page-item.active .page-link {
+		background-color: #000 !important; /* 검정 배경 */
+		color: #fff !important;           /* 흰 글씨 */
+		border-color: #000 !important;
+	}
+
+	/* 일반 페이지 버튼 (흰 배경 + 검정 글씨) */
+	.dataTables_wrapper .dataTables_paginate .page-item .page-link {
+		color: #000 !important;
+		background-color: #fff !important;
+	}
+
+	/* hover 시 (일반 버튼만) */
+	.dataTables_wrapper .dataTables_paginate .page-item:not(.active):not(.disabled) .page-link:hover {
+		background-color: #f2f2f2 !important;
+		color: #000 !important;
+	}
+
+	/* disabled 버튼 (이전/다음 비활성화 시) */
+	.dataTables_wrapper .dataTables_paginate .page-item.disabled .page-link {
+		color: #6c757d !important;        /* 글씨 회색 */
+		background-color: #f8f9fa !important; /* 연한 회색 배경 */
+		border-color: #dee2e6 !important; /* 연한 회색 테두리 */
+		pointer-events: none;             /* 클릭 안되게 */
+	}
 </style>
 </head>
 <body>

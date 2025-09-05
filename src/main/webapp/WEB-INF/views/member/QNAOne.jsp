@@ -50,7 +50,7 @@
 		</c:forEach>
 		
 		<div class="text-start">
-			<a href="/member/QNAList" class="btn btn-primary">목록</a>
+			<a href="/member/QNAList" class="btn btn-dark">목록</a>
 			<!-- 로그인 사용자와 작성자가 같을 때만 수정 노출 -->
 			<c:forEach var="qna" items="${QNAOne}">
 				<c:if test="${qna.createUser eq username}">

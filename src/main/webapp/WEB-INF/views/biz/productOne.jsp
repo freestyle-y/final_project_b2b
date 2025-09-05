@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -110,7 +111,7 @@
 				
 				  <!-- 리뷰 개수 표시 -->
 				  <span class="review-text">
-				    (${fn:length(productReview)} reviews)
+				    (${fn:length(productReview)}개의 리뷰)
 				  </span>
 				</div>
               </div>
@@ -119,7 +120,9 @@
 
               <div class="pricing-section">
                 <div class="price-display">
-                  <span class="sale-price" id="sale-price">${optionList[0].price}원</span>
+                  <span class="sale-price" id="sale-price">
+				  <fmt:formatNumber value="${optionList[0].price}" type="number" />원
+				</span>
                 </div>
               </div>
 
@@ -157,25 +160,6 @@
 				  </div>
 				</div>
 
-              <!-- Benefits List -->
-              <div class="benefits-list">
-                <div class="benefit-item">
-                  <i class="bi bi-truck"></i>
-                  <span>Free delivery on orders over $75</span>
-                </div>
-                <div class="benefit-item">
-                  <i class="bi bi-arrow-clockwise"></i>
-                  <span>45-day hassle-free returns</span>
-                </div>
-                <div class="benefit-item">
-                  <i class="bi bi-shield-check"></i>
-                  <span>3-year manufacturer warranty</span>
-                </div>
-                <div class="benefit-item">
-                  <i class="bi bi-headset"></i>
-                  <span>24/7 customer support available</span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -185,8 +169,8 @@
           <div class="col-12">
             <div class="info-tabs-container">
               <nav class="tabs-navigation nav">
-                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#ecommerce-product-details-5-overview" type="button">Overview</button>
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#ecommerce-product-details-5-customer-reviews" type="button">Reviews (${fn:length(productReview)})</button>
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#ecommerce-product-details-5-overview" type="button">상품 상세정보</button>
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#ecommerce-product-details-5-customer-reviews" type="button">리뷰 (${fn:length(productReview)})개</button>
               </nav>
 
               <div class="tab-content">
@@ -196,46 +180,7 @@
                     <div class="row g-4">
                       <div class="col-lg-8">
                         <div class="content-section">
-                          <h3>Product Overview</h3>
-                          <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.</p>
-
-                          <h4>Key Highlights</h4>
-                          <div class="highlights-grid">
-                            <div class="highlight-card">
-                              <i class="bi bi-volume-up"></i>
-                              <h5>Superior Audio</h5>
-                              <p>Ut enim ad minima veniam quis nostrum exercitationem</p>
-                            </div>
-                            <div class="highlight-card">
-                              <i class="bi bi-battery-charging"></i>
-                              <h5>Long Battery</h5>
-                              <p>Excepteur sint occaecat cupidatat non proident</p>
-                            </div>
-                            <div class="highlight-card">
-                              <i class="bi bi-wifi"></i>
-                              <h5>Wireless Tech</h5>
-                              <p>Duis aute irure dolor in reprehenderit in voluptate</p>
-                            </div>
-                            <div class="highlight-card">
-                              <i class="bi bi-person-check"></i>
-                              <h5>Comfort Fit</h5>
-                              <p>Lorem ipsum dolor sit amet consectetur adipiscing</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="col-lg-4">
-                        <div class="package-contents">
-                          <h4>Package Contents</h4>
-                          <ul class="contents-list">
-                            <li><i class="bi bi-check-circle"></i>Premium Audio Device</li>
-                            <li><i class="bi bi-check-circle"></i>Premium Carrying Case</li>
-                            <li><i class="bi bi-check-circle"></i>USB-C Fast Charging Cable</li>
-                            <li><i class="bi bi-check-circle"></i>3.5mm Audio Connector</li>
-                            <li><i class="bi bi-check-circle"></i>Quick Start Guide</li>
-                            <li><i class="bi bi-check-circle"></i>Warranty Documentation</li>
-                          </ul>
+                          
                         </div>
                       </div>
                     </div>
@@ -268,7 +213,7 @@
 			                      <i class="far fa-star"></i>
 			                  </c:forEach>
 						  </div>
-                          <div class="total-reviews">(${fn:length(productReview)}) customer reviews</div>
+                          <div class="total-reviews">(${fn:length(productReview)})개의 리뷰</div>
                         </div>
                       </div>
                     </div>
@@ -512,7 +457,7 @@ $(function() {
 
         pagination.append($('<nav>').append(ul));
         }
-    }
+
 
     function initReviewPagination() {
         const $reviewList = $('#review-list');
