@@ -10,22 +10,10 @@
 
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
-
-	<!-- Page Title -->
-	<div class="page-title light-background">
-		<div class="container d-lg-flex justify-content-between align-items-center">
-			<h1 class="mb-2 mb-lg-0">공지사항 상세</h1>
-			<nav class="breadcrumbs">
-				<ol>
-					<li><%@include file="/WEB-INF/common/home.jsp"%></li>
-					<li class="current">공지사항</li>
-				</ol>
-			</nav>
-		</div>
-	</div>
-	<!-- End Page Title -->
 	
-	<div class="container my-4">
+	<div class="container-xl py-3">
+		<h1 class="h4 mb-3">공지사항 관리</h1>
+		
 		<div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
 			<!-- 제목 -->
 			<h3 class="mb-0">${noticeOne.boardTitle}</h3>
