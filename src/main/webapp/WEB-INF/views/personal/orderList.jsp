@@ -124,14 +124,19 @@ button,.btn{ font-weight:500; }
               <ul class="nav flex-column" role="tablist">
                 <li class="nav-item">
                   <a class="nav-link ${ordersActive ? 'active' : ''}" href="<c:url value='/personal/orderList'/>">
-                    <i class="bi bi-box-seam"></i><span>주문</span>
+                    <i class="bi bi-box-seam"></i>
+                    <span>주문</span>
                     <span class="badge"><c:out value="${orderCount}"/></span>
                   </a>
-                </li>
-                <li class="nav-item">
                   <a class="nav-link ${wishlistActive ? 'active' : ''}" href="<c:url value='/personal/wishList'/>">
-                    <i class="bi bi-heart"></i><span>찜</span>
+                    <i class="bi bi-heart"></i>
+                    <span>찜</span>
                     <span class="badge">${fn:length(wishList)}</span>
+                  </a>
+                  <a class="nav-link ${paymentsActive ? 'active' : ''}" href="<c:url value='/personal/paymentCard'/>">
+                    <i class="bi bi-credit-card-2-front"></i>
+                    <span>카드관리</span>
+                    <span class="badge"></span>
                   </a>
                 </li>
               </ul>

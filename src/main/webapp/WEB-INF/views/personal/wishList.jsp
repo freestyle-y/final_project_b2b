@@ -226,6 +226,11 @@
                       <span>찜</span>
                       <span class="badge">${fn:length(wishList)}</span>
                     </a>
+                    <a class="nav-link ${paymentsActive ? 'active' : ''}" href="<c:url value='/personal/paymentCard'/>">
+                    <i class="bi bi-credit-card-2-front"></i>
+                      <span>카드관리</span>
+                      <span class="badge"></span>
+                    </a>
                   </li>
                 </ul>
               </nav>

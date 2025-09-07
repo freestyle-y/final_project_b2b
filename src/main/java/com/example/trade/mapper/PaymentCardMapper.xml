@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.trade.mapper.PaymentCardMapper">
+	<select id="getCardList" resultType="com.example.trade.dto.PaymentMethod">
+		SELECT
+			 payment_method_no AS paymentMethodNo
+		    ,pm.user_id AS userId
+		    ,pm.payment_code AS paymentCode
+		    ,pm.financial_institution AS financialInstitution
+		    ,pm.account_number AS accountNumber
+		    ,pm.card_password AS cardPassword
+		    ,pm.card_cvc AS cardCvc
+		    ,pm.card_expiration AS cardExpiration
+		    ,pm.is_default AS isDefault
+		    ,pm.create_user AS createUser
+		    ,pm.create_date AS createDate
+		    ,pm.update_user AS updateUser
+		    ,pm.update_date AS updateDate
+		    ,pm.use_status AS useStatus
+		    ,u.`name` AS name
+		FROM payment_method pm INNER JOIN `user` u ON pm.user_id = u.id
+		WHERE user_id = #{userId}
+		AND use_status = "Y"
+	</select>
+	
+	<update id="updateUseStatus">
+		UPDATE payment_method
+		SET
+		 use_status = "N"
+		WHERE
+			payment_method_no = #{paymentMethodNo}
+			AND	user_id = #{userId}
+	</update>
+</mapper>

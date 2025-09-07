@@ -24,4 +24,7 @@ public class PaymentMethod {
 	private String updateUser;
 	private LocalDateTime updateDate;
 	private String useStatus;
+	
+	//  user조인
+	private String name;
 }
