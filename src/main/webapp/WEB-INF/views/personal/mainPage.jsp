@@ -28,7 +28,7 @@
 	  </div><!-- End Section Title -->
 
 	<!-- 검색 input -->
-	<div class="header sticky-top mb-4">
+	<div class="header mb-4">
 		<div class="row justify-content-center">
 			<div class="col-md-3 col-lg-3">
 				<div class="search-form">
