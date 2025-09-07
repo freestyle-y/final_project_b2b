@@ -5,51 +5,6 @@
 <meta charset="UTF-8">
 <%@ include file="/WEB-INF/common/head.jsp"%>
 <title>교환/반품 신청</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        text-align: left;
-    }
-    form {
-        width: 400px;
-        margin: 30px auto;
-        text-align: left;
-        padding: 20px;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        background-color: #f9f9f9;
-    }
-    label {
-        font-weight: bold;
-        display: block;
-        margin-top: 10px;
-        margin-bottom: 5px;
-    }
-    input[type="text"], 
-    input[type="number"],
-    textarea {
-        width: 100%;
-        padding: 6px;
-        margin-bottom: 15px;
-        box-sizing: border-box;
-    }
-    button {
-        width: 100%;
-        padding: 10px;
-        margin: 10px auto;
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-    button:hover {
-        background-color: #45a049;
-    }
-    #exchangeBox, #returnBox {
-        margin-top: 15px;
-    }
-</style>
 </head>
 <body>
 
@@ -57,41 +12,84 @@
 <%@include file="/WEB-INF/common/header/header.jsp"%>
 
 <main class="main">
+
+	<!-- Contact 2 Section -->
+	<section id="contact-2" class="contact-2 section">
+
+		<!-- Contact Form Section -->
+		<div class="container">
+			<div class="row justify-content-center" data-aos="fade-up" data-aos-delay="300">
+				<div class="col-lg-6">
+					<div class="contact-form-wrapper">
+						<h2 class="text-center mb-4">교환/반품 신청</h2>
+						
+							<form id="personalDeliveryForm" action="/personal/exchangeReturn" method="post">
+							<input type="hidden" name="orderNo" value="${orderNo}">
+							<input type="hidden" name="subOrderNo" value="${subOrderNo}">
+							<div class="row g-3">
+								<div class="col-md-12">
+									<div class="form-group">
+											<select id="deliveryStatus" name="deliveryStatus" class="form-select" required onchange="toggleReason()">
+											<option value="DS006" selected>교환</option>
+											<option value="DS004">반품</option>
+										</select>
+									</div>
+								</div>
+								<!-- 교환 -->
+								<div id="exchangeBox">
+								<div class="col-md-12">
+									<div class="form-group">
+										<div class="input-with-icon">
+											<i class="bi bi-text-left"></i>
+											<input type="number" class="form-control" id="exchangeQuantity" name="exchangeQuantity" min="1" max="${orderQuantity}" placeholder="교환 수량 입력" required>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="form-group">
+										<div class="input-with-icon">
+											<i class="bi bi-pencil-square"></i>
+											<input type="text" class="form-control" id="exchangeReason" name="exchangeReason" rows="3" placeholder="교환 사유 입력" required>
+										</div>
+									</div>
+								</div>
+								</div>
+								<!-- 반품 -->
+								<div id="returnBox" style="display:none;">
+								<div class="col-md-12">
+									<div class="form-group">
+										<div class="input-with-icon">
+											<i class="bi bi-text-left"></i>
+											<input type="number" class="form-control" id="returnQuantity" name="returnQuantity" min="1" max="${orderQuantity}" placeholder="반품 수량 입력" required>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="form-group">
+										<div class="input-with-icon">
+											<i class="bi bi-pencil-square"></i>
+											<input type="text" class="form-control" id="returnReason" name="returnReason" rows="3" placeholder="반품 사유 입력" disabled required>
+										</div>
+									</div>
+								</div>
+								</div>
+								<!-- 버튼 -->
+								<section class="register py-1">
+									<div class="d-grid">
+										<button type="submit" class="btn btn-register">신청</button>
+									</div>
+								</section>
+							</div>
+						</form>
+						
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</section>
+	<!-- /Contact 2 Section -->
 	
-    <h1>교환/반품 신청</h1>
-    
-    <!-- 교환/반품 신청 폼 -->
-    <form action="/personal/exchangeReturn" method="post">
-    	<input type="hidden" name="orderNo" value="${orderNo}">
-    	<input type="hidden" name="subOrderNo" value="${subOrderNo}">
-    	
-		<label for="deliveryStatus">구분</label>
-		<select id="deliveryStatus" name="deliveryStatus" required onchange="toggleReason()">
-			<option value="DS006" selected>교환</option>
-			<option value="DS004">반품</option>
-		</select>
-		
-		<!-- 교환 -->
-		<div id="exchangeBox">
-			<label for="exchangeQuantity">교환 수량</label>
-			<input type="number" id="exchangeQuantity" name="exchangeQuantity" min="1" max="${orderQuantity}" required>
-			
-			<label for="exchangeReason">교환 사유</label>
-			<textarea id="exchangeReason" name="exchangeReason" rows="6" required></textarea>
-		</div>
-		
-		<!-- 반품 -->
-		<div id="returnBox" style="display:none;">
-			<label for="returnQuantity">반품 수량</label>
-			<input type="number" id="returnQuantity" name="returnQuantity" min="1" max="${orderQuantity}" disabled required>
-			
-			<label for="returnReason">반품 사유</label>
-			<textarea id="returnReason" name="returnReason" rows="6" disabled required></textarea>
-		</div>
-
-		<button type="submit">신청</button>
-    </form>
-
 </main>
 
 <!-- 공통 풋터 -->

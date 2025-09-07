@@ -11,20 +11,6 @@
 <!-- 공통 헤더 -->
 <%@include file="/WEB-INF/common/header/header.jsp"%>
 
-	<!-- Page Title -->
-	<div class="page-title light-background">
-		<div class="container d-lg-flex justify-content-between align-items-center">
-			<h1 class="mb-2 mb-lg-0">교환 처리(개인)</h1>
-			<nav class="breadcrumbs">
-				<ol>
-					<li><%@include file="/WEB-INF/common/home.jsp"%></li>
-					<li class="current">Delivery</li>
-				</ol>
-			</nav>
-		</div>
-	</div>
-	<!-- End Page Title -->
-
 	<!-- Contact 2 Section -->
 	<section id="contact-2" class="contact-2 section">
 
