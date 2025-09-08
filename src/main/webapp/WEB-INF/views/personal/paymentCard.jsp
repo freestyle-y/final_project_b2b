@@ -25,13 +25,45 @@ html, body, button, input, select, textarea {
 .num, .mono { font-variant-numeric: tabular-nums; font-feature-settings:"tnum" 1; letter-spacing:.1px; }
 
 /* ===== 좌측 메뉴 ===== */
-.profile-menu .user-info{padding:16px;border:1px solid #eef2f5;border-radius:12px;background:#fff;margin-bottom:12px}
-.profile-menu .user-info h4{display:flex;align-items:center;gap:8px;margin:0 0 8px}
-.profile-menu .user-status{color:#6b7280;display:flex;align-items:center;gap:6px}
-.menu-nav .nav-link{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid #eef2f5;border-radius:10px;margin-bottom:8px;padding:10px 12px;background:#fff}
-.menu-nav .nav-link.active{background:#111827;color:#fff;border-color:#111827}
-.menu-nav .badge{background:#f3f4f6;border-radius:999px;padding:2px 8px;font-size:.8rem}
-.menu-nav .nav-link.active .badge{background:rgba(255,255,255,.2);color:#fff}
+/* ===== 좌측 메뉴 (첫 번째 스타일과 동일) ===== */
+.profile-menu .user-info{
+  padding:16px;
+  background:transparent;   /* 배경 투명 */
+  border:none;              /* 테두리 제거 */
+  margin-bottom:12px
+}
+
+.menu-nav .nav-link{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  border:none;              /* ✅ 테두리 제거 */
+  border-radius:8px;
+  margin-bottom:8px;
+  padding:10px 12px;
+  background:transparent;   /* 배경 투명 */
+  color:#111827;
+  font-weight:500;
+}
+
+.menu-nav .nav-link.active{
+  background:#111827;
+  color:#fff;
+}
+
+.menu-nav .badge{
+  background:#f3f4f6;
+  border-radius:999px;
+  padding:2px 8px;
+  font-size:.8rem
+}
+
+.menu-nav .nav-link.active .badge{
+  background:rgba(255,255,255,.2);
+  color:#fff;
+}
+
 
 /* ===== 상단 툴바 ===== */
 .section-header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:8px}
@@ -125,58 +157,60 @@ html, body, button, input, select, textarea {
       <div class="row g-4">
 
         <!-- ===== 좌측 사이드 ===== -->
-        <div class="col-lg-3">
-          <div class="profile-menu collapse d-lg-block" id="profileMenu">
-            <c:set var="currUri" value="${pageContext.request.requestURI}" />
-            <c:set var="ordersActive"   value="${fn:contains(currUri, '/personal/orderList')}" />
-            <c:set var="wishlistActive" value="${fn:contains(currUri, '/personal/wishList')}" />
-            <c:set var="paymentsActive" value="${fn:contains(currUri, '/personal/paymentCard')}" />
+<div class="col-lg-3">
+  <div class="profile-menu collapse d-lg-block" id="profileMenu">
+    <c:set var="currUri" value="${pageContext.request.requestURI}" />
+    <c:set var="ordersActive"   value="${fn:contains(currUri, '/personal/orderList')}" />
+    <c:set var="wishlistActive" value="${fn:contains(currUri, '/personal/wishList')}" />
+    <c:set var="paymentsActive" value="${fn:contains(currUri, '/personal/paymentCard')}" />
 
-            <!-- 이름: paymentMethodList[0].name 사용, 없으면 '회원님' -->
-            <c:set var="displayName"
-                   value="${(not empty paymentMethodList and not empty paymentMethodList[0].name)
-                             ? paymentMethodList[0].name : '회원님'}" />
-            <c:set var="orderCount"   value="${empty orderGroupMap ? 0 : fn:length(orderGroupMap)}" />
-            <c:set var="wishCount"    value="${empty wishList ? 0 : fn:length(wishList)}" />
-            <c:set var="paymentCount" value="${empty paymentMethodList ? 0 : fn:length(paymentMethodList)}" />
+    <!-- ✅ 이름 출력 -->
+    <c:set var="displayName"
+           value="${(not empty paymentMethodList and not empty paymentMethodList[0].name)
+                     ? paymentMethodList[0].name : '회원님'}" />
 
-            <div class="user-info" data-aos="fade-right">
-              <h4><c:out value="${displayName}"/> <span class="status-badge"><i class="bi bi-shield-check"></i></span></h4>
-              <div class="user-status">
-                <i class="bi bi-award"></i>
-                <c:set var="cat" value="${(not empty userInformation and not empty userInformation[0].customerCategory)
-                                          ? userInformation[0].customerCategory : ''}" />
-                <span>
-                  <c:choose>
-                    <c:when test="${cat eq 'CC003'}">개인회원</c:when>
-                    <c:when test="${cat eq 'CC002'}">기업</c:when>
-                    <c:when test="${cat eq 'CC001' or cat eq '001'}">관리자</c:when>
-                    <c:otherwise>회원</c:otherwise>
-                  </c:choose>
-                </span>
-              </div>
-            </div>
+    <div class="user-info" data-aos="fade-right">
+      <h4><c:out value="${displayName}"/> <span class="status-badge"><i class="bi bi-shield-check"></i></span></h4>
+      <div class="user-status">
+        <i class="bi bi-award"></i>
+        <c:set var="cat" value="${(not empty userInformation and not empty userInformation[0].customerCategory)
+                                  ? userInformation[0].customerCategory : ''}" />
+        <span>
+          <c:choose>
+            <c:when test="${cat eq 'CC003'}">개인회원</c:when>
+            <c:when test="${cat eq 'CC002'}">기업회원</c:when>
+            <c:when test="${cat eq 'CC001' or cat eq '001'}">관리자</c:when>
+            <c:otherwise>개인회원</c:otherwise>
+          </c:choose>
+        </span>
+      </div>
+    </div>
 
-            <nav class="menu-nav">
-              <ul class="nav flex-column" role="tablist">
-                <li class="nav-item">
-                  <a class="nav-link ${ordersActive ? 'active' : ''}" href="<c:url value='/personal/orderList'/>">
-                    <i class="bi bi-box-seam"></i><span>주문</span>
-                    <span class="badge"><c:out value="${order}"/></span>
-                  </a>
-                  <a class="nav-link ${wishlistActive ? 'active' : ''}" href="<c:url value='/personal/wishList'/>">
-                    <i class="bi bi-heart"></i><span>찜</span>
-                    <span class="badge"><c:out value="${fn:length(wishList)}"/></span>
-                  </a>
-                  <a class="nav-link ${paymentsActive ? 'active' : ''}" href="<c:url value='/personal/paymentCard'/>">
-                    <i class="bi bi-credit-card-2-front"></i><span>결제수단</span>
-                    <span class="badge"><c:out value="${paymentCount}"/></span>
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          </div>
-        </div><!-- /col-lg-3 -->
+    <!-- ✅ 메뉴 (첫 번째와 동일한 구조) -->
+    <nav class="menu-nav">
+      <ul class="nav flex-column" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link ${ordersActive ? 'active' : ''}" href="<c:url value='/personal/orderList'/>">
+            <i class="bi bi-box-seam"></i>
+            <span>주문</span>
+            <span class="badge">${order}</span>
+          </a>
+          <a class="nav-link ${wishlistActive ? 'active' : ''}" href="<c:url value='/personal/wishList'/>">
+            <i class="bi bi-heart"></i>
+            <span>찜</span>
+            <span class="badge"><c:out value="${empty wishList ? 0 : fn:length(wishList)}"/></span>
+          </a>
+          <a class="nav-link ${paymentsActive ? 'active' : ''}" href="<c:url value='/personal/paymentCard'/>">
+            <i class="bi bi-credit-card-2-front"></i>
+            <span>카드관리</span>
+            <span class="badge"><c:out value="${empty paymentMethodList ? 0 : fn:length(paymentMethodList)}"/></span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
 
         <!-- ===== 우측 컨텐츠: 결제수단 목록 ===== -->
         <div class="col-lg-9">

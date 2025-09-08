@@ -297,4 +297,11 @@
   WHERE order_no = #{orderNo}
 </select>
 
+
+	<select id="getCardCount" resultType="int">
+		SELECT COUNT(payment_method_no)
+			FROM payment_method
+			WHERE user_id = #{userId}
+			AND use_status="Y"
+	</select>
 </mapper>

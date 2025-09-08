@@ -51,8 +51,8 @@ public class OrderController {
 
     	List<Order> orderList = orderService.getOrderList(orderNo);
         List<PaymentMethod> cardList = paymentMethodService.getUserCardList(userId);
-        
         List<Address> mainAddress = addressService.getMainAddress(userId);
+        
         model.addAttribute("mainAddress", mainAddress);
         
         int reward = orderService.getReward(userId);
@@ -92,6 +92,8 @@ public class OrderController {
                 .collect(Collectors.groupingBy(Order::getOrderNo, LinkedHashMap::new, Collectors.toList()));
 
         List<Map<String, Object>> wishList = productService.selectWishList(userId);
+        int cardCount = orderService.getCardCount(userId);
+        model.addAttribute("cardCount", cardCount);
         model.addAttribute("userInformation", userInformation);
         model.addAttribute("orderGroupMap", orderGroupMap);
         model.addAttribute("wishList", wishList);

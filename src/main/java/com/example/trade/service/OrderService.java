@@ -100,5 +100,10 @@ public class OrderService {
 	}
 
 
+	public int getCardCount(String userId) {
+		return orderMapper.getCardCount(userId);
+	}
+
+
 
 }
