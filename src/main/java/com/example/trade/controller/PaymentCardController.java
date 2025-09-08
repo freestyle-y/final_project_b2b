@@ -46,7 +46,7 @@ public class PaymentCardController {
     							   ,Principal principal) {
     	String userId = principal.getName();
     	paymentCardService.updateUseStatus(paymentMethodNo, userId);
-    	return "personal/paymentCard";
+    	return "redirect:/personal/paymentCard";
     }
     
     @PostMapping("/personal/setDefault")

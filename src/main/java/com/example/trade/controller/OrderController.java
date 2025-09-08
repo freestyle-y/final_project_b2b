@@ -1,6 +1,7 @@
 package com.example.trade.controller;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,30 +87,66 @@ public class OrderController {
         String userId = principal.getName();
 
         List<Order> orderList = orderService.getOrderListByuserId(userId);
-        List<User> userInformation = orderService.getUserInformation(userId);
-        // 주문번호 기준으로 그룹핑
         Map<String, List<Order>> orderGroupMap = orderList.stream()
                 .collect(Collectors.groupingBy(Order::getOrderNo, LinkedHashMap::new, Collectors.toList()));
-
         List<Map<String, Object>> wishList = productService.selectWishList(userId);
+        List<User> userInformation = orderService.getUserInformation(userId);
+        // ✅ 주문번호별 적립금 사용액
+        Map<String, Integer> usedPointMap = new HashMap<>();
+        for (String orderNo : orderGroupMap.keySet()) {
+            int usedPoint = orderService.getUsedPointByOrderNo(orderNo);
+            usedPointMap.put(orderNo, usedPoint);
+        }
+
+        // ✅ 주문번호별 카카오페이 포인트 사용액
+        Map<String, Integer> kakaoPayPointMap = new HashMap<>();
+        for (String orderNo : orderGroupMap.keySet()) {
+            int kakaoPayUsed = orderService.getKakaoPayPointByOrderNo(orderNo);
+            kakaoPayPointMap.put(orderNo, kakaoPayUsed);
+        }
         int cardCount = orderService.getCardCount(userId);
-        model.addAttribute("cardCount", cardCount);
         model.addAttribute("userInformation", userInformation);
-        model.addAttribute("orderGroupMap", orderGroupMap);
         model.addAttribute("wishList", wishList);
-        
+        model.addAttribute("cardCount", cardCount);
+        model.addAttribute("orderGroupMap", orderGroupMap);
+        model.addAttribute("usedPointMap", usedPointMap);          // ✅ 추가
+        model.addAttribute("kakaoPayPointMap", kakaoPayPointMap);  // ✅ 기존 추가분
+
         return "personal/orderList";
     }
+
     
     // 주문 상세
+ // 주문 상세
     @GetMapping("/personal/orderOne")
     public String orderOne(@RequestParam("orderNo") String orderNo, Model model) {
         List<Order> orderDetailList = orderService.getOrderDetailByOrderNo(orderNo);
+
+        // ✅ 추가: 상품합계(라인합)
+        int subtotal = 0;
+        for (Order o : orderDetailList) {
+            subtotal += o.getPrice() * o.getOrderQuantity();
+        }
+
+        // 기존: 자체 적립금 사용액
         int usedPoint = orderService.getUsedPointByOrderNo(orderNo);
-        model.addAttribute("usedPoint", usedPoint);
+
+        // ✅ 추가: 카카오페이 포인트 사용액
+        int usedKakaoPoint = orderService.getKakaoPayPointByOrderNo(orderNo);
+
+        // ✅ 추가: 최종 결제금액 = 상품합계 - 적립금 - 카카오페이포인트 (음수 방지)
+        int finalPay = subtotal - usedPoint - usedKakaoPoint;
+        if (finalPay < 0) finalPay = 0;
+
+        // 모델 주입
         model.addAttribute("orderDetailList", orderDetailList);
+        model.addAttribute("usedPoint", usedPoint);
+        model.addAttribute("usedKakaoPoint", usedKakaoPoint);   // ✅ 추가
+        model.addAttribute("subtotal", subtotal);                // ✅ 추가
+        model.addAttribute("finalPay", finalPay);                // ✅ 추가
         return "personal/orderOne";
     }
+
     
  // ✅ 수정: pg_token을 optional로 받고, 있으면 승인 호출
     @GetMapping("/personal/payment/orderResult")
@@ -138,6 +175,8 @@ public class OrderController {
             usedKakaoPoint  = approval.getUsedKakaoPoint();
             realPaidAmount  = approval.getRealPaidAmount();
 
+            orderService.insertKakaoPayPointUse(orderNo, approval);
+            
             session.setAttribute("or_usedKakaoPoint_" + orderNo, usedKakaoPoint);
             session.setAttribute("or_realPaidAmount_" + orderNo, realPaidAmount);
 

@@ -179,9 +179,23 @@ button,.btn{ font-weight:500; }
 
                 <!-- 합계 -->
                 <c:set var="orderTotal" value="0" />
-                <c:forEach var="it" items="${items}">
-                  <c:set var="orderTotal" value="${orderTotal + (it.price * it.orderQuantity)}" />
-                </c:forEach>
+					<c:forEach var="it" items="${items}">
+					  <c:set var="orderTotal" value="${orderTotal + (it.price * it.orderQuantity)}" />
+					</c:forEach>
+					
+					<!-- 주문별 적립금 사용 -->
+					<c:set var="usedPoint"
+					       value="${empty usedPointMap ? 0 : (empty usedPointMap[orderNo] ? 0 : usedPointMap[orderNo])}" />
+					
+					<!-- 주문별 카카오페이 포인트 사용 -->
+					<c:set var="kakaoPayUsed"
+					       value="${empty kakaoPayPointMap ? 0 : (empty kakaoPayPointMap[orderNo] ? 0 : kakaoPayPointMap[orderNo])}" />
+					
+					<!-- 최종 결제 금액 -->
+					<c:set var="finalPay" value="${orderTotal - usedPoint - kakaoPayUsed}" />
+					<c:if test="${finalPay < 0}">
+					  <c:set var="finalPay" value="0" />
+					</c:if>
 
                 <!-- 상태 매핑 -->
                 <c:set var="statusClass" value="processing" />
@@ -255,10 +269,26 @@ button,.btn{ font-weight:500; }
                         <span>수량</span>
                         <span>${fn:length(items)} 개</span>
                       </div>
-                      <div class="info-row">
-                        <span>합계</span>
-                        <span class="price">₩<fmt:formatNumber value="${orderTotal}" type="number"/></span>
-                      </div>
+
+                      <!-- ✅ 수정: 결제 금액 = 상품합계 - 카카오페이 포인트 -->
+						<div class="info-row">
+						  <span>결제 금액</span>
+						  <span class="price">₩<fmt:formatNumber value="${finalPay}" type="number"/></span>
+						</div>
+						
+						<c:if test="${usedPoint > 0}">
+						  <div class="info-row">
+						    <span class="text-muted">적립금 사용</span>
+						    <span class="price text-muted">-₩<fmt:formatNumber value="${usedPoint}" type="number"/></span>
+						  </div>
+						</c:if>
+						
+						<c:if test="${kakaoPayUsed > 0}">
+						  <div class="info-row">
+						    <span class="text-muted">카카오페이 포인트</span>
+						    <span class="price text-muted">-₩<fmt:formatNumber value="${kakaoPayUsed}" type="number"/></span>
+						  </div>
+						</c:if>
                     </div>
                   </div>
 
@@ -494,9 +524,8 @@ button,.btn{ font-weight:500; }
     }
   });
 
-  // ✅ 헤더 전체 클릭 & 복사 버튼 처리
+  // 헤더/복사
   grid.addEventListener('click', function(e){
-    // 복사 버튼
     const copyBtn = e.target.closest('.copy-btn');
     if (copyBtn && grid.contains(copyBtn)){
       const val = copyBtn.dataset.copy || '';
@@ -509,14 +538,12 @@ button,.btn{ font-weight:500; }
       }
       return;
     }
-    // 헤더 영역 아무 곳이나 클릭 → 상세이동 (링크/버튼/토글 제외)
     const header = e.target.closest('.order-card .order-header');
     if (header && grid.contains(header) && !e.target.closest('a,button,.js-collapse-toggle')){
       const href = header.getAttribute('data-detail-href');
       if (href) window.location.assign(href);
       return;
     }
-    // 직접 링크 클릭도 정상 동작
     const link = e.target.closest('.order-card .order-id .order-link');
     if (link && grid.contains(link)){
       e.preventDefault();

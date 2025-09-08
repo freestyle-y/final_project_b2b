@@ -135,9 +135,27 @@
         <tr><td>받는 주소</td><td>${orderDetailList[0].address} ${orderDetailList[0].detailAddress}</td></tr>
         <tr><td>배송 요청사항</td><td>${orderDetailList[0].deliveryRequest}</td></tr>
         <tr><th colspan="2">결제 정보</th></tr>
-        <tr><td>결제 수단</td><td>${orderDetailList[0].paymentType}</td></tr>
-        <tr><td>적립금 사용</td><td><fmt:formatNumber value="${usedPoint}" type="number"/>원</td></tr> <!-- ✅ [수정] 콤마/원 -->
-        <tr><td>총 결제금액</td><td><fmt:formatNumber value="${orderDetailList[0].totalPrice-usedPoint}" type="number"/>원</td></tr> <!-- ✅ -->
+<tr><td>결제 수단</td><td>${orderDetailList[0].paymentType}</td></tr>
+
+<!-- ✅ 추가: 상품합계 -->
+<tr><td>상품 합계</td>
+    <td><fmt:formatNumber value="${subtotal}" type="number"/>원</td></tr>
+
+<!-- 기존: 적립금 사용 -->
+<tr><td>적립금 사용</td>
+    <td><fmt:formatNumber value="${usedPoint}" type="number"/>원</td></tr>
+
+<!-- ✅ 추가: 카카오페이 포인트 사용 -->
+<c:if test="${usedKakaoPoint > 0}">
+  <tr>
+    <td>카카오페이 포인트 사용</td>
+    <td><fmt:formatNumber value="${usedKakaoPoint}" type="number"/>원</td>
+  </tr>
+</c:if>
+
+<!-- ✅ 수정: 총 결제금액 = subtotal - usedPoint - usedKakaoPoint -->
+<tr><td>총 결제금액</td>
+    <td><strong><fmt:formatNumber value="${finalPay}" type="number"/></strong>원</td></tr>
       </tbody>
     </table>
 

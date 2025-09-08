@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.example.trade.dto.Attachment;
+import com.example.trade.dto.KakaoPayApprovalResponse;
 import com.example.trade.dto.Order;
 import com.example.trade.dto.User;
 
@@ -34,5 +35,11 @@ public interface OrderMapper {
 	int decreaseStock(@Param("productNo") int productNo, @Param("optionNo") int optionNo, @Param("quantity") int quantity);
 	List<User> getUserInformation(String userId);
 	Integer getUsedPointByOrderNo(String orderNo);
-	int getCardCount(String userId);	
+	int getCardCount(String userId);
+	void insertKakaoPayPointUse(@Param("orderNo") String orderNo,
+            @Param("usedKakaoPoint") int usedKakaoPoint);
+	List<Map<String, Object>> selectKakaoPayPointByOrderNos(List<String> orderNos);
+
+	Integer selectKakaoPayPointByOrderNo(@org.apache.ibatis.annotations.Param("orderNo") String orderNo);
+
 }

@@ -19,7 +19,7 @@
         manager_name    AS managerName,
         main_address    AS mainAddress
     FROM address
-    WHERE user_id = #{userId}
+    WHERE user_id = #{userId} AND use_status ="Y"
 </select>
 
 	
@@ -60,7 +60,7 @@
     		,nickname AS nickname
     		,main_address AS mainAddress
     	FROM address
-    	WHERE user_id = #{userId} AND main_address = 'Y'
+    	WHERE user_id = #{userId} AND main_address = 'Y' AND use_status = "Y"
     </select>
     
 	<!-- 기본 배송지 변경 Y -->
@@ -79,9 +79,10 @@
 	</update>
 	
 	<!-- 배송지 삭제 -->
-	<delete id="deleteAddress">
-		DELETE FROM address
+	<update id="deleteAddress">
+		UPDATE address
+		SET use_status = "N"
 		WHERE user_id = #{userId}
 		AND address_no = #{addressNo}
-	</delete>
+	</update>
 </mapper>

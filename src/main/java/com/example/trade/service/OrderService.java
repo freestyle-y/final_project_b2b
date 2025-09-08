@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.trade.dto.Attachment;
+import com.example.trade.dto.KakaoPayApprovalResponse;
 import com.example.trade.dto.Order;
 import com.example.trade.dto.User;
 import com.example.trade.mapper.OrderMapper;
@@ -102,6 +103,33 @@ public class OrderService {
 
 	public int getCardCount(String userId) {
 		return orderMapper.getCardCount(userId);
+	}
+
+
+	public void insertKakaoPayPointUse(String orderNo, KakaoPayApprovalResponse approval) {
+	    orderMapper.insertKakaoPayPointUse(orderNo, approval.getUsedKakaoPoint());
+	}
+
+
+	// ✅ 추가
+	public Map<String, Integer> getKakaoPayPointMap(List<String> orderNos) {
+	    if (orderNos == null || orderNos.isEmpty()) return java.util.Collections.emptyMap();
+	    // result: [{order_no=..., kakaoPay_reward_use=...}, ...]
+	    List<Map<String, Object>> rows = orderMapper.selectKakaoPayPointByOrderNos(orderNos);
+
+	    // Map<String, Integer>로 변환
+	    return rows.stream().collect(Collectors.toMap(
+	        r -> (String) r.get("order_no"),
+	        r -> ((Number) r.getOrDefault("kakaoPay_reward_use", 0)).intValue(),
+	        (a, b) -> a,
+	        LinkedHashMap::new
+	    ));
+	}
+
+	// ✅ 추가: 단건 주문의 카카오페이 포인트 사용액 조회
+	public int getKakaoPayPointByOrderNo(String orderNo) {
+	    Integer v = orderMapper.selectKakaoPayPointByOrderNo(orderNo);
+	    return v != null ? v.intValue() : 0;
 	}
 
 

@@ -81,7 +81,7 @@
 		    ), 0)
 		    -
 		    IFNULL((
-		        SELECT SUM(rh.reward_use)
+		        SELECT SUM(DISTINCT rh.reward_use)
 		        FROM reward_history rh
 		        JOIN `order` o2 ON rh.order_no = o2.order_no
 		        WHERE o2.user_id = #{userId}
@@ -245,6 +245,14 @@
 		)	
 	</insert>
 	
+	<insert id="insertKakaoPayPointUse">
+		INSERT INTO reward_history(
+			order_no, kakaoPay_reward_use
+		) VALUES (
+			#{orderNo}, ${usedKakaoPoint}
+		)
+	
+	</insert>
 	<update id="updateDeliveryAddress">
 	    UPDATE `order`
 	    SET address_no = #{addressNo}
@@ -304,4 +312,19 @@
 			WHERE user_id = #{userId}
 			AND use_status="Y"
 	</select>
+	
+	<select id="selectKakaoPayPointByOrderNos" parameterType="map" resultType="map">
+  SELECT order_no, kakaoPay_reward_use
+  FROM reward_history
+  WHERE order_no IN
+  <foreach collection="orderNos" item="no" open="(" separator="," close=")">
+    #{no}
+  </foreach>
+</select>
+
+<select id="selectKakaoPayPointByOrderNo" parameterType="string" resultType="int">
+  SELECT COALESCE(SUM(kakaoPay_reward_use), 0)
+  FROM reward_history
+  WHERE order_no = #{orderNo}
+</select>
 </mapper>

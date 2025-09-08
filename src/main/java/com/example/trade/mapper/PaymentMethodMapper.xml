@@ -10,7 +10,7 @@
 	        card_expiration AS cardExpiration,
 	        is_default AS isDefault
 	    FROM payment_method
-	    WHERE user_id = #{userId}
+	    WHERE user_id = #{userId} AND use_status="Y"
 	</select>
 	
 	<insert id="insertCard" parameterType="com.example.trade.dto.PaymentMethod">

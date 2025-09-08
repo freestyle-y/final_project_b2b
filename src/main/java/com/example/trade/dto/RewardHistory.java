@@ -11,4 +11,5 @@ public class RewardHistory {
 	private int rewardHistoryNo;
 	private String orderNo;
 	private int rewardUse;
+	private int kakaoPayRewardUse;
 }
