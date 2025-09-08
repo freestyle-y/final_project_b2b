@@ -166,7 +166,7 @@ html, body, button, input, select, textarea {
                   </a>
                   <a class="nav-link ${wishlistActive ? 'active' : ''}" href="<c:url value='/personal/wishList'/>">
                     <i class="bi bi-heart"></i><span>찜</span>
-                    <span class="badge"><c:out value="${wishCount}"/></span>
+                    <span class="badge"><c:out value="${fn:length(wishList)}"/></span>
                   </a>
                   <a class="nav-link ${paymentsActive ? 'active' : ''}" href="<c:url value='/personal/paymentCard'/>">
                     <i class="bi bi-credit-card-2-front"></i><span>결제수단</span>

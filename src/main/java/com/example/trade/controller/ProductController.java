@@ -23,11 +23,13 @@ import com.example.trade.dto.Category;
 import com.example.trade.dto.CommTbl;
 import com.example.trade.dto.Option;
 import com.example.trade.dto.Order;
+import com.example.trade.dto.PaymentMethod;
 import com.example.trade.dto.Product;
 import com.example.trade.dto.ProductRequest;
 import com.example.trade.dto.ProductRequestForm;
 import com.example.trade.dto.PurchaseListWrapper;
 import com.example.trade.service.OrderService;
+import com.example.trade.service.PaymentCardService;
 import com.example.trade.service.ProductService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -38,9 +40,11 @@ public class ProductController {
 
 	private final ProductService productService;
 	private final OrderService orderService;
-	public ProductController(ProductService productService, OrderService orderService) {
+	private final PaymentCardService paymentCardService;
+	public ProductController(ProductService productService, OrderService orderService, PaymentCardService paymentCardService) {
 		this.productService = productService;
 		this.orderService = orderService;
+		this.paymentCardService = paymentCardService;
 	}
 	
 	// 상품 후기 페이지
@@ -69,6 +73,8 @@ public class ProductController {
 		String name = productService.selectName(loginUserName);
 		List<Map<String, Object>> wishList = productService.selectWishList(loginUserName);
 		//log.info(wishList.toString());
+		List<PaymentMethod> list = paymentCardService.getCardList(loginUserName);
+        model.addAttribute("paymentMethodList", list);
 		List<Order> orderList = orderService.getOrderListByuserId(loginUserName);
 		Map<String, List<Order>> orderGroupMap = orderList.stream()
                 .collect(Collectors.groupingBy(Order::getOrderNo, LinkedHashMap::new, Collectors.toList()));
