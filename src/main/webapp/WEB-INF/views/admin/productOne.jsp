@@ -148,13 +148,20 @@
 <div class="product-section">
     <h3>상품 정보</h3>
     <p><strong>상품명:</strong> ${product.productName}</p>
-    
     <div class="form-group">
 	    <label><strong>상품 상태 변경:</strong></label>
 	    <select id="productStatusSelect" data-product-no="${product.productNo}">
+		    <!-- 선택 안내 옵션: 기본 선택됨 + 선택 불가 -->
+		    <option value="" disabled
+		        <c:if test="${product.productStatus != 'GS001' and product.productStatus != 'GS004'}">
+		            selected
+		        </c:if>
+		    >-- 상태를 선택하세요 --</option>
+		
+		    <!-- 실제 선택 가능한 옵션들 -->
 		    <c:forEach var="status" items="${productStatus}">
 		        <c:if test="${status.codeNumber == 'GS001' || status.codeNumber == 'GS004'}">
-		            <option value="${status.codeNumber}" 
+		            <option value="${status.codeNumber}"
 		                <c:if test="${status.codeNumber == product.productStatus}">selected</c:if>>
 		                ${status.codeName}
 		            </option>
