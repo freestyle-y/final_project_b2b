@@ -67,4 +67,6 @@ public interface UserMapper {
     );
     // 회원상태 수정
     void updateMemberStatus(String userId, String customerStatus, String updateUser);
+
+	int getTotalReward(String id);
 }

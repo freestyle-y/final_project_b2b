@@ -319,4 +319,8 @@ public class MemberService {
         return false; // 번호가 일치하지 않으면 실패
     }
 
+	public int getTotalReward(String id) {
+		return userMapper.getTotalReward(id);
+	}
+
 }

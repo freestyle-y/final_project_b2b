@@ -41,7 +41,8 @@ public class MemberController {
         }
         User user = memberService.getUserById(id);
         model.addAttribute("user", user);
-        
+        int reward = memberService.getTotalReward(id);
+        model.addAttribute("reward", reward);
         // 연동된 소셜 계정 조회
         model.addAttribute("socialList", memberService.getLinkedSocials(user.getId()));
         return "member/myPage";

@@ -320,7 +320,7 @@
                                         <div class="form-group">
                                             <label for="totalReward">보유 적립금</label>
                                             <div class="input-wrapper">
-                                                <input type="text" class="form-control" id="totalReward" readonly value="${user.totalReward}">
+                                                <input type="text" class="form-control" id="totalReward" readonly value="${reward}">
                                             </div>
                                         </div>
                                         <div class="form-group">

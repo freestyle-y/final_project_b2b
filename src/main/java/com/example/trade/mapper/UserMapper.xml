@@ -193,4 +193,20 @@
 		WHERE id = #{userId}
 	</update>
 	
+	<select id="getTotalReward" resultType="int">
+			SELECT
+		    IFNULL((
+		        SELECT SUM(IFNULL(o.order_reward,0) + IFNULL(o.review_reward,0))
+		        FROM `order` o
+		        WHERE o.user_id = #{id}
+		          AND o.order_status = 'OS003'
+		    ), 0)
+		    -
+		    IFNULL((
+		        SELECT SUM(rh.reward_use)
+		        FROM reward_history rh
+		        JOIN `order` o2 ON rh.order_no = o2.order_no
+		        WHERE o2.user_id = #{id}
+		    ), 0) AS reward;
+	</select>
 </mapper>
