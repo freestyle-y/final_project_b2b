@@ -624,11 +624,9 @@
 	
 	<!-- 주문 시 사용한 적립금 조회 -->
 	<select id="getRewardUseByOrder" parameterType="com.example.trade.dto.Order" resultType="int">
-		SELECT
-			rh.reward_use AS rewardUse
-		FROM `order` o INNER JOIN reward_history rh ON o.order_no = rh.order_no
-		WHERE o.order_no = #{orderNo}
-		AND o.sub_order_no = #{subOrderNo}
+	    SELECT COALESCE(rh.reward_use, 0) AS rewardUse
+	    FROM reward_history rh
+	    WHERE rh.order_no = #{orderNo}
 	</select>
 	
 	<!-- 해당 주문의 전체 금액 조회 -->

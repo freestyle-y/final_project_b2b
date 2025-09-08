@@ -135,7 +135,7 @@ public interface AdminMapper {
 	int insertLoginHistory(String userId);
 
 	// 주문 시 사용한 적립금 조회
-	int getRewardUseByOrder(Order order);
+	Integer getRewardUseByOrder(Order order);
 	
 	// 해당 주문의 전체 결제 금액 조회
 	int getTotalAmountByOrder(Order order);

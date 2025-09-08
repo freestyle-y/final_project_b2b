@@ -22,8 +22,8 @@
 						<h2 class="text-center mb-4">교환 배송 처리(개인)</h2>
 						
 							<form id="personalDeliveryForm" action="/admin/exchangeApprove" method="post">
-							<input type="hidden" name="orderNo" value="${orderNo}">
-							<input type="hidden" name="subOrderNo" value="${subOrderNo}">
+							<input type="hidden" name="orderNo" value="${order.orderNo}">
+							<input type="hidden" name="subOrderNo" value="${order.subOrderNo}">
 							<div class="row g-3">
 								<!-- 택배사 입력 -->
 								<div class="col-md-12">

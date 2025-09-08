@@ -144,7 +144,7 @@ body{
 			<nav class="breadcrumbs">
 				<ol>
 					<li><%@include file="/WEB-INF/common/home.jsp"%></li>
-					<li class="current">Delivery</li>
+					<li class="current">배송</li>
 				</ol>
 			</nav>
 		</div>

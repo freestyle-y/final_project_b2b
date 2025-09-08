@@ -23,7 +23,7 @@
 					<div class="contact-form-wrapper">
 						<h2 class="text-center mb-4">교환/반품 신청</h2>
 						
-							<form id="personalDeliveryForm" action="/personal/exchangeReturn" method="post">
+							<form action="/personal/exchangeReturn" method="post">
 							<input type="hidden" name="orderNo" value="${orderNo}">
 							<input type="hidden" name="subOrderNo" value="${subOrderNo}">
 							<div class="row g-3">
@@ -49,7 +49,7 @@
 									<div class="form-group">
 										<div class="input-with-icon">
 											<i class="bi bi-pencil-square"></i>
-											<input type="text" class="form-control" id="exchangeReason" name="exchangeReason" rows="3" placeholder="교환 사유 입력" required>
+											<input type="text" class="form-control" id="exchangeReason" name="exchangeReason" placeholder="교환 사유 입력" required>
 										</div>
 									</div>
 								</div>
@@ -60,7 +60,7 @@
 									<div class="form-group">
 										<div class="input-with-icon">
 											<i class="bi bi-text-left"></i>
-											<input type="number" class="form-control" id="returnQuantity" name="returnQuantity" min="1" max="${orderQuantity}" placeholder="반품 수량 입력" required>
+											<input type="number" class="form-control" id="returnQuantity" name="returnQuantity" min="1" max="${orderQuantity}" placeholder="반품 수량 입력" disabled required>
 										</div>
 									</div>
 								</div>
@@ -68,7 +68,7 @@
 									<div class="form-group">
 										<div class="input-with-icon">
 											<i class="bi bi-pencil-square"></i>
-											<input type="text" class="form-control" id="returnReason" name="returnReason" rows="3" placeholder="반품 사유 입력" disabled required>
+											<input type="text" class="form-control" id="returnReason" name="returnReason" placeholder="반품 사유 입력" disabled required>
 										</div>
 									</div>
 								</div>
@@ -97,33 +97,41 @@
 
 <script>
 	function toggleReason() {
-		const deliveryStatus = document.getElementById("deliveryStatus").value;
-
-		const exchangeBox = document.getElementById("exchangeBox");
-		const returnBox = document.getElementById("returnBox");
-
-		const exchangeQuantity = document.getElementById("exchangeQuantity");
-		const returnQuantity = document.getElementById("returnQuantity");
-		const exchangeReason = document.getElementById("exchangeReason");
-		const returnReason = document.getElementById("returnReason");
-
-		if (deliveryStatus === "DS006") { // 교환
-			exchangeBox.style.display = "block";
-			exchangeQuantity.disabled = false;
-			exchangeReason.disabled = false;
-
-			returnBox.style.display = "none";
-			returnQuantity.disabled = true;
-			returnReason.disabled = true;
-		} else { // 반품
-			returnBox.style.display = "block";
-			returnQuantity.disabled = false;
-			returnReason.disabled = false;
-
-			exchangeBox.style.display = "none";
-			exchangeQuantity.disabled = true;
-			exchangeReason.disabled = true;
-		}
+	    const deliveryStatus = document.getElementById("deliveryStatus").value;
+	
+	    const exchangeBox = document.getElementById("exchangeBox");
+	    const returnBox = document.getElementById("returnBox");
+	
+	    const exchangeQuantity = document.getElementById("exchangeQuantity");
+	    const returnQuantity = document.getElementById("returnQuantity");
+	    const exchangeReason = document.getElementById("exchangeReason");
+	    const returnReason = document.getElementById("returnReason");
+	
+	    if (deliveryStatus === "DS006") { // 교환
+	        exchangeBox.style.display = "block";
+	        exchangeQuantity.disabled = false;
+	        exchangeQuantity.required = true;
+	        exchangeReason.disabled = false;
+	        exchangeReason.required = true;
+	
+	        returnBox.style.display = "none";
+	        returnQuantity.disabled = true;
+	        returnQuantity.required = false;
+	        returnReason.disabled = true;
+	        returnReason.required = false;
+	    } else { // 반품
+	        returnBox.style.display = "block";
+	        returnQuantity.disabled = false;
+	        returnQuantity.required = true;
+	        returnReason.disabled = false;
+	        returnReason.required = true;
+	
+	        exchangeBox.style.display = "none";
+	        exchangeQuantity.disabled = true;
+	        exchangeQuantity.required = false;
+	        exchangeReason.disabled = true;
+	        exchangeReason.required = false;
+	    }
 	}
 </script>
 

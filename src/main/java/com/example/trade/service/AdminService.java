@@ -276,7 +276,10 @@ public class AdminService {
 		
 		int totalAmount = adminMapper.getTotalAmountByOrder(order); // 전체 결제 금액
 		int returnAmount = adminMapper.getReturnAmountByOrder(order); // 반품 상품 금액
-		int rewardUse = adminMapper.getRewardUseByOrder(order); // 사용한 적립금
+		// 사용한 적립금
+	    // null-safe 처리
+	    Integer rewardUseVal = adminMapper.getRewardUseByOrder(order);
+	    int rewardUse = (rewardUseVal != null) ? rewardUseVal : 0;
 		
 		// 반품 제외 구매 금액
 		int remainAmount = totalAmount - returnAmount;

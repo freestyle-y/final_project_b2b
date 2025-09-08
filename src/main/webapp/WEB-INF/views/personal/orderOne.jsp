@@ -184,6 +184,7 @@
             <td class="td-status">
               <span class="chip">
                 <c:choose>
+                  <c:when test="${order.deliveryStatus == 'DS010'}">반품중</c:when>
                   <c:when test="${order.deliveryStatus == 'DS008'}">교환완료</c:when>
                   <c:when test="${order.deliveryStatus == 'DS007'}">교환중</c:when>
                   <c:when test="${order.deliveryStatus == 'DS006'}">교환대기</c:when>
