@@ -13,4 +13,12 @@ public interface PaymentCardMapper {
 
 	void updateUseStatus(int paymentMethodNo, String userId);
 
+	void setDefault(int paymentMethodNo, String userId);
+
+	PaymentMethod getCardOne(int paymentMethodNo, String userId);
+
+	void updateCardInfo(PaymentMethod paymentMethod);
+
+	int getCountOrderList(String userId);
+
 }

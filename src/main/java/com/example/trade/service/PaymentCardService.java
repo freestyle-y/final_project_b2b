@@ -25,4 +25,21 @@ public class PaymentCardService {
 		paymentCardMapper.updateUseStatus(paymentMethodNo, userId);
 	}
 
+	public void setDefault(int paymentMethodNo, String userId) {
+		paymentCardMapper.setDefault(paymentMethodNo, userId);
+	}
+
+	public PaymentMethod getCardOne(int paymentMethodNo, String userId) {
+
+		return paymentCardMapper.getCardOne(paymentMethodNo, userId);
+	}
+
+	public void updateCardInfo(PaymentMethod paymentMethod) {
+		paymentCardMapper.updateCardInfo(paymentMethod);
+	}
+
+	public int getCountOrderList(String userId) {
+		return paymentCardMapper.getCountOrderList(userId);
+	}
+
 }

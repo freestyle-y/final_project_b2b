@@ -30,5 +30,63 @@
 		WHERE
 			payment_method_no = #{paymentMethodNo}
 			AND	user_id = #{userId}
+			AND is_default = "N"
 	</update>
+	
+	<update id="setDefault">
+	    UPDATE payment_method
+	    SET
+	      is_default = CASE
+	                     WHEN payment_method_no = #{paymentMethodNo} THEN 'Y'
+	                     ELSE 'N'
+	                   END,
+	      update_user = #{userId},
+	      update_date = NOW()
+	    WHERE user_id = #{userId}
+	    AND use_status = "Y"
+	</update>
+	
+	<select id="getCardOne">
+	    SELECT
+        payment_method_no AS paymentMethodNo,
+        user_id AS userId,
+        payment_code AS paymentCode,
+        financial_institution AS financialInstitution,
+        account_number AS accountNumber,
+        card_password AS cardPassword,
+        card_cvc AS cardCvc,
+        card_expiration AS cardExpiration,
+        is_default AS isDefault,
+        use_status AS useStatus,
+        create_user AS createUser,
+        create_date AS createDate,
+        update_user AS updateUser,
+        update_date AS updateDate
+    FROM payment_method
+    WHERE payment_method_no = #{paymentMethodNo}
+      AND user_id = #{userId}
+      AND use_status = 'Y'
+	</select>
+	
+	<update id="updateCardInfo" parameterType="com.example.trade.dto.PaymentMethod">
+	    UPDATE payment_method
+	    SET financial_institution = #{financialInstitution},
+	        payment_code          = #{paymentCode},
+	        account_number        = #{accountNumber},
+	        card_password         = #{cardPassword},
+	        card_cvc              = #{cardCvc},
+	        card_expiration       = #{cardExpiration},
+	        use_status            = #{useStatus},
+	        update_user           = #{userId},
+	        update_date           = NOW()
+	    WHERE payment_method_no   = #{paymentMethodNo}
+	      AND user_id             = #{userId}
+	</update>
+	
+	<select id="getCountOrderList" resultType="int">
+		SELECT COUNT(distinct order_no)
+		FROM `order`
+		WHERE user_id = #{userId}
+		AND use_status="Y"
+	</select>
 </mapper>

@@ -162,7 +162,7 @@ html, body, button, input, select, textarea {
                 <li class="nav-item">
                   <a class="nav-link ${ordersActive ? 'active' : ''}" href="<c:url value='/personal/orderList'/>">
                     <i class="bi bi-box-seam"></i><span>주문</span>
-                    <span class="badge"><c:out value="${orderCount}"/></span>
+                    <span class="badge"><c:out value="${order}"/></span>
                   </a>
                   <a class="nav-link ${wishlistActive ? 'active' : ''}" href="<c:url value='/personal/wishList'/>">
                     <i class="bi bi-heart"></i><span>찜</span>
@@ -239,7 +239,7 @@ html, body, button, input, select, textarea {
                 <div class="card-head">
                   <div class="card-id">
                     <span class="label">ID</span>
-                    <a class="id-pill" href="<c:url value='/personal/payment/cardOne?paymentMethodNo=${pmNo}'/>">
+                    <a class="id-pill" href="<c:url value='/personal/cardOne?paymentMethodNo=${pmNo}'/>">
                       <i class="bi bi-credit-card-2-front" aria-hidden="true"></i>
                       <span class="mono">#${pmNo}</span>
                     </a>
@@ -294,7 +294,7 @@ html, body, button, input, select, textarea {
                       <i class="bi bi-card-list"></i> 상세
                     </button>
 
-                    <form method="post" action="<c:url value='/personal/payment/setDefault'/>" class="d-inline">
+                    <form method="post" action="<c:url value='/personal/setDefault'/>" class="d-inline">
                       <input type="hidden" name="paymentMethodNo" value="${pmNo}"/>
                       <button class="btn-sm primary" type="submit" <c:if test="${isDef}">disabled</c:if>>
                         <i class="bi bi-star"></i> 기본으로
