@@ -874,7 +874,7 @@ body {
                +   '<td>' + (att.filename || '파일명 없음') + '</td>'
                +   '<td>' + uploadDate + '</td>'
                +   '<td>' + (att.createUser || '사용자 없음') + '</td>'
-               +   '<td><button class="btn btn-primary" onclick="deleteAttachment(' + att.attachmentNo + ')">삭제</button></td>'
+               +   '<td><button class="btn btn-dark" onclick="deleteAttachment(' + att.attachmentNo + ')">삭제</button></td>'
                + '</tr>';
         });
         html += '</tbody></table>';

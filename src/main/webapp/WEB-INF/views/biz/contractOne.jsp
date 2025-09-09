@@ -876,7 +876,7 @@
               +    '<td>' + (att.filename || '파일명 없음') + '</td>'
               +    '<td>' + uploadDate + '</td>'
               +    '<td>' + (att.createUser || '사용자 없음') + '</td>'
-              +    '<td><a class="btn btn-primary" href="' + downUrl + '">다운로드</a></td>'
+              +    '<td><a class="btn btn-dark" href="' + downUrl + '">다운로드</a></td>'
               +  '</tr>';
        }
        html += '</tbody></table>';
