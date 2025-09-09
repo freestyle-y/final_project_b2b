@@ -169,7 +169,7 @@
 		FROM contract c
 			INNER JOIN quotation q ON c.quotation_no = q.quotation_no
 			INNER JOIN product_request pr ON q.product_request_no = pr.product_request_no
-		WHERE pr.create_user = #{userId}
+		WHERE pr.create_user = #{userId} AND c.use_status ="Y"
 		ORDER BY c.contract_no ASC
 	</select>
 	

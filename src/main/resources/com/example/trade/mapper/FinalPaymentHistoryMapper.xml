@@ -46,7 +46,7 @@ SELECT
 
 FROM contract c
 LEFT JOIN container ct ON ct.contract_no = c.contract_no
-WHERE c.use_status ="Y"
+WHERE c.use_status ="Y" AND ct.use_status = "Y"
 ORDER BY c.contract_no DESC;
 </select>
 
