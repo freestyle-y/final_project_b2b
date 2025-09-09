@@ -17,23 +17,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        String os = System.getProperty("os.name").toLowerCase();
-
-        if (os.contains("win") || os.contains("mac")) {
-            // 윈도우, 맥 환경 - 윈도우 경로 기준
-            String location = "file:" + (uploadRoot.endsWith("/") ? uploadRoot : uploadRoot + "/");
-            String pattern  = (urlPrefix.endsWith("/")) ? (urlPrefix + "**") : (urlPrefix + "/**");
-
-            registry.addResourceHandler(pattern)
-                    .addResourceLocations(
-                            location,
-                            "classpath:/static" + urlPrefix
-                    );
-        } else {
-            // 리눅스 환경 - product 경로만 별도 등록
-            registry.addResourceHandler("/uploads/product/**")
-                    .addResourceLocations("file:/home/ubuntu/uploads/product/");
-        }
+        	registry.addResourceHandler("/uploads/**")
+            .addResourceLocations("file:/home/ubuntu/uploads/");
     }
 
 }
