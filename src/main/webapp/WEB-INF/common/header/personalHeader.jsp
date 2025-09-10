@@ -42,10 +42,6 @@
 									<i class="bi bi-heart me-2"></i>
 									<span>My Wishlist</span>
 								</a>
-								<a class="dropdown-item d-flex align-items-center" href="account.html">
-									<i class="bi bi-gear me-2"></i>
-									<span>Settings</span>
-								</a>
 							</div>
 						</div>
 					</div>

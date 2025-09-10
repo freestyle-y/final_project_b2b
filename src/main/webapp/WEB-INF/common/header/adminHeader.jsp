@@ -30,16 +30,6 @@
 								<h6>Welcome to <span class="sitename">FashionStore</span></h6>
 								<p class="mb-0">Access account &amp; manage orders</p>
 							</div>
-							<div class="dropdown-body">
-								<a class="dropdown-item d-flex align-items-center" href="account.html">
-									<i class="bi bi-person-circle me-2"></i>
-									<span>My Profile</span>
-								</a>
-								<a class="dropdown-item d-flex align-items-center" href="account.html">
-									<i class="bi bi-gear me-2"></i>
-									<span>Settings</span>
-								</a>
-							</div>
 						</div>
 					</div>
 

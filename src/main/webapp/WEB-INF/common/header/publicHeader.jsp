@@ -29,24 +29,6 @@
 								<h6>Welcome to <span class="sitename">FashionStore</span></h6>
 								<p class="mb-0">Access account &amp; manage orders</p>
 							</div>
-							<div class="dropdown-body">
-								<a class="dropdown-item d-flex align-items-center" href="/member/myPage">
-									<i class="bi bi-person-circle me-2"></i>
-									<span>My Profile</span>
-								</a>
-								<a class="dropdown-item d-flex align-items-center" href="/personal/deliveryList">
-									<i class="bi bi-bag-check me-2"></i>
-									<span>My Orders</span>
-								</a>
-								<a class="dropdown-item d-flex align-items-center" href="account.html">
-									<i class="bi bi-heart me-2"></i>
-									<span>My Wishlist</span>
-								</a>
-								<a class="dropdown-item d-flex align-items-center" href="account.html">
-									<i class="bi bi-gear me-2"></i>
-									<span>Settings</span>
-								</a>
-							</div>
 							<div class="dropdown-footer">
 								<a href="/public/login" class="btn btn-primary w-100 mb-2">Log In</a>
 								<a href="/public/joinMember" class="btn btn-outline-primary w-100">Register</a>
